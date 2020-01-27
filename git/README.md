@@ -15,14 +15,14 @@ This Task fetch credentials to be able to perform a git clone of a given reposit
 * **ConfigMap cd-config**
 
   ConfigMap corresponding to the CD tekton pipeline context:
-  - `API`: IBM Cloud api
-  - `TOOLCHAIN_ID`: Id of the toolchain
-  - `REGION`: Region where the toolchain is defined
+  * **API**: IBM Cloud api
+  * **TOOLCHAIN_ID**: Id of the toolchain
+  * **REGION**: Region where the toolchain is defined
 
 * **Secret cd-secret**
 
   Secret containing:
-  - `API_KEY`: An IBM Cloud Api Key allowing access to the toolchain
+  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain
 
 ### Parameters
 
@@ -34,6 +34,7 @@ This Task fetch credentials to be able to perform a git clone of a given reposit
 * **propertiesFile**: (optional) name of the properties file that will be created as additional outcome of this task in the pvc. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
 
 ## Output
+The output of this task is the clone operation performed in the specified directory (if any)
 
 ## Usage
 The `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run a sample usage the `clone-repo-task`
