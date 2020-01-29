@@ -76,9 +76,13 @@ spec:
             echo "Adding .git suffix to Repository URL"
             REPOSITORY="${REPOSITORY}.git"
           fi
-          GIT_TOKEN_URL=$(cat _toolchain.json | jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url')
           GIT_SERVICE_INSTANCE_ID=$(cat _toolchain.json | jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .instance_id')
+          if [ -z "$GIT_SERVICE_INSTANCE_ID" ]; then
+            echo "No Git integration (repository url: $REPOSITORY) found in the toolchain"
+            exit 1
+          fi
           GIT_SERVICE_TYPE=$(cat _toolchain.json | jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .service_id')
+          GIT_TOKEN_URL=$(cat _toolchain.json | jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url')
           GIT_TOKEN=$(curl -s -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}" | jq -r '.access_token')
           if [ "$GIT_SERVICE_TYPE" == "github" ]; then
             GIT_AUTH_USER="x-oauth-basic"
