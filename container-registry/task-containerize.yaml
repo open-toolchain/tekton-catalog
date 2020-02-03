@@ -23,9 +23,6 @@ spec:
       - name: buildkit_image
         description: The name of the BuildKit image
         default: "moby/buildkit:v0.6.3-rootless"
-      - name: propertiesFile
-        description: file containing properties out of containerize task
-        default: build.properties        
       - name: additionalTags
         description: comma-separated list of additionalTags
         # can not be defined as an array because of variable substition error for array
@@ -34,6 +31,9 @@ spec:
       - name: additionalTagsScript
         description: Shell script that allows to add tags for the image to be build.
         default: ''
+      - name: propertiesFile
+        description: file containing properties out of containerize task
+        default: build.properties        
     # resources:
     #   # TODO consider an optional git repository as the source of the image to build
     #   # when cd tekton support will be to tekton pipeline v 0.10
