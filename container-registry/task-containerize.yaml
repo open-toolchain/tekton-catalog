@@ -166,7 +166,6 @@ spec:
           # Add dynamicalyy computed tags
           printf "#!/bin/sh\n%s\n" '$(inputs.params.additionalTagsScript)' > /steps/additionnalTags.sh
           chmod +x /steps/additionnalTags.sh
-          cat /steps/additionnalTags.sh
           /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
           # Add image pipeline resource
           echo "${IMAGE_TAG:-latest}" >> /steps/tags.lst

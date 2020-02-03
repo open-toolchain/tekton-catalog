@@ -20,7 +20,6 @@ spec:
       description: The id of the toolchain referencing the git repository to clone
     - name: imageUrl
       description: The image url in your container registry
-      default: 'de.icr.io/jauninb-tekton/my-first-image'
   resourcetemplates:
     # CD context defined as a configmap because it is immutable information
     - apiVersion: v1
