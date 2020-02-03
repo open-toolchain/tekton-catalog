@@ -53,7 +53,7 @@ spec:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-          name: pipeline-simple-clone
+          name: pipeline-containerize
         resources:
           - name: app-image
             resourceRef:
