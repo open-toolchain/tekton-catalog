@@ -2,7 +2,7 @@
 
 This task is building and pushing an image to IBM Cloud Container Registry. This taks is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
 
-**WARNING:** This task needs to run on Kubernetes cluster with minimal version 1.15. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to at least this version.
+**WARNING: This task needs to run on Kubernetes cluster with minimal version 1.15. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 
 ## Install the Task
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
