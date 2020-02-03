@@ -1,0 +1,276 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: containerize-task
+spec:
+  inputs:
+    params:
+      - name: task-pvc
+        description: the task pvc - this is the volume where the files (Dockerfile etc..) are expected to be
+      - name: continuous-delivery-context-configmap
+        description: name of the configmap containing the continuous delivery pipeline context
+        default: cd-config
+      - name: continuous-delivery-context-secret
+        description: name of the configmap containing the continuous delivery pipeline context secrets
+        default: cd-secret
+      - name: pathToContext
+        default: .
+      - name: pathToDockerfile
+        default: .
+      - name: dockerfile
+        description: The name of the Dockerfile
+        default: "Dockerfile"
+      - name: buildkit_image
+        description: The name of the BuildKit image
+        default: "moby/buildkit:v0.6.3-rootless"
+      - name: propertiesFile
+        description: file containing properties out of containerize task
+        default: build.properties        
+      - name: additionalTags
+        description: comma-separated list of additionalTags
+        # can not be defined as an array because of variable substition error for array
+        # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
+        default: ''
+      - name: additionalTagsScript
+        description: Shell script that allows to add tags for the image to be build.
+        default: ''
+    # resources:
+    #   # TODO consider an optional git repository as the source of the image to build
+    #   # when cd tekton support will be to tekton pipeline v 0.10
+    #   - name: workspace
+    #     type: git
+    #     optional: true
+  outputs:
+    resources:
+      - name: builtImage
+        type: image
+  steps:
+    - name: check-registry
+      image: ibmcom/pipeline-base-image
+      workingDir: /steps
+      env:
+        - name: API
+          valueFrom:
+            configMapKeyRef:
+              name: $(inputs.params.continuous-delivery-context-configmap)
+              key: API
+        - name: REGION
+          valueFrom:
+            configMapKeyRef:
+              name: $(inputs.params.continuous-delivery-context-configmap)
+              key: REGION
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(inputs.params.continuous-delivery-context-secret)
+              key: API_KEY
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+
+          ##########################################################################
+          # Setting HOME explicitly to have ibmcloud plugins available
+          # doing the export rather than env definition is a workaround
+          # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+          export HOME="/root"
+          ##########################################################################
+          # Parse the image url to find information (region, namespace, image name)
+          IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
+          IMAGE_TAG=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
+          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
+          IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
+
+          # Find the ibmcloud container registry region
+          # https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_regions_local
+          if [[ $REGISTRY_URL =~ ^registry\.[a-z]*.bluemix.net$ ]]; then
+            # deprecated domain name
+            REGISTRY_REGION=$(echo $REGISTRY_URL | awk -F. '{print $2}')
+            if [ "$REGISTRY_REGION" == "ng" ]; then
+              REGISTRY_REGION="us-south"
+            fi
+          else
+            export REGISTRY_REGION=$(echo $REGISTRY_URL | awk -F. '{print $1}')
+            if [ "$REGISTRY_REGION" == "jp" ]; then
+              REGISTRY_REGION="ap-north"
+            elif [ "$REGISTRY_REGION" == "au" ]; then
+              REGISTRY_REGION="ap-south"
+            elif [ "$REGISTRY_REGION" == "de" ]; then
+              REGISTRY_REGION="eu-central"
+            elif [ "$REGISTRY_REGION" == "uk" ]; then
+              REGISTRY_REGION="uk-south"
+            elif [ "$REGISTRY_REGION" == "us" ]; then
+              REGISTRY_REGION="us-south"
+            else
+              echo "No IBM Cloud Container Registry region found for the registry url $REGISTRY_URL"
+              exit 1
+            fi
+          fi
+
+          # ibmcloud login
+          ibmcloud config --check-version false
+          ibmcloud login -a $API -r $REGION --apikey $API_KEY
+
+          # Log container registry to the appropriate region
+          ibmcloud cr region-set $REGISTRY_REGION
+
+          # Create the namespace if needed to ensure the push will be can be successfull
+          echo "Checking registry namespace: ${REGISTRY_NAMESPACE}"
+          NS=$( ibmcloud cr namespaces | grep ${REGISTRY_NAMESPACE} ||: )
+          if [ -z "${NS}" ]; then
+              echo "Registry namespace ${REGISTRY_NAMESPACE} not found, creating it."
+              ibmcloud cr namespace-add ${REGISTRY_NAMESPACE}
+              echo "Registry namespace ${REGISTRY_NAMESPACE} created."
+          else
+              echo "Registry namespace ${REGISTRY_NAMESPACE} found."
+          fi
+          echo -e "Existing images in registry"
+          ibmcloud cr images --restrict ${REGISTRY_NAMESPACE}
+
+          # create a dry-run k8s secret of type docker-registry to obtain
+          # the content of a docker config.json file to access the target
+          # ibmcloud container registry
+          kubectl create secret --dry-run=true --output=json \
+            docker-registry registry-dockerconfig-secret \
+            --docker-server=${REGISTRY_URL} \
+            --docker-password=${API_KEY} \
+            --docker-username=iamapikey --docker-email=a@b.com | \
+          jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
+
+          echo "REGISTRY_URL=${REGISTRY_URL}" > next-step-env.properties
+          echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> next-step-env.properties
+          echo "REGISTRY_REGION=${REGISTRY_REGION}" >> next-step-env.properties
+          echo "IMAGE_URL=${IMAGE_URL}" >> next-step-env.properties
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> next-step-env.properties
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> next-step-env.properties
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+    - name: build-image
+      image: $(inputs.params.buildkit_image)
+      workingDir: /artifacts
+      # specifying DOCKER_CONFIG is required to allow buildkit to detect docker credentials
+      env:
+        - name: DOCKER_CONFIG
+          value: /steps
+      securityContext:
+        privileged: true
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          source /steps/next-step-env.properties
+          export $(cut -d= -f1 /steps/next-step-env.properties)
+
+          # Manage multiple tags for an image
+          # Add dynamicalyy computed tags
+          printf "#!/bin/sh\n%s\n" '$(inputs.params.additionalTagsScript)' > /steps/additionnalTags.sh
+          chmod +x /steps/additionnalTags.sh
+          cat /steps/additionnalTags.sh
+          /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
+          # Add image pipeline resource
+          echo "${IMAGE_TAG:-latest}" >> /steps/tags.lst
+          # Add tags provided using task parameter
+          echo "$(inputs.params.additionalTags)" | sed 's/,/\n/g' >> /steps/tags.lst
+          echo "#######################"
+          echo "Image Tags:"
+          cat /steps/tags.lst
+          echo "#######################"
+          # Add the full image url with tags
+          sed -i -e "s/^/$REGISTRY_URL\/$REGISTRY_NAMESPACE\/$IMAGE_NAME:/" /steps/tags.lst
+          sort -u -o /steps/tags.lst /steps/tags.lst
+          echo "Full Image URLs:"
+          cat /steps/tags.lst
+          echo "#######################"
+          BUILDKIT_IMAGE_NAMES=$(tr -s '\r\n' ',' < /steps/tags.lst | sed -e 's/,$/\n/')
+          echo "Buildkit Image names: $BUILDKIT_IMAGE_NAMES"
+
+          buildctl-daemonless.sh build \
+            --progress=plain \
+            --frontend=dockerfile.v0 \
+            --opt filename=$(inputs.params.dockerfile) \
+            --local context=/artifacts/$(inputs.params.pathToContext) --local dockerfile=/artifacts/$(inputs.params.pathToDockerfile) \
+            --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
+            --export-cache type=inline \
+            --import-cache type=registry,ref=$(outputs.resources.builtImage.url) 2>&1 | tee /steps/build.log
+
+          # Using the deprecated --exporter option for now as the multiple name/tags using --output option
+          # is not working as expected: https://github.com/moby/buildkit/issues/797#issuecomment-581346240
+          #  --output type=image,"name=$(outputs.resources.builtImage.url):1.0.0,$(outputs.resources.builtImage.url)",push=true \
+
+          # it is not possible to specify multiple exporters for now
+          # --output type=oci,dest=/builder/home/image-outputs/builtImage/output.tar \
+          # It is possible to assign multiple tags to the image with latest version of buildkit_image
+          # see https://github.com/moby/buildkit/issues/797
+
+      volumeMounts:
+        - mountPath: /artifacts
+          name: task-volume
+        - mountPath: /steps
+          name: steps-volume
+    - name: process-build-log
+      # An image including only jq should be sufficient
+      image: ibmcom/pipeline-base-image
+      workingDir: /steps
+      env:
+        - name: PROPERTIES_FILE
+          value: $(inputs.params.propertiesFile)
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+          source /steps/next-step-env.properties
+          export $(cut -d= -f1 /steps/next-step-env.properties)
+
+          # buildctl/buildkit does not provide an index.json as part of the output
+          # https://github.com/moby/buildkit/issues/1158 and https://github.com/moby/buildkit/issues/993
+          # https://github.com/moby/buildkit/pull/1315
+          # unfortunately, this is needed for Tekton Image Pipeline Resource
+          # https://github.com/tektoncd/pipeline/blob/v0.7.0/docs/resources.md#image-resource
+          # so workaround for now is to process the buildkit log to find the required information
+
+          MANIFEST_SHA=$(grep -i 'exporting manifest' build.log | grep -i 'done' | awk '{print $4}')
+          CONFIG_SHA=$(grep -i 'exporting config' build.log | grep -i 'done' | awk '{print $4}')
+          FULLY_QUALIFIED_IMAGE=$(grep -i 'pushing manifest' build.log | grep -i 'done' | awk '{print $5}')
+
+          echo "Creating OCI image index - index.json - out of the build.log to reference image sha: $MANIFEST_SHA"
+          # ibmcloud container-registry image manifest is: application/vnd.docker.distribution.manifest.v2+json
+          echo "{}" | \
+          jq --arg manifest_sha "$MANIFEST_SHA" '{schemaVersion:2,manifests:[{"mediaType": "application/vnd.oci.image.manifest.v1+json", digest:$manifest_sha}]}' 2>&1 | \
+          tee /workspace/output/builtImage/index.json
+
+          # Copy the index.json to the legacy location - v0.7.0 - for such imageoutput
+          mkdir -p /builder/home/image-outputs/builtImage
+          cp /workspace/output/builtImage/index.json /builder/home/image-outputs/builtImage
+
+          # Because of https://github.com/tektoncd/pipeline/issues/216          
+          # the image digest for input is/will always empty
+          # there was an alternative/workaround but it is updating using a specific account
+          # and using a kubectl command to update the resources
+          # see https://github.com/nlewo/poc-tekton#deploy-tasks
+          # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
+          # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
+          # Here the workaround will be to add registry and image information in an output properties file
+          if [ "$PROPERTIES_FILE" ]; then
+            cd /artifacts
+            touch $PROPERTIES_FILE
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> $PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
+            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
+            echo "IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')" >> $PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
+            echo "$PROPERTIES_FILE content:"
+            cat $PROPERTIES_FILE
+          fi
+      volumeMounts:
+        - mountPath: /artifacts
+          name: task-volume
+        - mountPath: /steps
+          name: steps-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: task-volume
+      persistentVolumeClaim:
+        claimName: $(inputs.params.task-pvc)

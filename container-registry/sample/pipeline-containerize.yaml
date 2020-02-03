@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-containerize
+spec:
+  params:
+    - name: pipeline-pvc
+      description: the pipeline pvc name
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+  resources:
+  - name: app-image
+    type: image
+  tasks:
+    - name: pipeline-1-clone-task
+      taskRef:
+        name: clone-repo-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+    - name: pipeline-2-containerize-task
+      runAfter: [pipeline-1-clone-task]
+      taskRef:
+        name: containerize-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: additionalTags
+          value: '1.0.0-dev'
+        - name: additionalTagsScript
+          value: |
+            source /artifacts/build.properties
+            export GIT_BRANCH 
+            export GIT_COMMIT
+            # Add a specific tag with branch and commit
+            echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
+      resources:          
+        outputs:
+          - name: builtImage
+            resource: app-image
