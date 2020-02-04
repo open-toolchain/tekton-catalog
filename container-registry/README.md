@@ -32,7 +32,7 @@ This task is building and pushing an image to IBM Cloud Container Registry. This
 
 ### Parameters
 
-* **task-pvc**: the output pvc - this is where the PVC created and mounted for the execution
+* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)

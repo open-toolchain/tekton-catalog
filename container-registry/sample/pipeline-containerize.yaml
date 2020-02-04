@@ -35,9 +35,11 @@ spec:
           value: '1.0.0-dev'
         - name: additionalTagsScript
           value: |
+            # Include the clone task output variables in the environment
             source /artifacts/build.properties
-            export GIT_BRANCH 
-            export GIT_COMMIT
+            # The script is providing tag(s) as output
+            # But logs can be written as error stderr
+            echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
       resources:          
