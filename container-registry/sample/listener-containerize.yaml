@@ -1,0 +1,86 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-containerize
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: apikey
+      description: the ibmcloud api key
+    - name: toolchainRegion
+      description: the ibmcloud region containing the toolchain
+      default: us-south
+    - name: toolchainId
+      description: The id of the toolchain referencing the git repository to clone
+    - name: imageUrl
+      description: The image url in your container registry
+  resourcetemplates:
+    # CD context defined as a configmap because it is immutable information
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: cd-config
+      data:
+        API: $(params.api)
+        REGION: $(params.toolchainRegion)
+        TOOLCHAIN_ID: $(params.toolchainId)
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.apikey)
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineResource
+      metadata:
+        name: image-to-build
+      spec:
+        type: image
+        params:
+          - name: url
+            value: $(params.imageUrl)
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline-containerize
+        resources:
+          - name: app-image
+            resourceRef:
+              name: image-to-build
+        params:
+          - name: pipeline-pvc
+            value: pipelinerun-$(uid)-pvc
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-containerize
+spec:
+  params:
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-containerize
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-containerize
+      template:
+        name: trigger-template-containerize
