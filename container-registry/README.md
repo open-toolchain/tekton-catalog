@@ -12,7 +12,7 @@ This task is building and pushing an image to IBM Cloud Container Registry. This
 
 ### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resource to be defined:
+  The task expects the following kubernetes resources to be defined:
 
 * **ConfigMap cd-config**
 
@@ -26,7 +26,7 @@ This task is building and pushing an image to IBM Cloud Container Registry. This
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain
+  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (https://cloud.ibm.com/iam/apikeys)
 
   See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
