@@ -39,7 +39,7 @@ This task is building and pushing an image to IBM Cloud Container Registry. This
 * **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
 * **additionalTags**: (optional) comma-separated list of tags for the built image
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
-* **propertiesFile**: (optional) name of the properties file that will be created as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
+* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 
 ## Outputs
 
