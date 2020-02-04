@@ -168,7 +168,7 @@ spec:
           chmod +x /steps/additionnalTags.sh
           /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
           # Add image pipeline resource
-          echo "${IMAGE_TAG:-latest}" >> /steps/tags.lst
+          echo "${IMAGE_TAG}" >> /steps/tags.lst
           # Add tags provided using task parameter
           echo "$(inputs.params.additionalTags)" | sed 's/,/\n/g' >> /steps/tags.lst
           echo "#######################"
