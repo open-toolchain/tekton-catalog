@@ -186,7 +186,7 @@ spec:
           cat /steps/tags.lst
           echo "#######################"
           BUILDKIT_IMAGE_NAMES=$(tr -s '\r\n' ',' < /steps/tags.lst | sed -e 's/,$/\n/')
-          if [ -z "BUILDKIT_IMAGE_NAMES" ]; then
+          if [ -z "$BUILDKIT_IMAGE_NAMES" ]; then
             # Set default image name for buildkit to push
             BUILDKIT_IMAGE_NAMES="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
           fi
