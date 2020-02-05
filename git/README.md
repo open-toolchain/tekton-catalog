@@ -12,19 +12,10 @@ This Task fetches the credentials needed to perform a git clone of a repo specif
 
   The task expects the following kubernetes resource to be defined:
 
-* **ConfigMap cd-config**
-
-  ConfigMap corresponding to the CD tekton pipeline context:
-  * **API**: IBM Cloud api endpoint. 
-  * **TOOLCHAIN_ID**: Id of the toolchain
-  * **REGION**: Region where the toolchain is defined
-
-  See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the configMap using `resourcetemplates` in a `TriggerTemplate`
-
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain
+  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (and `Git Repos and Issue Tracking` service if used)
 
   See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
@@ -36,6 +27,7 @@ This Task fetches the credentials needed to perform a git clone of a repo specif
 * **revision**: (optional) the git revision/commit to update the git HEAD to (default to empty meaning only use the branch information)
 * **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
 * **propertiesFile**: (optional) name of the properties file that will be created as an additional outcome of this task in the pvc. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 
 ## Output
 The output of this task is the repository cloned into the directory on the pvc.
@@ -57,7 +49,7 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
 3) Add the environment properties:
 
-   - `toolchainId`, `apikey` (and optionally `toolchainRegion` if the toolchain is not in `us-south`) to inject Continuous Delivery toolchain context
+   - `apikey` to provide an API key used for the ibmcloud login/access
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
 
    ![Tekton pipeline environment properties](./sample/sample-tekton-pipeline-environment-properties.png)

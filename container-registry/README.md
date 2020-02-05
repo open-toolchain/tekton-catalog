@@ -17,19 +17,10 @@
 
   The task expects the following kubernetes resources to be defined:
 
-* **ConfigMap cd-config**
-
-  ConfigMap corresponding to the CD tekton pipeline context:
-  * **API**: IBM Cloud api endpoint. 
-  * **TOOLCHAIN_ID**: Id of the toolchain
-  * **REGION**: Region where the toolchain is defined
-
-  See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the configMap using `resourcetemplates` in a `TriggerTemplate`
-
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (https://cloud.ibm.com/iam/apikeys)
+  * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
 
   See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
@@ -43,6 +34,7 @@
 * **additionalTags**: (optional) comma-separated list of tags for the built image
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 
 ### Outputs
 
@@ -58,19 +50,10 @@
 
   The task expects the following kubernetes resources to be defined:
 
-* **ConfigMap cd-config**
-
-  ConfigMap corresponding to the CD tekton pipeline context:
-  * **API**: IBM Cloud api endpoint. 
-  * **TOOLCHAIN_ID**: Id of the toolchain
-  * **REGION**: Region where the toolchain is defined
-
-  See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the configMap using `resourcetemplates` in a `TriggerTemplate`
-
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (https://cloud.ibm.com/iam/apikeys)
+  * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
 
   See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
@@ -82,6 +65,7 @@
 * **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
 * **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the task-pvc
 * **failOnScannedIssues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 
 #### Resources
 
@@ -109,7 +93,7 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
 3) Add the environment properties:
 
-   - `toolchainId`, `apikey` (and optionally `toolchainRegion` if the toolchain is not in `us-south`) to inject Continuous Delivery toolchain context
+   - `apikey` to provide an API key used for the ibmcloud login/access
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
    - `imageUrl` to indicate the URL of the image to push to the IBM Cloud Container Registry
 

@@ -8,26 +8,10 @@ spec:
       description: The git repo
     - name: branch
       description: the branch for the git repo
-    - name: api
-      description: the ibmcloud api
-      default: https://cloud.ibm.com
     - name: apikey
       description: the ibmcloud api key
-    - name: toolchainRegion
-      description: the ibmcloud region containing the toolchain
-      default: us-south
-    - name: toolchainId
-      description: The id of the toolchain referencing the git repository to clone
   resourcetemplates:
-    # CD context defined as a configmap because it is immutable information
-    - apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: cd-config
-      data:
-        API: $(params.api)
-        REGION: $(params.toolchainRegion)
-        TOOLCHAIN_ID: $(params.toolchainId)
+    # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
       kind: Secret
       metadata:
