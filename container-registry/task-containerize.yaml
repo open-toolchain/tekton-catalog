@@ -33,7 +33,7 @@ spec:
         default: ''
       - name: propertiesFile
         description: file containing properties out of containerize task
-        default: build.properties        
+        default: build.properties
     # resources:
     #   # TODO consider an optional git repository as the source of the image to build
     #   # when cd tekton support will be to tekton pipeline v 0.10
@@ -54,11 +54,6 @@ spec:
             configMapKeyRef:
               name: $(inputs.params.continuous-delivery-context-configmap)
               key: API
-        - name: REGION
-          valueFrom:
-            configMapKeyRef:
-              name: $(inputs.params.continuous-delivery-context-configmap)
-              key: REGION
         - name: API_KEY
           valueFrom:
             secretKeyRef:
@@ -68,7 +63,8 @@ spec:
       args:
         - |
           set -e -o pipefail
-
+          TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+          TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           ##########################################################################
           # Setting HOME explicitly to have ibmcloud plugins available
           # doing the export rather than env definition is a workaround
@@ -110,7 +106,7 @@ spec:
 
           # ibmcloud login
           ibmcloud config --check-version false
-          ibmcloud login -a $API -r $REGION --apikey $API_KEY
+          ibmcloud login -a $API -r $TOOLCHAIN_REGION --apikey $API_KEY
 
           # Log container registry to the appropriate region
           ibmcloud cr region-set $REGISTRY_REGION
@@ -145,6 +141,8 @@ spec:
           echo "IMAGE_TAG=${IMAGE_TAG}" >> next-step-env.properties
           echo "IMAGE_NAME=${IMAGE_NAME}" >> next-step-env.properties
       volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
     - name: build-image
@@ -250,7 +248,7 @@ spec:
           mkdir -p /builder/home/image-outputs/builtImage
           cp /workspace/output/builtImage/index.json /builder/home/image-outputs/builtImage
 
-          # Because of https://github.com/tektoncd/pipeline/issues/216          
+          # Because of https://github.com/tektoncd/pipeline/issues/216
           # the image digest for input is/will always empty
           # there was an alternative/workaround but it is updating using a specific account
           # and using a kubectl command to update the resources
@@ -281,3 +279,9 @@ spec:
     - name: task-volume
       persistentVolumeClaim:
         claimName: $(inputs.params.task-pvc)
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+        - key: toolchain.json
+          path: toolchain.json
