@@ -7,6 +7,9 @@ spec:
     params:
       - name: task-pvc
         description: the output pvc - this is where the cloned repository will be stored
+      - name: ibmcloudApi
+        description: the ibmcloud api
+        default: https://cloud.ibm.com
       - name: continuous-delivery-context-secret
         description: name of the configmap containing the continuous delivery pipeline context secrets
         default: cd-secret
@@ -31,11 +34,6 @@ spec:
         default: build.properties
   stepTemplate:
     env:
-      - name: API
-        valueFrom:
-          configMapKeyRef:
-            name: cd-config
-            key: API
       - name: API_KEY
         valueFrom:
           secretKeyRef:
@@ -58,7 +56,7 @@ spec:
           #####################################
           echo "Fetching token for $REPOSITORY"
           ibmcloud config --check-version false
-          ibmcloud login -a $API -r $TOOLCHAIN_REGION --apikey $API_KEY
+          ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
           TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
           if [[ "$REPOSITORY" != *.git ]]; then
             echo "Adding .git suffix to Repository URL"
