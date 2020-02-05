@@ -49,7 +49,7 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
 3) Add the environment properties:
 
-   - `toolchainId`, `apikey` (and optionally `toolchainRegion` if the toolchain is not in `us-south`) to inject Continuous Delivery toolchain context
+   - `apikey` to provide an API key used for the ibmcloud login/access
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
 
    ![Tekton pipeline environment properties](./sample/sample-tekton-pipeline-environment-properties.png)
