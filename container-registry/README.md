@@ -123,13 +123,12 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
 6) After the pipeline ran successfully, if you look at the IBM Cloud container registry content referenced within the Image url definition, you will see an image with the expected tags:
    ```
-   $ ibmcloud cr images
-   Listing images...
+    $ ibmcloud cr images
+    Listing images...
 
-   Repository                                 Tag                                                     Digest         Namespace        Created          Size    Security status
-   de.icr.io/jauninb-tekton/my-second-image   1.0.0-dev                                               97c251e54286   jauninb-tekton   31 minutes ago   54 MB   No Issues
-   de.icr.io/jauninb-tekton/my-second-image   1.0.0-master-e8e9fa6b7827d7898d04a218fa69f327db7fc2b4   97c251e54286   jauninb-tekton   31 minutes ago   54 MB   No Issues
-   de.icr.io/jauninb-tekton/my-second-image   latest                                                  97c251e54286   jauninb-tekton   31 minutes ago   54 MB   No Issues
+    Repository                              Tag                                                     Digest         Namespace        Created         Size    Security status
+    de.icr.io/jauninb-tekton/my-new-image   1.0.0-dev                                               5107dea95bd0   jauninb-tekton   6 minutes ago   54 MB   No Issues
+    de.icr.io/jauninb-tekton/my-new-image   1.0.0-master-e8e9fa6b7827d7898d04a218fa69f327db7fc2b4   5107dea95bd0   jauninb-tekton   6 minutes ago   54 MB   No Issues
 
-   OK
+    OK
    ```
