@@ -98,14 +98,14 @@ The `sample` sub-directory contains an EventListener definition that you can inc
    - the repository containing this tekton task
    - a tekton pipeline definition
 
-   ![Toolchain overview](./sample/containerize-sample-toolchain-overview.png)
+   ![Toolchain overview](./sample/container-registry-sample-toolchain-overview.png)
 
 2) Add the definitions:
 
    - for the `clone-repo-task` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample` paths)
 
-   ![Tekton pipeline definitions](./sample/containerize-sample-tekton-pipeline-definitions.png)
+   ![Tekton pipeline definitions](./sample/container-registry-sample-tekton-pipeline-definitions.png)
 
 3) Add the environment properties:
 
@@ -113,11 +113,11 @@ The `sample` sub-directory contains an EventListener definition that you can inc
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
    - `imageUrl` to indicate the URL of the image to push to the IBM Cloud Container Registry
 
-   ![Tekton pipeline environment properties](./sample/containerize-sample-tekton-pipeline-environment-properties.png)
+   ![Tekton pipeline environment properties](./sample/container-registry-sample-tekton-pipeline-environment-properties.png)
 
 4) Create a manual trigger to start the sample listener
 
-   ![Tekton pipeline sample trigger](./sample/containerize-sample-tekton-pipeline-sample-triggers.png)
+   ![Tekton pipeline sample trigger](./sample/container-registry-sample-tekton-pipeline-sample-triggers.png)
 
 5) Run the pipeline
 
