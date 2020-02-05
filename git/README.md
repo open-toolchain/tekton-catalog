@@ -12,15 +12,6 @@ This Task fetches the credentials needed to perform a git clone of a repo specif
 
   The task expects the following kubernetes resource to be defined:
 
-* **ConfigMap cd-config**
-
-  ConfigMap corresponding to the CD tekton pipeline context:
-  * **API**: IBM Cloud api endpoint. 
-  * **TOOLCHAIN_ID**: Id of the toolchain
-  * **REGION**: Region where the toolchain is defined
-
-  See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the configMap using `resourcetemplates` in a `TriggerTemplate`
-
 * **Secret cd-secret**
 
   Secret containing:
