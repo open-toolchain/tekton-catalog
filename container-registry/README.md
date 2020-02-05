@@ -1,16 +1,19 @@
-# Build Image task helper
+# Container-Registry related tasks
 
-This task is building and pushing an image to IBM Cloud Container Registry. This taks is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **containerize-task**: This task is building and pushing an image to IBM Cloud Container Registry. This taks is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **vulnerability-advisor-task**: This task is verifying that a vulnerability advisor scan has been made for the image and process the outcome of the scan.
 
-**WARNING: This task needs to run on Kubernetes cluster with minimal version 1.15. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
+**WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.15. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 
-## Install the Task
+## Install the Tasks
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
 - Add that github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `container-registry`
 
-## Inputs
+## Build Image helper task
 
-### Context - ConfigMap/Secret
+### Inputs
+
+#### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resources to be defined:
 
@@ -30,7 +33,7 @@ This task is building and pushing an image to IBM Cloud Container Registry. This
 
   See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-### Parameters
+#### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
@@ -41,14 +44,47 @@ This task is building and pushing an image to IBM Cloud Container Registry. This
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 
-## Outputs
+### Outputs
 
-### Resources
+#### Resources
 
 * **builtImage**: The Image PipelineResource that will be created as output of this task.
 
-## Usage
-The `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run an example of the `containerize-task`.
+## Vulnerability Advisor helper task
+
+### Inputs
+
+#### Context - ConfigMap/Secret
+
+  The task expects the following kubernetes resources to be defined:
+
+* **ConfigMap cd-config**
+
+  ConfigMap corresponding to the CD tekton pipeline context:
+  * **API**: IBM Cloud api endpoint. 
+  * **TOOLCHAIN_ID**: Id of the toolchain
+  * **REGION**: Region where the toolchain is defined
+
+  See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the configMap using `resourcetemplates` in a `TriggerTemplate`
+
+* **Secret cd-secret**
+
+  Secret containing:
+  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (https://cloud.ibm.com/iam/apikeys)
+
+  See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+
+#### Parameters
+
+* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **imagePropertiesFile**: file containing properties of the image to be scanned (default to 'build.properties')
+* **maxIteration**: maximum number of iterations allowed while loop to check for va report (default to 30 iterations maximum)
+* **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
+* **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the task-pvc
+* **failOnScannedIssues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
+
+# Usage
+The `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `containerize-task` and `vulnerability-advisor-task`.
 
 **Note:** This sample also rely on the clone-repo task to clone the application to containerize.
 
