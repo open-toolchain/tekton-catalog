@@ -1,7 +1,7 @@
 # Container-Registry related tasks
 
-- **containerize-task**: This task is building and pushing an image to IBM Cloud Container Registry. This taks is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
-- **vulnerability-advisor-task**: This task is verifying that a vulnerability advisor scan has been made for the image and process the outcome of the scan.
+- **containerize-task**: This task is building and pushing an image to [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This taks is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **vulnerability-advisor-task**: This task is verifying that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and process the outcome of the scan.
 
 **WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.15. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 
