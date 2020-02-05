@@ -83,6 +83,10 @@
 * **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the task-pvc
 * **failOnScannedIssues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
 
+#### Resources
+
+* **image**: The Image PipelineResource that this task will process the Vulnerability Advisor scan result.
+
 # Usage
 The `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `containerize-task` and `vulnerability-advisor-task`.
 

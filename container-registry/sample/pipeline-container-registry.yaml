@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: pipeline-containerize
+  name: pipeline-container-registry
 spec:
   params:
     - name: pipeline-pvc

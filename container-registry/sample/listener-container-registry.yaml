@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-containerize
+  name: trigger-template-container-registry
 spec:
   params:
     - name: repository
@@ -52,7 +52,7 @@ spec:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-          name: pipeline-containerize
+          name: pipeline-container-registry
         resources:
           - name: app-image
             resourceRef:
@@ -68,7 +68,7 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: trigger-binding-containerize
+  name: trigger-binding-container-registry
 spec:
   params:
     - name: branch
@@ -77,10 +77,10 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: event-listener-containerize
+  name: event-listener-container-registry
 spec:
   triggers:
     - binding:
-        name: trigger-binding-containerize
+        name: trigger-binding-container-registry
       template:
-        name: trigger-template-containerize
+        name: trigger-template-container-registry
