@@ -13,6 +13,9 @@ spec:
       - name: continuous-delivery-context-secret
         description: name of the configmap containing the continuous delivery pipeline context secrets
         default: cd-secret
+      - name: resourceGroup
+        description: target resource group (name or id) for the ibmcloud login operation
+        default: ''
       - name: pathToContext
         default: .
       - name: pathToDockerfile
@@ -102,9 +105,13 @@ spec:
           # ibmcloud login
           ibmcloud config --check-version false
           ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
+          if [ "$(inputs.params.resourceGroup)" ]; then
+            ibmcloud target -g $(inputs.params.resourceGroup)
+          fi
 
           # Log container registry to the appropriate region
           ibmcloud cr region-set $REGISTRY_REGION
+          ibmcloud cr info
 
           # Create the namespace if needed to ensure the push will be can be successfull
           echo "Checking registry namespace: ${REGISTRY_NAMESPACE}"

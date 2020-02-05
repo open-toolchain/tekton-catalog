@@ -20,13 +20,14 @@
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (https://cloud.ibm.com/iam/apikeys)
+  * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
 
   See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
 #### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
@@ -52,13 +53,14 @@
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (https://cloud.ibm.com/iam/apikeys)
+  * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
 
   See [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
 #### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **imagePropertiesFile**: file containing properties of the image to be scanned (default to 'build.properties')
 * **maxIteration**: maximum number of iterations allowed while loop to check for va report (default to 30 iterations maximum)
 * **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)

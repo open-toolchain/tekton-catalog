@@ -13,6 +13,9 @@ spec:
       - name: continuous-delivery-context-secret
         description: name of the configmap containing the continuous delivery pipeline context secrets
         default: cd-secret
+      - name: resourceGroup
+        description: target resource group (name or id) for the ibmcloud login operation
+        default: ''
       - name: repository
         description: the git repo url
       - name: branch
@@ -43,8 +46,6 @@ spec:
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image
       env:
-        - name: HOME
-          value: "/root"
         - name: REPOSITORY
           value: $(inputs.params.repository)
       command: ["/bin/bash", "-c"]
@@ -53,10 +54,18 @@ spec:
           set -e -o pipefail
           TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
-          #####################################
+          ##########################################################################
+          # Setting HOME explicitly to have ibmcloud plugins available
+          # doing the export rather than env definition is a workaround
+          # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+          export HOME="/root"
+          ##########################################################################
           echo "Fetching token for $REPOSITORY"
           ibmcloud config --check-version false
           ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
+          if [ "$(inputs.params.resourceGroup)" ]; then
+            ibmcloud target -g $(inputs.params.resourceGroup)
+          fi
           TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
           if [[ "$REPOSITORY" != *.git ]]; then
             echo "Adding .git suffix to Repository URL"
