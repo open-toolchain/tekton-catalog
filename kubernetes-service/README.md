@@ -1,7 +1,7 @@
 # Kubernetes-Service related tasks
 
-- **fetch-iks-cluster-config**: This task is fetching the kuberenetes configuration needed to perform `kubectl` commands targetting a specific IBM Kubernetes Service cluster.
-- **kubernetes-contextual-execution**: This task is executing bash snippet/script in the context of a kubernetes cluster configuration.
+- **fetch-iks-cluster-config**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
+- **kubernetes-contextual-execution**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
 
 **WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.16. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 
@@ -31,7 +31,7 @@
 #### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation. If not specified, it will use the toolchain region as a default.
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation.
 * **clusterRegion**: (optional) the ibmcloud region hosting the target cluster. If not specified, it will use the toolchain region as a default.
 * **clusterPipelineResourcesDirectoryFallback**: (optional) that will be used as a fallback mechanism to store the kubeconfig file for the target cluster (expressed by the inputs)
 
