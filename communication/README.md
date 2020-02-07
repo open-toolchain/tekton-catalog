@@ -18,7 +18,9 @@ None.
 * **channel**: (optional) the Slack channel to send the message to. (default value is '': all channels integrated to the toolchain will be notified).
 * **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
 * **messageScript**: (optional) Shell script that provides messsage content.
-* **message**: (optional) the message to send to Slack. ![Default value](./default-message.png)
+* **message**: (optional) the message to send to Slack.
+
+![Default value](./sample/default-message.png)
 
 
 ## Output
@@ -27,9 +29,10 @@ None.
 ## Usage
 The `sample` sub-directory contains an EventListener definition that you can include in your Tekton pipeline configuration to run an example of the `task-post-slack`
 
-1) Create a toolchain (or update a toolchain) to include:
+1) Create or update a toolchain so it includes:
+   - a Slack integration
    - the repository containing this tekton task
-   - a tekton pipeline definition
+   - a Tekton pipeline definition
 
    ![Toolchain overview](./sample/sample-toolchain-overview.png)
 
