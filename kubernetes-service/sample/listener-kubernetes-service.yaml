@@ -1,0 +1,103 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-kubernetes-service
+spec:
+  params:
+    - name: apikey
+      description: the ibmcloud api key
+    - name: clusterName
+      description: the name of the cluster to target
+  resourcetemplates:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.apikey)
+    # - apiVersion: v1
+    #   kind: ServiceAccount
+    #   metadata:
+    #     name: cluster-pipeline-resource-updater-account              
+    # - apiVersion: rbac.authorization.k8s.io/v1
+    #   kind: Role
+    #   metadata:
+    #     name: cluster-pipeline-resource-updater
+    #   rules:
+    #   - apiGroups:
+    #     - tekton.dev
+    #     resources:
+    #     - taskruns
+    #     verbs:
+    #     - list
+    #   - apiGroups:
+    #     - tekton.dev
+    #     resources:
+    #     - pipelineresources
+    #     verbs:
+    #     - get
+    #     - patch            
+    # - apiVersion: rbac.authorization.k8s.io/v1
+    #   kind: RoleBinding
+    #   metadata:
+    #     name: cluster-pipeline-resource-updater-binding
+    #   roleRef:
+    #     apiGroup: rbac.authorization.k8s.io
+    #     kind: Role
+    #     name: cluster-pipeline-resource-updater
+    #   subjects:
+    #   - kind: ServiceAccount
+    #     name: cluster-pipeline-resource-updater-account
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineResource
+      metadata:
+        name: the-cluster
+      spec:
+        type: cluster
+        params:
+          - name: name
+            value: $(params.clusterName)
+          - name: username
+            value: norealvalueneeded
+          - name: url
+            value: https://no.real.value.needed
+          - name: token
+            value: norealvalueneeded
+          - name: cadata
+            value: norealvalueneeded
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline-kubernetes-service
+        # serviceAccounts:
+        #   - taskName: pipeline-0-setup-task
+        #     serviceAccount: cluster-pipeline-resource-updater-account
+        resources:
+          - name: target-cluster
+            resourceRef:
+              name: the-cluster
+        params:
+          - name: pipeline-pvc
+            value: pipelinerun-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-kubernetes-service
+spec:
+  params:
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-kubernetes-service
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-kubernetes-service
+      template:
+        name: trigger-template-kubernetes-service
