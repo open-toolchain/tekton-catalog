@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-post-slack
+spec:
+  params:
+    - name: pipeline-pvc
+      description: the pipeline pvc name
+    # TriggerTemplate default param values are not taken into account
+    # https://github.ibm.com/org-ids/roadmap/issues/11640
+    - name: channel
+      description: the Slack channel to send the message to (default to the one specified in the slack integration card(s))
+      default: ' '
+    - name: messageFormat
+      description: the format of the message. text(default) or JSON.
+      default: text 
+    - name: message
+      description: the message to send to Slack
+      default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline-slack
+        params:
+          - name: pipeline-pvc
+            value: pipelinerun-$(uid)-pvc
+          - name: message
+            value: $(params.message)
+          - name: channel
+            value: $(params.channel)
+          - name: messageFormat
+            value: $(params.messageFormat)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-post-slack
+spec:
+  params:
+    - name: message
+      value: $(params.message)
+    - name: channel
+      value: $(params.channel)
+    - name: messageFormat
+      value: $(params.messageFormat)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-post-slack
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-post-slack
+      template:
+        name: trigger-template-post-slack

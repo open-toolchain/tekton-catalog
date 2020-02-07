@@ -1,0 +1,39 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-slack
+spec:
+  params:
+    - name: pipeline-pvc
+      description: the pipeline pvc name
+    - name: channel
+      description: the Slack channel to send the message to (default to the one specified in the slack integration card(s))
+      default: ' '
+    - name: messageFormat
+      description: the format of the message. text(default) or JSON.
+      default: text 
+    - name: messageScript
+      description: Shell script that provides messsage content.
+      default: ''
+    - name: message
+      description: the message to send to Slack
+      default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
+  tasks:
+    - name: post-to-slack
+      taskRef:
+        name: task-post-slack
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: channel
+          value: $(params.channel)
+        - name: messageFormat
+          value: $(params.messageFormat)
+        - name: message
+          value: $(params.message)
+        # uncomment the lines below to inject the message from messageScript
+        # - name: messageScript
+        #   value: |
+            # add any custom script that will be executed by the task
+            # Reference: https://api.slack.com/reference/surfaces/formatting^
+        #     echo "Message injected by messageScript. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
