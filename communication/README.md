@@ -36,14 +36,15 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
    ![Toolchain overview](./sample/sample-toolchain-overview.png)
 
-2) Add the definitions of this task and the sample (`git` and `git/sample` paths)
+2) Add the definitions of this task and the sample (`communication` and `communication/sample` paths)
 
    ![Tekton pipeline definitions](./sample/sample-tekton-pipeline-definitions.png)
 
-3) Add the environment properties:
+3) (optional) Add the environment properties:
 
-   - `apikey` to provide an API key used for the ibmcloud login/access
-   - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
+   - `channel` the channel to post to.
+   - `messageFormat` the format of the message (text or JSON).
+   - `message` the message to post to Slack.
 
    ![Tekton pipeline environment properties](./sample/sample-tekton-pipeline-environment-properties.png)
 
@@ -52,3 +53,11 @@ The `sample` sub-directory contains an EventListener definition that you can inc
    ![Tekton pipeline sample trigger](./sample/sample-tekton-pipeline-sample-triggers.png)
 
 5) Run the pipeline
+
+6) The message is posted to Slack
+
+   ![sample message](./sample/sample-message.png)
+
+7) Optional: check the execution log
+
+   ![Tekton pipeline sample trigger](./sample/sample-log.png)
