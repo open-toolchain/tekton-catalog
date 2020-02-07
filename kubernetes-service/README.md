@@ -64,8 +64,7 @@
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **task-pvc-mountpath**: the mountpath for the pvc (default to `/artifacts`)
-* **clusterPipelineResourcesDirectory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be a combination of `task-pvc-mountpath`
-`fetch-iks-cluster-config#clusterPipelineResourcesDirectoryFallback` if cluster pipeline resource update is not made by the `fetch-iks-cluster-config` task - fallback copy of kubeconfig)
+* **clusterPipelineResourcesDirectory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be a combination of `task-pvc-mountpath` and `fetch-iks-cluster-config#clusterPipelineResourcesDirectoryFallback` if cluster pipeline resource update is not made by the `fetch-iks-cluster-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
 
 # Usage
