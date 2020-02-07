@@ -14,7 +14,7 @@ Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery
 None.
 ### Parameters
 
-* **task-pvc**: the output pvc - this is where the cloned repository will be stored
+* **task-pvc**: the output pvc.
 * **channel**: (optional) the Slack channel to send the message to. (default value is '': all channels integrated to the toolchain will be notified).
 * **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
 * **messageScript**: (optional) Shell script that provides messsage content.
