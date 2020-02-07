@@ -81,8 +81,7 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
-   - for this task and the sample (`container-registry` and `container-registry/sample` paths)
+   - for the tasks and the sample (`kubernetes-service` and `kubernetes-service/sample` paths)
 
    ![Tekton pipeline definitions](./sample/kubernetes-service-sample-tekton-pipeline-definitions.png)
 
