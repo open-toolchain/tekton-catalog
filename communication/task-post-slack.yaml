@@ -49,7 +49,9 @@ spec:
               exit 1
           fi
           # Dynamically set message if messageScript param is set
-          printf "#!/bin/sh\n%s\n" '$(inputs.params.messageScript)' > /steps/messageScript.sh
+          printf "#!/bin/sh\n" > /steps/messageScript.sh 
+          print "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
+          printf "\n" >> /steps/messageScript.sh
           chmod +x /steps/messageScript.sh
           echo "************************************"
           echo "Snippet for dynamic message content:"
