@@ -64,10 +64,12 @@ spec:
           fi
           if [[ "${MESSAGE_FORMAT}" == "text" ]]; then
             # format message to a Slack JSON payload
-            echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/message.content
+            echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/payload.json
+          else 
+            mv /steps/message.content /steps/payload.json
           fi      
-          echo "Message content:"
-          cat /steps/message.content
+          echo "Slack Message payload:"
+          cat /steps/payload.json
           echo ""
           for WEBHOOK in $SLACK_WEBHOOKS
             do
@@ -76,7 +78,7 @@ spec:
             # L'intégration slack définit un webhook mais également potentiellement un channel qui peut etre différent de 
             # celui par défaut dans le webhook. il faut donc spécifier le channel obtenu via la task ou via le toolchain.json
             # si vide, c'est celui par défaut du slack qui sera utilisé
-             curl -X POST -H 'Content-type: application/json' -d @/steps/message.content $WEBHOOK
+             curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json $WEBHOOK
              # Si erreur il faut faire un exit conditionnel ?
           done
       volumeMounts:
