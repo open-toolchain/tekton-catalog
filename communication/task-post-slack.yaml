@@ -51,6 +51,10 @@ spec:
           # Dynamically set message if messageScript param is set
           printf "%s" '$(inputs.params.messageScript)' > /steps/messageScript.sh
           chmod +x /steps/messageScript.sh
+          echo "************************************"
+          echo "Snippet for dynamic message content:"
+          cat /steps/messageScript.sh
+          echo "************************************"
           /steps/messageScript.sh 2 >& 1 > /steps/message.content
           if [ -s /steps/message.content ]
           then
@@ -60,11 +64,11 @@ spec:
           fi
           if [[ ${MESSAGE_FORMAT} == 'text' ]]; then
             # format message
+            # TODO Utiliser jq slurp pour l'injection du message
             echo "Converting text message to JSON."
             SLACK_MESSAGE='{"type": "text", "text": "'"${SLACK_MESSAGE}"'"}'
-          else
-            echo "Using JSON message format: posting the message as is."
           fi      
+          # Privilegier le stockage dans un fichier pour l'envoi via curl -d
           echo "Message content:"
           echo $SLACK_MESSAGE
           echo ""
