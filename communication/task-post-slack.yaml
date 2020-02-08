@@ -51,11 +51,11 @@ spec:
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh 
           printf "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
-          printf "\n" >> /steps/messageScript.sh
           chmod +x /steps/messageScript.sh
           echo "************************************"
           echo "Snippet for dynamic message content:"
           cat /steps/messageScript.sh
+          echo ""
           echo "************************************"
           /steps/messageScript.sh 2 >& 1 > /steps/message.content
           if [ -s /steps/message.content ]; then
