@@ -11,7 +11,7 @@ spec:
         description: the Slack channel to send the message to. If not set, all channels integrated to the toolchain will be notified.
         default: ' '
       - name: messageFormat
-        description: the format of the message. text(default) or JSON.
+        description: the format of the message. text(default) or JSON payload.
         default: text
       - name: messageScript
         description: Shell script that provides messsage content.
@@ -24,10 +24,13 @@ spec:
       # tbd: use an image with curl and jq?
       image: ibmcom/pipeline-base-image
       env:
+        # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
           value: $(inputs.params.message)
-        - name: MESSAGE_FORMAT
-          value: $(inputs.params.messageFormat)
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -43,8 +46,7 @@ spec:
           fi
           if [[ $SLACK_WEBHOOKS == '' ]]; then
               echo "No webhook found for channel $SLACK_CHANNEL."
-              echo "Verify that this channel has been integrated to toolchain ${TOOLCHAIN_ID}."
-              echo "Toolchain URL: ${API}/devops/toolchains/${TOOLCHAIN_ID}?env_id=ibm:yp:${REGION}"
+              echo "Verify that this Slack channel has been integrated to toolchain ${TOOLCHAIN_ID}."
               echo "Exiting..."
               exit 1
           fi
@@ -62,7 +64,7 @@ spec:
           else 
              echo "${SLACK_MESSAGE}" > /steps/message.content
           fi
-          if [[ "${MESSAGE_FORMAT}" == "text" ]]; then
+          if [[ "$(inputs.params.messageFormat)" == "text" ]]; then
             # format message to a Slack JSON payload
             echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/payload.json
           else 
@@ -79,6 +81,7 @@ spec:
             # L'intégration slack définit un webhook mais également potentiellement un channel qui peut etre différent de 
             # celui par défaut dans le webhook. il faut donc spécifier le channel obtenu via la task ou via le toolchain.json
             # si vide, c'est celui par défaut du slack qui sera utilisé
+            # quid du domain également comme critère de filtre ?
              curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json $WEBHOOK
              # Si erreur il faut faire un exit conditionnel ?
           done
