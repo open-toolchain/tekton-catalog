@@ -38,7 +38,7 @@ spec:
             echo "Retrieving Slack webhook for $SLACK_CHANNEL channel."
             SLACK_WEBHOOKS=$(cat /cd-config/toolchain.json | jq -r '.services[] | select (.service_id=="slack") | select (.parameters.channel_name=="'"${SLACK_CHANNEL}"'") | .parameters.api_token')          
           else
-            echo "No channel specified: posting to all channels integrated to the toolchain."
+            echo "No channel specified: posting to each slack channel integrated to the toolchain."
             SLACK_WEBHOOKS=$(cat /cd-config/toolchain.json | jq -r '.services[] | select (.service_id=="slack") | .parameters.api_token')
           fi
           if [[ $SLACK_WEBHOOKS == '' ]]; then
@@ -49,33 +49,35 @@ spec:
               exit 1
           fi
           # Dynamically set message if messageScript param is set
-          printf "%s" '$(inputs.params.messageScript)' > /steps/messageScript.sh
+          printf "#!/bin/sh\n%s\n" '$(inputs.params.messageScript)' > /steps/messageScript.sh
           chmod +x /steps/messageScript.sh
           echo "************************************"
           echo "Snippet for dynamic message content:"
           cat /steps/messageScript.sh
           echo "************************************"
           /steps/messageScript.sh 2 >& 1 > /steps/message.content
-          if [ -s /steps/message.content ]
-          then
+          if [ -s /steps/message.content ]; then
             echo "Using dynamic message from messageScript."
             cat /steps/message.content
-            SLACK_MESSAGE=$(cat /steps/message.content)
+          else 
+             echo "${SLACK_MESSAGE}" > /steps/message.content
           fi
-          if [[ ${MESSAGE_FORMAT} == 'text' ]]; then
-            # format message
-            # TODO Utiliser jq slurp pour l'injection du message
-            echo "Converting text message to JSON."
-            SLACK_MESSAGE='{"type": "text", "text": "'"${SLACK_MESSAGE}"'"}'
+          if [[ "${MESSAGE_FORMAT}" == "text" ]]; then
+            # format message to a Slack JSON payload
+            echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text'
           fi      
-          # Privilegier le stockage dans un fichier pour l'envoi via curl -d
           echo "Message content:"
-          echo $SLACK_MESSAGE
+          cat /steps/message.content
           echo ""
           for WEBHOOK in $SLACK_WEBHOOKS
             do
              echo "Posting Slack Message using Webhook $WEBHOOK."
-             curl -X POST -H 'Content-type: application/json' --data "$SLACK_MESSAGE" $WEBHOOK
+            # TODO
+            # L'intégration slack définit un webhook mais également potentiellement un channel qui peut etre différent de 
+            # celui par défaut dans le webhook. il faut donc spécifier le channel obtenu via la task ou via le toolchain.json
+            # si vide, c'est celui par défaut du slack qui sera utilisé
+             curl -X POST -H 'Content-type: application/json' -d @/steps/message.content $WEBHOOK
+             # Si erreur il faut faire un exit conditionnel ?
           done
       volumeMounts:
         - mountPath: /steps
