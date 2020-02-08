@@ -17,6 +17,12 @@ spec:
     - name: message
       description: the message to send to Slack
       default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
+    - name: messageScript
+      description: | 
+          any custom script that will be executed by the task to provide a message.
+          Reference: https://api.slack.com/reference/surfaces/formatting
+          For instance: echo "Message injected by messageScript. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
+      default: ' '
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
@@ -34,6 +40,8 @@ spec:
             value: $(params.channel)
           - name: messageFormat
             value: $(params.messageFormat)
+          - name: messageScript
+            value: $(params.messageScript)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -41,12 +49,6 @@ metadata:
   name: trigger-binding-post-slack
 spec:
   params:
-    - name: message
-      value: $(params.message)
-    - name: channel
-      value: $(params.channel)
-    - name: messageFormat
-      value: $(params.messageFormat)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
