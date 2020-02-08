@@ -50,7 +50,7 @@ spec:
           fi
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh 
-          print "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
+          printf "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
           printf "\n" >> /steps/messageScript.sh
           chmod +x /steps/messageScript.sh
           echo "************************************"
