@@ -52,15 +52,13 @@ spec:
           printf "#!/bin/sh\n" > /steps/messageScript.sh 
           printf "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
           chmod +x /steps/messageScript.sh
-          echo "************************************"
-          echo "Snippet for dynamic message content:"
-          cat /steps/messageScript.sh
-          echo ""
-          echo "************************************"
           /steps/messageScript.sh 2 >& 1 > /steps/message.content
           if [ -s /steps/message.content ]; then
-            echo "Using dynamic message from messageScript."
-            cat /steps/message.content
+            echo "************************************"
+            echo "Snippet for dynamic message content:"
+            cat /steps/messageScript.sh
+            echo ""
+            echo "************************************"
           else 
              echo "${SLACK_MESSAGE}" > /steps/message.content
           fi
@@ -68,6 +66,7 @@ spec:
             # format message to a Slack JSON payload
             echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/payload.json
           else 
+            # message.content is already expected to be a slack json payload
             mv /steps/message.content /steps/payload.json
           fi      
           echo "Slack Message payload:"
