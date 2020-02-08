@@ -64,7 +64,7 @@ spec:
           fi
           if [[ "${MESSAGE_FORMAT}" == "text" ]]; then
             # format message to a Slack JSON payload
-            echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text'
+            echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/message.content
           fi      
           echo "Message content:"
           cat /steps/message.content
