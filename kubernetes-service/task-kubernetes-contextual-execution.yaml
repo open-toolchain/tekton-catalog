@@ -20,14 +20,17 @@ spec:
     resources:
       - name: cluster
         type: cluster
-  stepTemplate:
-    env:
-      - name: KUBECONFIG
-        value: $(inputs.params.clusterPipelineResourcesDirectory)/$(inputs.resources.cluster.name)/kubeconfig
   steps:
     - name: execute
       image: ibmcom/pipeline-base-image
       workingDir: $(inputs.params.task-pvc-mountpath)
+      env:
+        - name: KUBECONFIG
+          value: $(inputs.params.clusterPipelineResourcesDirectory)/$(inputs.resources.cluster.name)/kubeconfig
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
       command: ["/bin/bash", "-c"]
       args: 
         - |
@@ -43,7 +46,15 @@ spec:
       volumeMounts:
         - mountPath: $(inputs.params.task-pvc-mountpath)
           name: task-volume
+        - mountPath: /cd-config
+          name: cd-config-volume
   volumes:
     - name: task-volume
       persistentVolumeClaim:
         claimName: $(inputs.params.task-pvc)
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+        - key: toolchain.json
+          path: toolchain.json        

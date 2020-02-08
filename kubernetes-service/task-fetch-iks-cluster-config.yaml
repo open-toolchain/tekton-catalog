@@ -37,18 +37,16 @@ spec:
       # Will be set as optional when tekton version support it
       - name: cluster
         type: cluster    
-  stepTemplate:
-    env:
-      - name: API_KEY
-        valueFrom:
-          secretKeyRef:
-            name: $(inputs.params.continuous-delivery-context-secret)
-            key: API_KEY
   steps:
     - name: setup
       image: ibmcom/pipeline-base-image
       workingDir: /artifacts
       env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(inputs.params.continuous-delivery-context-secret)
+              key: API_KEY
         - name: NAMESPACE
           valueFrom:
             fieldRef:
