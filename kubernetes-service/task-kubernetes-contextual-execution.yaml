@@ -1,0 +1,60 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kubernetes-contextual-execution
+spec:
+  inputs:
+    params:
+      - name: task-pvc
+        description: the task pvc - this is the volume valid for the lifetime of the pipelinerun
+      - name: task-pvc-mountpath
+        default: /artifacts
+      # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
+      # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
+      - name: clusterPipelineResourcesDirectory
+        description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
+        default: /workspace
+      - name: script
+        description: the bash snippet to execute within the context of the kubernetes configuration
+        default: 'kubectl version'
+    resources:
+      - name: cluster
+        type: cluster
+  steps:
+    - name: execute
+      image: ibmcom/pipeline-base-image
+      workingDir: $(inputs.params.task-pvc-mountpath)
+      env:
+        - name: KUBECONFIG
+          value: $(inputs.params.clusterPipelineResourcesDirectory)/$(inputs.resources.cluster.name)/kubeconfig
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+      command: ["/bin/bash", "-c"]
+      args: 
+        - |
+          # Validate KUBECONFIG 
+          if test -f "$KUBECONFIG"; then
+            echo "KUBECONFIG=$KUBECONFIG"
+          else
+            echo "$KUBECONFIG file is not existing. Exiting now..."
+            exit 1
+          fi
+          # User-defined snippet/script
+          $(inputs.params.script)
+      volumeMounts:
+        - mountPath: $(inputs.params.task-pvc-mountpath)
+          name: task-volume
+        - mountPath: /cd-config
+          name: cd-config-volume
+  volumes:
+    - name: task-volume
+      persistentVolumeClaim:
+        claimName: $(inputs.params.task-pvc)
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+        - key: toolchain.json
+          path: toolchain.json        
