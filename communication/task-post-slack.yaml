@@ -21,7 +21,7 @@ spec:
         default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
       - name: exitOnError
         description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
-        default: 'false'
+        default: 'true'
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
