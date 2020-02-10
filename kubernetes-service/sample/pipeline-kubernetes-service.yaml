@@ -41,7 +41,7 @@ spec:
             kubectl version
             echo "** Here is the kubectl cluster-info:"
             kubectl cluster-info
-            echo "** Here is the kubectl namespaces:"
+            echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
       resources:          
         inputs:

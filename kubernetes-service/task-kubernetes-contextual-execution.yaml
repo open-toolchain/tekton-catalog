@@ -10,7 +10,7 @@ spec:
       - name: task-pvc-mountpath
         default: /artifacts
       # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
-      # Allow user to specifiy kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
+      # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
       - name: clusterPipelineResourcesDirectory
         description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
         default: /workspace
@@ -38,7 +38,7 @@ spec:
           if test -f "$KUBECONFIG"; then
             echo "KUBECONFIG=$KUBECONFIG"
           else
-            echo "$KUBECONFIG file is not existing. exiting now..."
+            echo "$KUBECONFIG file is not existing. Exiting now..."
             exit 1
           fi
           # User-defined snippet/script

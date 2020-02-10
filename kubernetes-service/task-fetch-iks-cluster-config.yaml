@@ -79,7 +79,7 @@ spec:
 
           # PipelineResource Cluster are managed appropriately as input resources
           # but not as output resources, attempting to update the PipelineResource Cluster
-          # that has been given (using kubeclt patch commands)
+          # that has been given (using kubectl patch commands)
           # Verifying the access to pipeline resources
           updateClusterPipelineResource="false"
           if [ "$(inputs.params.kubeAPIServerAccessible)" == "true" ]; then
@@ -88,6 +88,9 @@ spec:
             fi
           fi
           if [ "$updateClusterPipelineResource" == "true" ]; then
+            # TODO Need to update the Cluster Pipeline Resource with this values
+            # This can only be done when TriggerTemplate#resourcetemplates will accept
+            # Role and Binding K8S resources definition
             echo "TODO - Processing $KUBECONFIG_FILE"
             K8S_USER_NAME=$(yq r $KUBECONFIG_FILE users[0].name)
             K8S_USER_TOKEN=$(yq r $KUBECONFIG_FILE users[0].user.auth-provider.config.id-token)
@@ -98,7 +101,6 @@ spec:
             #echo "K8S_USER_TOKEN=$K8S_USER_TOKEN"
             echo "K8S_CLUSTER_URL=$K8S_CLUSTER_URL"
             #echo "K8S_CLUSTER_CADATA=$K8S_CLUSTER_CADATA"
-            # TODO Need to update the Cluster Pipeline Resource with this values
           else
             echo "Access to pipelineresources.tekton.dev is required to update Cluser Pipeline Resource accordingly"
             echo "Falling back to copy of $(basename $KUBECONFIG_FILE) to the pipeline run volume"

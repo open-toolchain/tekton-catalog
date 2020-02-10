@@ -16,39 +16,6 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.apikey)
-    # - apiVersion: v1
-    #   kind: ServiceAccount
-    #   metadata:
-    #     name: cluster-pipeline-resource-updater-account              
-    # - apiVersion: rbac.authorization.k8s.io/v1
-    #   kind: Role
-    #   metadata:
-    #     name: cluster-pipeline-resource-updater
-    #   rules:
-    #   - apiGroups:
-    #     - tekton.dev
-    #     resources:
-    #     - taskruns
-    #     verbs:
-    #     - list
-    #   - apiGroups:
-    #     - tekton.dev
-    #     resources:
-    #     - pipelineresources
-    #     verbs:
-    #     - get
-    #     - patch            
-    # - apiVersion: rbac.authorization.k8s.io/v1
-    #   kind: RoleBinding
-    #   metadata:
-    #     name: cluster-pipeline-resource-updater-binding
-    #   roleRef:
-    #     apiGroup: rbac.authorization.k8s.io
-    #     kind: Role
-    #     name: cluster-pipeline-resource-updater
-    #   subjects:
-    #   - kind: ServiceAccount
-    #     name: cluster-pipeline-resource-updater-account
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
@@ -73,9 +40,6 @@ spec:
       spec:
         pipelineRef:
           name: pipeline-kubernetes-service
-        # serviceAccounts:
-        #   - taskName: pipeline-0-setup-task
-        #     serviceAccount: cluster-pipeline-resource-updater-account
         resources:
           - name: target-cluster
             resourceRef:
