@@ -19,6 +19,7 @@ None.
 * **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
 * **messageScript**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
+* **exitOnError**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
 
 ![Default value](./sample/default-message.png)
 

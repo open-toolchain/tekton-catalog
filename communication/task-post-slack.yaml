@@ -19,6 +19,9 @@ spec:
       - name: message
         description: the message to send to Slack
         default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
+      - name: exitOnError
+        description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
+        default: 'false'
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
@@ -35,6 +38,12 @@ spec:
       args:
         - |
           set -e -o pipefail
+          # determine if we should fail the task in case of error.
+          # Default is 'false'
+          exitStatus=0
+          if [ $(inputs.params.exitOnError) == 'true' ]; then
+            exitStatus=1
+          fi
           # check if a channel was passed as parameter
           SLACK_CHANNEL=$(echo $(inputs.params.channel))
           if [ "$SLACK_CHANNEL" ]; then
@@ -48,7 +57,7 @@ spec:
               echo "No webhook found for channel $SLACK_CHANNEL."
               echo "Verify that this Slack channel has been integrated to toolchain ${TOOLCHAIN_ID}."
               echo "Exiting..."
-              exit 1
+              exit $exitStatus
           fi
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh 
@@ -66,6 +75,7 @@ spec:
           fi
           if [[ "$(inputs.params.messageFormat)" == "text" ]]; then
             # format message to a Slack JSON payload
+            echo "Formatting text message to JSON."
             echo '{"type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/payload.json
           else 
             # message.content is already expected to be a slack json payload
@@ -76,13 +86,20 @@ spec:
           echo ""
           for WEBHOOK in $SLACK_WEBHOOKS
             do
-             echo "Posting Slack Message using Webhook $WEBHOOK."
+              echo "Posting Slack Message using Webhook $WEBHOOK."
+              if [ $(curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK") = 200 ]; then
+                echo "Message posted to Slack."
+              else
+                echo "Failed to post the message to Slack." 
+               exit $exitStatus          
+             fi
+            # echo "Posting Slack Message using Webhook $WEBHOOK."
             # TODO
             # L'intégration slack définit un webhook mais également potentiellement un channel qui peut etre différent de 
             # celui par défaut dans le webhook. il faut donc spécifier le channel obtenu via la task ou via le toolchain.json
             # si vide, c'est celui par défaut du slack qui sera utilisé
             # quid du domain également comme critère de filtre ?
-             curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json $WEBHOOK
+             # curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json $WEBHOOK
              # Si erreur il faut faire un exit conditionnel ?
           done
       volumeMounts:
