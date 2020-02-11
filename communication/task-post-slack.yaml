@@ -52,7 +52,7 @@ spec:
           if [ -z "$SLACK_DOMAIN" ]; then
             echo "No Slack domain passed as parameter. Add domain environment property and value to your Tekton pipeline."
             echo "Exiting..."
-            exit $exitStatus
+            # exit $exitStatus
           fi
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh 
