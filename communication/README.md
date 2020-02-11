@@ -37,9 +37,9 @@ None.
 None.
 
 ## Usage
-The `sample` sub-directory contains an EventListener definition that you can include in your Tekton pipeline configuration to run an example of the `task-post-slack`
+The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the `task-post-slack`.
 
-1) Create or update a toolchain so it includes:
+1) Create or update a Toolchain so it includes:
    - a Slack integration
    - the repository containing this tekton task
    - a Tekton pipeline definition
@@ -50,9 +50,9 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
    ![Tekton pipeline definitions](./sample/sample-tekton-pipeline-definitions.png)
 
-3) Add the environment properties:
+3) Add the environment properties as needed:
 
-   - `domain` the Slack domain to send the message to.
+   - `domain` (optional) the Slack domain to send the message to.
    - `channel` (optional) the channel to post to (overrides the dafault channel as set in the Slack webhook).
    - `messageFormat` (optional) the format of the message (text or JSON).
    - `message` (optional) the message to post to Slack.
