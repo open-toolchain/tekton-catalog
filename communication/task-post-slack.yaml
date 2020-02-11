@@ -30,8 +30,6 @@ spec:
       # tbd: use an image with curl and jq?
       image: ibmcom/pipeline-base-image
       env:
-        - name: SLACK_CHANNEL
-          value: $(inputs.params.channel)
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
           value: $(inputs.params.message)
@@ -71,10 +69,13 @@ spec:
              echo "${SLACK_MESSAGE}" > /steps/message.content
           fi
           #####################################################
+          # message.content was passed as a slack json payload: keep it as-is
           if [[ "$(inputs.params.messageFormat)" != "text" ]]; then
-            # message.content is already expected to be a slack json payload
             mv /steps/message.content /steps/payload.json
           fi 
+          #####################################################
+          # Handle channel
+          SLACK_CHANNEL=$(echo $(inputs.params.channel))
           #####################################################
           echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
           msgSent=0
