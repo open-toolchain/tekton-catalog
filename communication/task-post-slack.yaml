@@ -47,13 +47,6 @@ spec:
           if [ $(inputs.params.exitOnError) == 'true' ]; then
             exitStatus=1
           fi
-          # ensure domain is set
-          SLACK_DOMAIN=$(echo $(inputs.params.domain))
-          if [ -z "$SLACK_DOMAIN" ]; then
-            echo "No Slack domain passed as parameter. Add domain environment property and value to your Tekton pipeline."
-            echo "Exiting..."
-            # exit $exitStatus
-          fi
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh 
           printf "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
@@ -76,10 +69,18 @@ spec:
           #####################################################
           # Handle channel
           SLACK_CHANNEL=$(echo $(inputs.params.channel))
-          #####################################################
-          echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
+          #####################################################          
+          # check if domain is set
+          SLACK_DOMAIN=$(echo $(inputs.params.domain))
+          if [ -z "$SLACK_DOMAIN" ]; then
+            echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
+          else
+            echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
+            SELECT_DOMAIN='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'")'
+            echo "SELECT_DOMAIN: $SELECT_DOMAIN"
+          fi          
           msgSent=0
-          for SLACK_INTEGRATION in $(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") | select (.parameters.team_url=="'"${SLACK_DOMAIN}"'") | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
+          for SLACK_INTEGRATION in $(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") $SELECT_DOMAIN | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
           do
             WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
             if [[ "$(inputs.params.messageFormat)" == "text" ]]; then
