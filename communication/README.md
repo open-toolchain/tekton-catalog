@@ -9,6 +9,7 @@ The message, passed as a parameter, can be:
 - a text message (that will be converted to Slack JSON payload)
 - dynamically injected by a bash script
 - default message if not set
+
 ![Default value](./sample/default-message.png)
 
 ## Prereq
