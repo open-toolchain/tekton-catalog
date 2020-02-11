@@ -9,6 +9,7 @@ spec:
         description: the output pvc
       - name: domain
         description: the Slack domain to send the message to.
+        default: ''
       - name: channel
         description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
         default: ' '
@@ -44,11 +45,17 @@ spec:
       args:
         - |
           set -e -o pipefail
-          # determine if we should fail the task in case of error.
-          # Default is 'false'
+          # determine if we should fail the task in case of error: default is 'false'
+          # TBD Benoit - quel devrait être le default?
           exitStatus=0
           if [ $(inputs.params.exitOnError) == 'true' ]; then
             exitStatus=1
+          fi
+          # ensure domain is set
+          if [ -z "$SLACK_DOMAIN" ]; then
+            echo "No Slack domain passed as parameter. Add domain environment property and value to your Tekton pipeline."
+            echo "Exiting..."
+            exit $exitStatus
           fi
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh 
