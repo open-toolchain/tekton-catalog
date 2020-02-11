@@ -7,7 +7,7 @@ filtered on the Slack domain (if passed as parameter) and posts the message to t
 The message, passed as a parameter, can be:
 - a Slack formatted JSON payload,
 - a text message (that will be converted to Slack JSON payload)
-- dynamically injected by a bash script
+- dynamically injected by a bash script, or as an output of a previous task (stored in the PVC)
 - default message if not set
 
 ![Default value](./sample/default-message.png)
@@ -57,7 +57,10 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
    - `messageFormat` (optional) the format of the message (text or JSON).
    - `message` (optional) the message to post to Slack.
 
+**Note:** when using JSON format, the message is posted as-is to Slack. 
+
    ![Tekton pipeline environment properties](./sample/sample-tekton-pipeline-environment-properties.png)
+
 
 4) Create a manual trigger to start the sample listener
 
