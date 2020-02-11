@@ -1,6 +1,15 @@
 # Post to Slack task helper
 This Task sends a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
+The task will retrieve the Slack integration(s) as set in your Toolchain,
+based on the Slack domain (passed as paremeter) and post the message to the corresponding channel(s).
+
+The message, passed as a parameter, can be:
+- a Slack formatted JSON payload,
+- a text message (that will be converted to Slack JSON payload)
+- dynamically injected by a bash script
+- default message if not set
+
 ## Prereq
 ### Slack
 Create a [Slack Webhook](https://api.slack.com/messaging/webhooks).
@@ -15,7 +24,8 @@ None.
 ### Parameters
 
 * **task-pvc**: the output pvc.
-* **channel**: (optional) the Slack channel to send the message to. (default value is '': all channels integrated to the toolchain will be notified).
+* **domain**: the Slack domain to send the message to.
+* **channel**: (optional) the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
 * **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
 * **messageScript**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
@@ -41,11 +51,12 @@ The `sample` sub-directory contains an EventListener definition that you can inc
 
    ![Tekton pipeline definitions](./sample/sample-tekton-pipeline-definitions.png)
 
-3) (optional) Add the environment properties:
+3) Add the environment properties:
 
-   - `channel` the channel to post to.
-   - `messageFormat` the format of the message (text or JSON).
-   - `message` the message to post to Slack.
+   - `domain` the Slack domain to send the message to.
+   - `channel` (optional) the channel to post to (overrides the dafault channel as set in the Slack webhook).
+   - `messageFormat` (optional) the format of the message (text or JSON).
+   - `message` (optional) the message to post to Slack.
 
    ![Tekton pipeline environment properties](./sample/sample-tekton-pipeline-environment-properties.png)
 
