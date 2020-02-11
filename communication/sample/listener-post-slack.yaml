@@ -9,10 +9,10 @@ spec:
     # TriggerTemplate default param values are not taken into account
     # https://github.ibm.com/org-ids/roadmap/issues/11640
     - name: domain
-      description: the Slack domain to send the message to.
+      description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
       default: ' '
     - name: channel
-      description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
+      description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
       default: ' '
     - name: messageFormat
       description: the format of the message. text(default) or JSON.

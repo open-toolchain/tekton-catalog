@@ -8,9 +8,9 @@ spec:
       - name: task-pvc
         description: the output pvc
       - name: domain
-        description: the Slack domain to send the message to.
+        description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
       - name: channel
-        description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
+        description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
       - name: messageFormat
         description: the format of the message. text(default) or JSON payload.
         default: text
@@ -70,8 +70,8 @@ spec:
             echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
           else
             echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
+            # to be added to jq query
             SELECT_DOMAIN='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'")'
-            echo "SELECT_DOMAIN: $SELECT_DOMAIN"
           fi
           #####################################################
           # Handle channel
@@ -90,7 +90,7 @@ spec:
                 echo "Using channel $CHANNEL as defined in Slack integration."
               fi
               # format message to a Slack JSON payload
-              # echo "Formatting text message to JSON."
+              echo "Formatting text message to JSON."
               echo '{"channel": "'"${CHANNEL}"'", "type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/payload.json
             fi
             echo "Slack Message payload:"

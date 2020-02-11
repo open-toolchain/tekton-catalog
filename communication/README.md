@@ -1,8 +1,8 @@
 # Post to Slack task helper
 This Task sends a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
-The task will retrieve the Slack integration(s) as set in your Toolchain,
-based on the Slack domain (passed as paremeter) and post the message to the corresponding channel(s).
+The task retrieves the Slack integration(s) as set in your Toolchain,
+filtered on the Slack domain (if passed as parameter) and post the message to the corresponding channel(s).
 
 The message, passed as a parameter, can be:
 - a Slack formatted JSON payload,
@@ -24,8 +24,8 @@ None.
 ### Parameters
 
 * **task-pvc**: the output pvc.
-* **domain**: the Slack domain to send the message to.
-* **channel**: (optional) the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
+* **domain**: (optional) the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
+* **channel**: (optional) the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
 * **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
 * **messageScript**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
