@@ -9,7 +9,7 @@ spec:
         description: the output pvc
       - name: domain
         description: the Slack domain to send the message to.
-        default: ''
+        default: ' '
       - name: channel
         description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
         default: ' '
@@ -30,8 +30,6 @@ spec:
       # tbd: use an image with curl and jq?
       image: ibmcom/pipeline-base-image
       env:
-        - name: SLACK_DOMAIN
-          value: $(inputs.params.domain)
         - name: SLACK_CHANNEL
           value: $(inputs.params.channel)
         # keep slack message injected in an env var to let YAML manage the quote for us
@@ -45,7 +43,6 @@ spec:
       args:
         - |
           set -e -o pipefail
-          echo "Magic re-sync..."
           # determine if we should fail the task in case of error: default is 'false'
           # TBD Benoit - quel devrait être le default?
           exitStatus=0
@@ -53,6 +50,7 @@ spec:
             exitStatus=1
           fi
           # ensure domain is set
+          SLACK_DOMAIN=$(echo $(inputs.params.domain))
           if [ -z "$SLACK_DOMAIN" ]; then
             echo "No Slack domain passed as parameter. Add domain environment property and value to your Tekton pipeline."
             echo "Exiting..."
