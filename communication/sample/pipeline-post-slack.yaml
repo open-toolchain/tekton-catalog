@@ -6,8 +6,10 @@ spec:
   params:
     - name: pipeline-pvc
       description: the pipeline pvc name
+    - name: domain
+      description: the Slack domain to send the message to.
     - name: channel
-      description: the Slack channel to send the message to. If not set, all channels integrated to the toolchain will be notified.
+      description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
       default: ' '
     - name: messageFormat
       description: the format of the message. text(default) or JSON.
@@ -24,6 +26,8 @@ spec:
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
+        - name: domain
+          value: $(params.domain)
         - name: channel
           value: $(params.channel)
         - name: messageFormat

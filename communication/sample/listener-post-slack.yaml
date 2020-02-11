@@ -8,8 +8,10 @@ spec:
       description: the pipeline pvc name
     # TriggerTemplate default param values are not taken into account
     # https://github.ibm.com/org-ids/roadmap/issues/11640
+    - name: domain
+      description: the Slack domain to send the message to.
     - name: channel
-      description: the Slack channel to send the message to. If not set, all channels integrated to the toolchain will be notified.
+      description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
       default: ' '
     - name: messageFormat
       description: the format of the message. text(default) or JSON.
@@ -34,10 +36,12 @@ spec:
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc
-          - name: message
-            value: $(params.message)
+          - name: domain
+            value: $(params.domain)
           - name: channel
             value: $(params.channel)
+          - name: message
+            value: $(params.message)
           - name: messageFormat
             value: $(params.messageFormat)
           - name: messageScript
