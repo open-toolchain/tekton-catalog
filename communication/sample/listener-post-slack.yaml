@@ -10,6 +10,7 @@ spec:
     # https://github.ibm.com/org-ids/roadmap/issues/11640
     - name: domain
       description: the Slack domain to send the message to.
+      default: ' '
     - name: channel
       description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
       default: ' '
