@@ -45,6 +45,7 @@ spec:
       args:
         - |
           set -e -o pipefail
+          echo "Magic re-sync..."
           # determine if we should fail the task in case of error: default is 'false'
           # TBD Benoit - quel devrait être le default?
           exitStatus=0
