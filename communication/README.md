@@ -1,14 +1,15 @@
 # Post to Slack task helper
 This Task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
-The task retrieves the Slack integration(s) as set in your Toolchain,
-filtered on the Slack domain (if passed as parameter) and post the message to the corresponding channel(s).
+The task retrieves the Slack integration(s) as set in the Toolchain,
+filtered on the Slack domain (if passed as parameter) and posts the message to the corresponding channel(s).
 
 The message, passed as a parameter, can be:
 - a Slack formatted JSON payload,
 - a text message (that will be converted to Slack JSON payload)
 - dynamically injected by a bash script
 - default message if not set
+![Default value](./sample/default-message.png)
 
 ## Prereq
 ### Slack
@@ -30,9 +31,6 @@ None.
 * **messageScript**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
 * **exitOnError**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
-
-![Default value](./sample/default-message.png)
-
 
 ## Output
 None.
