@@ -10,7 +10,6 @@ spec:
       description: the Slack domain to send the message to.
     - name: channel
       description: the Slack channel to send the message to. If not set, the default channel as set in the Slack Webhook URL will be used.
-      default: ' '
     - name: messageFormat
       description: the format of the message. text(default) or JSON.
       default: text 
