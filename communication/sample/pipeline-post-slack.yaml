@@ -19,6 +19,9 @@ spec:
       default: ' '
     - name: message
       description: the message to send to Slack
+    - name: exitOnError
+      description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
+      default: 'false'
   tasks:
     - name: post-to-slack
       taskRef:
@@ -36,3 +39,5 @@ spec:
           value: $(params.message)
         - name: messageScript
           value: $(params.messageScript)
+        - name: exitOnError
+          value: $(params.exitOnError)

@@ -25,6 +25,9 @@ spec:
           Reference: https://api.slack.com/reference/surfaces/formatting
           For instance: echo "Message injected by messageScript. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
       default: ' '
+    - name: exitOnError
+      description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
+      default: 'false'
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
@@ -46,6 +49,8 @@ spec:
             value: $(params.messageFormat)
           - name: messageScript
             value: $(params.messageScript)
+          - name: exitOnError
+            value: $(params.exitOnError)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
