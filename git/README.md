@@ -29,7 +29,7 @@ This Task fetches the credentials needed to perform a git clone of a repo specif
 * **propertiesFile**: (optional) name of the properties file that will be created as an additional outcome of this task in the pvc. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 
-## Output
+## Outputs
 The output of this task is the repository cloned into the directory on the pvc.
 
 ## Usage
