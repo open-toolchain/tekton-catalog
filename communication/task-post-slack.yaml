@@ -114,7 +114,7 @@ spec:
           echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failures)."
           
           # Handle exit based on error if any
-          if [ $msgFail -ne 0  && "$(inputs.params.exitOnError)" == "true"]; then
+          if [[ $msgFail -ne 0 ]] && [[ "$(inputs.params.exitOnError)" == "true" ]]; then
             exit 1
           fi           
       volumeMounts:
