@@ -15,7 +15,7 @@ The message can be:
 
     ![Default value](./sample/default-message.png)
 
-## Prereq
+## Prerequisites
 ### Slack
 Create a [Slack Webhook](https://api.slack.com/messaging/webhooks).
 ### Toolchain
@@ -24,8 +24,6 @@ Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery
 - Add a github integration in your Toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
 - Add that github integration to the Definitions tab of your Continuous Delivery Tekton pipeline, with the Path set to `communication`.
 
-## Inputs
-None.
 ### Parameters
 
 * **task-pvc**: the output pvc.
@@ -36,7 +34,7 @@ None.
 * **message**: (optional) the message to send to Slack.
 * **exitOnError**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
 
-## Output
+## Outputs
 None.
 
 ## Usage
