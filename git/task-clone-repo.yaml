@@ -81,7 +81,15 @@ spec:
 
           echo "Doing cURL to ${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
 
-          GIT_TOKEN=$(curl -s -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}" | jq -r '.access_token')
+          curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+          if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
+            GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
+          else
+            echo "No access token found for the Git integration (repository url: $REPOSITORY)"
+            cat /steps/github_token_result.json
+            exit 1
+          fi
+
           if [ "$GIT_SERVICE_TYPE" == "github" ]; then
             GIT_AUTH_USER="x-oauth-basic"
           elif [ "$GIT_SERVICE_TYPE" == "githubpublic" ]; then
