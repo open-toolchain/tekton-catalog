@@ -24,7 +24,7 @@ spec:
   tasks:
     - name: post-to-slack
       taskRef:
-        name: task-post-slack
+        name: post-slack
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
