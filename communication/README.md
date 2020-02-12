@@ -1,8 +1,8 @@
 # Post to Slack task helper
-This Task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
+This Task posts a message to the Slack channel(s) integrated with your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
-The task retrieves the Slack integration(s) as set in the Toolchain,
-filtered on the Slack domain (if passed as parameter) and posts the message to the corresponding channel(s).
+The task retrieves a Slack integration(s) from the Toolchain,
+filtered on the Slack domain (if passed as a parameter) and posts the message to the corresponding channel(s).
 
 The message can be:
 - passed as a parameter 
