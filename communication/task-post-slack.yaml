@@ -87,10 +87,10 @@ spec:
             if [[ "$(inputs.params.messageFormat)" == "text" ]]; then
               if [ "$SLACK_CHANNEL" ]; then
                 CHANNEL=$SLACK_CHANNEL
-                echo "Using channel $CHANNEL as passed as parameter."                  
+                echo "Posting to channel $CHANNEL as passed as parameter."                  
               else
                 CHANNEL=$(echo ${SLACK_INTEGRATION} | jq -r ' .channel')
-                echo "Using channel $CHANNEL as defined in Slack integration."
+                echo "Posting to channel $CHANNEL as defined in Slack integration."
               fi
               # format message to a Slack JSON payload
               echo "Formatting text message to JSON."
