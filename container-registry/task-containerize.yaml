@@ -164,7 +164,8 @@ spec:
 
           # Manage multiple tags for an image
           # Add dynamically computed tags
-          printf "#!/bin/sh\n%s\n" '$(inputs.params.additionalTagsScript)' > /steps/additionnalTags.sh
+          printf "#!/bin/sh\n" > /steps/additionnalTags.sh
+          printf "%s " '$(inputs.params.additionalTagsScript)' >> /steps/additionnalTags.sh
           chmod +x /steps/additionnalTags.sh
           /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
           # Add image pipeline resource
