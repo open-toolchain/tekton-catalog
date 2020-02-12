@@ -100,8 +100,8 @@ spec:
             cat /steps/payload.json
             echo "Posting Slack Message using Webhook $WEBHOOK."
             status_code=$(curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK")
-            [[ $status_code -eq 200 ]]
-              echo "Message "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain." to Slack."
+            if [[ $status_code -eq 200 ]]
+              echo "Message successfully posted to Slack."
               msgSent=$((msgSent+1))
             else
               echo "Failed to post the message to Slack with status code: $status_code."
