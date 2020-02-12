@@ -108,6 +108,7 @@ spec:
             else
               echo ""
               echo "Failed to post the message to Slack with status code: $status_code."
+              echo "More details about $status_code error: https://api.slack.com/changelog/2016-05-17-changes-to-errors-for-incoming-webhooks."
               echo ""
               # keep track of failures
               msgFail=$((msgFail+1))
