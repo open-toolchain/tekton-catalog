@@ -10,10 +10,10 @@ The message can be:
    - a static text message (that will be converted to Slack JSON payload)
 - dynamically injected
    - by a bash script
-   - the output of previous task(s) stored in the PVC
+   - based on the output of previous task(s) stored in the PVC
 - default message if not set
 
-![Default value](./sample/default-message.png)
+    ![Default value](./sample/default-message.png)
 
 ## Prereq
 ### Slack
@@ -58,6 +58,7 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
    - `domain` (optional) the Slack domain to send the message to.
    - `channel` (optional) the channel to post to (overrides the dafault channel as set in the Slack webhook).
    - `messageFormat` (optional) the format of the message (text or JSON).
+   - `messageScript` (optional) Shell script that provides messsage content.
    - `message` (optional) the message to post to Slack.
 
 **Note:** when using JSON format, the message is posted as-is to Slack. 
