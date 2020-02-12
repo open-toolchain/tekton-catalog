@@ -98,7 +98,8 @@ spec:
             fi
             echo "Slack Message payload:"
             cat /steps/payload.json
-            echo "Posting Slack Message using Webhook $WEBHOOK."
+            echo ""
+            echo "Posting Slack Message..."
             status_code=$(curl -s -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK")
             if [[ $status_code -eq 200 ]]; then
               echo ""
