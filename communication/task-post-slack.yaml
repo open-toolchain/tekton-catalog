@@ -100,11 +100,11 @@ spec:
             cat /steps/payload.json
             echo "Posting Slack Message using Webhook $WEBHOOK."
             status_code=$(curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK")
-            echo "status_code: $status_code"
-            if [ $(curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK") = 200 ]; then
+            [[ $status_code -eq 200 ]]
+              echo "Message "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain." to Slack."
               msgSent=$((msgSent+1))
             else
-              echo "Failed to post the message to Slack."
+              echo "Failed to post the message to Slack with status code: $status_code."
               # keep track of failures
               msgFail=$((msgFail+1))
             fi
