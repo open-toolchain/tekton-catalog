@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: task-post-slack
+  name: post-slack
 spec:
   inputs:
     params:

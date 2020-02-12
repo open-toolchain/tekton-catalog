@@ -38,7 +38,7 @@ Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery
 None.
 
 ## Usage
-The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the `task-post-slack`.
+The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the `post-slack` task.
 
 1) Create or update a Toolchain so it includes:
    - a Slack integration
