@@ -100,7 +100,7 @@ spec:
             cat /steps/payload.json
             echo "Posting Slack Message using Webhook $WEBHOOK."
             status_code=$(curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK")
-            if [[ $status_code -eq 200 ]]
+            if [[ $status_code -eq 200 ]]; then
               echo "Message successfully posted to Slack."
               msgSent=$((msgSent+1))
             else
