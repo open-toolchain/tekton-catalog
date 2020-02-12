@@ -99,6 +99,8 @@ spec:
             echo "Slack Message payload:"
             cat /steps/payload.json
             echo "Posting Slack Message using Webhook $WEBHOOK."
+            status_code=$(curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK")
+            echo "status_code: $status_code"
             if [ $(curl -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK") = 200 ]; then
               msgSent=$((msgSent+1))
             else
@@ -111,7 +113,7 @@ spec:
               break
             fi
           done
-          echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failures)."
+          echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failure(s))."
           
           # Handle exit based on error if any
           if [[ $msgFail -ne 0 ]] && [[ "$(inputs.params.exitOnError)" == "true" ]]; then
