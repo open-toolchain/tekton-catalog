@@ -12,15 +12,12 @@ spec:
       description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
     - name: messageFormat
       description: the format of the message. text(default) or JSON.
-      default: text 
     - name: messageScript
       description: Shell script that provides messsage content.
-      default: ' '
     - name: message
       description: the message to send to Slack
     - name: exitOnError
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
-      default: 'false'
   tasks:
     - name: post-to-slack
       taskRef:

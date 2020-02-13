@@ -77,3 +77,22 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 7) Optional: check the execution log
 
    ![Tekton pipeline sample trigger](./sample/sample-log.png)
+
+8) Optionnal: Create a message using snippet 
+
+   a) Define the snippet in the `messageScript` environment property of the pipeline
+
+       messageScript: `echo 'Message sent from PipelineRun' ${PIPELINE_RUN_NAME}; echo 'uid:' ${PIPELINE_RUN_ID}; echo 'buildNumber:' ${BUILD_NUMBER};`
+
+      Note: this could also be done in the trigger-template or pipeline definition
+
+      ![Tekton pipeline sample trigger](./sample/sample-snippet-environment-property.png)
+
+
+   b) After running the pipeline, a new message like the following should have been posted to the Slack channel
+
+      ![sample message using snippet](./sample/sample-snippet-message.png)
+
+   c) Check the execution log
+
+      ![Tekton pipeline sample snippet message](./sample/sample-snippet-log.png)

@@ -6,7 +6,8 @@ spec:
   params:
     - name: pipeline-pvc
       description: the pipeline pvc name
-    # TriggerTemplate default param values are not taken into account
+    # TriggerTemplate default param values are not taken into account if empty string
+    # hence put a single space string value as workaround
     # https://github.ibm.com/org-ids/roadmap/issues/11640
     - name: domain
       description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
