@@ -10,10 +10,10 @@ spec:
     # https://github.ibm.com/org-ids/roadmap/issues/11640
     - name: domain
       description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-      default: ''
+      default: ' '
     - name: channel
       description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-      default: ''
+      default: ' '
     - name: messageFormat
       description: the format of the message. text(default) or JSON.
       default: text 
@@ -25,7 +25,7 @@ spec:
           any custom script that will be executed by the task to provide a message.
           Reference: https://api.slack.com/reference/surfaces/formatting
           For instance: echo "Message injected by messageScript. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
-      default: ''
+      default: ' '
     - name: exitOnError
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
       default: 'false'
