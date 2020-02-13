@@ -15,7 +15,7 @@ spec:
       default: text 
     - name: messageScript
       description: Shell script that provides messsage content.
-      default: ' '
+      default: ''
     - name: message
       description: the message to send to Slack
     - name: exitOnError
