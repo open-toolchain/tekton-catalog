@@ -33,13 +33,13 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
-        name: pipelinerun-$(uid)
+        name: post-to-slack-$(uid)
       spec:
         pipelineRef:
           name: pipeline-slack
         params:
           - name: pipeline-pvc
-            value: pipelinerun-$(uid)-pvc
+            value: post-to-slack-$(uid)-pvc
           - name: domain
             value: $(params.domain)
           - name: channel
