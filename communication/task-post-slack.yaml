@@ -31,6 +31,10 @@ spec:
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
           value: $(inputs.params.message)
+        - name: PIPELINE_RUN_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tekton.dev/pipelineRun']
         - name: PIPELINE_RUN_ID
           valueFrom:
             fieldRef:
