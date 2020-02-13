@@ -6,7 +6,8 @@ spec:
   params:
     - name: pipeline-pvc
       description: the pipeline pvc name
-    # TriggerTemplate default param values are not taken into account
+    # TriggerTemplate default param values are not taken into account if empty string
+    # hence put a single space string value as workaround
     # https://github.ibm.com/org-ids/roadmap/issues/11640
     - name: domain
       description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
@@ -33,13 +34,13 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
-        name: pipelinerun-$(uid)
+        name: post-a-message-to-slack-$(uid)
       spec:
         pipelineRef:
           name: pipeline-slack
         params:
           - name: pipeline-pvc
-            value: pipelinerun-$(uid)-pvc
+            value: post-a-message-to-slack-$(uid)-pvc
           - name: domain
             value: $(params.domain)
           - name: channel
