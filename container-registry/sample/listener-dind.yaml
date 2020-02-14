@@ -13,7 +13,7 @@ spec:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-          name: pipeline-container-sample
+          name: pipeline-dind-sample
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc
