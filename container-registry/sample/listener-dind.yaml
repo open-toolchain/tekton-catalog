@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-dind-sample
+spec:
+  params:
+    - name: custom-image
+      description: The Docker image to use
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline-container-sample
+        resources:
+          - name: app-image
+            resourceRef:
+              name: image-to-build
+        params:
+          - name: pipeline-pvc
+            value: pipelinerun-$(uid)-pvc
+          - name: custom-image
+            value: $(params.custom-image)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-dind-sample
+spec:
+  params:
+    - name: custom-image
+      value: docker
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-dind-sample
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-dind-sample
+      template:
+        name: trigger-template-dind-sample

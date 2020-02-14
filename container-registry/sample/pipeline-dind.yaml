@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-dind-sample
+spec:
+  params:
+    - name: pipeline-pvc
+      description: the pipeline pvc name
+    - name: custom-image
+      description: The Docker image to use
+  tasks:
+    - name: task-dind
+      taskRef:
+        name: task-dind-sample
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: custom-image
+          value: docker
