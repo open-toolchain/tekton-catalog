@@ -32,3 +32,7 @@ spec:
           value: $(params.pipeline-pvc)
         - name: custom-image
           value: docker
+      resources:          
+        outputs:
+          - name: builtImage
+            resource: app-image
