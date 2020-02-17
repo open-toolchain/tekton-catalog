@@ -12,6 +12,9 @@ spec:
       description: the branch for the git repo
     - name: custom-image
       description: The Docker image to use
+  resources:
+  - name: app-image
+    type: image
   tasks:
     - name: task-clone-repo
       taskRef:
