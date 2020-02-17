@@ -46,10 +46,6 @@ spec:
     #   - name: workspace
     #     type: git
     #     optional: true
-  outputs:
-    resources:
-      - name: builtImage
-        type: image
   steps:
     - name: check-registry
       image: ibmcom/pipeline-base-image
