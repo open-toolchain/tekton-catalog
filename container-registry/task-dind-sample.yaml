@@ -10,15 +10,10 @@ spec:
       - name: custom-image
         description: The Docker image to use
         default: docker
-      - name: propertiesFile
-        description: file containing properties out of containerize task
-        default: build.properties
   steps:
     - name: client
       image: $(inputs.params.custom-image)
       env:
-        - name: PROPERTIES_FILE
-          value: $(inputs.params.propertiesFile)
         # Connect to the sidecar over TCP, with TLS.
         - name: DOCKER_HOST
           value: tcp://localhost:2376
@@ -32,8 +27,6 @@ spec:
       args:
         - |
           set -e -o pipefail
-          echo "$PROPERTIES_FILE content:"
-          cat $PROPERTIES_FILE
           # Run a Docker container.
           docker run busybox echo hello
           # Write a Dockerfile and `docker build` it.
