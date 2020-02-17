@@ -27,20 +27,10 @@ spec:
       args:
         - |
           set -e -o pipefail
-          # Run a Docker container.
-          docker run busybox echo hello
-          # Write a Dockerfile and `docker build` it.
-          cat > Dockerfile << EOF
-          FROM ubuntu
-          RUN apt-get update
-          ENTRYPOINT ["echo", "hello"]
-          EOF
-          docker build -t hello . && docker run hello
-          docker images
-          # ...then run it!
-          docker run hello
+          echo "ls /artifacts"
+          ls /artifacts
       volumeMounts:
-        - mountPath: /test
+        - mountPath: /artifacts
           name: task-volume
         - mountPath: /certs/client
           name: dind-certs
