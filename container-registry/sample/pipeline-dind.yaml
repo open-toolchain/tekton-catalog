@@ -13,7 +13,7 @@ spec:
     - name: custom-image
       description: The Docker image to use
   tasks:
-    - name: pipeline-simple-clone-task
+    - name: task-clone-repo
       taskRef:
         name: clone-repo-task
       params:
@@ -24,6 +24,7 @@ spec:
         - name: branch
           value: $(params.branch)
     - name: task-dind
+      runAfter: [task-clone-repo]
       taskRef:
         name: task-dind-custom
       params:
