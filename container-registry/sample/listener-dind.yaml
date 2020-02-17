@@ -11,7 +11,11 @@ spec:
     - name: apikey
       description: the ibmcloud api key
     - name: custom-image
-      description: The Docker image to use
+      description: The Docker image to use   
+    - name: registryNameSpace
+      description: the Container Registry NameSpace
+    - name: imageName
+      description: the image name
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
@@ -37,6 +41,10 @@ spec:
             value: $(params.branch)
           - name: custom-image
             value: $(params.custom-image)
+          - name: registryNameSpace
+            value: $(params.registryNameSpace)
+          - name: imageName
+            value: $(params.imageName)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

@@ -11,7 +11,11 @@ spec:
     - name: branch
       description: the branch for the git repo
     - name: custom-image
-      description: The Docker image to use
+      description: The Docker image to use       
+    - name: registryNameSpace
+      description: the Container Registry NameSpace
+    - name: imageName
+      description: the image name
   tasks:
     - name: task-clone-repo
       taskRef:
@@ -32,3 +36,7 @@ spec:
           value: $(params.pipeline-pvc)
         - name: custom-image
           value: docker
+        - name: registryNameSpace
+          value: $(params.registryNameSpace)
+        - name: imageName
+          value: $(params.imageName)
