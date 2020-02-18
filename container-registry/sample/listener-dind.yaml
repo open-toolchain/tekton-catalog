@@ -10,8 +10,6 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: custom-image
-      description: The Docker image to use   
     - name: registryNameSpace
       description: the Container Registry NameSpace
     - name: imageName
@@ -31,7 +29,7 @@ spec:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-          name: pipeline-dind-sample
+          name: pipeline-dind
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc
@@ -39,8 +37,6 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: custom-image
-            value: $(params.custom-image)
           - name: registryNameSpace
             value: $(params.registryNameSpace)
           - name: imageName
@@ -52,8 +48,8 @@ metadata:
   name: trigger-binding-dind-sample
 spec:
   params:
-    - name: custom-image
-      value: docker
+    - name: branch
+      value: "master"
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener

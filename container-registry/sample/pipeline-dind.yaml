@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: pipeline-dind-sample
+  name: pipeline-dind
 spec:
   params:
     - name: pipeline-pvc
@@ -10,8 +10,6 @@ spec:
       description: the git repo
     - name: branch
       description: the branch for the git repo
-    - name: custom-image
-      description: The Docker image to use       
     - name: registryNameSpace
       description: the Container Registry NameSpace
     - name: imageName
@@ -30,12 +28,10 @@ spec:
     - name: task-dind
       runAfter: [task-clone-repo]
       taskRef:
-        name: task-dind-custom
+        name: task-dind
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
-        - name: custom-image
-          value: docker
         - name: registryNameSpace
           value: $(params.registryNameSpace)
         - name: imageName
