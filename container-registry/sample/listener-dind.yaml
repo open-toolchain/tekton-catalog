@@ -45,7 +45,7 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: trigger-binding-dind-sample
+  name: trigger-binding-dind
 spec:
   params:
     - name: branch
@@ -54,10 +54,10 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: event-listener-dind-sample
+  name: event-listener-dind
 spec:
   triggers:
     - binding:
-        name: trigger-binding-dind-sample
+        name: trigger-binding-dind
       template:
-        name: trigger-template-dind-sample
+        name: trigger-template-dind
