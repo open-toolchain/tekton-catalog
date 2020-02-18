@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-dind-sample
+  name: trigger-template-dind
 spec:
   params:
     - name: repository
