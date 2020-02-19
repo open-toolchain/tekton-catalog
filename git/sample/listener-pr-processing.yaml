@@ -161,7 +161,7 @@ metadata:
 spec:
   params:
     - name: repository
-      value: $(event.project.http_url)
+      value: $(event.repository.git_http_url)
     - name: revision
       value: $(event.checkout_sha)
     - name: branch
