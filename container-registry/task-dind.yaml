@@ -32,6 +32,10 @@ spec:
       - name: dockerClientImage
         description: The Docker image to use to run the Docker client
         default: docker
+  outputs:
+    resources:
+      - name: builtImage
+        type: image
   steps:
     - name: create-secret
       image: ibmcom/pipeline-base-image
@@ -89,6 +93,18 @@ spec:
       args:
         - |
           set -e -o pipefail
+          # Parse the image url to find information (region, namespace, image name)
+          IMAGE_URL1=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
+          IMAGE_TAG1=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
+          REGISTRY_URL1=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE1=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
+          IMAGE_NAME1=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
+          echo "IMAGE_URL1: $IMAGE_URL1"
+          echo "IMAGE_TAG1: $IMAGE_TAG1"
+          echo "REGISTRY_URL1: $REGISTRY_URL1"
+          echo "IMAGE_NAME1: $IMAGE_NAME1"
+          exit 0
+
           echo "Building Docker image..."
           echo "docker build --tag $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)"
           docker build --tag "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG" --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)
