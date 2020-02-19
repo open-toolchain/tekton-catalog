@@ -193,6 +193,9 @@ spec:
           fi
           # Fetch the origin reference to the update code (PR)
           if [ ! -z "${PR_BRANCH}" ]; then
+            echo "Performing Pull Request Checkout/Merge"
+            git config --global user.email "cdtektonpipeline@ibm.com"
+            git config --global user.name "CD Tekton Pipeline"            
             echo "Fetch PR Branch ${PR_BRANCH}"
             git fetch origin "${PR_BRANCH}"
             if [ ! -z "${PR_REVISION}" ]; then
