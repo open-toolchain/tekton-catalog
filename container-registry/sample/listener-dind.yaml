@@ -10,8 +10,6 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: imageUrl
-      description: The image url in your container registry
     - name: registryNameSpace
       description: the Container Registry NameSpace
     - name: imageName
@@ -26,25 +24,12 @@ spec:
       stringData:
         API_KEY: $(params.apikey)
     - apiVersion: tekton.dev/v1alpha1
-      kind: PipelineResource
-      metadata:
-        name: image-to-build
-      spec:
-        type: image
-        params:
-          - name: url
-            value: $(params.imageUrl)
-    - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
           name: pipeline-dind
-        resources:
-          - name: app-image
-            resourceRef:
-              name: image-to-build
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc

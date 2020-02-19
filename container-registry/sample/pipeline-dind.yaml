@@ -14,9 +14,6 @@ spec:
       description: the Container Registry NameSpace
     - name: imageName
       description: the image name
-  resources:
-  - name: app-image
-    type: image
   tasks:
     - name: task-clone-repo
       taskRef:
@@ -39,7 +36,3 @@ spec:
           value: $(params.registryNameSpace)
         - name: imageName
           value: $(params.imageName)
-      resources:          
-        outputs:
-          - name: builtImage
-            resource: app-image
