@@ -110,12 +110,12 @@ spec:
 
           # add commands
           printf "%s " '$(inputs.params.dockerCommands)' >> /steps/runDockerCommands.sh
-          chmod +x /steps/runDockerCommands.sh
           
           # run commands
           echo "Running docker command(s):"
           cat /steps/runDockerCommands.sh
           echo ""
+          chmod +x /steps/runDockerCommands.sh
           /steps/runDockerCommands.sh
 
           echo ""
