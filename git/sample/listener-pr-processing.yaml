@@ -11,6 +11,7 @@ spec:
       default: ' '
     - name: repository
       description: The git repo
+      default: ' '
     - name: branch
       description: the branch for the git repo
     - name: revision
