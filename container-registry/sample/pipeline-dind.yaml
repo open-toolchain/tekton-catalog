@@ -14,7 +14,7 @@ spec:
   - name: app-image
     type: image
   tasks:
-    - name: task-clone-repo
+    - name: clone-repoitory
       taskRef:
         name: clone-repo-task
       params:
@@ -25,9 +25,9 @@ spec:
         - name: branch
           value: $(params.branch)
     - name: task-dind
-      runAfter: [task-clone-repo]
+      runAfter: [clone-repoitory]
       taskRef:
-        name: task-dind
+        name: build-and-push-docker
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
@@ -35,3 +35,23 @@ spec:
         outputs:
           - name: builtImage
             resource: app-image
+    - name: va-scan-task
+      taskRef:
+        name: vulnerability-advisor-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: scanReportFile
+          value: 'app-image-va-report.json'
+        # - name: maxIteration
+        #   value: '5'
+        # - name: sleepTime
+        #   value: '3'
+        # - name: failOnScannedIssues          
+        #   value: 'false'
+      resources:          
+        inputs:
+          - name: image
+            resource: app-image
+            from:
+              - build-and-push-docker
