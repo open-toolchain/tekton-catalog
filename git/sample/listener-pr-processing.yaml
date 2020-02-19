@@ -11,11 +11,11 @@ spec:
     - name: branch
       description: the branch for the git repo
     - name: revision
-      default: ''
+      default: ' '
     - name: pr_branch
-      default: ''
+      default: ' '
     - name: pr_revision
-      default: ''
+      default: ' '
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
