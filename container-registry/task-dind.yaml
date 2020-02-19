@@ -6,7 +6,10 @@ spec:
   inputs:
     params:
       - name: task-pvc
-        description: the output pvc
+        description: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+      - name: imageTag
+        description: the image tag
+        default: latest
       # Dockerfile location
       - name: pathToDockerfile
         description: the path to the Docker file
@@ -14,17 +17,6 @@ spec:
       - name: dockerfile
         description: The name of the Dockerfile to build from
         default: "Dockerfile"
-      # IBM Cloud Container Registry configuration
-      - name: registryUrl
-        description: the Container Registry URL
-        default: us.icr.io        
-      - name: registryNameSpace
-        description: the Container Registry NameSpace
-      - name: imageName
-        description: the image name
-      - name: imageTag
-        description: the image tag
-        default: latest
       - name: continuous-delivery-context-secret
         description: name of the configmap containing the continuous delivery pipeline context secrets
         default: cd-secret
@@ -67,13 +59,6 @@ spec:
     - name: build-and-push-image
       image: $(inputs.params.dockerClientImage)
       env:
-        # IBM Cloud Container Registry configuration
-        - name: REGISTRY_URL
-          value: $(inputs.params.registryUrl)
-        - name: REGISTRY_NAMESPACE
-          value: $(inputs.params.registryNameSpace)
-        - name: IMAGE_NAME
-          value: $(inputs.params.imageName)
         - name: IMAGE_TAG
           value: $(inputs.params.imageTag)
         # Docker client configuration
@@ -93,33 +78,27 @@ spec:
       args:
         - |
           set -e -o pipefail
-          # Parse the image url to find information (region, namespace, image name)
-          IMAGE_URL1=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
-          IMAGE_TAG1=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
-          REGISTRY_URL1=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
-          REGISTRY_NAMESPACE1=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
-          IMAGE_NAME1=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
-          echo "IMAGE_URL1: $IMAGE_URL1"
-          echo "IMAGE_TAG1: $IMAGE_TAG1"
-          echo "REGISTRY_URL1: $REGISTRY_URL1"
-          echo "IMAGE_NAME1: $IMAGE_NAME1"
-          exit 0
+          # Get the image url from builtImage
+          IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
+          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
+          IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
 
           echo "Building Docker image..."
-          echo "docker build --tag $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)"
-          docker build --tag "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG" --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)
+          echo "docker build --tag $IMAGE_URL:$IMAGE_TAG --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)"
+          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)
           echo ""
           echo "#######################"
 
           echo "Inpecting Docker image..."
-          echo "docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}"
-          docker inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}
+          echo "docker inspect ${IMAGE_URL}:${IMAGE_TAG}"
+          docker inspect ${IMAGE_URL}:${IMAGE_TAG}
           echo ""
           echo "#######################"
 
-          echo "Pushing Docker image $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG to the IBM Cloud Container Registry"
-          echo "docker push "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG""
-          docker push "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG" 
+          echo "Pushing Docker image IMAGE_URL:$IMAGE_TAG to the IBM Cloud Container Registry"
+          echo "docker push "IMAGE_URL:$IMAGE_TAG""
+          docker push "IMAGE_URL:$IMAGE_TAG" 
           echo ""
           echo "Done."
       volumeMounts:

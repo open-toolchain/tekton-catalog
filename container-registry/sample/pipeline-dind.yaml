@@ -10,10 +10,6 @@ spec:
       description: the git repo
     - name: branch
       description: the branch for the git repo
-    - name: registryNameSpace
-      description: the Container Registry NameSpace
-    - name: imageName
-      description: the image name
   resources:
   - name: app-image
     type: image

@@ -12,10 +12,6 @@ spec:
       description: the ibmcloud api key
     - name: imageUrl
       description: The image url in your container registry
-    - name: registryNameSpace
-      description: the Container Registry NameSpace
-    - name: imageName
-      description: the image name
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
