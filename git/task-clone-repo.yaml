@@ -206,6 +206,8 @@ spec:
 
           git show-branch --all
 
+          apk update && apk add tree
+          
           tree
 
           GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
