@@ -113,8 +113,7 @@ spec:
           chmod +x /steps/runDockerCommands.sh
           
           # run commands
-          echo "Running docker commands:"
-          echo ""
+          echo "Running docker command(s):"
           cat /steps/runDockerCommands.sh
           echo ""
           /steps/runDockerCommands.sh
