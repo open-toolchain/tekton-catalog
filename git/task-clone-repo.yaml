@@ -13,6 +13,11 @@ spec:
       - name: continuous-delivery-context-secret
         description: name of the configmap containing the continuous delivery pipeline context secrets
         default: cd-secret
+      - name: gitAccessToken
+        description: |
+          (optional) token to access the git repository. If this token is provided, there will not be an attempt
+          to use the git token obtained from the authorization flow when adding the git integration in the toolchain 
+        default: ''
       - name: resourceGroup
         description: target resource group (name or id) for the ibmcloud login operation
         default: ''
@@ -60,13 +65,6 @@ spec:
           # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
           export HOME="/root"
           ##########################################################################
-          echo "Fetching token for $REPOSITORY"
-          ibmcloud config --check-version false
-          ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
-          if [ "$(inputs.params.resourceGroup)" ]; then
-            ibmcloud target -g $(inputs.params.resourceGroup)
-          fi
-          TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
           if [[ "$REPOSITORY" != *.git ]]; then
             echo "Adding .git suffix to Repository URL"
             REPOSITORY="${REPOSITORY}.git"
@@ -77,19 +75,6 @@ spec:
             exit 1
           fi
           GIT_SERVICE_TYPE=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .service_id' /cd-config/toolchain.json)
-          GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' /cd-config/toolchain.json)
-
-          echo "Doing cURL to ${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
-
-          curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
-          if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
-            GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
-            echo "Access token found for the Git integration (repository url: $REPOSITORY)"
-          else
-            echo "No access token found for the Git integration (repository url: $REPOSITORY)"
-            cat /steps/github_token_result.json
-            exit 1
-          fi
 
           if [ "$GIT_SERVICE_TYPE" == "github" ]; then
             GIT_AUTH_USER="x-oauth-basic"
@@ -104,6 +89,31 @@ spec:
           else
             GIT_AUTH_USER="x-token-auth"
           fi;
+
+          GIT_TOKEN="$(inputs.params.gitAccessToken)"
+          if [ -z "$GIT_TOKEN" ]; then
+            echo "Fetching token for $REPOSITORY"
+            ibmcloud config --check-version false
+            ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
+            if [ "$(inputs.params.resourceGroup)" ]; then
+              ibmcloud target -g $(inputs.params.resourceGroup)
+            fi
+            TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
+            GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' /cd-config/toolchain.json)
+
+            echo "Doing cURL to ${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+
+            curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+            if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
+              GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
+              echo "Access token found for the Git integration (repository url: $REPOSITORY)"
+            else
+              echo "No access token found for the Git integration (repository url: $REPOSITORY)"
+              cat /steps/github_token_result.json
+              exit 1
+            fi
+          fi
+
           echo "GIT_REPOSITORY=$REPOSITORY" > /steps/next-step-env.properties
           echo "GIT_AUTH_USER=$GIT_AUTH_USER" >> /steps/next-step-env.properties
           echo "GIT_TOKEN=$GIT_TOKEN" >> /steps/next-step-env.properties

@@ -1,0 +1,49 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-pr-processing
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: gitAccessToken
+      description: the token to access the git repository for the clone operations
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: git-pr-process-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline-pr-processing
+        params:
+          - name: pipeline-pvc
+            value: git-pr-process-$(uid)-pvc
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: gitAccessToken
+            value: $(params.gitAccessToken)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-pr-processing-manual
+spec:
+  params:
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-pr-processing-manual
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-pr-processing-manual
+      template:
+        name: trigger-template-pr-processing
