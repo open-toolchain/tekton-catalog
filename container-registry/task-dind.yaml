@@ -105,6 +105,9 @@ spec:
 
           # prepare docker commands
           printf "#!/bin/sh\n" > /steps/runDockerCommands.sh
+          echo DOCKER_HOST=$DOCKER_HOST >> /steps/runDockerCommands.sh
+          echo DOCKER_TLS_VERIFY=$DOCKER_TLS_VERIFY >> /steps/runDockerCommands.sh
+          echo DOCKER_CERT_PATH=$DOCKER_CERT_PATH >> /steps/runDockerCommands.sh
           echo DOCKER_CONFIG=$DOCKER_CONFIG >> /steps/runDockerCommands.sh
 
           # inject the required variable(s)
