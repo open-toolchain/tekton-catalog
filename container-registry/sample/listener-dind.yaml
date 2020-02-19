@@ -48,10 +48,6 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: registryNameSpace
-            value: $(params.registryNameSpace)
-          - name: imageName
-            value: $(params.imageName)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
