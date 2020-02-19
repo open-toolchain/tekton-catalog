@@ -48,7 +48,7 @@ spec:
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
           # ibmcloud container registry
-          echo "Creating a Kubernetes secret to access the IBM Cloud Container Registry."
+          echo "Creating a Kubernetes secret to access the ${REGISTRY_URL} Container Registry."
           kubectl create secret --dry-run=true --output=json \
             docker-registry registry-dockerconfig-secret \
             --docker-server=${REGISTRY_URL} \
@@ -81,7 +81,8 @@ spec:
       args:
         - |
           set -e -o pipefail
-          # Get the image url from builtImage
+          # Get the registry and image url from builtImage
+          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
 
           echo "Building Docker image..."
@@ -96,9 +97,9 @@ spec:
           echo ""
           echo "#######################"
 
-          echo "Pushing Docker image IMAGE_URL:$IMAGE_TAG to the IBM Cloud Container Registry"
-          echo "docker push "IMAGE_URL:$IMAGE_TAG""
-          docker push "IMAGE_URL:$IMAGE_TAG" 
+          echo "Pushing Docker image ${IMAGE_URL}:${IMAGE_TAG} to the ${REGISTRY_URL} Container Registry"
+          echo "docker push ${IMAGE_URL}:${IMAGE_TAG}"
+          docker push ${IMAGE_URL}:${IMAGE_TAG} 
           echo ""
           echo "Done."
       volumeMounts:
