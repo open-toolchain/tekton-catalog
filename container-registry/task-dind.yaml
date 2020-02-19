@@ -24,6 +24,14 @@ spec:
       - name: dockerClientImage
         description: The Docker image to use to run the Docker client
         default: docker
+      - name: dockerCommands
+        description: Shell script that contains the docker commands.
+        default: |
+            # Default docker build / inspect / push command
+            docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
+            docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+            docker push ${IMAGE_URL}:${IMAGE_TAG} 
+
   outputs:
     resources:
       - name: builtImage
@@ -48,7 +56,7 @@ spec:
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
           # ibmcloud container registry
-          echo "Creating a Kubernetes secret to access the ${REGISTRY_URL} Container Registry."
+          echo "Creating a Kubernetes secret to access the IBM Cloud Container Registry."
           kubectl create secret --dry-run=true --output=json \
             docker-registry registry-dockerconfig-secret \
             --docker-server=${REGISTRY_URL} \
@@ -81,32 +89,23 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          PATH_TO_DOCKERFILE=$(inputs.params.pathToDockerfile)
+          DOCKERFILE=$(inputs.params.dockerfile)
           # Get the image url from builtImage
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
-
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
-          echo ""
+          echo "PATH_TO_DOCKERFILE: $PATH_TO_DOCKERFILE"
+          echo "DOCKERFILE: $DOCKERFILE"
 
-          echo "#########################"
-          echo "| Building Docker image |"
-          echo "#########################"
-          echo "docker build --tag $IMAGE_URL:$IMAGE_TAG --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)"
-          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)
-          echo ""          
+          # injecting docker commands
+          printf "#!/bin/sh\n" > /steps/runDockerCommands.sh 
+          printf "%s " '$(inputs.params.dockerCommands)' >> /steps/runDockerCommands.sh
+          chmod +x /steps/runDockerCommands.sh
+          cat /steps/runDockerCommands.sh
+          /steps/runDockerCommands.sh
 
-          echo "###########################"
-          echo "| Inspecting Docker image |"
-          echo "###########################"
-          echo "docker inspect ${IMAGE_URL}:${IMAGE_TAG}"
-          docker inspect ${IMAGE_URL}:${IMAGE_TAG}
-          echo ""
-
-          echo "########################"
-          echo "| Pushing Docker image |"
-          echo "########################"
-          echo "docker push ${IMAGE_URL}:${IMAGE_TAG}"
-          docker push ${IMAGE_URL}:${IMAGE_TAG} 
           echo ""
           echo "Done."
       volumeMounts:
