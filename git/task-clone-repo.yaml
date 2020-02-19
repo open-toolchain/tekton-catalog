@@ -196,8 +196,10 @@ spec:
             # Point the HEAD to the specific revision
             git checkout -q $REVISION
           fi
-          # Fetch the origin reference to the update code (PR)
+          GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
+
           if [ ! -z "${PR_BRANCH}" ]; then
+            # Fetch the origin reference to the update code (PR)
             echo "Performing Pull Request Checkout/Merge"
             git config --global user.email "cdtektonpipeline@ibm.com"
             git config --global user.name "CD Tekton Pipeline"            
@@ -206,7 +208,14 @@ spec:
             if [ ! -z "${PR_REVISION}" ]; then
               #git checkout "${PR_REVISION}"
               git merge "${PR_REVISION}"
+              # Keep the GIT_COMMIT information to an existing git commit
+              GIT_COMMIT=${PR_REVISION}
+            else 
+              git merge "${PR_BRANCH}"
             fi
+            echo "git merge of $GIT_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) in (branch $BRANCH - commit $REVISION) done to directory $DIRECTORY_NAME"
+          else
+            echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
           fi
 
           git show-branch --all
@@ -215,9 +224,7 @@ spec:
 
           tree
 
-          GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
           cd $current_dir
-          echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
           if [ "$PROPERTIES_FILE" ]; then
             echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
             echo "GIT_BRANCH=$BRANCH" >> $PROPERTIES_FILE
