@@ -94,17 +94,16 @@ spec:
       args:
         - |
           set -e -o pipefail
-
-          # prepare docker commands
-          printf "#!/bin/sh\n" > /steps/runDockerCommands.sh
-
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
-          echo "Envioronment variables:"
+          echo "Environment variables:"
           echo "IMAGE_URL: $IMAGE_URL"
           echo "IMAGE_TAG: $IMAGE_TAG"
           echo "DOCKERFILE: $DOCKERFILE"
           echo "PATH_TO_DOCKERFILE: $PATH_TO_DOCKERFILE"
           echo ""
+
+          # prepare docker commands
+          printf "#!/bin/sh\n" > /steps/runDockerCommands.sh
 
           # inject the required variable(s)
           echo IMAGE_URL=$IMAGE_TAG >> /steps/runDockerCommands.sh
