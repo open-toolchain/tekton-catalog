@@ -24,6 +24,7 @@ spec:
       - name: dockerClientImage
         description: The Docker image to use to run the Docker client
         default: docker
+      # Docker commands
       - name: dockerCommands
         description: Shell script that contains the docker commands.
         default: |
@@ -116,7 +117,7 @@ spec:
           cat /steps/runDockerCommands.sh
           echo ""
           chmod +x /steps/runDockerCommands.sh
-          /steps/runDockerCommands.sh
+          /steps/runDockerCommands.sh | tee /steps/docker.log
 
           echo ""
           echo "Done."
@@ -127,6 +128,18 @@ spec:
           name: steps-volume
         - mountPath: /certs/client
           name: dind-certs
+    - name: process-docker-log
+      # An image including only jq should be sufficient
+      image: ibmcom/pipeline-base-image
+      workingDir: /steps
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+          cat /steps/docker.log
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
   volumes:
     - name: task-volume
       persistentVolumeClaim:
