@@ -14,7 +14,7 @@ spec:
   - name: app-image
     type: image
   tasks:
-    - name: clone-repoitory
+    - name: clone-repository
       taskRef:
         name: clone-repo-task
       params:
@@ -24,10 +24,10 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
-    - name: task-dind
-      runAfter: [clone-repoitory]
-      taskRef:
-        name: build-and-push-docker
+    - name: build-and-push-docker
+      runAfter: [clone-repository]
+      taskRef: 
+        name: task-dind
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
