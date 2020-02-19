@@ -203,6 +203,8 @@ spec:
 
           git show-branch --all
 
+          tree
+
           GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
           cd $current_dir
           echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
