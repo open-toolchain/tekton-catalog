@@ -12,6 +12,8 @@ spec:
       description: the token to access the git repository for the clone operations
     - name: origin
       default: ''
+    - name: revision
+      default: ''
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
@@ -27,6 +29,8 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
+          - name: revision
+            value: $(params.revision)
           - name: gitAccessToken
             value: $(params.gitAccessToken)
           - name: origin
