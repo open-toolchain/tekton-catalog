@@ -60,8 +60,10 @@ spec:
       value: $(event.pull_request.base.repo.clone_url)
     - name: branch
       value: $(event.pull_request.base.ref)
-    - name: revision
-      value: $(event.pull_request.base.sha)
+    # Do we want to really use the revision when the PR was made ?
+    # if yes, it may miss update in the initial branch but just uncomment the line
+    # - name: revision
+    #   value: $(event.pull_request.base.sha)
     # Then the origin of the update to incorporate is from the PR head
     - name: pr_branch
       value: $(event.pull_request.head.ref)
