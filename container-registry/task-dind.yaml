@@ -90,14 +90,15 @@ spec:
         - |
           set -e -o pipefail
 
-          PATH_TO_DOCKERFILE=$(inputs.params.pathToDockerfile)
-          DOCKERFILE=$(inputs.params.dockerfile)
+          export ATH_TO_DOCKERFILE=$(inputs.params.pathToDockerfile)
+          exportDOCKERFILE=$(inputs.params.dockerfile)
           # Get the image url from builtImage
-          IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
+          export IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
           echo "PATH_TO_DOCKERFILE: $PATH_TO_DOCKERFILE"
           echo "DOCKERFILE: $DOCKERFILE"
+          echo ""
 
           # injecting docker commands
           printf "#!/bin/sh\n" > /steps/runDockerCommands.sh 
