@@ -81,23 +81,30 @@ spec:
       args:
         - |
           set -e -o pipefail
-          # Get the registry and image url from builtImage
-          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
+          # Get the image url from builtImage
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
 
-          echo "Building Docker image..."
+          echo "Image URL: $IMAGE_URL"
+          echo "Image tag: $IMAGE_TAG"
+          echo ""
+
+          echo "#########################"
+          echo "| Building Docker image |"
+          echo "#########################"
           echo "docker build --tag $IMAGE_URL:$IMAGE_TAG --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)"
           docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)
-          echo ""
-          echo "#######################"
+          echo ""          
 
-          echo "Inpecting Docker image..."
+          echo "###########################"
+          echo "| Inspecting Docker image |"
+          echo "###########################"
           echo "docker inspect ${IMAGE_URL}:${IMAGE_TAG}"
           docker inspect ${IMAGE_URL}:${IMAGE_TAG}
           echo ""
-          echo "#######################"
 
-          echo "Pushing Docker image ${IMAGE_URL}:${IMAGE_TAG} to the ${REGISTRY_URL} Container Registry"
+          echo "########################"
+          echo "| Pushing Docker image |"
+          echo "########################"
           echo "docker push ${IMAGE_URL}:${IMAGE_TAG}"
           docker push ${IMAGE_URL}:${IMAGE_TAG} 
           echo ""
