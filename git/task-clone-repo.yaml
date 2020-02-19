@@ -161,6 +161,11 @@ spec:
           REVISION=$(echo $REVISION)
           ############################
           source /steps/next-step-env.properties
+
+          echo "######################"
+          env | sort
+          echo "######################"
+
           echo "Cloning $REPOSITORY"
           # Add the proper creds to the git repository
           GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
@@ -207,7 +212,7 @@ spec:
           git show-branch --all
 
           apk update && apk add tree
-          
+
           tree
 
           GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
