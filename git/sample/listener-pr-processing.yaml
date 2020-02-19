@@ -25,14 +25,14 @@ spec:
         params:
           - name: pipeline-pvc
             value: git-pr-process-$(uid)-pvc
+          - name: gitAccessToken
+            value: $(params.gitAccessToken)
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
           - name: revision
             value: $(params.revision)
-          - name: gitAccessToken
-            value: $(params.gitAccessToken)
           - name: origin
             value: $(params.origin)
 ---
