@@ -113,6 +113,8 @@ spec:
               cat /steps/github_token_result.json
               exit 1
             fi
+          else
+            echo "Using git Access Token provided"
           fi
 
           echo "GIT_REPOSITORY=$REPOSITORY" > /steps/next-step-env.properties
