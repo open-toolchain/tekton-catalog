@@ -44,7 +44,7 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: trigger-binding-pr-processing-git-pr-event
+  name: trigger-binding-pr-processing-github-pr-event
 spec:
   params:
     - name: repository
@@ -59,7 +59,7 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
-  name: trigger-binding-pr-processing-git-commit-event
+  name: trigger-binding-pr-processing-github-commit-event
 spec:
   params:
     - name: repository
@@ -83,21 +83,71 @@ spec:
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: event-listener-pr-processing-git-pr-event
+  name: event-listener-pr-processing-github-pr-event
 spec:
   triggers:
     - binding:
-        name: trigger-binding-pr-processing-git-pr-event
+        name: trigger-binding-pr-processing-github-pr-event
       template:
         name: trigger-template-pr-processing
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: event-listener-pr-processing-git-commit-event
+  name: event-listener-pr-processing-github-commit-event
 spec:
   triggers:
     - binding:
-        name: trigger-binding-pr-processing-git-commit-event
+        name: trigger-binding-pr-processing-github-commit-event
+      template:
+        name: trigger-template-pr-processing
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-pr-processing-grit-pr-event
+spec:
+  params:
+    - name: repository
+      value: $(event.pull_request.head.repo.html_url)
+    - name: branch
+      value: $(event.pull_request.head.ref)
+    - name: revision
+      value: $(event.pull_request.head.sha)
+    - name: origin
+      value: $(event.pull_request.base.ref)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-pr-processing-grit-commit-event
+spec:
+  params:
+    - name: repository
+      value: $(event.repository.git_http_url)
+    - name: revision
+      value: $(event.checkout_sha)
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-pr-processing-grit-pr-event
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-pr-processing-grit-pr-event
+      template:
+        name: trigger-template-pr-processing
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-pr-processing-grit-commit-event
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-pr-processing-grit-commit-event
       template:
         name: trigger-template-pr-processing
