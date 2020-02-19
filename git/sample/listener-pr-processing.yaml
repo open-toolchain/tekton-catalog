@@ -166,7 +166,8 @@ spec:
     - name: revision
       value: $(event.checkout_sha)
     - name: branch
-      value: "$(event.ref)"
+      value: "master"
+      # value: "$(event.ref)"
     - name: triggerName
       value: grit-commit-trigger
 ---
