@@ -42,13 +42,16 @@ spec:
       args:
         - |
           set -e -o pipefail 
+          # Get the registry url from builtImage
+          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
+          
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
           # ibmcloud container registry
           echo "Creating a Kubernetes secret to access the IBM Cloud Container Registry."
           kubectl create secret --dry-run=true --output=json \
             docker-registry registry-dockerconfig-secret \
-            --docker-server=$(inputs.params.registryUrl) \
+            --docker-server=${REGISTRY_URL} \
             --docker-password=${API_KEY} \
             --docker-username=iamapikey --docker-email=a@b.com | \
           jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
@@ -80,9 +83,6 @@ spec:
           set -e -o pipefail
           # Get the image url from builtImage
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
-          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
-          REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
-          IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
 
           echo "Building Docker image..."
           echo "docker build --tag $IMAGE_URL:$IMAGE_TAG --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)"
