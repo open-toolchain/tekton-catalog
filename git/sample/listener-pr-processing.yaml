@@ -19,6 +19,8 @@ spec:
       default: ' '
     - name: pr_revision
       default: ' '
+    - name: triggerName
+      default: 'git-pr-process'
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
@@ -31,13 +33,13 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
-        name: git-pr-process-$(uid)
+        name: $(params.triggerName)-$(uid)
       spec:
         pipelineRef:
           name: pipeline-pr-processing
         params:
           - name: pipeline-pvc
-            value: git-pr-process-$(uid)-pvc
+            value: $(params.triggerName)-$(uid)-pvc
           - name: gitAccessToken
             value: $(params.gitAccessToken)
           - name: repository
@@ -59,6 +61,8 @@ spec:
   params:
     - name: branch
       value: "master"
+    - name: triggerName
+      value: manual-trigger
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
@@ -91,6 +95,8 @@ spec:
       value: $(event.pull_request.head.ref)
     - name: pr_revision
       value: $(event.pull_request.head.sha)
+    - name: triggerName
+      value: github-pr-trigger
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -104,6 +110,8 @@ spec:
       value: $(event.head_commit.id)
     - name: branch
       value: "master"
+    - name: triggerName
+      value: github-commit-trigger
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
@@ -143,6 +151,8 @@ spec:
       value: $(event.pull_request.base.ref)
     - name: pr_revision
       value: $(event.pull_request.base.ref)
+    - name: triggerName
+      value: grit-merge-request-trigger
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -156,6 +166,8 @@ spec:
       value: $(event.checkout_sha)
     - name: branch
       value: "$(event.ref)"
+    - name: triggerName
+      value: grit-commit-trigger
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
