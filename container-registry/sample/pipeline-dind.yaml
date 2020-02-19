@@ -31,10 +31,6 @@ spec:
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
-        - name: registryNameSpace
-          value: $(params.registryNameSpace)
-        - name: imageName
-          value: $(params.imageName)
       resources:          
         outputs:
           - name: builtImage
