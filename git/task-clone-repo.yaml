@@ -47,6 +47,7 @@ spec:
           secretKeyRef:
             name: $(inputs.params.continuous-delivery-context-secret)
             key: API_KEY
+            optional: true
   steps:
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image
