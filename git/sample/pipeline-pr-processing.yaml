@@ -12,7 +12,9 @@ spec:
       description: the branch for the git repo
     - name: revision
       default: ''
-    - name: origin
+    - name: pr_branch
+      default: ''
+    - name: pr_revision
       default: ''
     - name: gitAccessToken
       description: the token to access the git repository for the clone operations
@@ -30,7 +32,9 @@ spec:
           value: $(params.branch)
         - name: revision
           value: $(params.revision)
-        - name: origin
-          value: $(params.origin)
+        - name: pr_branch
+          value: $(params.pr_branch)
+        - name: pr_revision
+          value: $(params.pr_revision)
         - name: gitAccessToken
           value: $(params.gitAccessToken)

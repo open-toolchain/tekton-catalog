@@ -4,15 +4,17 @@ metadata:
   name: trigger-template-pr-processing
 spec:
   params:
+    - name: gitAccessToken
+      description: the token to access the git repository for the clone operations
     - name: repository
       description: The git repo
     - name: branch
       description: the branch for the git repo
-    - name: gitAccessToken
-      description: the token to access the git repository for the clone operations
-    - name: origin
-      default: ''
     - name: revision
+      default: ''
+    - name: pr_branch
+      default: ''
+    - name: pr_revision
       default: ''
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
@@ -33,8 +35,10 @@ spec:
             value: $(params.branch)
           - name: revision
             value: $(params.revision)
-          - name: origin
-            value: $(params.origin)
+          - name: pr_branch
+            value: $(params.pr_branch)
+          - name: pr_revision
+            value: $(params.pr_revision)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -51,14 +55,18 @@ metadata:
   name: trigger-binding-pr-processing-github-pr-event
 spec:
   params:
+    # For PR, the repo to clone first is the base repo (target of the PR)
     - name: repository
-      value: $(event.pull_request.head.repo.html_url)
+      value: $(event.pull_request.base.repo.clone_url)
     - name: branch
-      value: $(event.pull_request.head.ref)
-    - name: revision
-      value: $(event.pull_request.head.sha)
-    - name: origin
       value: $(event.pull_request.base.ref)
+    - name: revision
+      value: $(event.pull_request.base.sha)
+    # Then the origin of the update to incorporate is from the PR head
+    - name: pr_branch
+      value: $(event.pull_request.head.ref)
+    - name: pr_revision
+      value: $(event.pull_request.head.sha)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -118,7 +126,9 @@ spec:
       value: $(event.pull_request.head.ref)
     - name: revision
       value: $(event.pull_request.head.sha)
-    - name: origin
+    - name: pr_branch
+      value: $(event.pull_request.base.ref)
+    - name: pr_revision
       value: $(event.pull_request.base.ref)
 ---
 apiVersion: tekton.dev/v1alpha1

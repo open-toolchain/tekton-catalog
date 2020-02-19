@@ -31,8 +31,12 @@ spec:
           the git revision/commit to update the git HEAD to.
           Default is to mean only use the branch
         default: ""
-      - name: origin
-        description: origin to merge the code with
+      - name: pr_branch
+        description: |
+          origin reference to merge the code with in order to offer a merge
+          Like https://docs.cloudbees.com/docs/admin-resources/latest/plugins/github-branch-source#_controlling_what_is_built
+        default: ""
+      - name: pr_revision
         default: ""
       - name: directoryName
         description: |
@@ -139,8 +143,10 @@ spec:
           value: $(inputs.params.branch)
         - name: REVISION
           value: $(inputs.params.revision)
-        - name: ORIGIN
-          value: $(inputs.params.origin)          
+        - name: PR_BRANCH
+          value: $(inputs.params.pr_branch)          
+        - name: PR_REVISION
+          value: $(inputs.params.pr_revision)          
         - name: DIRECTORY_NAME
           value: $(inputs.params.directoryName)
         - name: PROPERTIES_FILE
@@ -185,12 +191,19 @@ spec:
             # Point the HEAD to the specific revision
             git checkout -q $REVISION
           fi
-          GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
-          # from one pipeline 
-          if [[ "${ORIGIN}" != "" ]]; then
-            echo "Origin: ${ORIGIN}"
-            git merge origin/${ORIGIN}
+          # Fetch the origin reference to the update code (PR)
+          if [ ! -z "${PR_BRANCH}" ]; then
+            echo "Fetch PR Branch ${PR_BRANCH}"
+            git fetch origin "${PR_BRANCH}"
+            if [ ! -z "${PR_REVISION}" ]; then
+              #git checkout "${PR_REVISION}"
+              git merge "${PR_REVISION}"
+            fi
           fi
+
+          git show-branch --all
+
+          GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
           cd $current_dir
           echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
           if [ "$PROPERTIES_FILE" ]; then
