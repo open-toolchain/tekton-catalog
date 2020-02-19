@@ -50,6 +50,17 @@ spec:
       value: "master"
 ---
 apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: event-listener-pr-processing-manual
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-pr-processing-manual
+      template:
+        name: trigger-template-pr-processing
+---
+apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: trigger-binding-pr-processing-github-pr-event
@@ -82,17 +93,6 @@ spec:
       value: $(event.head_commit.id)
     - name: branch
       value: "master"
----
-apiVersion: tekton.dev/v1alpha1
-kind: EventListener
-metadata:
-  name: event-listener-pr-processing-manual
-spec:
-  triggers:
-    - binding:
-        name: trigger-binding-pr-processing-manual
-      template:
-        name: trigger-template-pr-processing
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
@@ -144,7 +144,7 @@ spec:
     - name: revision
       value: $(event.checkout_sha)
     - name: branch
-      value: "master"
+      value: "$(event.ref)"
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
