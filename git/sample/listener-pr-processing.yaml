@@ -84,20 +84,20 @@ spec:
   params:
     # For PR, the repo to clone first is the base repo (target of the PR)
     - name: repository
-      value: $(event.pull_request.base.repo.clone_url)
+      value: "$(event.pull_request.base.repo.clone_url)"
     - name: branch
-      value: $(event.pull_request.base.ref)
+      value: "$(event.pull_request.base.ref)"
     # Do we want to really use the revision when the PR was made ?
     # if yes, it may miss update in the initial branch but just uncomment the line
     # - name: revision
     #   value: $(event.pull_request.base.sha)
     # Then the origin of the update to incorporate is from the PR head
     - name: pr_branch
-      value: $(event.pull_request.head.ref)
+      value: "$(event.pull_request.head.ref)"
     - name: pr_revision
-      value: $(event.pull_request.head.sha)
+      value: "$(event.pull_request.head.sha)"
     - name: triggerName
-      value: github-pr-trigger
+      value: "github-pr-trigger"
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -106,13 +106,13 @@ metadata:
 spec:
   params:
     - name: repository
-      value: $(event.repository.url)
+      value: "$(event.repository.url)"
     - name: revision
-      value: $(event.head_commit.id)
+      value: "$(event.head_commit.id)"
     - name: branch
       value: "master"
     - name: triggerName
-      value: github-commit-trigger
+      value: "github-commit-trigger"
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
@@ -143,17 +143,17 @@ metadata:
 spec:
   params:
     - name: repository
-      value: $(event.pull_request.head.repo.html_url)
+      value: "$(event.object_attributes.target.git_http_url)"
     - name: branch
-      value: $(event.pull_request.head.ref)
-    - name: revision
-      value: $(event.pull_request.head.sha)
+      value: "$(event.object_attributes.target_branch)"
+    # - name: revision
+    #   value: $(event.pull_request.head.sha)
     - name: pr_branch
-      value: $(event.pull_request.base.ref)
+      value: "$(event.object_attributes.source_branch)"
     - name: pr_revision
-      value: $(event.pull_request.base.ref)
+      value: "$(event.object_attributes.last_commit.id)"
     - name: triggerName
-      value: grit-merge-request-trigger
+      value: "grit-merge-request-trigger"
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -164,12 +164,12 @@ spec:
     - name: repository
       value: "$(event.repository.git_http_url)"
     - name: revision
-      value: $(event.checkout_sha)
+      value: "$(event.checkout_sha)"
     - name: branch
       value: "master"
       # value: "$(event.ref)"
     - name: triggerName
-      value: grit-commit-trigger
+      value: "grit-commit-trigger"
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
