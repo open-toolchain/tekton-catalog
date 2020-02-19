@@ -105,6 +105,7 @@ spec:
 
           # prepare docker commands
           printf "#!/bin/sh\n" > /steps/runDockerCommands.sh
+          echo DOCKER_CONFIG=$DOCKER_CONFIG >> /steps/runDockerCommands.sh
 
           # inject the required variable(s)
           echo IMAGE_URL=$IMAGE_TAG >> /steps/runDockerCommands.sh
