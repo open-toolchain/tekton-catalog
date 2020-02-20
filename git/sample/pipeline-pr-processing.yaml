@@ -12,6 +12,8 @@ spec:
       description: the branch for the git repo
     - name: revision
       default: ''
+    - name: pr_repository
+      default: ''
     - name: pr_branch
       default: ''
     - name: pr_revision
@@ -32,6 +34,8 @@ spec:
           value: $(params.branch)
         - name: revision
           value: $(params.revision)
+        - name: pr_repository
+          value: $(params.pr_repository)
         - name: pr_branch
           value: $(params.pr_branch)
         - name: pr_revision

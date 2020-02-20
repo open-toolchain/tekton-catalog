@@ -16,6 +16,8 @@ spec:
       description: the branch for the git repo
     - name: revision
       default: ' '
+    - name: pr_repository
+      default: ' '
     - name: pr_branch
       default: ' '
     - name: pr_revision
@@ -49,6 +51,8 @@ spec:
             value: $(params.branch)
           - name: revision
             value: $(params.revision)
+          - name: pr_repository
+            value: $(params.pr_repository)
           - name: pr_branch
             value: $(params.pr_branch)
           - name: pr_revision
@@ -92,6 +96,8 @@ spec:
     # - name: revision
     #   value: $(event.pull_request.base.sha)
     # Then the origin of the update to incorporate is from the PR head
+    - name: pr_repository
+      value: "$(event.pull_request.head.repo.clone_url)"
     - name: pr_branch
       value: "$(event.pull_request.head.ref)"
     - name: pr_revision

@@ -31,6 +31,11 @@ spec:
           the git revision/commit to update the git HEAD to.
           Default is to mean only use the branch
         default: ""
+      - name: pr_repository
+        description: |
+          the originated repository where the PR come from (in case of a fork)
+          default to '' means same repository (not a fork) or it can be the same as repository
+        default: ""
       - name: pr_branch
         description: |
           origin reference to merge the code with in order to offer a merge
@@ -160,6 +165,7 @@ spec:
           # REVISION if not set is define with a single blank value
           BRANCH=$(echo $BRANCH)
           REVISION=$(echo $REVISION)
+          PR_REPOSITORY=$(echo $PR_REPOSITORY)
           PR_BRANCH=$(echo $PR_BRANCH)
           PR_REVISION=$(echo $PR_REVISION)
           ############################
@@ -201,24 +207,42 @@ spec:
           fi
           GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
 
-          if [ ! -z "${PR_BRANCH}" ]; then
-            # Fetch the origin reference to the update code (PR)
+          # Expect the directory content to be the result of the merge for pull request/merge request
+          if [ ! -z "${PR_BRANCH}" ]; then            
             echo "Performing Pull Request Checkout/Merge"
             git config --global user.email "cdtektonpipeline@ibm.com"
-            git config --global user.name "CD Tekton Pipeline"            
-            echo "Fetch PR Branch ${PR_BRANCH}"
-            git fetch origin "${PR_BRANCH}"
-            if [ ! -z "${PR_REVISION}" ]; then
-              #git checkout "${PR_REVISION}"
-              git merge "${PR_REVISION}"
-              # Keep the GIT_COMMIT information to an existing git commit
-              GIT_COMMIT=${PR_REVISION}
-            else 
-              git merge "${PR_BRANCH}"
+            git config --global user.name "CD Tekton Pipeline"
+            # Clear GIT_COMMIT as the outcome if this task is a non yet known commit
+            GIT_COMMIT=""
+            if [ -z "$PR_REPOSITORY" ] || [ "$PR_REPOSITORY" == "$REPOSITORY" ]; then
+              # If PR_REPOSITORY is empty or the same as REPOSITORY, assuming the PR is not coming from a fork
+              # Make the manual steps that a merge request action is doing
+              git fetch origin "${PR_BRANCH}"
+              if [ ! -z "${PR_REVISION}" ]; then
+                git merge "${PR_REVISION}"
+              else 
+                git merge "${PR_BRANCH}"
+              fi
+              echo "git merge of $GIT_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
+            else
+              # Assuming the PR is from a fork
+              # Expect that the same creds will be sufficient for the git pull from the forked repository
+              GIT_PR_REPO_URL=$(echo "$PR_REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
+              # Make the manual steps that a merge request action is doing
+              # Step 1
+              git pull "${GIT_PR_REPO_URL}" "${PR_BRANCH}"
+              if [ ! -z "$PR_REVISION" ]; then
+                git checkout "$PR_REVISION"
+              fi
+              # create a specific branch to hold the PR state
+              git checkout -b cd-tekton-pipeline-temp-branch-for-pr
+              # Step 2
+              git checkout ${BRANCH}
+              git merge cd-tekton-pipeline-temp-branch-for-pr
+              echo "git merge of $PR_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to $REPOSITORY (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
             fi
-            echo "git merge of $GIT_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) in (branch $BRANCH - commit $REVISION) done to directory $DIRECTORY_NAME"
           else
-            echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
+            echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done in directory $DIRECTORY_NAME"
           fi
 
           git show-branch --all
