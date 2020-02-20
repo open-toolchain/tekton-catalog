@@ -117,8 +117,6 @@ spec:
           REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
           REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
           IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
-          # get sha from the docker log
-          echo "tototo"
           MANIFEST_SHA=$(docker images --digests | grep -i $IMAGE_URL | awk '{print $3}')
           
           if [ "$PROPERTIES_FILE" ]; then
@@ -126,7 +124,6 @@ spec:
             touch $PROPERTIES_FILE
             echo "REGISTRY_URL=${REGISTRY_URL}" >> $PROPERTIES_FILE
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
-            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE
             echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
             echo "IMAGE_TAGS=${IMAGE_TAG}" >> $PROPERTIES_FILE
             echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
