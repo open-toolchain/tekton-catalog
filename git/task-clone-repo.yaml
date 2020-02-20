@@ -227,6 +227,8 @@ spec:
 
           tree
 
+          cat README.md
+
           cd $current_dir
           if [ "$PROPERTIES_FILE" ]; then
             echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
