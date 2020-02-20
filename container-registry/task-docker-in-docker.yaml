@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: task-dind
+  name: task-docker-in-docker
 spec:
   inputs:
     params:
@@ -35,7 +35,6 @@ spec:
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
             docker inspect ${IMAGE_URL}:${IMAGE_TAG}
             docker push ${IMAGE_URL}:${IMAGE_TAG} 2>&1 | tee /steps/docker.log
-
   outputs:
     resources:
       - name: builtImage
@@ -105,7 +104,7 @@ spec:
           echo "Image tag: $IMAGE_TAG"
           echo ""
 
-          # run docker commad(s) passed as parameter
+          # run docker command(s) passed as parameter
           echo "Running docker command(s)..."
           echo ""
 
