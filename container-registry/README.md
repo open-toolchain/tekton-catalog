@@ -46,6 +46,9 @@
 This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind,
 and push the resulting image to the IBM Cloud Container Registry.
 
+**Note:** the **Docker engine** used to execute the commands is **transient**, created by the task as a sidecar container,
+and is available only during the task's lifespan.
+
 ### Inputs
 
 #### Context - ConfigMap/Secret
