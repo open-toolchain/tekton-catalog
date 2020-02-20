@@ -242,8 +242,11 @@ spec:
               GIT_PR_REPO_URL=$(echo "$PR_REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
               # Make the manual steps that a merge request action is doing
               # Step 1
-              echo "Doing git pull ${GIT_PR_REPO_URL} ${PR_BRANCH}"
-              git pull "${GIT_PR_REPO_URL}" "${PR_BRANCH}"
+              if git pull "${GIT_PR_REPO_URL}" "${PR_BRANCH}"; then
+                echo "git pull ${PR_REPOSITORY} ${PR_BRANCH} done"
+              else
+                exit 1
+              fi
               if [ "$PR_REVISION" ]; then
                 git checkout -q "$PR_REVISION"
               fi
