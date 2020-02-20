@@ -67,6 +67,8 @@ spec:
             --docker-password=${API_KEY} \
             --docker-username=iamapikey --docker-email=a@b.com | \
           jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
+          
+          echo ""
           echo "Secret created."
       volumeMounts:
         - mountPath: /steps
@@ -119,8 +121,7 @@ spec:
         - mountPath: /certs/client
           name: dind-certs
     - name: process-docker-log
-      # An image including only jq should be sufficient
-      image: ibmcom/pipeline-base-image
+      image: alpine
       workingDir: /steps
       env:
         - name: PROPERTIES_FILE
