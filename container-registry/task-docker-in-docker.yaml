@@ -118,11 +118,8 @@ spec:
           REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
           IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
           # get sha from the docker log
-          MANIFEST_SHA=$(docker images --digests | grep -i 'sha256:' | awk '{print $3}')
+          MANIFEST_SHA=$(docker images --digests | grep -i '${IMAGE_URL}' | awk '{print $3}')
           
-          echo ""
-          docker images --digests
-          echo ""
           if [ "$PROPERTIES_FILE" ]; then
             cd /artifacts
             touch $PROPERTIES_FILE
