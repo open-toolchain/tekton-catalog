@@ -126,7 +126,7 @@ spec:
       env:
         - name: PROPERTIES_FILE
           value: $(inputs.params.propertiesFile)
-      command: ["/bin/bash", "-c"]
+      command: ["/bin/sh", "-c"]
       args:
         - |
           set -e -o pipefail
