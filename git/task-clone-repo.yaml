@@ -208,6 +208,9 @@ spec:
           # Execute git commands to have the cloned git repository directory content 
           # to be the result of the merge for pull request/merge request
           if [ "${PR_BRANCH}" ]; then
+
+            echo "GIT_URL=$GIT_URL"
+
             echo "Performing Pull Request Checkout/Merge"
             git config --global user.email "cdtektonpipeline@ibm.com"
             git config --global user.name "CD Tekton Pipeline"
