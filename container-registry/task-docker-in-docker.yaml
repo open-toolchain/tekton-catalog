@@ -29,7 +29,7 @@ spec:
         description: file containing properties out of the docker in docker task
         default: build.properties
       - name: dockerCommands
-        description: Shell script that contains the docker commands.
+        description: The docker command(s) to run.
         default: |
             # Default docker build / inspect / push command
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE

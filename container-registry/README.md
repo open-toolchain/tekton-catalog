@@ -28,13 +28,51 @@
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current) directory)
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
 * **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
 * **additionalTags**: (optional) comma-separated list of tags for the built image
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+
+### Outputs
+
+#### Resources
+
+* **builtImage**: The Image PipelineResource that will be created as output of this task.
+
+## Docker IN Docker (DIND) helper task
+This tasks enables you to run `docker` commands (build, inspect...) that communicate with a sidecar dind,
+and push the resulting image to the IBM Cloud Container Registry.
+
+### Inputs
+
+#### Context - ConfigMap/Secret
+
+  The task expects the following kubernetes resources to be defined:
+
+* **Secret cd-secret**
+
+  Secret containing:
+  * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
+
+  See [sample TriggerTemplate](./sample/listener-docker-in-docker.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+
+#### Parameters
+
+* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **imageTag**: (optional) the tag for the built image (default to `latest`) 
+* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `/`) 
+* **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
+* **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
+* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **dockerCommands**: (optional) The docker command(s) to run. Default commands:
+```
+docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
+docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+docker push ${IMAGE_URL}:${IMAGE_TAG} 2>&1 | tee /steps/docker.log
+```
 
 ### Outputs
 
