@@ -1,0 +1,57 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-dind
+spec:
+  params:
+    - name: pipeline-pvc
+      description: the pipeline pvc name
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+  resources:
+  - name: app-image
+    type: image
+  tasks:
+    - name: clone-repository
+      taskRef:
+        name: clone-repo-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+    - name: build-and-push-docker
+      runAfter: [clone-repository]
+      taskRef: 
+        name: task-docker-in-docker
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+      resources:          
+        outputs:
+          - name: builtImage
+            resource: app-image
+    - name: va-scan-task
+      taskRef:
+        name: vulnerability-advisor-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: scanReportFile
+          value: 'app-image-va-report.json'
+        # - name: maxIteration
+        #   value: '5'
+        # - name: sleepTime
+        #   value: '3'
+        # - name: failOnScannedIssues          
+        #   value: 'false'
+      resources:          
+        inputs:
+          - name: image
+            resource: app-image
+            from:
+              - build-and-push-docker

@@ -42,6 +42,44 @@
 
 * **builtImage**: The Image PipelineResource that will be created as output of this task.
 
+## Docker In Docker (DIND) helper task
+This tasks enables you to run `docker` commands (build, inspect...) that communicate with a sidecar dind,
+and push the resulting image to the IBM Cloud Container Registry.
+
+### Inputs
+
+#### Context - ConfigMap/Secret
+
+  The task expects the following kubernetes resources to be defined:
+
+* **Secret cd-secret**
+
+  Secret containing:
+  * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
+
+  See [sample TriggerTemplate](./sample/listener-docker-in-docker.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+
+#### Parameters
+
+* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **imageTag**: (optional) the tag for the built image (default to `latest`) 
+* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `/`) 
+* **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
+* **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
+* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **dockerCommands**: (optional) The docker command(s) to run. Default commands:
+```
+docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
+docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+docker push ${IMAGE_URL}:${IMAGE_TAG} 2>&1 | tee /steps/docker.log
+```
+
+### Outputs
+
+#### Resources
+
+* **builtImage**: The Image PipelineResource that will be created as output of this task.
+
 ## Vulnerability Advisor helper task
 
 ### Inputs
