@@ -64,10 +64,12 @@ metadata:
   name: trigger-binding-pr-processing-manual
 spec:
   params:
+    - name: repository
+      value: $(params.sampleRepository)
     - name: branch
       value: "master"
     - name: triggerName
-      value: manual-trigger
+      value: manual-trigger      
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener

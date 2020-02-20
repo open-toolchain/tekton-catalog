@@ -43,6 +43,7 @@ spec:
         - name: gitAccessToken
           value: $(params.gitAccessToken)
     - name: pipeline-git-event-content-inspect
+      runAfter: [pipeline-git-event-clone-task]
       taskRef:
         name: inspect-content-task
       params:
