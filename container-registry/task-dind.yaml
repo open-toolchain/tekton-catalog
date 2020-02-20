@@ -30,7 +30,7 @@ spec:
         default: |
             # Default docker build / inspect / push command
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
-            docker inspect ${IMAGE_URL}:${IMAGE_TAG} > /steps/docker.log
+            docker inspect ${IMAGE_URL}:${IMAGE_TAG} 2>&1 | tee /steps/docker.log
             docker push ${IMAGE_URL}:${IMAGE_TAG} 
 
   outputs:
