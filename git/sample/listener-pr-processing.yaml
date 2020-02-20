@@ -210,17 +210,17 @@ metadata:
 spec:
   params:
     - name: repository
-      value: "$(event.object_attributes.target.git_http_url)"
+      value: "$(event.pullrequest.destination.repository.links.html.href)"
     - name: branch
-      value: "$(event.object_attributes.target_branch)"
+      value: "$(event.pullrequest.destination.branch.name)"
     # - name: revision
     #   value: $(event.pull_request.head.sha)
     - name: pr_repository
-      value: "$(event.object_attributes.source.git_http_url)"
+      value: "$(event.pullrequest.source.repository.links.html.href)"
     - name: pr_branch
-      value: "$(event.object_attributes.source_branch)"
+      value: "$(event.pullrequest.source.branch.name)"
     - name: pr_revision
-      value: "$(event.object_attributes.last_commit.id)"
+      value: "$(event.pullrequest.source.commit.hash)"
     - name: triggerName
       value: "bitbucket-pull-request-trigger"
 ---
