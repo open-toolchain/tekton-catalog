@@ -24,6 +24,15 @@ spec:
       - name: dockerClientImage
         description: The Docker image to use to run the Docker client
         default: docker
+      # Docker commands
+      - name: dockerCommands
+        description: Shell script that contains the docker commands.
+        default: |
+            # Default docker build / inspect / push command
+            docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
+            docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+            docker push ${IMAGE_URL}:${IMAGE_TAG} 
+
   outputs:
     resources:
       - name: builtImage
@@ -48,7 +57,7 @@ spec:
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
           # ibmcloud container registry
-          echo "Creating a Kubernetes secret to access the ${REGISTRY_URL} Container Registry."
+          echo "Creating a Kubernetes secret to access the IBM Cloud Container Registry."
           kubectl create secret --dry-run=true --output=json \
             docker-registry registry-dockerconfig-secret \
             --docker-server=${REGISTRY_URL} \
@@ -64,6 +73,11 @@ spec:
       env:
         - name: IMAGE_TAG
           value: $(inputs.params.imageTag)
+        # docker command variables
+        - name: PATH_TO_DOCKERFILE
+          value: $(inputs.params.pathToDockerfile)
+        - name: DOCKERFILE
+          value: $(inputs.params.dockerfile)
         # Docker client configuration
         # Connect to the sidecar over TCP, with TLS.
         - name: DOCKER_HOST
@@ -81,28 +95,17 @@ spec:
       args:
         - |
           set -e -o pipefail
-          # Get the image url from builtImage
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
           echo ""
-          echo "#########################"
-          echo "| Building Docker image |"
-          echo "#########################"
-          echo "docker build --tag $IMAGE_URL:$IMAGE_TAG --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)"
-          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$(inputs.params.pathToDockerfile)$(inputs.params.dockerfile) /artifacts$(inputs.params.pathToDockerfile)
-          echo ""          
-          echo "###########################"
-          echo "| Inspecting Docker image |"
-          echo "###########################"
-          echo "docker inspect ${IMAGE_URL}:${IMAGE_TAG}"
-          docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+
+          # run docker commad(s) passed as parameter
+          echo "Docker command(s):"
+          echo $(inputs.params.dockerCommands)
           echo ""
-          echo "########################"
-          echo "| Pushing Docker image |"
-          echo "########################"
-          echo "docker push ${IMAGE_URL}:${IMAGE_TAG}"
-          docker push ${IMAGE_URL}:${IMAGE_TAG} 
+          $(inputs.params.dockerCommands)
+
           echo ""
           echo "Done."
       volumeMounts:
@@ -112,6 +115,18 @@ spec:
           name: steps-volume
         - mountPath: /certs/client
           name: dind-certs
+    - name: process-docker-log
+      # An image including only jq should be sufficient
+      image: ibmcom/pipeline-base-image
+      workingDir: /steps
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+          cat /steps/docker.log
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
   volumes:
     - name: task-volume
       persistentVolumeClaim:
