@@ -43,7 +43,7 @@
 * **builtImage**: The Image PipelineResource that will be created as output of this task.
 
 ## Docker In Docker (DIND) helper task
-This tasks enables you to run `docker` commands (build, inspect...) that communicate with a sidecar dind,
+This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind,
 and push the resulting image to the IBM Cloud Container Registry.
 
 ### Inputs
