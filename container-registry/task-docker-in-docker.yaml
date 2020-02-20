@@ -121,7 +121,7 @@ spec:
           MANIFEST_SHA=$(docker images --digests | grep -i 'sha256:' | awk '{print $3}')
           
           echo ""
-          docker images
+          docker images --digests
           echo ""
           if [ "$PROPERTIES_FILE" ]; then
             cd /artifacts
