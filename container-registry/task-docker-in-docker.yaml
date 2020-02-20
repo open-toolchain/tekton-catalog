@@ -34,7 +34,7 @@ spec:
             # Default docker build / inspect / push command
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
             docker inspect ${IMAGE_URL}:${IMAGE_TAG}
-            docker push ${IMAGE_URL}:${IMAGE_TAG} 2>&1 | tee /steps/docker.log
+            docker push ${IMAGE_URL}:${IMAGE_TAG}
   outputs:
     resources:
       - name: builtImage
@@ -120,6 +120,9 @@ spec:
           # get sha from the docker log
           MANIFEST_SHA=$(docker images --digests | grep -i 'sha256:' | awk '{print $3}')
           
+          echo ""
+          docker images
+          echo ""
           if [ "$PROPERTIES_FILE" ]; then
             cd /artifacts
             touch $PROPERTIES_FILE
