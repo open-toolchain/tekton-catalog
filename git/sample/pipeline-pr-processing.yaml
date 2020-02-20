@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: pipeline-pr-processing
+  name: pipeline-git-event-processing
 spec:
   params:
     - name: pipeline-pvc
@@ -22,7 +22,7 @@ spec:
       description: the token to access the git repository for the clone operations
       default: ''
   tasks:
-    - name: pipeline-simple-clone-task
+    - name: pipeline-git-event-clone-task
       taskRef:
         name: clone-repo-task
       params:
@@ -42,3 +42,11 @@ spec:
           value: $(params.pr_revision)
         - name: gitAccessToken
           value: $(params.gitAccessToken)
+    - name: pipeline-git-event-content-inspect
+      taskRef:
+        name: inspect-content-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
