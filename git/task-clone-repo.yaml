@@ -214,7 +214,7 @@ spec:
           # If a Pull Request/Merge Request branch is specified, then
           # Execute git commands to have the cloned git repository directory content 
           # to be the result of the merge for pull request/merge request
-          if [ ! -z "${PR_BRANCH}" ]; then            
+          if [ "${PR_BRANCH}" ]; then
             echo "Performing Pull Request Checkout/Merge"
             git config --global user.email "cdtektonpipeline@ibm.com"
             git config --global user.name "CD Tekton Pipeline"
@@ -224,7 +224,7 @@ spec:
               # Assuming the PR is not coming from a fork as $PR_REPOSITORY is empty or equals to $REPOSITORY
               # Make the manual steps that a merge request action is doing
               git fetch origin "${PR_BRANCH}"
-              if [ ! -z "${PR_REVISION}" ]; then
+              if [ "${PR_REVISION}" ]; then
                 git merge "${PR_REVISION}"
               else 
                 git merge "${PR_BRANCH}"
@@ -237,7 +237,7 @@ spec:
               # Make the manual steps that a merge request action is doing
               # Step 1
               git pull "${GIT_PR_REPO_URL}" "${PR_BRANCH}"
-              if [ ! -z "$PR_REVISION" ]; then
+              if [ "$PR_REVISION" ]; then
                 git checkout "$PR_REVISION"
               fi
               # create a specific branch to hold the PR state
