@@ -38,7 +38,7 @@ spec:
       - name: builtImage
         type: image
   steps:
-    - name: create-secret
+    - name: create-registry-secret
       image: ibmcom/pipeline-base-image
       workingDir: /steps
       env:
@@ -68,7 +68,7 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
-    - name: build-and-push-image
+    - name: run-docker-commands
       image: $(inputs.params.dockerClientImage)
       env:
         - name: IMAGE_TAG
@@ -101,10 +101,10 @@ spec:
           echo ""
 
           # run docker commad(s) passed as parameter
-          echo "Docker command(s):"
-          echo $(inputs.params.dockerCommands)
+          echo "Running docker command(s)..."
           echo ""
-          $(inputs.params.dockerCommands)
+
+          $(inputs.params.dockerCommands) | tee /steps/docker.log
 
           echo ""
           echo "Done."
