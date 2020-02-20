@@ -146,7 +146,7 @@ spec:
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
             echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE
             echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
-            echo "IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')" >> $PROPERTIES_FILE
+            echo "IMAGE_TAGS=${IMAGE_TAG}" >> $PROPERTIES_FILE
             echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
             cat $PROPERTIES_FILE
