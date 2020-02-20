@@ -161,9 +161,6 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - |
-          set -e -o pipefail
-          # Following is to debug
-          set -x -e -o pipefail
           ############################
           # Workaround until a null/empty param can be flowing to Task
           # REVISION if not set is define with a single blank value
@@ -223,11 +220,19 @@ spec:
             if [ -z "$PR_REPOSITORY" ] || [ "$PR_REPOSITORY" == "$REPOSITORY" ]; then
               # Assuming the PR is not coming from a fork as $PR_REPOSITORY is empty or equals to $REPOSITORY
               # Make the manual steps that a merge request action is doing
-              git fetch origin "${PR_BRANCH}"
+              git fetch -q origin "${PR_BRANCH}"
               if [ "${PR_REVISION}" ]; then
-                git merge "${PR_REVISION}"
+                if git merge "${PR_REVISION}"; then
+                  echo "git merge ${PR_REVISION} done"
+                else
+                  exit 1
+                fi
               else 
-                git merge "${PR_BRANCH}"
+                if git merge "origin/${PR_BRANCH}"; then
+                  echo "git merge origin/${PR_BRANCH} done"
+                else
+                  exit 1
+                fi
               fi
               echo "git merge of $GIT_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
             else
@@ -238,14 +243,17 @@ spec:
               # Step 1
               git pull "${GIT_PR_REPO_URL}" "${PR_BRANCH}"
               if [ "$PR_REVISION" ]; then
-                git checkout "$PR_REVISION"
+                git checkout -q "$PR_REVISION"
               fi
               # create a specific branch to hold the PR state
-              git checkout -b cd-tekton-pipeline-temp-branch-for-pr
+              git checkout -q -b cd-tekton-pipeline-temp-branch-for-pr
               # Step 2
-              git checkout ${BRANCH}
-              git merge cd-tekton-pipeline-temp-branch-for-pr
-              echo "git merge of $PR_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to $REPOSITORY (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
+              git checkout -q ${BRANCH}
+              if git merge cd-tekton-pipeline-temp-branch-for-pr; then
+                echo "git merge of $PR_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to $REPOSITORY (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
+              else
+                exit 1
+              fi
             fi
           else
             echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done in directory $DIRECTORY_NAME"
@@ -259,6 +267,7 @@ spec:
 
           cat README.md
 
+          echo ""
           cd $current_dir
           if [ "$PROPERTIES_FILE" ]; then
             echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
