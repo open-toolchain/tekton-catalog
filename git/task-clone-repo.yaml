@@ -172,8 +172,6 @@ spec:
           ############################
           source /steps/next-step-env.properties
 
-          env | sort
-
           echo "Cloning $REPOSITORY"
           # Add the proper creds to the git repository
           GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
@@ -210,10 +208,7 @@ spec:
           # Execute git commands to have the cloned git repository directory content 
           # to be the result of the merge for pull request/merge request
           if [ "${PR_BRANCH}" ]; then
-
-            echo "GIT_URL=$GIT_URL"
-
-            echo "Performing Pull Request Checkout/Merge"
+            echo "Performing Pull Request Checkout & Merge"
             git config --global user.email "cdtektonpipeline@ibm.com"
             git config --global user.name "CD Tekton Pipeline"
             # Clear GIT_COMMIT as the outcome if this task is a non yet known commit
@@ -263,16 +258,6 @@ spec:
           else
             echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done in directory $DIRECTORY_NAME"
           fi
-
-          git show-branch --all
-
-          apk update && apk add tree
-
-          tree
-
-          cat README.md
-
-          echo ""
           cd $current_dir
           if [ "$PROPERTIES_FILE" ]; then
             echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
