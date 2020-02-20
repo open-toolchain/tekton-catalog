@@ -28,7 +28,7 @@
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current) directory)
+* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
 * **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
 * **additionalTags**: (optional) comma-separated list of tags for the built image
