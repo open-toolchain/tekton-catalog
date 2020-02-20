@@ -30,7 +30,7 @@ spec:
         default: |
             # Default docker build / inspect / push command
             docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
-            docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+            docker inspect ${IMAGE_URL}:${IMAGE_TAG} | tee /steps/docker.log
             docker push ${IMAGE_URL}:${IMAGE_TAG} 
 
   outputs:
@@ -104,7 +104,7 @@ spec:
           echo "Running docker command(s)..."
           echo ""
 
-          $(inputs.params.dockerCommands) | tee /steps/docker.log
+          $(inputs.params.dockerCommands)
 
           echo ""
           echo "Done."
