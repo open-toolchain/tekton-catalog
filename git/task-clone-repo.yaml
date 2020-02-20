@@ -148,6 +148,8 @@ spec:
           value: $(inputs.params.branch)
         - name: REVISION
           value: $(inputs.params.revision)
+        - name: PR_REPOSITORY
+          value: $(inputs.params.pr_repository)
         - name: PR_BRANCH
           value: $(inputs.params.pr_branch)          
         - name: PR_REVISION
