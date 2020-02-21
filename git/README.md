@@ -36,7 +36,7 @@ This Task fetches the credentials needed to perform a git clone of a repo specif
 ## Outputs
 The output of this task is the repository cloned into the directory on the pvc.
 
-## Usage
+## Usages
 
 - The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `clone-repo-task`.
 
