@@ -1,6 +1,7 @@
 # Container-Registry related tasks
 
 - **containerize-task**: This task is building and pushing an image to [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This taks is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **execute-in-dind-task**: This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind, and push the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
 - **vulnerability-advisor-task**: This task is verifying that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and process the outcome of the scan.
 
 **WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.16. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
@@ -74,7 +75,7 @@ and is available only during the task's lifespan.
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
 docker inspect ${IMAGE_URL}:${IMAGE_TAG}
-docker push ${IMAGE_URL}:${IMAGE_TAG} 2>&1 | tee /steps/docker.log
+docker push ${IMAGE_URL}:${IMAGE_TAG}
 ```
 
 ### Outputs
