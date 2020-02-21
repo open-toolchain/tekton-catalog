@@ -65,7 +65,7 @@ metadata:
 spec:
   params:
     - name: repository
-      value: $(params.sampleRepository)
+      value: $(params.repository)
     - name: branch
       value: "master"
     - name: triggerName
@@ -88,16 +88,10 @@ metadata:
   name: trigger-binding-pr-processing-github-pr-event
 spec:
   params:
-    # For PR, the repo to clone first is the base repo (target of the PR)
     - name: repository
       value: "$(event.pull_request.base.repo.clone_url)"
     - name: branch
       value: "$(event.pull_request.base.ref)"
-    # Do we want to really use the revision when the PR was made ?
-    # if yes, it may miss update in the initial branch but just uncomment the line
-    # - name: revision
-    #   value: $(event.pull_request.base.sha)
-    # Then the origin of the update to incorporate is from the PR head
     - name: pr_repository
       value: "$(event.pull_request.head.repo.clone_url)"
     - name: pr_branch
@@ -119,6 +113,7 @@ spec:
       value: "$(event.head_commit.id)"
     - name: branch
       value: "master"
+      # value: "$(event.ref)"
     - name: triggerName
       value: "github-commit-trigger"
 ---
@@ -154,8 +149,6 @@ spec:
       value: "$(event.object_attributes.target.git_http_url)"
     - name: branch
       value: "$(event.object_attributes.target_branch)"
-    # - name: revision
-    #   value: $(event.pull_request.head.sha)
     - name: pr_repository
       value: "$(event.object_attributes.source.git_http_url)"
     - name: pr_branch
@@ -213,8 +206,6 @@ spec:
       value: "$(event.pullrequest.destination.repository.links.html.href)"
     - name: branch
       value: "$(event.pullrequest.destination.branch.name)"
-    # - name: revision
-    #   value: $(event.pull_request.head.sha)
     - name: pr_repository
       value: "$(event.pullrequest.source.repository.links.html.href)"
     - name: pr_branch
