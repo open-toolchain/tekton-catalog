@@ -30,14 +30,16 @@ spec:
             DIRECTORY_NAME=$(basename "${GIT_REPOSITORY##*/}" .git)
           fi
           # show the git content
+          echo "Executing 'git show-branch --all'"
           git show-branch --all
           echo "##############"
           # show the directory content as a tree
           apk update && apk add tree
           echo "##############"
-          tree
+          echo "Executing 'tree'"
           # show the README.md content
           echo "##############"
+          echo "Executing 'cat README.md'"
           cat README.md
           echo ""
       volumeMounts:
