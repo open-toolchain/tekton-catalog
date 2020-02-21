@@ -32,11 +32,14 @@ spec:
           # show the git content
           echo "Executing 'git show-branch --all'"
           git show-branch --all
+          echo ""
           echo "##############"
           # show the directory content as a tree
           apk update && apk add tree
           echo "##############"
           echo "Executing 'tree'"
+          tree
+          echo ""
           # show the README.md content
           echo "##############"
           echo "Executing 'cat README.md'"
