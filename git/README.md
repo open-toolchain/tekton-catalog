@@ -38,6 +38,10 @@ The output of this task is the repository cloned into the directory on the pvc.
 
 ## Usage
 
-- The `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run an example showing a simple usage of the `clone-repo-task`.
+- The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `clone-repo-task`.
 
   See the documentation [here](./sample/README.md)
+
+- The `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example showing usage of the clone-repo-task in the context of CD tekton pipeline triggered by git event(s) (Commit pushed or PullRequest opened/updated)
+
+  See the documentation [here](./sample-git-trigger/README.md)
