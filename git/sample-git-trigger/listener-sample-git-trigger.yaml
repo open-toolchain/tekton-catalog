@@ -65,7 +65,7 @@ metadata:
 spec:
   params:
     - name: repository
-      value: $(params.sampleRepository)
+      value: $(params.repositoryForManualTrigger)
     - name: branch
       value: "master"
     - name: triggerName
