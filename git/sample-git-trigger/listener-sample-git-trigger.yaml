@@ -15,12 +15,16 @@ spec:
     - name: branch
       description: the branch for the git repo
     - name: revision
+      description: the commit id/sha for the clone action
       default: ' '
     - name: pr_repository
+      description: The source git repo for the PullRequest
       default: ' '
     - name: pr_branch
+      description: The source branch for the PullRequest
       default: ' '
     - name: pr_revision
+      description: the commit id/sha for the PullRequest
       default: ' '
     - name: triggerName
       default: 'git-pr-process'

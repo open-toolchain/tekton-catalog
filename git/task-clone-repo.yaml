@@ -33,15 +33,16 @@ spec:
         default: ""
       - name: pr_repository
         description: |
-          the originated repository where the PR come from (in case of a fork)
+          the originated repository where the PullRequest come from (in case of a fork)
           default to '' means same repository (not a fork) or it can be the same as repository
         default: ""
       - name: pr_branch
         description: |
-          origin reference to merge the code with in order to offer a merge
-          Like https://docs.cloudbees.com/docs/admin-resources/latest/plugins/github-branch-source#_controlling_what_is_built
+          the branch that is the source of this PullRequest
         default: ""
       - name: pr_revision
+        description:
+          the commit/revision in the source branch of the PullRequest that is to be built
         default: ""
       - name: directoryName
         description: |
