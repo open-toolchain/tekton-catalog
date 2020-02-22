@@ -72,8 +72,6 @@ spec:
       env:
         - name: REPOSITORY
           value: $(inputs.params.repository)
-        - name: JSON_FILE_GIT_CREDENTIALS
-          value: $(inputs.params.gitCredentialsJsonFile)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -140,17 +138,6 @@ spec:
           echo "GIT_REPOSITORY=$REPOSITORY" > /steps/next-step-env.properties
           echo "GIT_AUTH_USER=$GIT_AUTH_USER" >> /steps/next-step-env.properties
           echo "GIT_TOKEN=$GIT_TOKEN" >> /steps/next-step-env.properties
-
-          if [ "$JSON_FILE_GIT_CREDENTIALS" ]; then
-            # Ensure directory is there
-            mkdir -p /artifacts/$(dirname "$JSON_FILE_GIT_CREDENTIALS")
-            # Create a JSON file as output of this step to store the git credentials            
-            echo "{}" | \
-            jq --arg git_repo "$REPOSITORY" \
-               --arg git_auth_user "$GIT_AUTH_USER" \
-               --arg git_token "$GIT_TOKEN" \
-               '{"GIT_REPOSITORY":$git_repo, "GIT_AUTH_USER":$git_auth_user, "GIT_TOKEN":$git_token}' > "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
-          fi
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
@@ -177,6 +164,8 @@ spec:
           value: $(inputs.params.directoryName)
         - name: PROPERTIES_FILE
           value: $(inputs.params.propertiesFile)
+        - name: JSON_FILE_GIT_CREDENTIALS
+          value: $(inputs.params.gitCredentialsJsonFile)
       command: ["/bin/sh", "-c"]
       args:
         - |
@@ -287,6 +276,16 @@ spec:
             echo "GIT_COMMIT=$GIT_COMMIT" >> /artifacts/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
             cat /artifacts/$PROPERTIES_FILE
+          fi
+          if [ "$JSON_FILE_GIT_CREDENTIALS" ]; then
+            # Ensure directory is there
+            mkdir -p /artifacts/$(dirname "$JSON_FILE_GIT_CREDENTIALS")
+            # Create a JSON file as output of this step to store the git credentials for future use            
+            echo "{" > "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_REPOSITORY\":\"${REPOSITORY}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_AUTH_USER\":\"${GIT_AUTH_USER}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_TOKEN\":\"${GIT_TOKEN}\"" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "}" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
           fi
       volumeMounts:
         - mountPath: /artifacts
