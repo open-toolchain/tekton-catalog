@@ -1,8 +1,8 @@
 # Git integration clone task helper
 
-This Task fetches the credentials needed to perform a git operation on a repository specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone (and/or the appropriate checkout if pull request parameters are given) the repository.
+This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository.
 
-Note: The access token can be provided specifically by setting the optional parameter `gitAccessToken`
+Note: Specific access token can be provided specifically by providing a value for the optional parameter `gitAccessToken`.
 
 ## Install the Task
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
