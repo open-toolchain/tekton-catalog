@@ -51,8 +51,13 @@ spec:
           It will be to the "humanish" part of the repository if this param is set to blank
         default: "."
       - name: propertiesFile
-        description: file containing properties out of clone task
+        description: file containing properties out of clone task (can be a filepath name relative to the task-pvc volume)
         default: build.properties
+      - name: gitCredentialsJsonFile
+        description: |
+          JSON file storing git credentials found out of the clone task (can be a file path relative to task-pvc volume).
+          Default to '' meaning no output of this information
+        default: ''
   stepTemplate:
     env:
       - name: API_KEY
@@ -67,6 +72,8 @@ spec:
       env:
         - name: REPOSITORY
           value: $(inputs.params.repository)
+        - name: JSON_FILE_GIT_CREDENTIALS
+          value: $(inputs.params.gitCredentialsJsonFile)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -133,6 +140,17 @@ spec:
           echo "GIT_REPOSITORY=$REPOSITORY" > /steps/next-step-env.properties
           echo "GIT_AUTH_USER=$GIT_AUTH_USER" >> /steps/next-step-env.properties
           echo "GIT_TOKEN=$GIT_TOKEN" >> /steps/next-step-env.properties
+
+          if [ "$JSON_FILE_GIT_CREDENTIALS" ]; then
+            # Ensure directory is there
+            mkdir -p /artifacts/$(dirname "$JSON_FILE_GIT_CREDENTIALS")
+            # Create a JSON file as output of this step to store the git credentials            
+            echo "{}" | \
+            jq --arg git_repo "$REPOSITORY" \
+               --arg git_auth_user "$GIT_AUTH_USER" \
+               --arg git_token "$GIT_TOKEN" \
+               '{"GIT_REPOSITORY":$git_repo, "GIT_AUTH_USER":$git_auth_user, "GIT_TOKEN":$git_token}' > "$JSON_FILE_GIT_CREDENTIALS"
+          fi
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
@@ -185,13 +203,13 @@ spec:
               # No branch provided
               git clone -q -n $GIT_URL $DIRECTORY_NAME
             elif git ls-remote --heads --exit-code $GIT_URL $BRANCH > /dev/null 2>&1; then
-              git clone -q -b $BRANCH $GIT_URL $DIRECTORY_NAME
+              git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME
             else
               echo "branch $BRANCH does not exists in $REPOSITORY"
               git clone -q -n $GIT_URL $DIRECTORY_NAME
             fi
           else
-            git clone -q -b $BRANCH $GIT_URL $DIRECTORY_NAME
+            git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME
           fi
           current_dir=$(pwd)
           if [ -z "$DIRECTORY_NAME" ]; then
@@ -250,7 +268,7 @@ spec:
               # create a specific branch to hold the PR state
               git checkout -q -b cd-tekton-pipeline-temp-branch-for-pr
               # Step 2
-              git checkout -q ${BRANCH}
+              git checkout -q "${BRANCH}"
               if git merge cd-tekton-pipeline-temp-branch-for-pr; then
                 echo "git merge of $PR_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to $REPOSITORY (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
               else
@@ -262,11 +280,13 @@ spec:
           fi
           cd $current_dir
           if [ "$PROPERTIES_FILE" ]; then
-            echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
-            echo "GIT_BRANCH=$BRANCH" >> $PROPERTIES_FILE
-            echo "GIT_COMMIT=$GIT_COMMIT" >> $PROPERTIES_FILE
+            # Ensure directory is there
+            mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
+            echo "GIT_URL=$REPOSITORY" > /artifacts/$PROPERTIES_FILE
+            echo "GIT_BRANCH=$BRANCH" >> /artifacts/$PROPERTIES_FILE
+            echo "GIT_COMMIT=$GIT_COMMIT" >> /artifacts/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat $PROPERTIES_FILE
+            cat /artifacts/$PROPERTIES_FILE
           fi
       volumeMounts:
         - mountPath: /artifacts
