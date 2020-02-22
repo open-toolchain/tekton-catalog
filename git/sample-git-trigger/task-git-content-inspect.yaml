@@ -11,6 +11,10 @@ spec:
         description: the git repo url
       - name: directoryName
         default: '.'
+      - name: propertiesFile
+        default: build.properties
+      - name: gitCredentialsJsonFile
+        default: ''
   steps:
     - name: inspect-git-content
       image: alpine/git
@@ -45,6 +49,13 @@ spec:
           echo "Executing 'cat README.md'"
           cat README.md
           echo ""
+          echo "Executing 'cat $(inputs.params.propertiesFile)'"
+          cat $(inputs.params.propertiesFile)
+          echo ""
+          if [ "$(inputs.params.gitCredentialsJsonFile)" ]; then
+            echo "Executing 'cat $(inputs.params.gitCredentialsJsonFile)'"
+            cat $(inputs.params.gitCredentialsJsonFile)
+          fi
       volumeMounts:
         - mountPath: /artifacts
           name: task-volume      
