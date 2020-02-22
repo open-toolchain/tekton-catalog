@@ -17,7 +17,7 @@ spec:
         default: ''
   steps:
     - name: inspect-git-content
-      image: alpine/git
+      image: ibmcom/pipeline-base-image
       env:
         - name: REPOSITORY
           value: $(inputs.params.repository)
@@ -38,9 +38,7 @@ spec:
           echo "Executing 'git show-branch --all'"
           git show-branch --all
           echo ""
-          echo "##############"
           # show the directory content as a tree
-          apk update && apk add tree
           echo "##############"
           echo "Executing 'tree'"
           tree
@@ -56,8 +54,8 @@ spec:
           echo ""
           if [ "$(inputs.params.gitCredentialsJsonFile)" ]; then
             echo "##############"
-            echo "Executing 'cat /artifacts/$(inputs.params.gitCredentialsJsonFile)'"
-            cat /artifacts/$(inputs.params.gitCredentialsJsonFile)
+            echo "Executing 'jq /artifacts/$(inputs.params.gitCredentialsJsonFile)'"
+            cat /artifacts/$(inputs.params.gitCredentialsJsonFile) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
           fi
       volumeMounts:
         - mountPath: /artifacts
