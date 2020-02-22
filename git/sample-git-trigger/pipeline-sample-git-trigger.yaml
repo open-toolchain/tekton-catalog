@@ -50,6 +50,10 @@ spec:
           value: $(params.pr_revision)
         - name: gitAccessToken
           value: $(params.gitAccessToken)
+        - name: propertiesFile
+          value: $(params.propertiesFile)
+        - name: gitCredentialsJsonFile
+          value: $(params.gitCredentialsJsonFile)
     - name: pipeline-git-event-content-inspect
       runAfter: [pipeline-git-event-clone-task]
       taskRef:
@@ -59,3 +63,7 @@ spec:
           value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
+        - name: propertiesFile
+          value: $(params.propertiesFile)
+        - name: gitCredentialsJsonFile
+          value: $(params.gitCredentialsJsonFile)
