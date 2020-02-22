@@ -286,6 +286,7 @@ spec:
             echo "\"GIT_AUTH_USER\":\"${GIT_AUTH_USER}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
             echo "\"GIT_TOKEN\":\"${GIT_TOKEN}\"" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
             echo "}" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            cat "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
           fi
       volumeMounts:
         - mountPath: /artifacts
