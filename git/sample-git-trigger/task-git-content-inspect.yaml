@@ -49,10 +49,12 @@ spec:
           echo "Executing 'cat README.md'"
           cat README.md
           echo ""
+          echo "##############"
           echo "Executing 'cat $(inputs.params.propertiesFile)'"
           cat $(inputs.params.propertiesFile)
           echo ""
           if [ "$(inputs.params.gitCredentialsJsonFile)" ]; then
+            echo "##############"
             echo "Executing 'cat $(inputs.params.gitCredentialsJsonFile)'"
             cat $(inputs.params.gitCredentialsJsonFile)
           fi

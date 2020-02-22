@@ -25,6 +25,10 @@ spec:
     - name: gitAccessToken
       description: the token to access the git repository for the clone operations
       default: ''
+    - name: propertiesFile
+      default: '/output/thebuild.properties'
+    - name: gitCredentialsJsonFile
+      default: '/output/secrets/thecredentials.json'
   tasks:
     - name: pipeline-git-event-clone-task
       taskRef:
