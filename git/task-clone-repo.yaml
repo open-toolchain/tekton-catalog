@@ -149,7 +149,7 @@ spec:
             jq --arg git_repo "$REPOSITORY" \
                --arg git_auth_user "$GIT_AUTH_USER" \
                --arg git_token "$GIT_TOKEN" \
-               '{"GIT_REPOSITORY":$git_repo, "GIT_AUTH_USER":$git_auth_user, "GIT_TOKEN":$git_token}' > "$JSON_FILE_GIT_CREDENTIALS"
+               '{"GIT_REPOSITORY":$git_repo, "GIT_AUTH_USER":$git_auth_user, "GIT_TOKEN":$git_token}' > "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
           fi
       volumeMounts:
         - mountPath: /cd-config
