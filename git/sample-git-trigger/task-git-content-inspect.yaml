@@ -30,9 +30,10 @@ spec:
           cd /artifacts
           if [ -z "$DIRECTORY_NAME" ]; then
             # Find the "humanish" part of the git source repository that corresponds to the clone directory
-            # GIT_REPOSITORY contains the repository url with .git suffix
-            DIRECTORY_NAME=$(basename "${GIT_REPOSITORY##*/}" .git)
+            # REPOSITORY contains the repository url and may end with .git suffix
+            DIRECTORY_NAME=$(basename "${REPOSITORY##*/}" .git)
           fi
+          cd "$DIRECTORY_NAME"
           # show the git content
           echo "Executing 'git show-branch --all'"
           git show-branch --all
@@ -50,13 +51,13 @@ spec:
           cat README.md
           echo ""
           echo "##############"
-          echo "Executing 'cat $(inputs.params.propertiesFile)'"
-          cat $(inputs.params.propertiesFile)
+          echo "Executing 'cat /artifacts/$(inputs.params.propertiesFile)'"
+          cat /artifacts/$(inputs.params.propertiesFile)
           echo ""
           if [ "$(inputs.params.gitCredentialsJsonFile)" ]; then
             echo "##############"
-            echo "Executing 'cat $(inputs.params.gitCredentialsJsonFile)'"
-            cat $(inputs.params.gitCredentialsJsonFile)
+            echo "Executing 'cat /artifacts/$(inputs.params.gitCredentialsJsonFile)'"
+            cat /artifacts/$(inputs.params.gitCredentialsJsonFile)
           fi
       volumeMounts:
         - mountPath: /artifacts

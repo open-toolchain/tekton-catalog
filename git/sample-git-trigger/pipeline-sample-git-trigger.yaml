@@ -50,6 +50,8 @@ spec:
           value: $(params.pr_revision)
         - name: gitAccessToken
           value: $(params.gitAccessToken)
+        - name: directoryName
+          value: ''
         - name: propertiesFile
           value: $(params.propertiesFile)
         - name: gitCredentialsJsonFile
@@ -63,6 +65,8 @@ spec:
           value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
+        - name: directoryName
+          value: ''
         - name: propertiesFile
           value: $(params.propertiesFile)
         - name: gitCredentialsJsonFile
