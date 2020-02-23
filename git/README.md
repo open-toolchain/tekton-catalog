@@ -30,7 +30,7 @@ Note: Specific access token can be provided specifically by providing a value fo
 * **repository**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default value to `master`)
 * **revision**: (optional) the git revision/commit to update the git HEAD to (default to empty meaning only use the branch information)
-* **pr_repository**: the originated repository where the PullRequest come from (in case of a fork). Default to '' means same repository (not a fork) or it can be the same as repository.
+* **pr_repository**: the originated repository where the PullRequest come from (in case of a fork). Default to '' means same repository (not a fork) or it can be the same as repository to clone.
 * **pr_branch**: the branch that is the source of this PullRequest. Default to ''.
 * **pr_revision**: the commit/revision in the source branch of the PullRequest that is to be built. Defaults to ''.
 * **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank

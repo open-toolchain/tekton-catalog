@@ -34,7 +34,7 @@ spec:
       - name: pr_repository
         description: |
           the originating repository where the PullRequest comes from (in case of a fork)
-          default to '' means same repository (not a fork) or it can be the same as the source repository
+          default to '' means same repository (not a fork) or it can be the same as the repository to clone
         default: ""
       - name: pr_branch
         description: |
