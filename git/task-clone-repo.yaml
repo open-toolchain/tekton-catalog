@@ -33,8 +33,8 @@ spec:
         default: ""
       - name: pr_repository
         description: |
-          the originated repository where the PullRequest come from (in case of a fork)
-          default to '' means same repository (not a fork) or it can be the same as repository
+          the originating repository where the PullRequest comes from (in case of a fork)
+          default to '' means same repository (not a fork) or it can be the same as the source repository
         default: ""
       - name: pr_branch
         description: |
@@ -48,14 +48,14 @@ spec:
         description: |
           name of the new directory to clone into.
           Default to . in order to clone at the root of the volume mounted for the pipeline run
-          It will be to the "humanish" part of the repository if this param is set to blank
+          It will be set to the "humanish" part of the repository if this param is set to blank
         default: "."
       - name: propertiesFile
         description: file containing properties out of clone task (can be a filepath name relative to the task-pvc volume)
         default: build.properties
       - name: gitCredentialsJsonFile
         description: |
-          JSON file storing git credentials found out of the clone task (can be a file path relative to task-pvc volume).
+          JSON file containing the git credentials as found out of the clone task (can be a file path relative to task-pvc volume).
           Default to '' meaning no output of this information
         default: ''
   stepTemplate:
@@ -214,7 +214,7 @@ spec:
           GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
 
           # If a Pull Request/Merge Request branch is specified, then
-          # Execute git commands to have the cloned git repository directory content 
+          # execute the git commands to have the cloned git repository directory content 
           # to be the result of the merge for pull request/merge request
           if [ "${PR_BRANCH}" ]; then
             echo "Performing Pull Request Checkout & Merge"
