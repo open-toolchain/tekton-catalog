@@ -200,6 +200,7 @@ spec:
           else
             if [ -z "$BRANCH" ]; then
               # No branch provided
+              echo "No branch or revision provided."
               git clone -q -n $GIT_URL $DIRECTORY_NAME
             else 
               git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME
