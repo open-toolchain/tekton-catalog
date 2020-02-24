@@ -13,6 +13,11 @@ spec:
       - name: continuous-delivery-context-secret
         description: name of the configmap containing the continuous delivery pipeline context secrets
         default: cd-secret
+      - name: gitAccessToken
+        description: |
+          (optional) token to access the git repository. If this token is provided, there will not be an attempt
+          to use the git token obtained from the authorization flow when adding the git integration in the toolchain 
+        default: ''
       - name: resourceGroup
         description: target resource group (name or id) for the ibmcloud login operation
         default: ''
@@ -26,15 +31,33 @@ spec:
           the git revision/commit to update the git HEAD to.
           Default is to mean only use the branch
         default: ""
+      - name: pr_repository
+        description: |
+          the originating repository where the PullRequest comes from (in case of a fork)
+          default to '' means same repository (not a fork) or it can be the same as the repository to clone
+        default: ""
+      - name: pr_branch
+        description: |
+          the branch that is the source of this PullRequest
+        default: ""
+      - name: pr_revision
+        description:
+          the commit/revision in the source branch of the PullRequest that is to be built
+        default: ""
       - name: directoryName
         description: |
           name of the new directory to clone into.
           Default to . in order to clone at the root of the volume mounted for the pipeline run
-          It will be to the "humanish" part of the repository if this param is set to blank
+          It will be set to the "humanish" part of the repository if this param is set to blank
         default: "."
       - name: propertiesFile
-        description: file containing properties out of clone task
+        description: file containing properties out of clone task (can be a filepath name relative to the task-pvc volume)
         default: build.properties
+      - name: gitCredentialsJsonFile
+        description: |
+          JSON file containing the git credentials as found out of the clone task (can be a file path relative to task-pvc volume).
+          Default to '' meaning no output of this information
+        default: ''
   stepTemplate:
     env:
       - name: API_KEY
@@ -42,6 +65,7 @@ spec:
           secretKeyRef:
             name: $(inputs.params.continuous-delivery-context-secret)
             key: API_KEY
+            optional: true
   steps:
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image
@@ -60,13 +84,6 @@ spec:
           # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
           export HOME="/root"
           ##########################################################################
-          echo "Fetching token for $REPOSITORY"
-          ibmcloud config --check-version false
-          ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
-          if [ "$(inputs.params.resourceGroup)" ]; then
-            ibmcloud target -g $(inputs.params.resourceGroup)
-          fi
-          TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
           if [[ "$REPOSITORY" != *.git ]]; then
             echo "Adding .git suffix to Repository URL"
             REPOSITORY="${REPOSITORY}.git"
@@ -77,19 +94,6 @@ spec:
             exit 1
           fi
           GIT_SERVICE_TYPE=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .service_id' /cd-config/toolchain.json)
-          GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' /cd-config/toolchain.json)
-
-          echo "Doing cURL to ${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
-
-          curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
-          if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
-            GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
-            echo "Access token found for the Git integration (repository url: $REPOSITORY)"
-          else
-            echo "No access token found for the Git integration (repository url: $REPOSITORY)"
-            cat /steps/github_token_result.json
-            exit 1
-          fi
 
           if [ "$GIT_SERVICE_TYPE" == "github" ]; then
             GIT_AUTH_USER="x-oauth-basic"
@@ -104,6 +108,33 @@ spec:
           else
             GIT_AUTH_USER="x-token-auth"
           fi;
+
+          GIT_TOKEN="$(inputs.params.gitAccessToken)"
+          if [ -z "$GIT_TOKEN" ]; then
+            echo "Fetching token for $REPOSITORY"
+            ibmcloud config --check-version false
+            ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
+            if [ "$(inputs.params.resourceGroup)" ]; then
+              ibmcloud target -g $(inputs.params.resourceGroup)
+            fi
+            TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
+            GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' /cd-config/toolchain.json)
+
+            echo "Doing cURL to ${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+
+            curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+            if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
+              GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
+              echo "Access token found for the Git integration (repository url: $REPOSITORY)"
+            else
+              echo "No access token found for the Git integration (repository url: $REPOSITORY)"
+              cat /steps/github_token_result.json
+              exit 1
+            fi
+          else
+            echo "Using git Access Token provided"
+          fi
+
           echo "GIT_REPOSITORY=$REPOSITORY" > /steps/next-step-env.properties
           echo "GIT_AUTH_USER=$GIT_AUTH_USER" >> /steps/next-step-env.properties
           echo "GIT_TOKEN=$GIT_TOKEN" >> /steps/next-step-env.properties
@@ -123,22 +154,36 @@ spec:
           value: $(inputs.params.branch)
         - name: REVISION
           value: $(inputs.params.revision)
+        - name: PR_REPOSITORY
+          value: $(inputs.params.pr_repository)
+        - name: PR_BRANCH
+          value: $(inputs.params.pr_branch)          
+        - name: PR_REVISION
+          value: $(inputs.params.pr_revision)          
         - name: DIRECTORY_NAME
           value: $(inputs.params.directoryName)
         - name: PROPERTIES_FILE
           value: $(inputs.params.propertiesFile)
+        - name: JSON_FILE_GIT_CREDENTIALS
+          value: $(inputs.params.gitCredentialsJsonFile)
       command: ["/bin/sh", "-c"]
       args:
         - |
           ############################
           # Workaround until a null/empty param can be flowing to Task
           # REVISION if not set is define with a single blank value
+          BRANCH=$(echo $BRANCH)
           REVISION=$(echo $REVISION)
+          PR_REPOSITORY=$(echo $PR_REPOSITORY)
+          PR_BRANCH=$(echo $PR_BRANCH)
+          PR_REVISION=$(echo $PR_REVISION)
           ############################
           source /steps/next-step-env.properties
+
           echo "Cloning $REPOSITORY"
           # Add the proper creds to the git repository
           GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
+
           cd /artifacts
           if [ "$REVISION" ]; then
             # check if the branch exists (that may not be the case in case of a pipeline-run re-run)
@@ -147,13 +192,13 @@ spec:
               # No branch provided
               git clone -q -n $GIT_URL $DIRECTORY_NAME
             elif git ls-remote --heads --exit-code $GIT_URL $BRANCH > /dev/null 2>&1; then
-              git clone -q -b $BRANCH $GIT_URL $DIRECTORY_NAME
+              git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME
             else
               echo "branch $BRANCH does not exists in $REPOSITORY"
               git clone -q -n $GIT_URL $DIRECTORY_NAME
             fi
           else
-            git clone -q -b $BRANCH $GIT_URL $DIRECTORY_NAME
+            git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME
           fi
           current_dir=$(pwd)
           if [ -z "$DIRECTORY_NAME" ]; then
@@ -167,14 +212,80 @@ spec:
             git checkout -q $REVISION
           fi
           GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
+
+          # If a Pull Request/Merge Request branch is specified, then
+          # execute the git commands to have the cloned git repository directory content 
+          # to be the result of the merge for pull request/merge request
+          if [ "${PR_BRANCH}" ]; then
+            echo "Performing Pull Request Checkout & Merge"
+            git config --global user.email "cdtektonpipeline@ibm.com"
+            git config --global user.name "CD Tekton Pipeline"
+            # Clear GIT_COMMIT as the outcome if this task is a non yet known commit
+            GIT_COMMIT=""
+            if [ -z "$PR_REPOSITORY" ] || [ "$PR_REPOSITORY" == "$REPOSITORY" ]; then
+              # Assuming the PR is not coming from a fork as $PR_REPOSITORY is empty or equals to $REPOSITORY
+              # Make the manual steps that a merge request action is doing
+              git fetch -q origin "${PR_BRANCH}"
+              if [ "${PR_REVISION}" ]; then
+                if git merge "${PR_REVISION}"; then
+                  echo "git merge ${PR_REVISION} done"
+                else
+                  exit 1
+                fi
+              else 
+                if git merge "origin/${PR_BRANCH}"; then
+                  echo "git merge origin/${PR_BRANCH} done"
+                else
+                  exit 1
+                fi
+              fi
+              echo "git merge of $GIT_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
+            else
+              # Assuming the PR is from a fork
+              # Expect that the same creds will be sufficient for the git pull from the forked repository
+              GIT_PR_REPO_URL=$(echo "$PR_REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
+              # Make the manual steps that a merge request action is doing
+              # Step 1
+              if git pull "${GIT_PR_REPO_URL}" "${PR_BRANCH}"; then
+                echo "git pull ${PR_REPOSITORY} ${PR_BRANCH} done"
+              else
+                exit 1
+              fi
+              if [ "$PR_REVISION" ]; then
+                git checkout -q "$PR_REVISION"
+              fi
+              # create a specific branch to hold the PR state
+              git checkout -q -b cd-tekton-pipeline-temp-branch-for-pr
+              # Step 2
+              git checkout -q "${BRANCH}"
+              if git merge cd-tekton-pipeline-temp-branch-for-pr; then
+                echo "git merge of $PR_REPOSITORY (pr_branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to $REPOSITORY (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
+              else
+                exit 1
+              fi
+            fi
+          else
+            echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done in directory $DIRECTORY_NAME"
+          fi
           cd $current_dir
-          echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
           if [ "$PROPERTIES_FILE" ]; then
-            echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
-            echo "GIT_BRANCH=$BRANCH" >> $PROPERTIES_FILE
-            echo "GIT_COMMIT=$GIT_COMMIT" >> $PROPERTIES_FILE
+            # Ensure directory is there
+            mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
+            echo "GIT_URL=$REPOSITORY" > /artifacts/$PROPERTIES_FILE
+            echo "GIT_BRANCH=$BRANCH" >> /artifacts/$PROPERTIES_FILE
+            echo "GIT_COMMIT=$GIT_COMMIT" >> /artifacts/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat $PROPERTIES_FILE
+            cat /artifacts/$PROPERTIES_FILE
+          fi
+          if [ "$JSON_FILE_GIT_CREDENTIALS" ]; then
+            # Ensure directory is there
+            mkdir -p /artifacts/$(dirname "$JSON_FILE_GIT_CREDENTIALS")
+            # Create a JSON file as output of this step to store the git credentials for future use            
+            echo "{" > "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_REPOSITORY\":\"${REPOSITORY}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_AUTH_USER\":\"${GIT_AUTH_USER}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_TOKEN\":\"${GIT_TOKEN}\"" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "}" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
           fi
       volumeMounts:
         - mountPath: /artifacts

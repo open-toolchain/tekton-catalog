@@ -1,0 +1,73 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline-git-event-processing
+spec:
+  params:
+    - name: pipeline-pvc
+      description: the pipeline pvc name
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: revision
+      description: the commit id/sha for the clone action
+      default: ''
+    - name: pr_repository
+      description: The source git repo for the PullRequest
+      default: ''
+    - name: pr_branch
+      description: The source branch for the PullRequest
+      default: ''
+    - name: pr_revision
+      description: the commit id/sha for the PullRequest    
+      default: ''
+    - name: gitAccessToken
+      description: the token to access the git repository for the clone operations
+      default: ''
+    - name: propertiesFile
+      default: 'output/thebuild.properties'
+    - name: gitCredentialsJsonFile
+      default: 'output/secrets/thecredentials.json'
+  tasks:
+    - name: pipeline-git-event-clone-task
+      taskRef:
+        name: clone-repo-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: pr_repository
+          value: $(params.pr_repository)
+        - name: pr_branch
+          value: $(params.pr_branch)
+        - name: pr_revision
+          value: $(params.pr_revision)
+        - name: gitAccessToken
+          value: $(params.gitAccessToken)
+        - name: directoryName
+          value: '.'
+        - name: propertiesFile
+          value: $(params.propertiesFile)
+        - name: gitCredentialsJsonFile
+          value: $(params.gitCredentialsJsonFile)
+    - name: pipeline-git-event-content-inspect
+      runAfter: [pipeline-git-event-clone-task]
+      taskRef:
+        name: inspect-content-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: directoryName
+          value: '.'
+        - name: propertiesFile
+          value: $(params.propertiesFile)
+        - name: gitCredentialsJsonFile
+          value: $(params.gitCredentialsJsonFile)
