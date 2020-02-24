@@ -42,21 +42,21 @@ This sample illustrates the PullRequest support provided by the `clone-repo-task
 7) Create Git Triggers for the different Git repositories that you have integrated to your Toolchain (corresponding to the repositories integrated to your Toolchain).
    
    Github:
-    - `event-listener-pr-processing-github-commit-event` for Github Commit pushed event
+    - `eventlistener-git-trigger-github-commit` for Github Commit pushed event
 
       ![Tekton pipeline sample-git-trigger Github Commit](./images/sample-git-trigger-github-commit-trigger-configuration.png)
 
-    - `event-listener-pr-processing-github-pr-event` for Github PullRequest opened/updated event
+    - `eventlistener-git-trigger-github-pr` for Github PullRequest opened/updated event
 
       ![Tekton pipeline sample-git-trigger Github PullRequest](./images/sample-git-trigger-github-pullrequest-trigger-configuration.png)
 
    GRIT/Gitlab:
-    - `event-listener-pr-processing-grit-commit-event` for GRIT/Gitlab Commit pushed event
-    - `event-listener-pr-processing-grit-pr-event` for GRIT/Gitlab MergeRequest opened/updated event
+    - `eventlistener-git-trigger-grit-commit` for GRIT/Gitlab Commit pushed event
+    - `eventlistener-git-trigger-grit-mr` for GRIT/Gitlab MergeRequest opened/updated event
 
    BitBucket:
-    - `event-listener-pr-processing-bitbucket-commit-event` for BitBucket Commit pushed event
-    - `event-listener-pr-processing-bitbucket-pr-event` for BitBucket PullRequest opened/updated event
+    - `eventlistener-git-trigger-bitbucket-commit` for BitBucket Commit pushed event
+    - `eventlistener-git-trigger-bitbucket-pr` for BitBucket PullRequest opened/updated event
 
 8) **Trigger on commit**: update the code in one of the repository that has the above triggers defined, using the tool and environment of your choice:
   
