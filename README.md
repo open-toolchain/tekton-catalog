@@ -4,7 +4,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 ## Git related tasks
 
-- **clone-repo-task**: This Task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo. [Documentation is here](./git/README.md)
+- **clone-repo-task**: This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository. [Documentation is here](./git/README.md)
 
 ## IBM Cloud Container Registry related tasks
 
