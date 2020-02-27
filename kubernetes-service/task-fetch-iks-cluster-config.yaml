@@ -28,6 +28,9 @@ spec:
       - name: clusterPipelineResourcesDirectoryFallback
         description: directory in the task-pvc that will be used as a fallback mechanism to store the kubeconfig file
         default: .tekton-cluster-pipeline-resources
+      - name: clusterAndWorkerNodesJsonExport
+        description: directory in the task-pvc volume that will be used to store the cluster and worker nodes export json files        
+        default: ''
     resources:
       # Will be set as optional when tekton version support it
       - name: cluster
@@ -108,6 +111,11 @@ spec:
             cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) /artifacts/$(inputs.params.clusterPipelineResourcesDirectoryFallback)/$(inputs.resources.cluster.name)
             cp $KUBECONFIG_FILE /artifacts/$(inputs.params.clusterPipelineResourcesDirectoryFallback)/$(inputs.resources.cluster.name)/kubeconfig
             echo "Kubeconfig file(s) copied to /artifacts/$(inputs.params.clusterPipelineResourcesDirectoryFallback)/$(inputs.resources.cluster.name)"
+          fi
+          if [ "$(inputs.params.clusterAndWorkerNodesJsonExport)" ]; then
+            mkdir -p /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)
+            ibmcloud ks cluster get $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name).json
+            ibmcloud ks workers --cluster $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name)-workers.json
           fi
       volumeMounts:
         - mountPath: /artifacts
