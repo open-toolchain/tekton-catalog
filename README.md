@@ -2,6 +2,8 @@
 
 Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 
+**WARNING: THE TASKS IN THIS BRANCH/TAG ARE COMPLIANT (DEVELOPPED AND TESTED) WITH TEKTON PIPELINE 0.7.0 AND CD DELIVERY PIPELINE PRIVATE WORKERS 0.4.X ONLY. THERE IS WORK IN PROGRESS TO SUPPORT TEKTON PIPELINE 0.10.1 ALONG WITH CD DELIVERY PIPELINE PRIVATE WORKER 0.5.X**
+
 ## Git related tasks
 
 - **clone-repo-task**: This Task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo. [Documentation is here](./git/README.md)
