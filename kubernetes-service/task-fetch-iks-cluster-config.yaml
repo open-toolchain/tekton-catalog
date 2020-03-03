@@ -73,7 +73,7 @@ spec:
           ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TARGET_REGION --apikey $API_KEY
           # Look for the cluster
           if ibmcloud ks cluster get $(inputs.resources.cluster.name); then
-            KUBECONFIG_FILE=$(ibmcloud ks cluster config $(inputs.resources.cluster.name) --export -s | awk -F= '{print $2}')
+            KUBECONFIG_FILE=$(ibmcloud ks cluster config --cluster $(inputs.resources.cluster.name) --export -s | awk -F= '{print $2}')
           else
             echo "Cluster $(inputs.resources.cluster.name) not found. Accessible clusters are:"
             ibmcloud ks clusters
