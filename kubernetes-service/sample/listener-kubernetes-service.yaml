@@ -60,7 +60,7 @@ spec:
         resources:
           - name: target-cluster
             resourceRef:
-              name: the-cluster
+              name: $(params.clusterName)
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc
