@@ -26,6 +26,10 @@ spec:
       spec:
         type: cluster
         params:
+          # name is required in tekton v0.7 but not in v0.10.1
+          - name: name
+            value: $(params.clusterName)
+          #
           - name: url
             value: https://fake.value
           - name: username
