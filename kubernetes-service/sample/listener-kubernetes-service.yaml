@@ -8,6 +8,9 @@ spec:
       description: the ibmcloud api key
     - name: clusterName
       description: the name of the cluster to target
+    - name: resourceGroup
+      description: Resource group for the ibmcloud operation
+      default: "default"
   resourcetemplates:
     - apiVersion: v1
       kind: Secret
@@ -19,20 +22,34 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
-        name: the-cluster
+        name: $(params.clusterName)
       spec:
         type: cluster
         params:
+          # name is required in tekton v0.7 but not in v0.10.1
           - name: name
             value: $(params.clusterName)
-          - name: username
-            value: norealvalueneeded
+          #
           - name: url
-            value: https://no.real.value.needed
+            value: https://fake.value
+          - name: username
+            value: fakevalue
           - name: token
-            value: norealvalueneeded
+            value: fakevalue
           - name: cadata
-            value: norealvalueneeded
+            value: fakevalue
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
@@ -43,10 +60,12 @@ spec:
         resources:
           - name: target-cluster
             resourceRef:
-              name: the-cluster
+              name: $(params.clusterName)
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc
+          - name: resourceGroup
+            value: $(params.resourceGroup)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

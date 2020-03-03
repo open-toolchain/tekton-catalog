@@ -16,7 +16,7 @@ spec:
       - name: gitAccessToken
         description: |
           (optional) token to access the git repository. If this token is provided, there will not be an attempt
-          to use the git token obtained from the authorization flow when adding the git integration in the toolchain 
+          to use the git token obtained from the authorization flow when adding the git integration in the toolchain
         default: ''
       - name: resourceGroup
         description: target resource group (name or id) for the ibmcloud login operation
@@ -157,9 +157,9 @@ spec:
         - name: PR_REPOSITORY
           value: $(inputs.params.pr_repository)
         - name: PR_BRANCH
-          value: $(inputs.params.pr_branch)          
+          value: $(inputs.params.pr_branch)
         - name: PR_REVISION
-          value: $(inputs.params.pr_revision)          
+          value: $(inputs.params.pr_revision)
         - name: DIRECTORY_NAME
           value: $(inputs.params.directoryName)
         - name: PROPERTIES_FILE
@@ -202,7 +202,7 @@ spec:
               # No branch provided
               echo "No branch or revision provided."
               git clone -q -n $GIT_URL $DIRECTORY_NAME
-            else 
+            else
               git clone -q -b "$BRANCH" $GIT_URL $DIRECTORY_NAME
             fi
           fi
@@ -220,7 +220,7 @@ spec:
           GIT_COMMIT=$(git show-ref --head | head -n1 | awk '{print $1}')
 
           # If a Pull Request/Merge Request branch is specified, then
-          # execute the git commands to have the cloned git repository directory content 
+          # execute the git commands to have the cloned git repository directory content
           # to be the result of the merge for pull request/merge request
           if [ "${PR_BRANCH}" ]; then
             echo "Performing Pull Request Checkout & Merge"
@@ -238,7 +238,7 @@ spec:
                 else
                   exit 1
                 fi
-              else 
+              else
                 if git merge "origin/${PR_BRANCH}"; then
                   echo "git merge origin/${PR_BRANCH} done"
                 else
@@ -286,7 +286,7 @@ spec:
           if [ "$JSON_FILE_GIT_CREDENTIALS" ]; then
             # Ensure directory is there
             mkdir -p /artifacts/$(dirname "$JSON_FILE_GIT_CREDENTIALS")
-            # Create a JSON file as output of this step to store the git credentials for future use            
+            # Create a JSON file as output of this step to store the git credentials for future use
             echo "{" > "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
             echo "\"GIT_REPOSITORY\":\"${REPOSITORY}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
             echo "\"GIT_AUTH_USER\":\"${GIT_AUTH_USER}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"

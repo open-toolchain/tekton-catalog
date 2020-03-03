@@ -29,7 +29,7 @@ spec:
         description: directory in the task-pvc that will be used as a fallback mechanism to store the kubeconfig file
         default: .tekton-cluster-pipeline-resources
       - name: clusterAndWorkerNodesJsonExport
-        description: directory in the task-pvc volume that will be used to store the cluster and worker nodes export json files        
+        description: directory in the task-pvc volume that will be used to store the cluster and worker nodes export json files
         default: ''
     resources:
       # Will be set as optional when tekton version support it
@@ -39,7 +39,7 @@ spec:
     resources:
       # Will be set as optional when tekton version support it
       - name: cluster
-        type: cluster    
+        type: cluster
   steps:
     - name: setup
       image: ibmcom/pipeline-base-image
@@ -67,14 +67,17 @@ spec:
           ibmcloud config --check-version false
           if [ "$(inputs.params.clusterRegion)" ]; then
             TARGET_REGION=$(inputs.params.clusterRegion)
-          else 
+          else
             TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
-          fi          
+          fi
           ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TARGET_REGION --apikey $API_KEY
+          if [ "$(inputs.params.resourceGroup)" ]; then
+            ibmcloud target -g $(inputs.params.resourceGroup)
+          fi
           # Look for the cluster
-          if ibmcloud ks cluster get $(inputs.resources.cluster.name); then
-            KUBECONFIG_FILE=$(ibmcloud ks cluster config $(inputs.resources.cluster.name) --export -s | awk -F= '{print $2}')
-          else 
+          if ibmcloud ks cluster get --cluster $(inputs.resources.cluster.name); then
+            KUBECONFIG_FILE=$(ibmcloud ks cluster config --cluster $(inputs.resources.cluster.name) --export -s | awk -F= '{print $2}')
+          else
             echo "Cluster $(inputs.resources.cluster.name) not found. Accessible clusters are:"
             ibmcloud ks clusters
             exit 1
@@ -114,8 +117,8 @@ spec:
           fi
           if [ "$(inputs.params.clusterAndWorkerNodesJsonExport)" ]; then
             mkdir -p /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)
-            ibmcloud ks cluster get $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name).json
-            ibmcloud ks workers --cluster $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name)-workers.json
+            ibmcloud ks cluster get --cluster $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name).json
+            ibmcloud ks worker ls --cluster $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name)-workers.json
           fi
       volumeMounts:
         - mountPath: /artifacts

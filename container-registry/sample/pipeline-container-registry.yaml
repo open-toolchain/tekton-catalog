@@ -42,7 +42,7 @@ spec:
             echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
-      resources:          
+      resources:
         outputs:
           - name: builtImage
             resource: app-image
@@ -58,9 +58,9 @@ spec:
         #   value: '5'
         # - name: sleepTime
         #   value: '3'
-        # - name: failOnScannedIssues          
+        # - name: failOnScannedIssues
         #   value: 'false'
-      resources:          
+      resources:
         inputs:
           - name: image
             resource: app-image

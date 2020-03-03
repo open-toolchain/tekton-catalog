@@ -17,12 +17,12 @@ spec:
       default: ' '
     - name: messageFormat
       description: the format of the message. text(default) or JSON.
-      default: text 
+      default: text
     - name: message
       description: the message to send to Slack
       default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
     - name: messageScript
-      description: | 
+      description: |
           any custom script that will be executed by the task to provide a message.
           Reference: https://api.slack.com/reference/surfaces/formatting
           For instance: echo "Message injected by messageScript. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
@@ -31,6 +31,18 @@ spec:
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
       default: 'false'
   resourcetemplates:
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: post-a-message-to-slack-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
