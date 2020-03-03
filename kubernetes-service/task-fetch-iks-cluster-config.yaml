@@ -72,7 +72,7 @@ spec:
           fi
           ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TARGET_REGION --apikey $API_KEY
           # Look for the cluster
-          if ibmcloud ks cluster get $(inputs.resources.cluster.name); then
+          if ibmcloud ks cluster get --cluster $(inputs.resources.cluster.name); then
             KUBECONFIG_FILE=$(ibmcloud ks cluster config --cluster $(inputs.resources.cluster.name) --export -s | awk -F= '{print $2}')
           else
             echo "Cluster $(inputs.resources.cluster.name) not found. Accessible clusters are:"
@@ -114,8 +114,8 @@ spec:
           fi
           if [ "$(inputs.params.clusterAndWorkerNodesJsonExport)" ]; then
             mkdir -p /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)
-            ibmcloud ks cluster get $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name).json
-            ibmcloud ks workers --cluster $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name)-workers.json
+            ibmcloud ks cluster get --cluster $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name).json
+            ibmcloud ks worker ls --cluster $(inputs.resources.cluster.name) --json > /artifacts/$(inputs.params.clusterAndWorkerNodesJsonExport)/$(inputs.resources.cluster.name)/$(inputs.resources.cluster.name)-workers.json
           fi
       volumeMounts:
         - mountPath: /artifacts
