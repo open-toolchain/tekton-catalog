@@ -20,7 +20,7 @@ spec:
       description: The source branch for the PullRequest
       default: ''
     - name: pr_revision
-      description: the commit id/sha for the PullRequest    
+      description: the commit id/sha for the PullRequest
       default: ''
     - name: gitAccessToken
       description: the token to access the git repository for the clone operations

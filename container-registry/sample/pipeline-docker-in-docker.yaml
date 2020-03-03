@@ -26,12 +26,12 @@ spec:
           value: $(params.branch)
     - name: build-and-push-docker
       runAfter: [clone-repository]
-      taskRef: 
+      taskRef:
         name: execute-in-dind-task
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
-      resources:          
+      resources:
         outputs:
           - name: builtImage
             resource: app-image
@@ -47,9 +47,9 @@ spec:
         #   value: '5'
         # - name: sleepTime
         #   value: '3'
-        # - name: failOnScannedIssues          
+        # - name: failOnScannedIssues
         #   value: 'false'
-      resources:          
+      resources:
         inputs:
           - name: image
             resource: app-image

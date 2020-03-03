@@ -18,7 +18,7 @@ spec:
           value: $(params.pipeline-pvc)
         - name: clusterPipelineResourcesDirectoryFallback
           value: .tekton-clusters
-      resources:          
+      resources:
         inputs:
           - name: cluster
             resource: target-cluster
@@ -43,7 +43,7 @@ spec:
             kubectl cluster-info
             echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
-      resources:          
+      resources:
         inputs:
           - name: cluster
             resource: target-cluster

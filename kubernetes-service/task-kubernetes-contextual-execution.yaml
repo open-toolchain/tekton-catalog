@@ -32,9 +32,9 @@ spec:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
       command: ["/bin/bash", "-c"]
-      args: 
+      args:
         - |
-          # Validate KUBECONFIG 
+          # Validate KUBECONFIG
           if test -f "$KUBECONFIG"; then
             echo "KUBECONFIG=$KUBECONFIG"
           else
@@ -57,4 +57,4 @@ spec:
         name: toolchain
         items:
         - key: toolchain.json
-          path: toolchain.json        
+          path: toolchain.json

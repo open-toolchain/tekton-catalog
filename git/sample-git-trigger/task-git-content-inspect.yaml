@@ -60,7 +60,7 @@ spec:
           fi
       volumeMounts:
         - mountPath: /artifacts
-          name: task-volume      
+          name: task-volume
   volumes:
     - name: task-volume
       persistentVolumeClaim:

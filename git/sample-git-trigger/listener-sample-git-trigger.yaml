@@ -37,6 +37,18 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.apikey)
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: $(params.triggerName)-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
@@ -73,7 +85,7 @@ spec:
     - name: branch
       value: "master"
     - name: triggerName
-      value: manual-trigger      
+      value: manual-trigger
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener

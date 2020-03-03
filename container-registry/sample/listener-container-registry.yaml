@@ -30,6 +30,18 @@ spec:
         params:
           - name: url
             value: $(params.imageUrl)
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:

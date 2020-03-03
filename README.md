@@ -2,7 +2,7 @@
 
 Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 
-**WARNING: THE TASKS IN THIS BRANCH/TAG ARE COMPLIANT (DEVELOPPED AND TESTED) WITH TEKTON PIPELINE 0.7.0 AND CD DELIVERY PIPELINE PRIVATE WORKERS 0.4.X ONLY. THERE IS WORK IN PROGRESS TO SUPPORT TEKTON PIPELINE 0.10.1 ALONG WITH CD DELIVERY PIPELINE PRIVATE WORKER 0.5.X**
+**Note**: These tasks use tekton pre-0.10.1 mode as for PVC declaration in the listeners(s) and are compliant with Tekton Pipeline [0.7.0, 0.10.1]. There is work in progress to replace the PVC mechanism/declaration by workspace usage in the tasks.
 
 ## Git related tasks
 
