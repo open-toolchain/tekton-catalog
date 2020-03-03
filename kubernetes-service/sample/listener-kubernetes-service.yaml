@@ -22,16 +22,14 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
-        name: the-cluster
+        name: $(params.clusterName)
       spec:
         type: cluster
         params:
-          - name: name
-            value: $(params.clusterName)
+          - name: url
+            value: https://fake.value
           - name: username
             value: fakevalue
-          - name: url
-            value: https://no.real.value.needed
           - name: token
             value: fakevalue
           - name: cadata
