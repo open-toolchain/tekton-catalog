@@ -71,6 +71,9 @@ spec:
             TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           fi
           ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TARGET_REGION --apikey $API_KEY
+          if [ "$(inputs.params.resourceGroup)" ]; then
+            ibmcloud target -g $(inputs.params.resourceGroup)
+          fi
           # Look for the cluster
           if ibmcloud ks cluster get --cluster $(inputs.resources.cluster.name); then
             KUBECONFIG_FILE=$(ibmcloud ks cluster config --cluster $(inputs.resources.cluster.name) --export -s | awk -F= '{print $2}')

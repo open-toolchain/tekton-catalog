@@ -8,6 +8,9 @@ spec:
       description: the ibmcloud api key
     - name: clusterName
       description: the name of the cluster to target
+    - name: resourceGroup
+      description: Resource group for the ibmcloud operation
+      default: "default"
   resourcetemplates:
     - apiVersion: v1
       kind: Secret
@@ -59,6 +62,8 @@ spec:
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc
+          - name: resourceGroup
+            value: $(params.resourceGroup)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
