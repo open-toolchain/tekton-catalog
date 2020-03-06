@@ -142,7 +142,7 @@ spec:
           REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
           REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
           IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
-          MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG" --format='{{index .Id }}')
+          MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG"  --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
 
           if [ "$PROPERTIES_FILE" ]; then
             # Ensure directory is there
