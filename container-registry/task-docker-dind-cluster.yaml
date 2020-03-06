@@ -32,6 +32,11 @@ spec:
       - name: imageTag
         description: the default image tag if none is provided using the builtImage url
         default: latest
+      # Dockerfile location
+      - name: pathToDockerContext
+        default: .
+      - name: pathToDockerfile
+        default: ./Dockerfile
       # Docker Client configuration
       - name: dockerClientImage
         description: The Docker image to use to run the Docker client
@@ -39,9 +44,8 @@ spec:
       - name: dockerCommands
         description: The docker command(s) to run.
         default: |
-          # Default docker build / inspect / push command
-          cd /artifacts
-          docker build --tag "$IMAGE_URL:$IMAGE_TAG" .
+          # Default docker build / inspect / push command          
+          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE $PATH_TO_DOCKERCONTEXT
           docker inspect ${IMAGE_URL}:${IMAGE_TAG}
           docker push ${IMAGE_URL}:${IMAGE_TAG}
       #
@@ -93,11 +97,18 @@ spec:
       image: $(inputs.params.dockerClientImage)
       workingDir: /artifacts      
       env:
+        - name: PROPERTIES_FILE
+          value: $(inputs.params.propertiesFile)
+        # variabled exposed to docker command
+        - name: PATH_TO_DOCKERCONTEXT
+          value: $(inputs.params.pathToDockerContext)
+        - name: PATH_TO_DOCKERFILE
+          value: $(inputs.params.pathToDockerfile)
         # Docker client configuration
         # Connect to the sidecar over TCP.
         - name: DOCKER_HOST
           value: 'tcp://localhost:2375'
-        # The location of the client configuration files.
+        # The location of the docker client configuration files.
         - name: DOCKER_CONFIG
           value: /steps
       command: ["/bin/sh", "-c"]
