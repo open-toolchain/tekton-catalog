@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
-  name: execute-in-docker-dind-cluster
+  name: execute-in-dind-cluster-task
 spec:
   inputs:
     params:
@@ -23,7 +23,7 @@ spec:
         description: target resource group (name or id) for the ibmcloud login operation
         default: ''
       - name: clusterRegion
-        description: (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+        description: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
         default: ''
       - name: clusterNamespace
         description: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed
@@ -33,7 +33,7 @@ spec:
         description: the default image tag if none is provided using the builtImage url
         default: latest
       # Dockerfile location
-      - name: pathToDockerContext
+      - name: pathToContext
         default: .
       - name: pathToDockerfile
         description: the path to the Docker file
@@ -50,7 +50,7 @@ spec:
         description: The docker command(s) to run.
         default: |
           # Default docker build / inspect / push command
-          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_DOCKERCONTEXT
+          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
           docker inspect ${IMAGE_URL}:${IMAGE_TAG}
           docker push ${IMAGE_URL}:${IMAGE_TAG}
       #
@@ -105,8 +105,8 @@ spec:
         - name: PROPERTIES_FILE
           value: $(inputs.params.propertiesFile)
         # variabled exposed to docker command
-        - name: PATH_TO_DOCKERCONTEXT
-          value: $(inputs.params.pathToDockerContext)
+        - name: PATH_TO_CONTEXT
+          value: $(inputs.params.pathToContext)
         - name: PATH_TO_DOCKERFILE
           value: $(inputs.params.pathToDockerfile)
         - name: DOCKERFILE

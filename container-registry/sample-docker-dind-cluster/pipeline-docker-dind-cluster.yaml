@@ -29,7 +29,7 @@ spec:
     - name: build-and-push-docker
       runAfter: [clone-repository]
       taskRef:
-        name: execute-in-docker-dind-cluster
+        name: execute-in-dind-cluster-task
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
