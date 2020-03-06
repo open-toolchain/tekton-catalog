@@ -11,7 +11,7 @@
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
 - Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `container-registry`
 
-## Build Image helper task
+## Build Image helper task: containerize-task
 
 ### Inputs
 
@@ -44,7 +44,7 @@
 
 * **builtImage**: The Image PipelineResource that will be created as output of this task.
 
-## Docker In Docker (DIND) helper task
+## Docker In Docker (DIND) helper task: execute-in-dind-task
 This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind,
 and pushes the resulting image to the IBM Cloud Container Registry.
 
@@ -86,8 +86,8 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 * **builtImage**: The Image PipelineResource that will be created as output of this task.
 
-## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task
-This task runs `docker` commands (build, inspect...) that communicate with a docker dind instane hosted in a kubernetes cluster, and pushes the resulting image to the IBM Cloud Container Registry.
+## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task: execute-in-dind-cluster-task
+This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
 
 ### Inputs
 
@@ -130,7 +130,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 * **builtImage**: The Image PipelineResource that will be created as output of this task.
 
-## Vulnerability Advisor helper task
+## Vulnerability Advisor helper task: vulnerability-advisor-task
 
 ### Inputs
 
@@ -167,4 +167,9 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 - The `sample-docker-dind-sidecar` sub-directory contains an `event-listener-dind` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-task` and `vulnerability-advisor-task`.
 
-  See the documentation [here](./sample-git-trigger/README.md)
+  See the documentation [here](./sample-docker-dind-sidecar/README.md)
+
+- The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-cluster` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-cluster-task` and `vulnerability-advisor-task`.
+
+  See the documentation [here](./sample-docker-dind-cluster/README.md)
+
