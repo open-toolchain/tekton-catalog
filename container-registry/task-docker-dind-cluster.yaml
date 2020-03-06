@@ -41,7 +41,7 @@ spec:
         default: |
           # Default docker build / inspect / push command
           cd /artifacts
-          docker build --tag "$IMAGE_URL:$IMAGE_TAG"
+          docker build --tag "$IMAGE_URL:$IMAGE_TAG" .
           docker inspect ${IMAGE_URL}:${IMAGE_TAG}
           docker push ${IMAGE_URL}:${IMAGE_TAG}
       #
@@ -91,6 +91,7 @@ spec:
           name: steps-volume
     - name: run-docker-commands
       image: $(inputs.params.dockerClientImage)
+      workingDir: /artifacts      
       env:
         # Docker client configuration
         # Connect to the sidecar over TCP.
