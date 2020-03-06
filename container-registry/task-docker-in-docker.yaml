@@ -6,35 +6,42 @@ spec:
   inputs:
     params:
       - name: task-pvc
-        description: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+        description: the task pvc - this is the volume where the files (Dockerfile etc..) are expected to be
+      - name: continuous-delivery-context-secret
+        description: name of the secret containing the continuous delivery pipeline context secrets
+        default: cd-secret
+      - name: container-registry-apikey-secret-key
+        description: field in the secret that contains the api key used to login to ibmcloud container registry
+        default: API_KEY
+      #
       - name: imageTag
-        description: the image tag
+        description: the default image tag if none is provided using the builtImage url
         default: latest
       # Dockerfile location
+      - name: pathToDockerContext
+        default: .
       - name: pathToDockerfile
         description: the path to the Docker file
-        default: /
+        default: .
       - name: dockerfile
-        description: The name of the Dockerfile to build from
+        description: The name of the Dockerfile
         default: "Dockerfile"
-      - name: continuous-delivery-context-secret
-        description: name of the configmap containing the continuous delivery pipeline context secrets
-        default: cd-secret
       # Docker Client configuration
       - name: dockerClientImage
         description: The Docker image to use to run the Docker client
         default: docker
       # Docker commands
-      - name: propertiesFile
-        description: file containing properties out of the docker in docker task
-        default: build.properties
       - name: dockerCommands
         description: The docker command(s) to run.
         default: |
-            # Default docker build / inspect / push command
-            docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file /artifacts$PATH_TO_DOCKERFILE$DOCKERFILE /artifacts$PATH_TO_DOCKERFILE
-            docker inspect ${IMAGE_URL}:${IMAGE_TAG}
-            docker push ${IMAGE_URL}:${IMAGE_TAG}
+          # Default docker build / inspect / push command
+          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_DOCKERCONTEXT
+          docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+          docker push ${IMAGE_URL}:${IMAGE_TAG}
+      #
+      - name: propertiesFile
+        description: file containing properties out of the docker in docker task
+        default: build.properties
   outputs:
     resources:
       - name: builtImage
@@ -48,7 +55,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: $(inputs.params.continuous-delivery-context-secret)
-              key: API_KEY
+              key: $(inputs.params.container-registry-apikey-secret-key)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -74,20 +81,21 @@ spec:
           name: steps-volume
     - name: run-docker-commands
       image: $(inputs.params.dockerClientImage)
+      workingDir: /artifacts
       env:
-        - name: IMAGE_TAG
-          value: $(inputs.params.imageTag)
         - name: PROPERTIES_FILE
           value: $(inputs.params.propertiesFile)
-        # docker command variables
+        # variabled exposed to docker command
+        - name: PATH_TO_DOCKERCONTEXT
+          value: $(inputs.params.pathToDockerContext)
         - name: PATH_TO_DOCKERFILE
           value: $(inputs.params.pathToDockerfile)
         - name: DOCKERFILE
-          value: $(inputs.params.dockerfile)
+          value: $(inputs.params.Dockerfile)
         # Docker client configuration
         # Connect to the sidecar over TCP, with TLS.
         - name: DOCKER_HOST
-          value: tcp://localhost:2376
+          value: 'tcp://localhost:2376'
         # Verify TLS.
         - name: DOCKER_TLS_VERIFY
           value: '1'
@@ -102,6 +110,10 @@ spec:
         - |
           set -e -o pipefail
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
+          IMAGE_TAG=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
+          if [ -z "$IMAGE_TAG" ]; then
+            IMAGE_TAG="$(inputs.params.imageTag)"
+          fi
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
           echo ""
@@ -117,20 +129,21 @@ spec:
           REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
           REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
           IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
-          MANIFEST_SHA=$(docker images --digests | grep -i $IMAGE_URL | awk '{print $3}')
+          MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG" --format='{{index .Id }}')
 
           if [ "$PROPERTIES_FILE" ]; then
-            cd /artifacts
-            touch $PROPERTIES_FILE
-            echo "REGISTRY_URL=${REGISTRY_URL}" >> $PROPERTIES_FILE
-            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
-            echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
-            echo "IMAGE_TAGS=${IMAGE_TAG}" >> $PROPERTIES_FILE
-            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
+            # Ensure directory is there
+            mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
+            touch /artifacts/$PROPERTIES_FILE
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> /artifacts/$PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> /artifacts/$PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> /artifacts/$PROPERTIES_FILE
+            echo "IMAGE_TAGS=${IMAGE_TAG}" >> /artifacts/$PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> /artifacts/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat $PROPERTIES_FILE
+            cat /artifacts/$PROPERTIES_FILE
+            echo ""
           fi
-          echo ""
           echo "Done."
       volumeMounts:
         - mountPath: /artifacts
@@ -139,14 +152,6 @@ spec:
           name: steps-volume
         - mountPath: /certs/client
           name: dind-certs
-  volumes:
-    - name: task-volume
-      persistentVolumeClaim:
-        claimName: $(inputs.params.task-pvc)
-    - name: steps-volume
-      emptyDir: {}
-    - name: dind-certs
-      emptyDir: {}
   sidecars:
     - image: docker:dind
       name: server
@@ -164,3 +169,11 @@ spec:
         periodSeconds: 1
         exec:
           command: ["ls", "/certs/client/ca.pem"]
+  volumes:
+    - name: task-volume
+      persistentVolumeClaim:
+        claimName: $(inputs.params.task-pvc)
+    - name: steps-volume
+      emptyDir: {}
+    - name: dind-certs
+      emptyDir: {}
