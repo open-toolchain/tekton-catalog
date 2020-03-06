@@ -39,6 +39,10 @@ spec:
       spec:
         type: cluster
         params:
+          # name is required in tekton v0.7 but not in v0.10.1
+          - name: name
+            value: $(params.buildCluster)
+          #
           - name: username
             value: username
           - name: url
