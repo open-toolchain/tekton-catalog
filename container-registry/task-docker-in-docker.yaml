@@ -91,7 +91,7 @@ spec:
         - name: PATH_TO_DOCKERFILE
           value: $(inputs.params.pathToDockerfile)
         - name: DOCKERFILE
-          value: $(inputs.params.Dockerfile)
+          value: $(inputs.params.dockerfile)
         # Docker client configuration
         # Connect to the sidecar over TCP, with TLS.
         - name: DOCKER_HOST
