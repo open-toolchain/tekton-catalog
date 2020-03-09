@@ -3,10 +3,11 @@ kind: Task
 metadata:
   name: clone-repo-task
 spec:
+  workspaces:
+    - name: artifacts
+      description: The git repo will be cloned onto the volumen backing this workspace
   inputs:
     params:
-      - name: task-pvc
-        description: the output pvc - this is where the cloned repository will be stored
       - name: ibmcloudApi
         description: the ibmcloud api
         default: https://cloud.ibm.com
@@ -141,8 +142,6 @@ spec:
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
-        - mountPath: /artifacts
-          name: task-volume
         - mountPath: /steps
           name: steps-volume
     - name: clone-repo
@@ -183,8 +182,8 @@ spec:
           echo "Cloning $REPOSITORY"
           # Add the proper creds to the git repository
           GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
-
-          cd /artifacts
+          ARTIFACTS_PATH="$(workspaces.artifacts.path)"
+          cd $ARTIFACTS_PATH
           if [ "$REVISION" ]; then
             # check if the branch exists (that may not be the case in case of a pipeline-run re-run)
             echo "Fetching specific -${REVISION}- commit"
@@ -276,34 +275,29 @@ spec:
           cd $current_dir
           if [ "$PROPERTIES_FILE" ]; then
             # Ensure directory is there
-            mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
-            echo "GIT_URL=$REPOSITORY" > /artifacts/$PROPERTIES_FILE
-            echo "GIT_BRANCH=$BRANCH" >> /artifacts/$PROPERTIES_FILE
-            echo "GIT_COMMIT=$GIT_COMMIT" >> /artifacts/$PROPERTIES_FILE
+            mkdir -p $ARTIFACTS_PATH/$(dirname "$PROPERTIES_FILE")
+            echo "GIT_URL=$REPOSITORY" > $ARTIFACTS_PATH/$PROPERTIES_FILE
+            echo "GIT_BRANCH=$BRANCH" >> $ARTIFACTS_PATH/$PROPERTIES_FILE
+            echo "GIT_COMMIT=$GIT_COMMIT" >> $ARTIFACTS_PATH/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat /artifacts/$PROPERTIES_FILE
+            cat $ARTIFACTS_PATH/$PROPERTIES_FILE
           fi
           if [ "$JSON_FILE_GIT_CREDENTIALS" ]; then
             # Ensure directory is there
-            mkdir -p /artifacts/$(dirname "$JSON_FILE_GIT_CREDENTIALS")
+            mkdir -p $ARTIFACTS_PATH/$(dirname "$JSON_FILE_GIT_CREDENTIALS")
             # Create a JSON file as output of this step to store the git credentials for future use
-            echo "{" > "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
-            echo "\"GIT_REPOSITORY\":\"${REPOSITORY}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
-            echo "\"GIT_AUTH_USER\":\"${GIT_AUTH_USER}\"," >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
-            echo "\"GIT_TOKEN\":\"${GIT_TOKEN}\"" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
-            echo "}" >> "/artifacts/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "{" > "${ARTIFACTS_PATH}/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_REPOSITORY\":\"${REPOSITORY}\"," >> "${ARTIFACTS_PATH}/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_AUTH_USER\":\"${GIT_AUTH_USER}\"," >> "${ARTIFACTS_PATH}/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "\"GIT_TOKEN\":\"${GIT_TOKEN}\"" >> "${ARTIFACTS_PATH}/${JSON_FILE_GIT_CREDENTIALS}"
+            echo "}" >> "${ARTIFACTS_PATH}/${JSON_FILE_GIT_CREDENTIALS}"
           fi
       volumeMounts:
-        - mountPath: /artifacts
-          name: task-volume
         - mountPath: /steps
           name: steps-volume
   volumes:
     - name: steps-volume
       emptyDir: {}
-    - name: task-volume
-      persistentVolumeClaim:
-        claimName: $(inputs.params.task-pvc)
     - name: cd-config-volume
       configMap:
         name: toolchain
