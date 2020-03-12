@@ -12,8 +12,11 @@ spec:
         description: the ibmcloud api
         default: https://cloud.ibm.com
       - name: continuous-delivery-context-secret
-        description: name of the configmap containing the continuous delivery pipeline context secrets
+        description: name of the secret containing the continuous delivery pipeline context secrets
         default: cd-secret
+      - name: ibmcloud-apikey-secret-key
+        description: field in the secret that contains the api key used to login to ibmcloud
+        default: 'API_KEY'
       - name: gitAccessToken
         description: |
           (optional) token to access the git repository. If this token is provided, there will not be an attempt
@@ -65,7 +68,7 @@ spec:
         valueFrom:
           secretKeyRef:
             name: $(inputs.params.continuous-delivery-context-secret)
-            key: API_KEY
+            key: $(inputs.params.ibmcloud-apikey-secret-key)
             optional: true
   steps:
     - name: fetch-git-token
