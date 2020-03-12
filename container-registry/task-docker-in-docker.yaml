@@ -12,7 +12,7 @@ spec:
         default: cd-secret
       - name: container-registry-apikey-secret-key
         description: field in the secret that contains the api key used to login to ibmcloud container registry
-        default: API_KEY
+        default: 'API_KEY'
       #
       - name: imageTag
         description: the default image tag if none is provided using the builtImage url
