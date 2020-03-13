@@ -63,6 +63,9 @@ spec:
           set -e -o pipefail
 
           TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+          TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
+
+          env | sort
 
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh
