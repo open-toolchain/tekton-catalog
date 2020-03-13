@@ -57,16 +57,12 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
-        - name: NO_TRIGGER_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/no-trigger-name']
       command: ["/bin/bash", "-c"]
       args:
         - |
           set -e -o pipefail
 
-          env | sort
+          TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
 
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh
