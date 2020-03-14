@@ -4,8 +4,6 @@ metadata:
   name: pipeline-slack
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: domain
       description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
     - name: channel
@@ -18,13 +16,13 @@ spec:
       description: the message to send to Slack
     - name: exitOnError
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: post-to-slack
       taskRef:
         name: post-slack
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: domain
           value: $(params.domain)
         - name: channel
@@ -37,3 +35,6 @@ spec:
           value: $(params.messageScript)
         - name: exitOnError
           value: $(params.exitOnError)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
