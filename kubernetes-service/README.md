@@ -30,10 +30,13 @@
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation.
 * **clusterRegion**: (optional) the ibmcloud region hosting the target cluster. If not specified, it will use the toolchain region as a default.
 * **clusterPipelineResourcesDirectoryFallback**: (optional) that will be used as a fallback mechanism to store the kubeconfig file for the target cluster (expressed by the inputs)
+
+## Workspaces
+
+* **workspace**: The workspace backing by a volume
 
 ### Outputs
 
@@ -62,10 +65,12 @@
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
-* **task-pvc-mountpath**: the mountpath for the pvc (default to `/artifacts`)
-* **clusterPipelineResourcesDirectory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be a combination of `task-pvc-mountpath` and `fetch-iks-cluster-config#clusterPipelineResourcesDirectoryFallback` if cluster pipeline resource update is not made by the `fetch-iks-cluster-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
+* **clusterPipelineResourcesDirectory**: directory of the workspace in which the kubeconfig file(s) for clusterPipelineResources are available (using the fallback mechanism of kubeconfig copy to the workspace)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
+
+## Workspaces
+
+* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
 # Usage
 The `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `fetch-iks-cluster-config` and `kubernetes-contextual-execution` tasks.

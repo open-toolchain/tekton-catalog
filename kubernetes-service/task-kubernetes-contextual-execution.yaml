@@ -5,28 +5,27 @@ metadata:
 spec:
   inputs:
     params:
-      - name: task-pvc
-        description: the task pvc - this is the volume valid for the lifetime of the pipelinerun
-      - name: task-pvc-mountpath
-        default: /artifacts
       # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
       # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
       - name: clusterPipelineResourcesDirectory
         description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
-        default: /workspace
+        default: /clusters
       - name: script
         description: the bash snippet to execute within the context of the kubernetes configuration
         default: 'kubectl version'
     resources:
       - name: cluster
         type: cluster
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume
   steps:
     - name: execute
       image: ibmcom/pipeline-base-image
-      workingDir: $(inputs.params.task-pvc-mountpath)
+      workingDir: $(workspaces.workspace.path)
       env:
         - name: KUBECONFIG
-          value: $(inputs.params.clusterPipelineResourcesDirectory)/$(inputs.resources.cluster.name)/kubeconfig
+          value: $(workspaces.workspace.path)/$(inputs.params.clusterPipelineResourcesDirectory)/$(inputs.resources.cluster.name)/kubeconfig
         - name: BUILD_NUMBER
           valueFrom:
             fieldRef:
@@ -44,14 +43,9 @@ spec:
           # User-defined snippet/script
           $(inputs.params.script)
       volumeMounts:
-        - mountPath: $(inputs.params.task-pvc-mountpath)
-          name: task-volume
         - mountPath: /cd-config
           name: cd-config-volume
   volumes:
-    - name: task-volume
-      persistentVolumeClaim:
-        claimName: $(inputs.params.task-pvc)
     - name: cd-config-volume
       configMap:
         name: toolchain
