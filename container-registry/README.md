@@ -28,7 +28,6 @@
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
@@ -37,6 +36,10 @@
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+
+## Workspaces
+
+* **artifacts**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
 ### Outputs
 
@@ -147,13 +150,16 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **imagePropertiesFile**: file containing properties of the image to be scanned (default to 'build.properties')
 * **maxIteration**: maximum number of iterations allowed while loop to check for va report (default to 30 iterations maximum)
 * **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
 * **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the task-pvc
 * **failOnScannedIssues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+
+## Workspaces
+
+* **artifacts**: The workspace backing by a volume that will be used to store output file
 
 #### Resources
 

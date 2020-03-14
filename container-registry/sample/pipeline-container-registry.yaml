@@ -13,24 +13,25 @@ spec:
   resources:
   - name: app-image
     type: image
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: pipeline-1-clone-task
       taskRef:
         name: clone-repo-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
     - name: pipeline-2-containerize-task
       runAfter: [pipeline-1-clone-task]
       taskRef:
         name: containerize-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: additionalTags
           value: '1.0.0-dev'
         - name: additionalTagsScript
@@ -42,6 +43,9 @@ spec:
             echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
       resources:
         outputs:
           - name: builtImage
@@ -50,8 +54,6 @@ spec:
       taskRef:
         name: vulnerability-advisor-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: scanReportFile
           value: 'app-image-va-report.json'
         # - name: maxIteration
@@ -60,6 +62,9 @@ spec:
         #   value: '3'
         # - name: failOnScannedIssues
         #   value: 'false'
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
       resources:
         inputs:
           - name: image
