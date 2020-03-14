@@ -25,7 +25,6 @@ Note: Specific access token can be provided specifically by providing a value fo
 
 ### Parameters
 
-* **task-pvc**: the output pvc - this is where the cloned repository will be stored
 * **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default value to `master`)
@@ -34,14 +33,17 @@ Note: Specific access token can be provided specifically by providing a value fo
 * **pr_branch**: the branch that is the source of this PullRequest. Default to ''.
 * **pr_revision**: the commit/revision in the source branch of the PullRequest that is to be built. Defaults to ''.
 * **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
-* **propertiesFile**: (optional) name of the properties file that will be created as an additional outcome of this task in the task-pvc. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
+* **propertiesFile**: (optional) name of the properties file that will be created as an additional outcome of this task in the workspace `artifacts`. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
-* **gitCredentialsJsonFile**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to task-pvc volume). Default to '' meaning no output of this information.
+* **gitCredentialsJsonFile**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to the workspace `artifacts` backed by a volume). Default to '' meaning no output of this information.
 
+## Workspaces
+
+* **artifacts**: The git repo will be cloned onto the volume backing this workspace
 
 ## Outputs
-The output of this task is the repository cloned into the directory on the pvc.
+The output of this task is the repository cloned into the directory on the workspace `artifacts`.
 
 ## Usages
 

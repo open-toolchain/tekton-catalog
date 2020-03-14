@@ -26,13 +26,16 @@ Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery
 
 ### Parameters
 
-* **task-pvc**: the output pvc.
 * **domain**: (optional) the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
 * **channel**: (optional) the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
 * **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
 * **messageScript**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
 * **exitOnError**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
+
+## Workspaces
+
+* **workspace**: A workspace that contain data useful for the script/slack message resolution. Should be marked as optional when Tekton will permit it.
 
 ## Outputs
 None.

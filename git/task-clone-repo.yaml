@@ -3,9 +3,6 @@ kind: Task
 metadata:
   name: clone-repo-task
 spec:
-  workspaces:
-    - name: artifacts
-      description: The git repo will be cloned onto the volumen backing this workspace
   inputs:
     params:
       - name: ibmcloudApi
@@ -51,17 +48,20 @@ spec:
       - name: directoryName
         description: |
           name of the new directory to clone into.
-          Default to . in order to clone at the root of the volume mounted for the pipeline run
+          Default to . in order to clone at the root of the workspace
           It will be set to the "humanish" part of the repository if this param is set to blank
         default: "."
       - name: propertiesFile
-        description: file containing properties out of clone task (can be a filepath name relative to the task-pvc volume)
+        description: file containing properties out of clone task (can be a filepath name relative to the workspace)
         default: build.properties
       - name: gitCredentialsJsonFile
         description: |
-          JSON file containing the git credentials as found out of the clone task (can be a file path relative to task-pvc volume).
+          JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace).
           Default to '' meaning no output of this information
         default: ''
+  workspaces:
+    - name: artifacts
+      description: The git repo will be cloned onto the volume backing this workspace
   stepTemplate:
     env:
       - name: API_KEY

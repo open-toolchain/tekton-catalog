@@ -28,15 +28,18 @@
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
 * **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
 * **additionalTags**: (optional) comma-separated list of tags for the built image
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+
+## Workspaces
+
+* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
 ### Outputs
 
@@ -66,19 +69,22 @@ and is available only during the task's lifespan.
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **imageTag**: (optional) the tag for the built image (default to `latest`) 
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
 * **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
 * **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **dockerCommands**: (optional) The docker command(s) to run. Default commands:
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
 docker inspect ${IMAGE_URL}:${IMAGE_TAG}
 docker push ${IMAGE_URL}:${IMAGE_TAG}
 ```
+
+## Workspaces
+
+* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
 ### Outputs
 
@@ -104,7 +110,6 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **clusterRegion**: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
 * **clusterNamespace**: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed (default to `build`)
@@ -113,7 +118,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
 * **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
 * **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **dockerCommands**: (optional) The docker command(s) to run. Default commands:
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
@@ -123,6 +128,10 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 #### Resources
 
 * **cluster**: The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
+
+## Workspaces
+
+* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
 ### Outputs
 
@@ -147,13 +156,16 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **imagePropertiesFile**: file containing properties of the image to be scanned (default to 'build.properties')
 * **maxIteration**: maximum number of iterations allowed while loop to check for va report (default to 30 iterations maximum)
 * **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
-* **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the task-pvc
+* **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the workspace
 * **failOnScannedIssues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+
+## Workspaces
+
+* **artifacts**: The workspace backing by a volume that will be used to store output file
 
 #### Resources
 

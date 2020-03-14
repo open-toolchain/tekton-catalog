@@ -57,8 +57,6 @@ spec:
         pipelineRef:
           name: pipeline-git-event-processing
         params:
-          - name: pipeline-pvc
-            value: $(params.triggerName)-$(uid)-pvc
           - name: gitAccessToken
             value: $(params.gitAccessToken)
           - name: repository
@@ -73,6 +71,10 @@ spec:
             value: $(params.pr_branch)
           - name: pr_revision
             value: $(params.pr_revision)
+        workspaces:
+        - name: pipeline-ws
+          persistentVolumeClaim:
+            claimName: $(params.triggerName)-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

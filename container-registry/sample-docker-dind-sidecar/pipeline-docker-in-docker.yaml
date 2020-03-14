@@ -4,8 +4,6 @@ metadata:
   name: pipeline-dind
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
@@ -13,24 +11,28 @@ spec:
   resources:
   - name: app-image
     type: image
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: clone-repository
       taskRef:
         name: clone-repo-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
     - name: build-and-push-docker
       runAfter: [clone-repository]
       taskRef:
         name: execute-in-dind-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
       resources:
         outputs:
           - name: builtImage
@@ -39,8 +41,6 @@ spec:
       taskRef:
         name: vulnerability-advisor-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: scanReportFile
           value: 'app-image-va-report.json'
         # - name: maxIteration
@@ -49,6 +49,9 @@ spec:
         #   value: '3'
         # - name: failOnScannedIssues
         #   value: 'false'
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
       resources:
         inputs:
           - name: image
