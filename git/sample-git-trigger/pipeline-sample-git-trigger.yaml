@@ -28,14 +28,11 @@ spec:
     - name: gitCredentialsJsonFile
       default: 'output/secrets/thecredentials.json'
   workspaces:
-    - name: pipeline-ws      
+    - name: pipeline-ws
   tasks:
     - name: pipeline-git-event-clone-task
       taskRef:
         name: clone-repo-task
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
       params:
         - name: repository
           value: $(params.repository)
@@ -57,6 +54,9 @@ spec:
           value: $(params.propertiesFile)
         - name: gitCredentialsJsonFile
           value: $(params.gitCredentialsJsonFile)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
     - name: pipeline-git-event-content-inspect
       runAfter: [pipeline-git-event-clone-task]
       taskRef:
