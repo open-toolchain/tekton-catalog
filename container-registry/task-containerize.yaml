@@ -263,16 +263,17 @@ spec:
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
           # Here the workaround will be to add registry and image information in an output properties file
           if [ "$PROPERTIES_FILE" ]; then
-            cd $(workspaces.workspace.path)
-            touch $PROPERTIES_FILE
-            echo "REGISTRY_URL=${REGISTRY_URL}" >> $PROPERTIES_FILE
-            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
-            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE
-            echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
-            echo "IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')" >> $PROPERTIES_FILE
-            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
+            mkdir -p $(workspaces.workspace.path)/$(dirname "$PROPERTIES_FILE")
+            touch $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo "IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat $PROPERTIES_FILE
+            cat $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo ""
           fi
       volumeMounts:
         - mountPath: /steps
