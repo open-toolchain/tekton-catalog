@@ -110,7 +110,6 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 #### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **clusterRegion**: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
 * **clusterNamespace**: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed (default to `build`)
@@ -119,7 +118,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
 * **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
 * **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **dockerCommands**: (optional) The docker command(s) to run. Default commands:
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
@@ -129,6 +128,10 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 #### Resources
 
 * **cluster**: The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
+
+## Workspaces
+
+* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
 ### Outputs
 

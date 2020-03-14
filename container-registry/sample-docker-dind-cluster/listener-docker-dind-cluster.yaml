@@ -78,12 +78,14 @@ spec:
             resourceRef:
               name: $(params.buildCluster)
         params:
-          - name: pipeline-pvc
-            value: dind-cluster-$(uid)-pvc
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
+        workspaces:
+        - name: pipeline-ws
+          persistentVolumeClaim:
+            claimName: dind-cluster-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
