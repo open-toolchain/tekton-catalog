@@ -3,9 +3,6 @@ kind: Task
 metadata:
   name: clone-repo-task
 spec:
-  workspaces:
-    - name: artifacts
-      description: The git repo will be cloned onto the volume backing this workspace
   inputs:
     params:
       - name: ibmcloudApi
@@ -62,6 +59,9 @@ spec:
           JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace).
           Default to '' meaning no output of this information
         default: ''
+  workspaces:
+    - name: artifacts
+      description: The git repo will be cloned onto the volume backing this workspace
   stepTemplate:
     env:
       - name: API_KEY
