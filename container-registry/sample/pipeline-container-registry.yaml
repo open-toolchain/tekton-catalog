@@ -4,8 +4,6 @@ metadata:
   name: pipeline-container-registry
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
