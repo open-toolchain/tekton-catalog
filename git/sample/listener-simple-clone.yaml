@@ -39,12 +39,14 @@ spec:
         pipelineRef:
           name: pipeline-simple-clone
         params:
-          - name: pipeline-pvc
-            value: pipelinerun-$(uid)-pvc
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
+        workspaces:
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: pipelinerun-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

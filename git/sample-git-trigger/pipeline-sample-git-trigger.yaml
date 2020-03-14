@@ -4,8 +4,6 @@ metadata:
   name: pipeline-git-event-processing
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
@@ -29,13 +27,16 @@ spec:
       default: 'output/thebuild.properties'
     - name: gitCredentialsJsonFile
       default: 'output/secrets/thecredentials.json'
+  workspaces:
+    - name: pipeline-ws      
   tasks:
     - name: pipeline-git-event-clone-task
       taskRef:
         name: clone-repo-task
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
@@ -60,9 +61,10 @@ spec:
       runAfter: [pipeline-git-event-clone-task]
       taskRef:
         name: inspect-content-task
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: directoryName

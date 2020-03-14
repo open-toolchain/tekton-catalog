@@ -4,19 +4,20 @@ metadata:
   name: pipeline-simple-clone
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
       description: the branch for the git repo
+  workspaces:
+    - name: pipeline-ws      
   tasks:
     - name: pipeline-simple-clone-task
       taskRef:
         name: clone-repo-task
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws        
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
