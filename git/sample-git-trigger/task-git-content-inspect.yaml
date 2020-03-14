@@ -50,11 +50,11 @@ spec:
           cat README.md
           echo ""
           echo "##############"
-          echo "Executing 'cat /$(workspaces.workspace.path)/$(inputs.params.propertiesFile)'"
-          cat /$(workspaces.workspace.path)/$(inputs.params.propertiesFile)
+          echo "Executing 'cat $(workspaces.workspace.path)/$(inputs.params.propertiesFile)'"
+          cat $(workspaces.workspace.path)/$(inputs.params.propertiesFile)
           echo ""
           if [ "$(inputs.params.gitCredentialsJsonFile)" ]; then
             echo "##############"
-            echo "Executing 'jq /$(workspaces.workspace.path)/$(inputs.params.gitCredentialsJsonFile)'"
-            cat /$(workspaces.workspace.path)/$(inputs.params.gitCredentialsJsonFile) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
+            echo "Executing 'jq $(workspaces.workspace.path)/$(inputs.params.gitCredentialsJsonFile)'"
+            cat $(workspaces.workspace.path)/$(inputs.params.gitCredentialsJsonFile) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
           fi
