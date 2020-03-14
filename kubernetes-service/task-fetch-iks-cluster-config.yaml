@@ -39,7 +39,6 @@ spec:
   workspaces:
     - name: workspace
       description: A workspace backing by a volume
-      mountPath: /artifacts
   outputs:
     resources:
       # Will be set as optional when tekton version support it
@@ -48,7 +47,7 @@ spec:
   steps:
     - name: setup
       image: ibmcom/pipeline-base-image
-      workingDir: /artifacts
+      workingDir: $(workspaces.workspace.path)
       env:
         - name: API_KEY
           valueFrom:
