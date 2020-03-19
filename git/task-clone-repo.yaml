@@ -60,8 +60,9 @@ spec:
           Default to '' meaning no output of this information
         default: ''
   workspaces:
-    - name: artifacts
+    - name: workspace
       description: The git repo will be cloned onto the volume backing this workspace
+      mountPath: /artifacts
   stepTemplate:
     env:
       - name: API_KEY
@@ -185,7 +186,7 @@ spec:
           echo "Cloning $REPOSITORY"
           # Add the proper creds to the git repository
           GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
-          ARTIFACTS_PATH="$(workspaces.artifacts.path)"
+          ARTIFACTS_PATH="$(workspaces.workspace.path)"
           cd $ARTIFACTS_PATH
           if [ "$REVISION" ]; then
             # check if the branch exists (that may not be the case in case of a pipeline-run re-run)

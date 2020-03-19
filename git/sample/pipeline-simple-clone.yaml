@@ -15,7 +15,7 @@ spec:
       taskRef:
         name: clone-repo-task
       workspaces:
-        - name: artifacts
+        - name: workspace
           workspace: pipeline-ws
       params:
         - name: repository
