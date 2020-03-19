@@ -40,7 +40,7 @@ Note: Specific access token can be provided specifically by providing a value fo
 
 ## Workspaces
 
-* **artifacts**: The git repo will be cloned onto the volume backing this workspace
+* **workspace**: The git repo will be cloned onto the volume backing this workspace
 
 ## Outputs
 The output of this task is the repository cloned into the directory on the workspace `artifacts`.

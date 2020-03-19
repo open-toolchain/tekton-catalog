@@ -55,7 +55,7 @@ spec:
         - name: gitCredentialsJsonFile
           value: $(params.gitCredentialsJsonFile)
       workspaces:
-        - name: artifacts
+        - name: workspace
           workspace: pipeline-ws
     - name: pipeline-git-event-content-inspect
       runAfter: [pipeline-git-event-clone-task]
