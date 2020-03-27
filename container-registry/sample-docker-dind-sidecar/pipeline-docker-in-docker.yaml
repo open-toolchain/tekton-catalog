@@ -23,7 +23,7 @@ spec:
         - name: branch
           value: $(params.branch)
       workspaces:
-        - name: artifacts
+        - name: workspace
           workspace: pipeline-ws
     - name: build-and-push-docker
       runAfter: [clone-repository]

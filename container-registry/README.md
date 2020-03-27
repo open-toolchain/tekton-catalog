@@ -165,7 +165,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 ## Workspaces
 
-* **artifacts**: The workspace backing by a volume that will be used to store output file
+* **workspace**: The workspace backing by a volume that will be used to store output file
 
 #### Resources
 
