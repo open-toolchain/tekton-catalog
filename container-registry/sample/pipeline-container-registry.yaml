@@ -41,6 +41,8 @@ spec:
             echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
+            # Add a specific tag with cd build number
+            echo "1.0.0-${BUILD_NUMBER}"
       workspaces:
         - name: workspace
           workspace: pipeline-ws
