@@ -57,7 +57,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
-        - name: TRIGGER_BY
+        - name: TRIGGERED_BY
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
