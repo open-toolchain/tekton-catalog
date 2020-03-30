@@ -128,8 +128,7 @@ spec:
     - name: revision
       value: "$(event.head_commit.id)"
     - name: branch
-      value: "master"
-      # value: "$(event.ref)"
+      value: "$(event.ref)"
     - name: triggerName
       value: "github-commit"
 ---
@@ -185,8 +184,7 @@ spec:
     - name: revision
       value: "$(event.checkout_sha)"
     - name: branch
-      value: "master"
-      # value: "$(event.ref)"
+      value: "$(event.ref)"
     - name: triggerName
       value: "grit-commit"
 ---

@@ -28,7 +28,7 @@ Note: Specific access token can be provided specifically by providing a value fo
 * **task-pvc**: the output pvc - this is where the cloned repository will be stored
 * **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
-* **branch**: the git branch (default value to `master`)
+* **branch**: the git branch (default value to `master`). This param can also be given as a full _git ref_ like `refs/heads/master` (as described by [Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References))
 * **revision**: (optional) the git revision/commit to update the git HEAD to (default to empty meaning only use the branch information)
 * **pr_repository**: the originated repository where the PullRequest come from (in case of a fork). Default to '' means same repository (not a fork) or it can be the same as repository to clone.
 * **pr_branch**: the branch that is the source of this PullRequest. Default to ''.
