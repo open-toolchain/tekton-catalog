@@ -183,6 +183,9 @@ spec:
           ############################
           source /steps/next-step-env.properties
 
+          # If $BRANCH is a full git ref then only keep the name part
+          BRANCH=$(echo ${BRANCH#"refs/heads/"})
+
           echo "Cloning $REPOSITORY"
           # Add the proper creds to the git repository
           GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
