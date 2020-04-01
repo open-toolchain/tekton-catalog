@@ -217,7 +217,8 @@ spec:
           echo "#######################"
           # Add the full image url with tags - use parameter substition in case image name contains /
           # ${varName/Pattern/Replacement}
-          sed -i -e "s/^/$REGISTRY_URL\/$REGISTRY_NAMESPACE\/${IMAGE_NAME/\//\\\/}:/" /steps/tags.lst
+          echo "sed s/^/$REGISTRY_URL\/$REGISTRY_NAMESPACE\/${IMAGE_NAME/\//\\\/}:/"
+          sed -i "s/^/$REGISTRY_URL\/$REGISTRY_NAMESPACE\/${IMAGE_NAME/\//\\\/}:/" /steps/tags.lst
           sort -u -o /steps/tags.lst /steps/tags.lst
           echo "Full Image URLs:"
           cat /steps/tags.lst
