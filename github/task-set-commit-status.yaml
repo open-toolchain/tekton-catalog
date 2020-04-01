@@ -48,7 +48,7 @@ spec:
         type: string
       - name: revision
         description: |
-          Commit SHA to set the status for.
+          Commit SHA to set the status for. If left empty, will attempt to read GIT_COMMIT from build-properties
         type: string
         default: ''
       - name: target-url
@@ -175,6 +175,7 @@ spec:
         if os.path.exists("$(workspaces.workspace.path)/$(inputs.params.build-properties)"):
             build_properties = open("$(workspaces.workspace.path)/$(inputs.params.build-properties)", "r")
             for x in build_properties:
+                print(x)
                 prop = x.split("=", 1)
                 os.environ[prop[0]] = prop[1].strip()
             build_properties.close()
@@ -183,8 +184,12 @@ spec:
         if "$(inputs.params.state-var)" != "":
             state = os.environ["$(inputs.params.state-var)"]
 
-        status_url = "$(inputs.params.api-path-prefix)" + "/repos/$(inputs.params.repository)/" + \
-            "statuses/$(inputs.params.revision)"
+        revision = "$(inputs.params.revision)"
+        if revision == "":
+            revision = os.environ["GIT_COMMIT"]
+            print(revision)
+
+        status_url = "$(inputs.params.api-path-prefix)" + "/repos/$(inputs.params.repository)/statuses/" + revision
         data = {
             "state": state,
             "target_url": "$(inputs.params.target-url)",
@@ -208,7 +213,7 @@ spec:
             print(resp.read())
         else:
           print("GitHub status '$(inputs.params.state)' has been set on "
-                "$(inputs.params.repository)#$(inputs.params.revision) ")
+                "$(inputs.params.repository)#" + revision)
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
