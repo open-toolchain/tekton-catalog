@@ -72,12 +72,15 @@ spec:
           # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
           export HOME="/root"
           ##########################################################################
-          # Parse the image url to find information (region, namespace, image name)
+          # Parse the image url to find information (region, namespace, image name and eventually tag)
+          # as url of Image PipelineResource is the complete path to the image, including the registry
+          # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
           IMAGE_TAG=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
           REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
           REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
-          IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{print $NF}')
+          # Image name is remaining part after the repository and namespace and can contains /
+          IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
 
           # Find the ibmcloud container registry region
           # https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_regions_local
