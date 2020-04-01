@@ -153,6 +153,9 @@ spec:
       args:
         - |
           set -e -o pipefail
+          # Parse the image url to find information (region, namespace, image name and eventually tag)
+          # as url of Image PipelineResource is the complete path to the image, including the registry
+          # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
           IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
           IMAGE_TAG=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
           if [ -z "$IMAGE_TAG" ]; then
@@ -172,7 +175,8 @@ spec:
           # Persist registry and image information in an output properties file
           REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
           REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
-          IMAGE_NAME=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $3}')
+          # Image name is remaining part after the repository and namespace and can contains /
+          IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
           MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG"  --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
 
           if [ "$PROPERTIES_FILE" ]; then
