@@ -215,10 +215,8 @@ spec:
           echo "Image Tags:"
           cat /steps/tags.lst
           echo "#######################"
-          # Add the full image url with tags - use parameter substition in case image name contains /
-          # ${varName/Pattern/Replacement}
-          echo "sed s/^/$REGISTRY_URL\/$REGISTRY_NAMESPACE\/${IMAGE_NAME/\//\\\/}:/"
-          sed -i "s/^/$REGISTRY_URL\/$REGISTRY_NAMESPACE\/${IMAGE_NAME/\//\\\/}:/" /steps/tags.lst
+          # Add the full image url with tags - use # as separator in case IMAGE_NAME contains /
+          sed -i "s#^#$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:#" /steps/tags.lst
           sort -u -o /steps/tags.lst /steps/tags.lst
           echo "Full Image URLs:"
           cat /steps/tags.lst
