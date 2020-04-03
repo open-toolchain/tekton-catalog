@@ -8,6 +8,8 @@ spec:
       description: the git repo
     - name: branch
       description: the branch for the git repo
+    - name: pathToDockerfile
+      default: '.'
   resources:
   - name: app-image
     type: image
@@ -30,6 +32,10 @@ spec:
       taskRef:
         name: containerize-task
       params:
+        - name: pathToContext
+          value: $(params.pathToDockerfile)
+        - name: pathToDockerfile
+          value: $(params.pathToDockerfile)
         - name: additionalTags
           value: 'latest'
         - name: additionalTagsScript
