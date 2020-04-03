@@ -12,6 +12,8 @@ spec:
       description: the ibmcloud api key
     - name: imageUrl
       description: The image url in your container registry
+    - name: pathToDockerfile
+      default: '.'
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
@@ -60,6 +62,8 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
+          - name: pathToDockerfile
+            value: $(params.pathToDockerfile)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
