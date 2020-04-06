@@ -286,6 +286,8 @@ spec:
             echo "GIT_URL=$REPOSITORY" > $ARTIFACTS_PATH/$PROPERTIES_FILE
             echo "GIT_BRANCH=$BRANCH" >> $ARTIFACTS_PATH/$PROPERTIES_FILE
             echo "GIT_COMMIT=$GIT_COMMIT" >> $ARTIFACTS_PATH/$PROPERTIES_FILE
+            # Change  write access permission to allow subsequent task(s) to update if needed
+            chmod go+rw $ARTIFACTS_PATH/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
             cat $ARTIFACTS_PATH/$PROPERTIES_FILE
           fi
