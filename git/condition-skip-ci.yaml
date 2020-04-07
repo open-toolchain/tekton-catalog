@@ -1,0 +1,14 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: skip-ci
+spec:
+  params:
+    - name: commit-message
+    - name: skip-ci-pattern
+      default: '.*\[\(skip ci\)\|\(ci skip\)\].*'
+  check:
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - echo "$(params.commit-message)" | grep -v '$(params.skip-ci-pattern)'
