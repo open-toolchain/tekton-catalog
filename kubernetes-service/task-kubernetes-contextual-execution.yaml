@@ -21,7 +21,7 @@ spec:
       description: A workspace backing by a volume
   steps:
     - name: execute
-      image: ibmcom/pipeline-base-image
+      image: ibmcom/pipeline-base-image:2.6
       workingDir: $(workspaces.workspace.path)
       env:
         - name: KUBECONFIG
