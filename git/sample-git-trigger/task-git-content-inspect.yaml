@@ -18,7 +18,7 @@ spec:
     mountPath: /artifacts
   steps:
     - name: inspect-git-content
-      image: ibmcom/pipeline-base-image
+      image: ibmcom/pipeline-base-image:2.6
       env:
         - name: REPOSITORY
           value: $(inputs.params.repository)

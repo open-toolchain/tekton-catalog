@@ -30,7 +30,7 @@ spec:
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
-      image: ibmcom/pipeline-base-image
+      image: ibmcom/pipeline-base-image:2.6
       env:
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
