@@ -22,7 +22,7 @@ spec:
         type: cluster
   steps:
     - name: execute
-      image: ibmcom/pipeline-base-image
+      image: ibmcom/pipeline-base-image:2.6
       workingDir: $(inputs.params.task-pvc-mountpath)
       env:
         - name: KUBECONFIG
