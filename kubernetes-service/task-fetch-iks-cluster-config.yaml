@@ -45,7 +45,7 @@ spec:
         type: cluster
   steps:
     - name: setup
-      image: ibmcom/pipeline-base-image
+      image: ibmcom/pipeline-base-image:2.6
       workingDir: /artifacts
       env:
         - name: API_KEY

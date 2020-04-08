@@ -48,7 +48,7 @@ spec:
         type: image
   steps:
     - name: create-registry-secret
-      image: ibmcom/pipeline-base-image
+      image: ibmcom/pipeline-base-image:2.6
       workingDir: /steps
       env:
         - name: API_KEY
