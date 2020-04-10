@@ -1,16 +1,17 @@
-# Git integration clone task helper
+# Git related tasks
 
-This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository.
+- **clone-repo-task**: This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository.
+- **set-commit-status**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
 
-Note: Specific access token can be provided specifically by providing a value for the optional parameter `gitAccessToken`.
-
-## Install the Task
+## Install the Tasks
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
 - Add that github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `git`
 
-## Inputs
+## Git integration clone task - clone-repo-task
 
-### Context - ConfigMap/Secret
+### Inputs
+
+#### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resource to be defined:
 
@@ -23,7 +24,7 @@ Note: Specific access token can be provided specifically by providing a value fo
 
   See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-### Parameters
+#### Parameters
 
 * **task-pvc**: the output pvc - this is where the cloned repository will be stored
 * **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
@@ -40,8 +41,40 @@ Note: Specific access token can be provided specifically by providing a value fo
 * **gitCredentialsJsonFile**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to task-pvc volume). Default to '' meaning no output of this information.
 
 
-## Outputs
+### Outputs
 The output of this task is the repository cloned into the directory on the pvc.
+
+## Git commit status setter task - set-commit-status
+
+### Inputs
+
+#### Context - ConfigMap/Secret
+
+  The task expects the following kubernetes resource to be defined:
+
+* **Secret cd-secret (optional)**
+
+  Secret containing:
+  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (and `Git Repos and Issue Tracking` service if used)
+
+  If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
+
+  See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+
+#### Parameters
+
+* **task-pvc**: the input pvc - this is where the properties file (like `build.properties` defined in `propertiesFile` parameter) would be stored
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
+* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
+* **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
+* **repository**: the git repository url that the toolchain is integrating
+* **revision**: the git revision/commit to update the status
+* **description**: A short description of the status.
+* **context**: (optional) A string label to differentiate this status from the status of other systems. (default to `continuous-integration/tekton`)
+* **state**: The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled` or a value meaningful for the target git repository (gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled` - github/integrated github: `pending`, `success`, `failure`, `error` - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED`)
+* **state-var**: Customized variable stored in `propertiesFile` (like `build-properties` for instance) to use as state if `state` input param is empty.
+* **propertiesFile**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
 
 ## Usages
 
@@ -52,3 +85,8 @@ The output of this task is the repository cloned into the directory on the pvc.
 - The `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example showing usage of the clone-repo-task in the context of CD tekton pipeline triggered by git event(s) (Commit pushed or PullRequest opened/updated)
 
   See the documentation [here](./sample-git-trigger/README.md)
+
+- The `sample-set-commit-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `set-commit-status` task in the context of a CD Tekton pipeline triggered by a Git event (Commit push).
+
+  See the documentation [here](./sample-set-commit-status/README.md)
+
