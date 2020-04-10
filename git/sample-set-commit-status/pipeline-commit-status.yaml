@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: set-commit-status
+spec:
+  params:
+    - name: pipeline-pvc
+    - name: repository
+    - name: branch
+    - name: revision
+    - name: state
+    - name: description
+    - name: pipeline-debug
+      default: "0"
+  tasks:
+    - name: clone-repository
+      taskRef:
+        name: clone-repo-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-commit-status
+      taskRef:
+        name: set-commit-status
+      runAfter: [clone-repository]
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.revision)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: $(params.state)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
