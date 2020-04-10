@@ -59,6 +59,9 @@ spec:
           JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace).
           Default to '' meaning no output of this information
         default: ''
+      - name: pipeline-debug
+        description: Pipeline debug mode
+        default: "0"        
   workspaces:
     - name: workspace
       description: The git repo will be cloned onto the volume backing this workspace
@@ -71,6 +74,8 @@ spec:
             name: $(inputs.params.continuous-delivery-context-secret)
             key: $(inputs.params.ibmcloud-apikey-secret-key)
             optional: true
+      - name: PIPELINE_DEBUG
+        value: $(inputs.params.pipeline-debug)            
   steps:
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image:2.6
@@ -81,6 +86,14 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
           TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           ##########################################################################
@@ -125,9 +138,11 @@ spec:
             TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
             GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' /cd-config/toolchain.json)
 
-            echo "Doing cURL to ${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+            # GIT_TOKEN_URL is like https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
+            # as there is already an url param git_id, just put the additional ones using &
+            echo "Doing cURL to ${GIT_TOKEN_URL}&toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
 
-            curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}?toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+            curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}&toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
             if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
               GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
               echo "Access token found for the Git integration (repository url: $REPOSITORY)"
