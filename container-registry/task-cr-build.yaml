@@ -189,8 +189,6 @@ spec:
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
-        - mountPath: /artifacts
-          name: task-volume
         - mountPath: /steps
           name: steps-volume
         - mountPath: /scripts
