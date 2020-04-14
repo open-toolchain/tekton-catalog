@@ -40,12 +40,6 @@ spec:
       - name: propertiesFile
         description: file containing properties out of containerize task
         default: build.properties
-    # resources:
-    #   # TODO consider an optional git repository as the source of the image to build
-    #   # when cd tekton support will be to tekton pipeline v 0.10
-    #   - name: workspace
-    #     type: git
-    #     optional: true
   outputs:
     resources:
       - name: builtImage
@@ -60,77 +54,25 @@ spec:
             secretKeyRef:
               name: $(inputs.params.continuous-delivery-context-secret)
               key: $(inputs.params.container-registry-apikey-secret-key)
+        - name: IMAGE_RESOURCE_URL
+          value: $(outputs.resources.builtImage.url)
+        - name: IBMCLOUD_API
+          value: $(inputs.params.ibmcloudApi)
+        - name: IBMCLOUD_RESOURCE_GROUP
+          value: $(inputs.params.resourceGroup)
       command: ["/bin/bash", "-c"]
       args:
         - |
           set -e -o pipefail
-          TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
-          TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           ##########################################################################
           # Setting HOME explicitly to have ibmcloud plugins available
           # doing the export rather than env definition is a workaround
           # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
           export HOME="/root"
           ##########################################################################
-          # Parse the image url to find information (region, namespace, image name and eventually tag)
-          # as url of Image PipelineResource is the complete path to the image, including the registry
-          # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
-          IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
-          IMAGE_TAG=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
-          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
-          REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
-          # Image name is remaining part after the repository and namespace and can contains /
-          IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
 
-          # Find the ibmcloud container registry region
-          # https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_regions_local
-          if [[ $REGISTRY_URL =~ ^registry\.[a-z]*.bluemix.net$ ]]; then
-            # deprecated domain name
-            REGISTRY_REGION=$(echo $REGISTRY_URL | awk -F. '{print $2}')
-            if [ "$REGISTRY_REGION" == "ng" ]; then
-              REGISTRY_REGION="us-south"
-            fi
-          else
-            export REGISTRY_REGION=$(echo $REGISTRY_URL | awk -F. '{print $1}')
-            if [ "$REGISTRY_REGION" == "jp" ]; then
-              REGISTRY_REGION="ap-north"
-            elif [ "$REGISTRY_REGION" == "au" ]; then
-              REGISTRY_REGION="ap-south"
-            elif [ "$REGISTRY_REGION" == "de" ]; then
-              REGISTRY_REGION="eu-central"
-            elif [ "$REGISTRY_REGION" == "uk" ]; then
-              REGISTRY_REGION="uk-south"
-            elif [ "$REGISTRY_REGION" == "us" ]; then
-              REGISTRY_REGION="us-south"
-            else
-              echo "No IBM Cloud Container Registry region found for the registry url $REGISTRY_URL"
-              exit 1
-            fi
-          fi
-
-          # ibmcloud login
-          ibmcloud config --check-version false
-          ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
-          if [ "$(inputs.params.resourceGroup)" ]; then
-            ibmcloud target -g $(inputs.params.resourceGroup)
-          fi
-
-          # Log container registry to the appropriate region
-          ibmcloud cr region-set $REGISTRY_REGION
-          ibmcloud cr info
-
-          # Create the namespace if needed to ensure the push will be can be successfull
-          echo "Checking registry namespace: ${REGISTRY_NAMESPACE}"
-          NS=$( ibmcloud cr namespaces | grep ${REGISTRY_NAMESPACE} ||: )
-          if [ -z "${NS}" ]; then
-              echo "Registry namespace ${REGISTRY_NAMESPACE} not found, creating it."
-              ibmcloud cr namespace-add ${REGISTRY_NAMESPACE}
-              echo "Registry namespace ${REGISTRY_NAMESPACE} created."
-          else
-              echo "Registry namespace ${REGISTRY_NAMESPACE} found."
-          fi
-          echo -e "Existing images in registry"
-          ibmcloud cr images --restrict ${REGISTRY_NAMESPACE}
+          # Ensure login to the container registry and namespace available
+          source /scripts/check_registry.sh
 
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
@@ -153,6 +95,8 @@ spec:
           name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
+        - mountPath: /scripts
+          name: check-registry-script
     - name: build-image
       image: $(inputs.params.buildkit_image)
       workingDir: /artifacts
@@ -323,3 +267,9 @@ spec:
         items:
         - key: toolchain.json
           path: toolchain.json
+    - name: check-registry-script
+      configmap: 
+        name: check-registry-script
+        items: 
+        - key: check_registry.sh
+          path: check_registry.sh          

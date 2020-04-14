@@ -1,0 +1,86 @@
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: cr-build
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: apikey
+      description: the ibmcloud api key
+    - name: imageUrl
+      description: The image url in your container registry
+    - name: pathToDockerfile
+      default: '.'
+  resourcetemplates:
+    # CD secret to provide API_KEY to access toolchain information
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.apikey)
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineResource
+      metadata:
+        name: image-to-build
+      spec:
+        type: image
+        params:
+          - name: url
+            value: $(params.imageUrl)
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: containerize-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: containerize-$(uid)
+      spec:
+        pipelineRef:
+          name: cr-build
+        resources:
+          - name: app-image
+            resourceRef:
+              name: image-to-build
+        params:
+          - name: pipeline-pvc
+            value: containerize-$(uid)-pvc
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: pathToDockerfile
+            value: $(params.pathToDockerfile)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: cr-build
+spec:
+  params:
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: cr-build
+spec:
+  triggers:
+    - binding:
+        name: cr-build
+      template:
+        name: cr-build
