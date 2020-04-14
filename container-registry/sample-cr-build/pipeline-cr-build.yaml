@@ -4,8 +4,6 @@ metadata:
   name: cr-build
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
@@ -15,6 +13,8 @@ spec:
   resources:
   - name: app-image
     type: image
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: pipeline-1-clone-task
       taskRef:
@@ -26,6 +26,9 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
     - name: pipeline-2-cr-build-task
       runAfter: [pipeline-1-clone-task]
       taskRef:
@@ -49,7 +52,10 @@ spec:
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
             # Add a specific tag with cd build number
-            echo "1.0.0-${BUILD_NUMBER}"            
+            echo "1.0.0-${BUILD_NUMBER}"
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
       resources:
         outputs:
           - name: builtImage
@@ -68,6 +74,9 @@ spec:
         #   value: '3'
         # - name: failOnScannedIssues
         #   value: 'false'
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
       resources:
         inputs:
           - name: image

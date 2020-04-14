@@ -56,14 +56,16 @@ spec:
             resourceRef:
               name: image-to-build
         params:
-          - name: pipeline-pvc
-            value: containerize-$(uid)-pvc
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
           - name: pathToDockerfile
             value: $(params.pathToDockerfile)
+        workspaces:
+        - name: pipeline-ws
+          persistentVolumeClaim:
+            claimName: containerize-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
