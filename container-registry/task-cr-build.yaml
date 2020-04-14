@@ -1,0 +1,210 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: cr-build-task
+spec:
+  inputs:
+    params:
+      - name: ibmcloudApi
+        description: the ibmcloud api
+        default: https://cloud.ibm.com
+      - name: continuous-delivery-context-secret
+        description: name of the configmap containing the continuous delivery pipeline context secrets
+        default: cd-secret
+      - name: container-registry-apikey-secret-key
+        description: field in the secret that contains the api key used to login to ibmcloud container registry
+        default: 'API_KEY'
+      - name: resourceGroup
+        description: target resource group (name or id) for the ibmcloud login operation
+        default: ''
+      - name: pathToContext
+        default: .
+      - name: pathToDockerfile
+        default: .
+      - name: dockerfile
+        description: The name of the Dockerfile
+        default: "Dockerfile"
+      - name: additionalTags
+        description: comma-separated list of additionalTags
+        # can not be defined as an array because of variable substition error for array
+        # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
+        default: ''
+      - name: additionalTagsScript
+        description: Shell script that allows to add tags for the image to be build.
+        default: ''
+      - name: propertiesFile
+        description: file containing properties out of containerize task
+        default: build.properties
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+      mountPath: /artifacts
+  outputs:
+    resources:
+      - name: builtImage
+        type: image
+  steps:
+    - name: check-registry-and-build-image
+      image: ibmcom/pipeline-base-image:2.6
+      workingDir: /artifacts
+      env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(inputs.params.continuous-delivery-context-secret)
+              key: $(inputs.params.container-registry-apikey-secret-key)
+        - name: IMAGE_RESOURCE_URL
+          value: $(outputs.resources.builtImage.url)
+        - name: IBMCLOUD_API
+          value: $(inputs.params.ibmcloudApi)
+        - name: IBMCLOUD_RESOURCE_GROUP
+          value: $(inputs.params.resourceGroup)
+        - name: PROPERTIES_FILE
+          value: $(inputs.params.propertiesFile)
+        # CD execution context injection
+        - name: PIPELINE_RUN_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tekton.dev/pipelineRun']
+        - name: PIPELINE_RUN_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: TRIGGER_TYPE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-type']
+        - name: TRIGGER_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
+        - name: TRIGGERED_BY
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+          ##########################################################################
+          # Setting HOME explicitly to have ibmcloud plugins available
+          # doing the export rather than env definition is a workaround
+          # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+          export HOME="/root"
+          ##########################################################################
+
+          # Ensure login to the container registry and namespace available
+          source /scripts/check_registry.sh
+
+          # Manage multiple tags for an image
+          # Add dynamically computed tags
+          printf "#!/bin/bash\n" > /steps/additionnalTags.sh
+          printf "%s " '$(inputs.params.additionalTagsScript)' >> /steps/additionnalTags.sh
+          chmod +x /steps/additionnalTags.sh
+          /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
+          # Add image pipeline resource
+          if [ "${IMAGE_TAG}" ]; then
+            echo "${IMAGE_TAG}" >> /steps/tags.lst
+          fi
+          # Add tags provided using task parameter
+          if [ "$(inputs.params.additionalTags)" ];  then
+            echo "$(inputs.params.additionalTags)" | sed 's/,/\n/g' >> /steps/tags.lst
+          fi
+          echo "#######################"
+          echo "Image Tags:"
+          cat /steps/tags.lst
+          echo "#######################"
+          # Add the full image url with tags - use # as separator in case IMAGE_NAME contains /
+          sed -i "s#^#$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:#" /steps/tags.lst
+          sort -u -o /steps/tags.lst /steps/tags.lst
+          echo "#######################"
+
+          if [ -s /steps/tags.lst ]; then
+            echo "Image tags:"
+            cat /steps/tags.lst
+          else
+            # Force a minimal tag for the image build
+            echo "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:latest" > /steps/tags.lst
+            echo "Define a minimal image tag: $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:latest"
+          fi
+
+          # Build the image using ibmcloud cr build for the first tag in the file
+          ibmcloud cr build \
+            --file $(inputs.params.pathToDockerfile)/$(inputs.params.dockerfile) \
+            --tag $(head --lines=1 /steps/tags.lst) \
+            $(inputs.params.pathToContext)
+
+          # Create remaining tags for the image
+          for tag in $(tail --lines=+2 /steps/tags.lst)
+          do
+            ibmcloud cr image-tag $(head --lines=1 /steps/tags.lst) $tag
+          done
+
+          # Workaround to reference the latest ibmcloud cr plugin
+          if ibmcloud cr image-digests; then
+            echo "ibmcloud cr plugin has an appropriate version containing image-digests command"
+          else
+            ibmcloud plugin update container-registry --force
+          fi            
+
+          IMAGE_TAG=$(head --lines=1 /steps/tags.lst |  awk -F: '{print $2}')
+          echo "**"
+          echo "** ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
+          ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME}
+          echo "** ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}'"
+          ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}'
+          echo "**"
+          MANIFEST_SHA=$(ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}' | grep "${IMAGE_TAG}" | awk '{print $NF}')
+
+          # Because of https://github.com/tektoncd/pipeline/issues/216
+          # the image digest for input is/will always empty
+          # there was an alternative/workaround but it is updating using a specific account
+          # and using a kubectl command to update the resources
+          # see https://github.com/nlewo/poc-tekton#deploy-tasks
+          # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
+          # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
+          # Here the workaround will be to add registry and image information in an output properties file
+          if [ "$PROPERTIES_FILE" ]; then
+            cd /artifacts
+            touch $PROPERTIES_FILE
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> $PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
+            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
+            IMAGE_TAGS=$(sed "s#^$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:##" /steps/tags.lst | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
+            echo "IMAGE_TAGS=$IMAGE_TAGS" >> $PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
+            echo "$PROPERTIES_FILE content:"
+            cat $PROPERTIES_FILE
+          fi
+
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /scripts
+          name: check-registry-script
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+        - key: toolchain.json
+          path: toolchain.json
+    - name: check-registry-script
+      configmap: 
+        name: check-registry-script
+        items: 
+        - key: check_registry.sh
+          path: check_registry.sh
