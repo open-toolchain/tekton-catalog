@@ -111,6 +111,8 @@ spec:
           echo ""
           echo "Secret created."
       volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
         - mountPath: /scripts
