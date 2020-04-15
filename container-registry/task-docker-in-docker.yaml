@@ -5,12 +5,18 @@ metadata:
 spec:
   inputs:
     params:
+      - name: ibmcloudApi
+        description: the ibmcloud api
+        default: https://cloud.ibm.com
       - name: continuous-delivery-context-secret
         description: name of the secret containing the continuous delivery pipeline context secrets
         default: cd-secret
       - name: container-registry-apikey-secret-key
         description: field in the secret that contains the api key used to login to ibmcloud container registry
         default: 'API_KEY'
+      - name: resourceGroup
+        description: target resource group (name or id) for the ibmcloud login operation
+        default: ''
       #
       - name: imageTag
         description: the default image tag if none is provided using the builtImage url
