@@ -26,6 +26,9 @@ spec:
       - name: dockerfile
         description: The name of the Dockerfile
         default: "Dockerfile"
+      - name: buildArgs
+        description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
+        default: ""
       - name: buildkit_image
         description: The name of the BuildKit image
         default: "moby/buildkit:v0.6.3-rootless"
@@ -40,10 +43,17 @@ spec:
       - name: propertiesFile
         description: file containing properties out of containerize task
         default: build.properties
+      - name: pipeline-debug
+        description: Pipeline debug mode
+        default: "0"
   outputs:
     resources:
       - name: builtImage
         type: image
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(inputs.params.pipeline-debug)
   steps:
     - name: check-registry
       image: ibmcom/pipeline-base-image:2.6
@@ -64,6 +74,14 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
           ##########################################################################
           # Setting HOME explicitly to have ibmcloud plugins available
           # doing the export rather than env definition is a workaround
@@ -138,6 +156,13 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - |
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
           source /steps/next-step-env.properties
           export $(cut -d= -f1 /steps/next-step-env.properties)
 
@@ -172,10 +197,16 @@ spec:
           fi
           echo "Buildkit Image names: $BUILDKIT_IMAGE_NAMES"
 
+          BUILD_ARG_LIST='$(inputs.params.buildArgs)'
+          for buildArg in $BUILD_ARG_LIST; do
+            BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
+          done
+
           buildctl-daemonless.sh build \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(inputs.params.dockerfile) \
+            ${BUILD_ARGS} \
             --local context=/artifacts/$(inputs.params.pathToContext) --local dockerfile=/artifacts/$(inputs.params.pathToDockerfile) \
             --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
             --export-cache type=inline \
@@ -206,6 +237,14 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
           source /steps/next-step-env.properties
           export $(cut -d= -f1 /steps/next-step-env.properties)
 

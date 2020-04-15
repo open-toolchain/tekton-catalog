@@ -12,6 +12,8 @@ spec:
       description: the branch for the git repo
     - name: pathToDockerfile
       default: '.'
+    - name: pipeline-debug
+      default: "0"
   resources:
   - name: app-image
     type: image
@@ -26,6 +28,8 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: pipeline-2-cr-build-task
       runAfter: [pipeline-1-clone-task]
       taskRef:
@@ -50,6 +54,8 @@ spec:
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
             # Add a specific tag with cd build number
             echo "1.0.0-${BUILD_NUMBER}"            
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       resources:
         outputs:
           - name: builtImage
@@ -68,6 +74,8 @@ spec:
         #   value: '3'
         # - name: failOnScannedIssues
         #   value: 'false'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       resources:
         inputs:
           - name: image

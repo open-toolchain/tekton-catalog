@@ -26,6 +26,9 @@ spec:
       - name: dockerfile
         description: The name of the Dockerfile
         default: "Dockerfile"
+      - name: buildArgs
+        description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
+        default: ""
       - name: additionalTags
         description: comma-separated list of additionalTags
         # can not be defined as an array because of variable substition error for array
@@ -37,6 +40,9 @@ spec:
       - name: propertiesFile
         description: file containing properties out of containerize task
         default: build.properties
+      - name: pipeline-debug
+        description: Pipeline debug mode
+        default: "0"
   outputs:
     resources:
       - name: builtImage
@@ -59,6 +65,8 @@ spec:
           value: $(inputs.params.resourceGroup)
         - name: PROPERTIES_FILE
           value: $(inputs.params.propertiesFile)
+        - name: PIPELINE_DEBUG
+          value: $(inputs.params.pipeline-debug)            
         # CD execution context injection
         - name: PIPELINE_RUN_NAME
           valueFrom:
@@ -92,6 +100,14 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
           ##########################################################################
           # Setting HOME explicitly to have ibmcloud plugins available
           # doing the export rather than env definition is a workaround
@@ -134,8 +150,14 @@ spec:
             echo "Define a minimal image tag: $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:latest"
           fi
 
+          BUILD_ARG_LIST='$(inputs.params.buildArgs)'
+          for buildArg in $BUILD_ARG_LIST; do
+            BUILD_ARGS="${BUILD_ARGS} --build-arg $buildArg "
+          done
+
           # Build the image using ibmcloud cr build for the first tag in the file
           ibmcloud cr build \
+            ${BUILD_ARGS} \
             --file $(inputs.params.pathToDockerfile)/$(inputs.params.dockerfile) \
             --tag $(head --lines=1 /steps/tags.lst) \
             $(inputs.params.pathToContext)
