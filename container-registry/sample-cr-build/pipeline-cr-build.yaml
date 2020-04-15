@@ -10,6 +10,8 @@ spec:
       description: the branch for the git repo
     - name: pathToDockerfile
       default: '.'
+    - name: pipeline-debug
+      default: "0"
   resources:
   - name: app-image
     type: image
@@ -24,6 +26,8 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -49,6 +53,12 @@ spec:
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
             # Add a specific tag with cd build number
             echo "1.0.0-${BUILD_NUMBER}"
+        - name: buildArgs
+          value: |
+            KEY1=value1
+            KEY2=value2
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -68,6 +78,8 @@ spec:
         #   value: '3'
         # - name: failOnScannedIssues
         #   value: 'false'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: workspace
           workspace: pipeline-ws
