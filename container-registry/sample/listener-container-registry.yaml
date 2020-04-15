@@ -14,6 +14,8 @@ spec:
       description: The image url in your container registry
     - name: pathToDockerfile
       default: '.'
+    - name: pipeline-debug
+      default: "0"
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
@@ -64,6 +66,8 @@ spec:
             value: $(params.branch)
           - name: pathToDockerfile
             value: $(params.pathToDockerfile)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
