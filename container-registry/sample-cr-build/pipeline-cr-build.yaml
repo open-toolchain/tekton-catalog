@@ -52,11 +52,7 @@ spec:
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
             # Add a specific tag with cd build number
-            echo "1.0.0-${BUILD_NUMBER}"
-        - name: buildArgs
-          value: |
-            KEY1=value1
-            KEY2=value2
+            echo "1.0.0-${BUILD_NUMBER}"            
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
