@@ -17,6 +17,9 @@ spec:
       - name: resourceGroup
         description: target resource group (name or id) for the ibmcloud login operation
         default: ''
+      - name: image-url
+        description: "url of the image to build - required if no image pipeline resource provided to this task"
+        default: ""
       - name: pathToContext
         default: .
       - name: pathToDockerfile
@@ -49,6 +52,8 @@ spec:
     resources:
       - name: builtImage
         type: image
+        description: "(Optional) The image to build"
+        optional: true
   steps:
     - name: check-registry-and-build-image
       image: ibmcom/pipeline-base-image:2.6
@@ -59,8 +64,6 @@ spec:
             secretKeyRef:
               name: $(inputs.params.continuous-delivery-context-secret)
               key: $(inputs.params.container-registry-apikey-secret-key)
-        - name: IMAGE_RESOURCE_URL
-          value: $(outputs.resources.builtImage.url)
         - name: IBMCLOUD_API
           value: $(inputs.params.ibmcloudApi)
         - name: IBMCLOUD_RESOURCE_GROUP
@@ -116,6 +119,12 @@ spec:
           # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
           export HOME="/root"
           ##########################################################################
+
+          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+          else
+            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+          fi
 
           # Ensure login to the container registry and namespace available
           source /scripts/check_registry.sh

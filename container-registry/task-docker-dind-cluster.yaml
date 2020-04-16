@@ -23,10 +23,16 @@ spec:
       - name: clusterRegion
         description: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
         default: ''
+      - name: cluster-name
+        description: "name of the docker build cluster - required if no cluster pipeline resource provided to this task"
+        default: ""
       - name: clusterNamespace
         description: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed
         default: 'build'
       # 
+      - name: image-url
+        description: "url of the image to build - required if no image pipeline resource provided to this task"
+        default: ""
       - name: imageTag
         description: the default image tag if none is provided using the builtImage url
         default: latest
@@ -56,9 +62,10 @@ spec:
         description: file containing properties out of the docker in docker task
         default: build.properties
     resources:
-      # Will be set as optional when tekton version support it
       - name: cluster
         type: cluster
+        description: "(Optional) The cluster used for Docker build"
+        optional: true
   workspaces:
     - name: workspace
       description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
@@ -67,6 +74,8 @@ spec:
     resources:
       - name: builtImage
         type: image
+        description: "(Optional) The image to build"
+        optional: true
   steps:
     - name: check-registry
       image: ibmcom/pipeline-base-image:2.6
@@ -77,8 +86,6 @@ spec:
             secretKeyRef:
               name: $(inputs.params.continuous-delivery-context-secret)
               key: $(inputs.params.container-registry-apikey-secret-key)
-        - name: IMAGE_RESOURCE_URL
-          value: $(outputs.resources.builtImage.url)
         - name: IBMCLOUD_API
           value: $(inputs.params.ibmcloudApi)
         - name: IBMCLOUD_RESOURCE_GROUP
@@ -93,6 +100,12 @@ spec:
           # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
           export HOME="/root"
           ##########################################################################
+
+          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+          else
+            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+          fi
 
           # Ensure login to the container registry and namespace available
           source /scripts/check_registry.sh
@@ -170,11 +183,18 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+          else
+            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+          fi
+
           # Parse the image url to find information (region, namespace, image name and eventually tag)
           # as url of Image PipelineResource is the complete path to the image, including the registry
           # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
-          IMAGE_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $1}')
-          IMAGE_TAG=$(echo $(outputs.resources.builtImage.url) |  awk -F: '{print $2}')
+          IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
+          IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
           if [ -z "$IMAGE_TAG" ]; then
             IMAGE_TAG="$(inputs.params.imageTag)"
           fi
@@ -190,8 +210,8 @@ spec:
 
           echo ""
           # Persist registry and image information in an output properties file
-          REGISTRY_URL=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $1}')
-          REGISTRY_NAMESPACE=$(echo $(outputs.resources.builtImage.url) |  awk -F/ '{print $2}')
+          REGISTRY_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $2}')
           # Image name is remaining part after the repository and namespace and can contains /
           IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
           MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG"  --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
@@ -270,8 +290,14 @@ spec:
           echo "Cluster list:"
           ibmcloud ks clusters
 
-          echo "Running ibmcloud ks cluster config --cluster "$(inputs.resources.cluster.name)" --export -s"
-          CLUSTER_CONFIG_COMMAND=$(ibmcloud ks cluster config --cluster "$(inputs.resources.cluster.name)" --export -s)
+          if [ "$(inputs.resources.cluster.name)" == "" ]; then
+            export BUILD_CLUSTER_NAME="$(inputs.params.cluster-name)"
+          else
+            export BUILD_CLUSTER_NAME="$(inputs.resources.cluster.name)"
+          fi
+
+          echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s"
+          CLUSTER_CONFIG_COMMAND=$(ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s)
           echo "$CLUSTER_CONFIG_COMMAND"
           eval $CLUSTER_CONFIG_COMMAND
 
