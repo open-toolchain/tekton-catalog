@@ -16,9 +16,6 @@ spec:
       default: '.'
     - name: pipeline-debug
       default: "0"
-  resources:
-  - name: app-image
-    type: image
   tasks:
     - name: pipeline-1-clone-task
       taskRef:
