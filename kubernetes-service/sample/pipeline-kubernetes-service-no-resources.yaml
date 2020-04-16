@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: kubernetes-service-no-resources
+spec:
+  params:
+    - name: resourceGroup
+    - name: cluster-name
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: pipeline-0-setup-task
+      taskRef:
+        name: fetch-iks-cluster-config
+      params:
+        - name: resourceGroup
+          value: $(params.resourceGroup)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: clusterPipelineResourcesDirectoryFallback
+          value: .tekton-clusters
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+    - name: pipeline-1-kubectl-task
+      runAfter: [pipeline-0-setup-task]
+      taskRef:
+        name: kubernetes-contextual-execution
+      params:
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: clusterPipelineResourcesDirectory
+          value: .tekton-clusters
+        - name: script
+          value: |
+            echo "** Here is the kubectl version:"
+            kubectl version
+            echo "** Here is the kubectl cluster-info:"
+            kubectl cluster-info
+            echo "** Here are the kubectl namespaces:"
+            kubectl get namespaces
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+
