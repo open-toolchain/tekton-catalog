@@ -30,6 +30,7 @@
 #### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
@@ -42,7 +43,7 @@
 
 #### Resources
 
-* **builtImage**: The Image PipelineResource that will be created as output of this task.
+* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Build Image helper task: cr-build-task
 
@@ -62,6 +63,7 @@
 #### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **additionalTags**: (optional) comma-separated list of tags for the built image
@@ -73,7 +75,7 @@
 
 #### Resources
 
-* **builtImage**: The Image PipelineResource that will be created as output of this task.
+* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Docker In Docker (DIND) helper task: execute-in-dind-task
 This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind,
@@ -98,6 +100,7 @@ and is available only during the task's lifespan.
 #### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
 * **imageTag**: (optional) the tag for the built image (default to `latest`) 
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
@@ -115,7 +118,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 #### Resources
 
-* **builtImage**: The Image PipelineResource that will be created as output of this task.
+* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task: execute-in-dind-cluster-task
 This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
@@ -139,6 +142,8 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **clusterRegion**: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
 * **clusterNamespace**: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed (default to `build`)
+* **cluster-name**: (optional) name of the docker build cluster - required if no cluster pipeline resource provided to this task
+* **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
 * **imageTag**: (optional) the tag for the built image (default to `latest`) 
 * **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
@@ -153,13 +158,13 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 ```
 #### Resources
 
-* **cluster**: The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
+* **cluster**: (optional) The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
 
 ### Outputs
 
 #### Resources
 
-* **builtImage**: The Image PipelineResource that will be created as output of this task.
+* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Vulnerability Advisor helper task: vulnerability-advisor-task
 
@@ -179,6 +184,8 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 #### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
+* **image-url**: (optional) url of the image to VA scan - required if no image pipeline resource provided to this task
+* **image-digest**: (optional) SHA id of the image to VA scan - required if no image pipeline resource provided and no `imagePropertiesFile` value provided
 * **imagePropertiesFile**: file containing properties of the image to be scanned (default to 'build.properties')
 * **maxIteration**: maximum number of iterations allowed while loop to check for va report (default to 30 iterations maximum)
 * **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
@@ -188,19 +195,22 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 #### Resources
 
-* **image**: The Image PipelineResource that this task will process the Vulnerability Advisor scan result.
+* **image**: (optional) The Image PipelineResource that this task will process the Vulnerability Advisor scan result.
 
 ## Usages
 
 - The `sample` sub-directory contains an `event-listener-container-registry` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `containerize-task` and `vulnerability-advisor-task`.
+  It also contains a `buildkit-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
   See the documentation [here](./sample/README.md)
 
 - The `sample-docker-dind-sidecar` sub-directory contains an `event-listener-dind` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-task` and `vulnerability-advisor-task`.
+  It also contains a `dind-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
   See the documentation [here](./sample-docker-dind-sidecar/README.md)
 
 - The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-cluster` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-cluster-task` and `vulnerability-advisor-task`.
+  It also contains a `dind-cluster-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
   See the documentation [here](./sample-docker-dind-cluster/README.md)
 
