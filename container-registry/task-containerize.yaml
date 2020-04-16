@@ -19,6 +19,9 @@ spec:
       - name: resourceGroup
         description: target resource group (name or id) for the ibmcloud login operation
         default: ''
+      - name: image-url
+        description: "url of the image to build - required if no image pipeline resource provided to this task"
+        default: ""
       - name: pathToContext
         default: .
       - name: pathToDockerfile
@@ -50,6 +53,8 @@ spec:
     resources:
       - name: builtImage
         type: image
+        description: "(Optional) The image to build"
+        optional: true
   stepTemplate:
     env:
       - name: PIPELINE_DEBUG
@@ -64,8 +69,6 @@ spec:
             secretKeyRef:
               name: $(inputs.params.continuous-delivery-context-secret)
               key: $(inputs.params.container-registry-apikey-secret-key)
-        - name: IMAGE_RESOURCE_URL
-          value: $(outputs.resources.builtImage.url)
         - name: IBMCLOUD_API
           value: $(inputs.params.ibmcloudApi)
         - name: IBMCLOUD_RESOURCE_GROUP
@@ -88,6 +91,12 @@ spec:
           # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
           export HOME="/root"
           ##########################################################################
+
+          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+          else
+            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+          fi
 
           # Ensure login to the container registry and namespace available
           source /scripts/check_registry.sh
@@ -202,6 +211,12 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
+          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+          else
+            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+          fi
+
           buildctl-daemonless.sh build \
             --progress=plain \
             --frontend=dockerfile.v0 \
@@ -210,7 +225,7 @@ spec:
             --local context=/artifacts/$(inputs.params.pathToContext) --local dockerfile=/artifacts/$(inputs.params.pathToDockerfile) \
             --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
             --export-cache type=inline \
-            --import-cache type=registry,ref=$(outputs.resources.builtImage.url) 2>&1 | tee /steps/build.log
+            --import-cache type=registry,ref=$IMAGE_RESOURCE_URL 2>&1 | tee /steps/build.log
 
           # Using the deprecated --exporter option for now as the multiple name/tags using --output option
           # is not working as expected: https://github.com/moby/buildkit/issues/797#issuecomment-581346240
