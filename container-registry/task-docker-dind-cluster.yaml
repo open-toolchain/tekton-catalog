@@ -25,6 +25,9 @@ spec:
       - name: clusterRegion
         description: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
         default: ''
+      - name: cluster-name
+        description: "name of the docker build cluster - required if no cluster pipeline resource provided to this task"
+        default: ""
       - name: clusterNamespace
         description: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed
         default: 'build'
@@ -61,9 +64,10 @@ spec:
         description: file containing properties out of the docker in docker task
         default: build.properties
     resources:
-      # Will be set as optional when tekton version support it
       - name: cluster
         type: cluster
+        description: "(Optional) The cluster used for Docker build"
+        optional: true
   outputs:
     resources:
       - name: builtImage
@@ -286,8 +290,14 @@ spec:
           echo "Cluster list:"
           ibmcloud ks clusters
 
-          echo "Running ibmcloud ks cluster config --cluster "$(inputs.resources.cluster.name)" --export -s"
-          CLUSTER_CONFIG_COMMAND=$(ibmcloud ks cluster config --cluster "$(inputs.resources.cluster.name)" --export -s)
+          if [ "$(inputs.resources.cluster.name)" == "" ]; then
+            export BUILD_CLUSTER_NAME="$(inputs.params.cluster-name)"
+          else
+            export BUILD_CLUSTER_NAME="$(inputs.resources.cluster.name)"
+          fi
+
+          echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s"
+          CLUSTER_CONFIG_COMMAND=$(ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s)
           echo "$CLUSTER_CONFIG_COMMAND"
           eval $CLUSTER_CONFIG_COMMAND
 
