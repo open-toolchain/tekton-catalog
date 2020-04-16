@@ -203,7 +203,8 @@ spec:
           # Here the workaround will be to add registry and image information in an output properties file
           if [ "$PROPERTIES_FILE" ]; then
             cd /artifacts
-            touch $PROPERTIES_FILE
+            # Ensure directory is there
+            mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
             echo "REGISTRY_URL=${REGISTRY_URL}" >> $PROPERTIES_FILE
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
             echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE

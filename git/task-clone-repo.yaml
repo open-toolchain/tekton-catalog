@@ -298,7 +298,7 @@ spec:
           if [ "$PROPERTIES_FILE" ]; then
             # Ensure directory is there
             mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
-            echo "GIT_URL=$REPOSITORY" > /artifacts/$PROPERTIES_FILE
+            echo "GIT_URL=$REPOSITORY" >> /artifacts/$PROPERTIES_FILE
             echo "GIT_BRANCH=$BRANCH" >> /artifacts/$PROPERTIES_FILE
             echo "GIT_COMMIT=$GIT_COMMIT" >> /artifacts/$PROPERTIES_FILE
             # Change  write access permission to allow subsequent task(s) to update if needed

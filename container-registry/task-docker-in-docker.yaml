@@ -206,7 +206,6 @@ spec:
           if [ "$PROPERTIES_FILE" ]; then
             # Ensure directory is there
             mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
-            touch /artifacts/$PROPERTIES_FILE
             echo "REGISTRY_URL=${REGISTRY_URL}" >> /artifacts/$PROPERTIES_FILE
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> /artifacts/$PROPERTIES_FILE
             echo "IMAGE_NAME=${IMAGE_NAME}" >> /artifacts/$PROPERTIES_FILE
