@@ -12,7 +12,7 @@ spec:
       description: the url of the image to build
   workspaces:
     - name: pipeline-ws
-tasks:
+  tasks:
     - name: clone-repository
       taskRef:
         name: clone-repo-task
