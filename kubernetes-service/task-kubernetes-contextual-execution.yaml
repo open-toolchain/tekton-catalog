@@ -14,19 +14,21 @@ spec:
       - name: clusterPipelineResourcesDirectory
         description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
         default: /workspace
+      - name: cluster-name
+        description: name of the cluster - required if no cluster pipeline resource provided to this task
+        default: ""
       - name: script
         description: the bash snippet to execute within the context of the kubernetes configuration
         default: 'kubectl version'
     resources:
       - name: cluster
         type: cluster
+        optional: true
   steps:
     - name: execute
       image: ibmcom/pipeline-base-image:2.6
       workingDir: $(inputs.params.task-pvc-mountpath)
       env:
-        - name: KUBECONFIG
-          value: $(inputs.params.clusterPipelineResourcesDirectory)/$(inputs.resources.cluster.name)/kubeconfig
         # CD execution context injection
         - name: PIPELINE_RUN_NAME
           valueFrom:
@@ -59,6 +61,15 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |
+
+          # Find cluster information
+          if [ "$(inputs.resources.cluster.name)" == "" ]; then
+            export CLUSTER_NAME="$(inputs.params.cluster-name)"
+          else
+            export CLUSTER_NAME="$(inputs.resources.cluster.name)"
+          fi
+          export KUBECONFIG=$(inputs.params.clusterPipelineResourcesDirectory)/$CLUSTER_NAME/kubeconfig
+
           # Validate KUBECONFIG
           if test -f "$KUBECONFIG"; then
             echo "KUBECONFIG=$KUBECONFIG"
