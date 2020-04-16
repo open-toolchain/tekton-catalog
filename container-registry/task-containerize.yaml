@@ -296,7 +296,6 @@ spec:
           # Here the workaround will be to add registry and image information in an output properties file
           if [ "$PROPERTIES_FILE" ]; then
             mkdir -p $(workspaces.workspace.path)/$(dirname "$PROPERTIES_FILE")
-            touch $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
