@@ -4,36 +4,33 @@ metadata:
   name: kubernetes-service-no-resources
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: resourceGroup
     - name: cluster-name
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: pipeline-0-setup-task
       taskRef:
         name: fetch-iks-cluster-config
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: resourceGroup
           value: $(params.resourceGroup)
         - name: cluster-name
           value: $(params.cluster-name)
         - name: clusterPipelineResourcesDirectoryFallback
           value: .tekton-clusters
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
     - name: pipeline-1-kubectl-task
       runAfter: [pipeline-0-setup-task]
       taskRef:
         name: kubernetes-contextual-execution
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: task-pvc-mountpath
-          value: /pipelinerun
         - name: cluster-name
           value: $(params.cluster-name)
         - name: clusterPipelineResourcesDirectory
-          value: /pipelinerun/.tekton-clusters
+          value: .tekton-clusters
         - name: script
           value: |
             echo "** Here is the kubectl version:"
@@ -42,4 +39,7 @@ spec:
             kubectl cluster-info
             echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
 

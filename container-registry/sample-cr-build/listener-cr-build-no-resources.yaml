@@ -45,8 +45,6 @@ spec:
         pipelineRef:
           name: cr-build-no-resources
         params:
-          - name: pipeline-pvc
-            value: cr-build-$(uid)-pvc
           - name: repository
             value: $(params.repository)
           - name: branch
@@ -57,6 +55,10 @@ spec:
             value: $(params.pathToDockerfile)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
+        workspaces:
+        - name: pipeline-ws
+          persistentVolumeClaim:
+            claimName: cr-build-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

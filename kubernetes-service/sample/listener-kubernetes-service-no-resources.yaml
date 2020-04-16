@@ -39,12 +39,14 @@ spec:
         pipelineRef:
           name: kubernetes-service-no-resources
         params:
-          - name: pipeline-pvc
-            value: pipelinerun-$(uid)-pvc
           - name: resourceGroup
             value: $(params.resourceGroup)
           - name: cluster-name
             value: $(params.clusterName)
+        workspaces:
+        - name: pipeline-ws
+          persistentVolumeClaim:
+            claimName: pipelinerun-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

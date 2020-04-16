@@ -41,14 +41,16 @@ spec:
         pipelineRef:
           name: dind-no-resources
         params:
-          - name: pipeline-pvc
-            value: dind-$(uid)-pvc
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
           - name: image-url
             value: $(params.imageUrl)
+        workspaces:
+        - name: pipeline-ws
+          persistentVolumeClaim:
+            claimName: dind-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

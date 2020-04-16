@@ -4,8 +4,6 @@ metadata:
   name: dind-cluster-no-resources
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
@@ -14,35 +12,37 @@ spec:
       description: the url of the image to build
     - name: cluster-name
       description: name of the docker build cluster
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: clone-repository
       taskRef:
         name: clone-repo-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
     - name: build-and-push-docker
       runAfter: [clone-repository]
       taskRef:
         name: execute-in-dind-cluster-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: image-url
           value: $(params.image-url)
         - name: cluster-name
           value: $(params.cluster-name)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
     - name: va-scan-task
       runAfter: [build-and-push-docker]
       taskRef:
         name: vulnerability-advisor-task
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: scanReportFile
           value: 'app-image-va-report.json'
         # - name: maxIteration
@@ -53,4 +53,6 @@ spec:
         #   value: 'false'
         - name: image-url
           value: $(params.image-url)
-
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
