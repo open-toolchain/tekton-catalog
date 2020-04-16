@@ -208,7 +208,6 @@ spec:
           if [ "$PROPERTIES_FILE" ]; then
             # Ensure directory is there
             mkdir -p $(workspaces.workspace.path)/$(dirname "$PROPERTIES_FILE")
-            touch $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
