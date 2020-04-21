@@ -34,19 +34,18 @@ spec:
     - name: clusterAndWorkerNodesJsonExport
       description: directory in the workspace that will be used to store the cluster and worker nodes export json files
       default: ''
-  inputs:
-    resources:
+  resources:
+    inputs:
+      - name: cluster
+        type: cluster
+        optional: true
+    outputs:
       - name: cluster
         type: cluster
         optional: true
   workspaces:
     - name: workspace
       description: A workspace backing by a volume
-  outputs:
-    resources:
-      - name: cluster
-        type: cluster
-        optional: true
   steps:
     - name: setup
       image: ibmcom/pipeline-base-image:2.6
@@ -82,10 +81,10 @@ spec:
             ibmcloud target -g $(params.resourceGroup)
           fi
           # Look for the cluster
-          if [ "$(inputs.resources.cluster.name)" == "" ]; then
+          if [ "$(resources.inputs.cluster.name)" == "" ]; then
             export CLUSTER_NAME="$(params.cluster-name)"
           else
-            export CLUSTER_NAME="$(inputs.resources.cluster.name)"
+            export CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
           if ibmcloud ks cluster get --cluster $CLUSTER_NAME; then
             KUBECONFIG_FILE=$(ibmcloud ks cluster config --cluster $CLUSTER_NAME --export -s | awk -F= '{print $2}')

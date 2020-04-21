@@ -15,8 +15,8 @@ spec:
     - name: script
       description: the bash snippet to execute within the context of the kubernetes configuration
       default: 'kubectl version'
-  inputs:
-    resources:
+   resources:
+    inputs:
       - name: cluster
         type: cluster
         optional: true        
@@ -62,10 +62,10 @@ spec:
         - |
 
           # Find cluster information
-          if [ "$(inputs.resources.cluster.name)" == "" ]; then
+          if [ "$(resources.inputs.cluster.name)" == "" ]; then
             export CLUSTER_NAME="$(params.cluster-name)"
           else
-            export CLUSTER_NAME="$(inputs.resources.cluster.name)"
+            export CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
           export KUBECONFIG=$(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectory)/$CLUSTER_NAME/kubeconfig
 

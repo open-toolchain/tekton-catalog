@@ -50,8 +50,8 @@ spec:
     - name: workspace
       description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
       mountPath: /artifacts
-  outputs:
-    resources:
+  resources:
+    outputs:
       - name: builtImage
         type: image
         description: "(Optional) The image to build"
@@ -93,10 +93,10 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
           fi
 
           # Ensure login to the container registry and namespace available
@@ -212,10 +212,10 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
-          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
           fi
 
           buildctl-daemonless.sh build \
@@ -230,7 +230,7 @@ spec:
 
           # Using the deprecated --exporter option for now as the multiple name/tags using --output option
           # is not working as expected: https://github.com/moby/buildkit/issues/797#issuecomment-581346240
-          #  --output type=image,"name=$(outputs.resources.builtImage.url):1.0.0,$(outputs.resources.builtImage.url)",push=true \
+          #  --output type=image,"name=$(resources.outputs.builtImage.url):1.0.0,$(resources.outputs.builtImage.url)",push=true \
 
           # it is not possible to specify multiple exporters for now
           # --output type=oci,dest=/builder/home/image-outputs/builtImage/output.tar \
@@ -273,7 +273,7 @@ spec:
           CONFIG_SHA=$(grep -i 'exporting config' build.log | grep -i 'done' | awk '{print $4}')
           FULLY_QUALIFIED_IMAGE=$(grep -i 'pushing manifest' build.log | grep -i 'done' | awk '{print $5}')
 
-          if [ "$(outputs.resources.builtImage.url)" ]; then
+          if [ "$(resources.outputs.builtImage.url)" ]; then
             echo "Creating OCI image index - index.json - out of the build.log to reference image sha: $MANIFEST_SHA"
             # ibmcloud container-registry image manifest is: application/vnd.docker.distribution.manifest.v2+json
             echo "{}" | \

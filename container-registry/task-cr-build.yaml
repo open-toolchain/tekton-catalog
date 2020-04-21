@@ -47,8 +47,8 @@ spec:
     - name: workspace
       description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
       mountPath: /artifacts
-  outputs:
-    resources:
+  resources:
+    outputs:
       - name: builtImage
         type: image
         description: "(Optional) The image to build"
@@ -119,10 +119,10 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
           fi
 
           # Ensure login to the container registry and namespace available
