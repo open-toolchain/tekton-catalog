@@ -3,26 +3,25 @@ kind: Task
 metadata:
   name: post-slack
 spec:
-  inputs:
-    params:
-      - name: domain
-        description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-        default: ''
-      - name: channel
-        description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-        default: ''
-      - name: messageFormat
-        description: the format of the message. text(default) or JSON payload.
-        default: text
-      - name: messageScript
-        description: Shell script that provides messsage content.
-        default: ''
-      - name: message
-        description: the message to send to Slack
-        default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
-      - name: exitOnError
-        description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
-        default: 'false'
+  params:
+    - name: domain
+      description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
+      default: ''
+    - name: channel
+      description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
+      default: ''
+    - name: messageFormat
+      description: the format of the message. text(default) or JSON payload.
+      default: text
+    - name: messageScript
+      description: Shell script that provides messsage content.
+      default: ''
+    - name: message
+      description: the message to send to Slack
+      default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
+    - name: exitOnError
+      description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
+      default: 'false'
   workspaces:
     - name: workspace
       description: A workspace that contain data useful for the script/slack message resolution. Should be marked as optional when Tekton will permit it
@@ -34,7 +33,7 @@ spec:
       env:
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
-          value: $(inputs.params.message)
+          value: $(params.message)
         - name: PIPELINE_RUN_NAME
           valueFrom:
             fieldRef:
@@ -73,7 +72,7 @@ spec:
 
           # Dynamically set message if messageScript param is set
           printf "#!/bin/sh\n" > /steps/messageScript.sh
-          printf "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
+          printf "%s " '$(params.messageScript)' >> /steps/messageScript.sh
           chmod +x /steps/messageScript.sh
           /steps/messageScript.sh 2 >& 1 > /steps/message.content
           if [ -s /steps/message.content ]; then
@@ -87,12 +86,12 @@ spec:
           fi
 
           # message.content was passed as a slack json payload: keep it as-is
-          if [[ "$(inputs.params.messageFormat)" != "text" ]]; then
+          if [[ "$(params.messageFormat)" != "text" ]]; then
             mv /steps/message.content /steps/payload.json
           fi
 
           # Handle domain
-          SLACK_DOMAIN=$(echo $(inputs.params.domain))
+          SLACK_DOMAIN=$(echo $(params.domain))
           if [ -z "$SLACK_DOMAIN" ]; then
             echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
           else
@@ -102,7 +101,7 @@ spec:
           fi
 
           # Handle channel
-          SLACK_CHANNEL=$(echo $(inputs.params.channel))
+          SLACK_CHANNEL=$(echo $(params.channel))
 
           # Post message
           msgSent=0
@@ -110,7 +109,7 @@ spec:
           for SLACK_INTEGRATION in $(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECT_DOMAIN}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
           do
             WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
-            if [[ "$(inputs.params.messageFormat)" == "text" ]]; then
+            if [[ "$(params.messageFormat)" == "text" ]]; then
               if [ "$SLACK_CHANNEL" ]; then
                 CHANNEL=$SLACK_CHANNEL
                 echo "Posting to channel $CHANNEL as passed as parameter."
@@ -148,7 +147,7 @@ spec:
           echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failure(s))."
 
           # Handle exit based on error if any
-          if [[ $msgFail -ne 0 ]] && [[ "$(inputs.params.exitOnError)" == "true" ]]; then
+          if [[ $msgFail -ne 0 ]] && [[ "$(params.exitOnError)" == "true" ]]; then
             exit 1
           fi
       volumeMounts:

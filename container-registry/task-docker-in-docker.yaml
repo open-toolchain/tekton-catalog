@@ -3,52 +3,51 @@ kind: Task
 metadata:
   name: execute-in-dind-task
 spec:
-  inputs:
-    params:
-      - name: ibmcloudApi
-        description: the ibmcloud api
-        default: https://cloud.ibm.com
-      - name: continuous-delivery-context-secret
-        description: name of the secret containing the continuous delivery pipeline context secrets
-        default: cd-secret
-      - name: container-registry-apikey-secret-key
-        description: field in the secret that contains the api key used to login to ibmcloud container registry
-        default: 'API_KEY'
-      - name: resourceGroup
-        description: target resource group (name or id) for the ibmcloud login operation
-        default: ''
-      #
-      - name: image-url
-        description: "url of the image to build - required if no image pipeline resource provided to this task"
-        default: ""
-      - name: imageTag
-        description: the default image tag if none is provided using the builtImage url
-        default: latest
-      # Dockerfile location
-      - name: pathToContext
-        default: .
-      - name: pathToDockerfile
-        description: the path to the Docker file
-        default: .
-      - name: dockerfile
-        description: The name of the Dockerfile
-        default: "Dockerfile"
-      # Docker Client configuration
-      - name: dockerClientImage
-        description: The Docker image to use to run the Docker client
-        default: docker
-      # Docker commands
-      - name: dockerCommands
-        description: The docker command(s) to run.
-        default: |
-          # Default docker build / inspect / push command
-          docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
-          docker inspect ${IMAGE_URL}:${IMAGE_TAG}
-          docker push ${IMAGE_URL}:${IMAGE_TAG}
-      #
-      - name: propertiesFile
-        description: file containing properties out of the docker in docker task
-        default: build.properties
+  params:
+    - name: ibmcloudApi
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the secret containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: container-registry-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud container registry
+      default: 'API_KEY'
+    - name: resourceGroup
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ''
+    #
+    - name: image-url
+      description: "url of the image to build - required if no image pipeline resource provided to this task"
+      default: ""
+    - name: imageTag
+      description: the default image tag if none is provided using the builtImage url
+      default: latest
+    # Dockerfile location
+    - name: pathToContext
+      default: .
+    - name: pathToDockerfile
+      description: the path to the Docker file
+      default: .
+    - name: dockerfile
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    # Docker Client configuration
+    - name: dockerClientImage
+      description: The Docker image to use to run the Docker client
+      default: docker
+    # Docker commands
+    - name: dockerCommands
+      description: The docker command(s) to run.
+      default: |
+        # Default docker build / inspect / push command
+        docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
+        docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+        docker push ${IMAGE_URL}:${IMAGE_TAG}
+    #
+    - name: propertiesFile
+      description: file containing properties out of the docker in docker task
+      default: build.properties
   workspaces:
     - name: workspace
       description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
@@ -67,12 +66,12 @@ spec:
         - name: API_KEY
           valueFrom:
             secretKeyRef:
-              name: $(inputs.params.continuous-delivery-context-secret)
-              key: $(inputs.params.container-registry-apikey-secret-key)
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.container-registry-apikey-secret-key)
         - name: IBMCLOUD_API
-          value: $(inputs.params.ibmcloudApi)
+          value: $(params.ibmcloudApi)
         - name: IBMCLOUD_RESOURCE_GROUP
-          value: $(inputs.params.resourceGroup)
+          value: $(params.resourceGroup)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -85,7 +84,7 @@ spec:
           ##########################################################################
 
           if [ "$(outputs.resources.builtImage.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+            export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
             export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
           fi
@@ -114,18 +113,18 @@ spec:
         - mountPath: /scripts
           name: check-registry-script
     - name: run-docker-commands
-      image: $(inputs.params.dockerClientImage)
+      image: $(params.dockerClientImage)
       workingDir: /artifacts
       env:
         - name: PROPERTIES_FILE
-          value: $(inputs.params.propertiesFile)
+          value: $(params.propertiesFile)
         # variabled exposed to docker command
         - name: PATH_TO_CONTEXT
-          value: $(inputs.params.pathToContext)
+          value: $(params.pathToContext)
         - name: PATH_TO_DOCKERFILE
-          value: $(inputs.params.pathToDockerfile)
+          value: $(params.pathToDockerfile)
         - name: DOCKERFILE
-          value: $(inputs.params.dockerfile)
+          value: $(params.dockerfile)
         # Docker client configuration
         # Connect to the sidecar over TCP, with TLS.
         - name: DOCKER_HOST
@@ -174,7 +173,7 @@ spec:
           set -e -o pipefail
 
           if [ "$(outputs.resources.builtImage.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+            export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
             export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
           fi
@@ -185,7 +184,7 @@ spec:
           IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
           IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
           if [ -z "$IMAGE_TAG" ]; then
-            IMAGE_TAG="$(inputs.params.imageTag)"
+            IMAGE_TAG="$(params.imageTag)"
           fi
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
@@ -195,7 +194,7 @@ spec:
           echo "Running docker command(s)..."
           echo ""
 
-          $(inputs.params.dockerCommands)
+          $(params.dockerCommands)
 
           echo ""
           # Persist registry and image information in an output properties file

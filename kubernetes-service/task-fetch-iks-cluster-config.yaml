@@ -3,38 +3,38 @@ kind: Task
 metadata:
   name: fetch-iks-cluster-config
 spec:
+  params:
+    - name: ibmcloudApi
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the configmap containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: kubernetes-service-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud kubernetes service
+      default: 'API_KEY'        
+    - name: resourceGroup
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ''
+    - name: clusterRegion
+      description: (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+      default: ''
+    - name: cluster-name
+      description: name of the cluster - required if no cluster pipeline resource provided to this task
+      default: ""
+    - name: kubeAPIServerAccessible
+      description: |
+        indicates if the kubeAPIServer is exposed which is not the case for IBM Cloud Public Shared Workers (Calico network policy).
+        If 'true', the task is trying to update the Cluster Pipeline Resources definition with the appropriate informations
+        When 'false', the fallback mechanism (copy file(s)) is used.
+      default: 'false'
+    - name: clusterPipelineResourcesDirectoryFallback
+      description: directory in the workspace that will be used as a fallback mechanism to store the kubeconfig file
+      default: .tekton-cluster-pipeline-resources
+    - name: clusterAndWorkerNodesJsonExport
+      description: directory in the workspace that will be used to store the cluster and worker nodes export json files
+      default: ''
   inputs:
-    params:
-      - name: ibmcloudApi
-        description: the ibmcloud api
-        default: https://cloud.ibm.com
-      - name: continuous-delivery-context-secret
-        description: name of the configmap containing the continuous delivery pipeline context secrets
-        default: cd-secret
-      - name: kubernetes-service-apikey-secret-key
-        description: field in the secret that contains the api key used to login to ibmcloud kubernetes service
-        default: 'API_KEY'        
-      - name: resourceGroup
-        description: target resource group (name or id) for the ibmcloud login operation
-        default: ''
-      - name: clusterRegion
-        description: (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
-        default: ''
-      - name: cluster-name
-        description: name of the cluster - required if no cluster pipeline resource provided to this task
-        default: ""
-      - name: kubeAPIServerAccessible
-        description: |
-          indicates if the kubeAPIServer is exposed which is not the case for IBM Cloud Public Shared Workers (Calico network policy).
-          If 'true', the task is trying to update the Cluster Pipeline Resources definition with the appropriate informations
-          When 'false', the fallback mechanism (copy file(s)) is used.
-        default: 'false'
-      - name: clusterPipelineResourcesDirectoryFallback
-        description: directory in the workspace that will be used as a fallback mechanism to store the kubeconfig file
-        default: .tekton-cluster-pipeline-resources
-      - name: clusterAndWorkerNodesJsonExport
-        description: directory in the workspace that will be used to store the cluster and worker nodes export json files
-        default: ''
     resources:
       - name: cluster
         type: cluster
@@ -55,8 +55,8 @@ spec:
         - name: API_KEY
           valueFrom:
             secretKeyRef:
-              name: $(inputs.params.continuous-delivery-context-secret)
-              key: $(inputs.params.kubernetes-service-apikey-secret-key)
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.kubernetes-service-apikey-secret-key)
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -72,18 +72,18 @@ spec:
           export HOME="/root"
           ##########################################################################
           ibmcloud config --check-version false
-          if [ "$(inputs.params.clusterRegion)" ]; then
-            TARGET_REGION=$(inputs.params.clusterRegion)
+          if [ "$(params.clusterRegion)" ]; then
+            TARGET_REGION=$(params.clusterRegion)
           else
             TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           fi
-          ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TARGET_REGION --apikey $API_KEY
-          if [ "$(inputs.params.resourceGroup)" ]; then
-            ibmcloud target -g $(inputs.params.resourceGroup)
+          ibmcloud login -a $(params.ibmcloudApi) -r $TARGET_REGION --apikey $API_KEY
+          if [ "$(params.resourceGroup)" ]; then
+            ibmcloud target -g $(params.resourceGroup)
           fi
           # Look for the cluster
           if [ "$(inputs.resources.cluster.name)" == "" ]; then
-            export CLUSTER_NAME="$(inputs.params.cluster-name)"
+            export CLUSTER_NAME="$(params.cluster-name)"
           else
             export CLUSTER_NAME="$(inputs.resources.cluster.name)"
           fi
@@ -100,7 +100,7 @@ spec:
           # that has been given (using kubectl patch commands)
           # Verifying the access to pipeline resources
           updateClusterPipelineResource="false"
-          if [ "$(inputs.params.kubeAPIServerAccessible)" == "true" ]; then
+          if [ "$(params.kubeAPIServerAccessible)" == "true" ]; then
             if kubectl auth can-i get pipelineresources.tekton.dev > /dev/null 2>&1; then
               updateClusterPipelineResource="true"
             fi
@@ -122,15 +122,15 @@ spec:
           else
             echo "Access to pipelineresources.tekton.dev is required to update Cluser Pipeline Resource accordingly"
             echo "Falling back to copy of $(basename $KUBECONFIG_FILE) to the pipeline run volume"
-            mkdir -p $(workspaces.workspace.path)/$(inputs.params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME
-            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) $(workspaces.workspace.path)/$(inputs.params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME
-            cp $KUBECONFIG_FILE $(workspaces.workspace.path)/$(inputs.params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME/kubeconfig
-            echo "Kubeconfig file(s) copied to $(workspaces.workspace.path)/$(inputs.params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME"
+            mkdir -p $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME
+            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME
+            cp $KUBECONFIG_FILE $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME/kubeconfig
+            echo "Kubeconfig file(s) copied to $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME"
           fi
-          if [ "$(inputs.params.clusterAndWorkerNodesJsonExport)" ]; then
-            mkdir -p $(workspaces.workspace.path)/$(inputs.params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME
-            ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(inputs.params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME/$CLUSTER_NAME.json
-            ibmcloud ks worker ls --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(inputs.params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
+          if [ "$(params.clusterAndWorkerNodesJsonExport)" ]; then
+            mkdir -p $(workspaces.workspace.path)/$(params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME
+            ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME/$CLUSTER_NAME.json
+            ibmcloud ks worker ls --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
           fi
       volumeMounts:
         - mountPath: /cd-config

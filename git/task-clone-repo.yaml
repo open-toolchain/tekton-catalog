@@ -3,65 +3,64 @@ kind: Task
 metadata:
   name: clone-repo-task
 spec:
-  inputs:
-    params:
-      - name: ibmcloudApi
-        description: the ibmcloud api
-        default: https://cloud.ibm.com
-      - name: continuous-delivery-context-secret
-        description: name of the secret containing the continuous delivery pipeline context secrets
-        default: cd-secret
-      - name: ibmcloud-apikey-secret-key
-        description: field in the secret that contains the api key used to login to ibmcloud
-        default: 'API_KEY'
-      - name: gitAccessToken
-        description: |
-          (optional) token to access the git repository. If this token is provided, there will not be an attempt
-          to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-        default: ''
-      - name: resourceGroup
-        description: target resource group (name or id) for the ibmcloud login operation
-        default: ''
-      - name: repository
-        description: the git repo url
-      - name: branch
-        description: the git branch
-        default: master
-      - name: revision
-        description: |
-          the git revision/commit to update the git HEAD to.
-          Default is to mean only use the branch
-        default: ""
-      - name: pr_repository
-        description: |
-          the originating repository where the PullRequest comes from (in case of a fork)
-          default to '' means same repository (not a fork) or it can be the same as the repository to clone
-        default: ""
-      - name: pr_branch
-        description: |
-          the branch that is the source of this PullRequest
-        default: ""
-      - name: pr_revision
-        description:
-          the commit/revision in the source branch of the PullRequest that is to be built
-        default: ""
-      - name: directoryName
-        description: |
-          name of the new directory to clone into.
-          Default to . in order to clone at the root of the workspace
-          It will be set to the "humanish" part of the repository if this param is set to blank
-        default: "."
-      - name: propertiesFile
-        description: file containing properties out of clone task (can be a filepath name relative to the workspace)
-        default: build.properties
-      - name: gitCredentialsJsonFile
-        description: |
-          JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace).
-          Default to '' meaning no output of this information
-        default: ''
-      - name: pipeline-debug
-        description: Pipeline debug mode
-        default: "0"        
+  params:
+    - name: ibmcloudApi
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the secret containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: ibmcloud-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud
+      default: 'API_KEY'
+    - name: gitAccessToken
+      description: |
+        (optional) token to access the git repository. If this token is provided, there will not be an attempt
+        to use the git token obtained from the authorization flow when adding the git integration in the toolchain
+      default: ''
+    - name: resourceGroup
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ''
+    - name: repository
+      description: the git repo url
+    - name: branch
+      description: the git branch
+      default: master
+    - name: revision
+      description: |
+        the git revision/commit to update the git HEAD to.
+        Default is to mean only use the branch
+      default: ""
+    - name: pr_repository
+      description: |
+        the originating repository where the PullRequest comes from (in case of a fork)
+        default to '' means same repository (not a fork) or it can be the same as the repository to clone
+      default: ""
+    - name: pr_branch
+      description: |
+        the branch that is the source of this PullRequest
+      default: ""
+    - name: pr_revision
+      description:
+        the commit/revision in the source branch of the PullRequest that is to be built
+      default: ""
+    - name: directoryName
+      description: |
+        name of the new directory to clone into.
+        Default to . in order to clone at the root of the workspace
+        It will be set to the "humanish" part of the repository if this param is set to blank
+      default: "."
+    - name: propertiesFile
+      description: file containing properties out of clone task (can be a filepath name relative to the workspace)
+      default: build.properties
+    - name: gitCredentialsJsonFile
+      description: |
+        JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace).
+        Default to '' meaning no output of this information
+      default: ''
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"        
   workspaces:
     - name: workspace
       description: The git repo will be cloned onto the volume backing this workspace
@@ -71,17 +70,17 @@ spec:
       - name: API_KEY
         valueFrom:
           secretKeyRef:
-            name: $(inputs.params.continuous-delivery-context-secret)
-            key: $(inputs.params.ibmcloud-apikey-secret-key)
+            name: $(params.continuous-delivery-context-secret)
+            key: $(params.ibmcloud-apikey-secret-key)
             optional: true
       - name: PIPELINE_DEBUG
-        value: $(inputs.params.pipeline-debug)            
+        value: $(params.pipeline-debug)            
   steps:
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image:2.6
       env:
         - name: REPOSITORY
-          value: $(inputs.params.repository)
+          value: $(params.repository)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -127,13 +126,13 @@ spec:
             GIT_AUTH_USER="x-token-auth"
           fi;
 
-          GIT_TOKEN="$(inputs.params.gitAccessToken)"
+          GIT_TOKEN="$(params.gitAccessToken)"
           if [ -z "$GIT_TOKEN" ]; then
             echo "Fetching token for $REPOSITORY"
             ibmcloud config --check-version false
-            ibmcloud login -a $(inputs.params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
-            if [ "$(inputs.params.resourceGroup)" ]; then
-              ibmcloud target -g $(inputs.params.resourceGroup)
+            ibmcloud login -a $(params.ibmcloudApi) -r $TOOLCHAIN_REGION --apikey $API_KEY
+            if [ "$(params.resourceGroup)" ]; then
+              ibmcloud target -g $(params.resourceGroup)
             fi
             TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
             GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' /cd-config/toolchain.json)
@@ -167,23 +166,23 @@ spec:
       image: alpine/git
       env:
         - name: REPOSITORY
-          value: $(inputs.params.repository)
+          value: $(params.repository)
         - name: BRANCH
-          value: $(inputs.params.branch)
+          value: $(params.branch)
         - name: REVISION
-          value: $(inputs.params.revision)
+          value: $(params.revision)
         - name: PR_REPOSITORY
-          value: $(inputs.params.pr_repository)
+          value: $(params.pr_repository)
         - name: PR_BRANCH
-          value: $(inputs.params.pr_branch)
+          value: $(params.pr_branch)
         - name: PR_REVISION
-          value: $(inputs.params.pr_revision)
+          value: $(params.pr_revision)
         - name: DIRECTORY_NAME
-          value: $(inputs.params.directoryName)
+          value: $(params.directoryName)
         - name: PROPERTIES_FILE
-          value: $(inputs.params.propertiesFile)
+          value: $(params.propertiesFile)
         - name: JSON_FILE_GIT_CREDENTIALS
-          value: $(inputs.params.gitCredentialsJsonFile)
+          value: $(params.gitCredentialsJsonFile)
       command: ["/bin/sh", "-c"]
       args:
         - |
