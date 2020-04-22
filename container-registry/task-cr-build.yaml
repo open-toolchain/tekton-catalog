@@ -4,7 +4,7 @@ metadata:
   name: cr-build-task
 spec:
   params:
-    - name: ibmcloudApi
+    - name: ibmcloud-api
       description: the ibmcloud api
       default: https://test.cloud.ibm.com
     - name: continuous-delivery-context-secret
@@ -13,7 +13,7 @@ spec:
     - name: container-registry-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud container registry
       default: 'API_KEY'
-    - name: resourceGroup
+    - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
       default: ''
     - name: image-url
@@ -37,7 +37,7 @@ spec:
     - name: additionalTagsScript
       description: Shell script that allows to add tags for the image to be build.
       default: ''
-    - name: propertiesFile
+    - name: properties-file
       description: file containing properties out of containerize task
       default: build.properties
     - name: pipeline-debug
@@ -64,11 +64,11 @@ spec:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.container-registry-apikey-secret-key)
         - name: IBMCLOUD_API
-          value: $(params.ibmcloudApi)
+          value: $(params.ibmcloud-api)
         - name: IBMCLOUD_RESOURCE_GROUP
-          value: $(params.resourceGroup)
+          value: $(params.resource-group)
         - name: PROPERTIES_FILE
-          value: $(params.propertiesFile)
+          value: $(params.properties-file)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)            
         # CD execution context injection

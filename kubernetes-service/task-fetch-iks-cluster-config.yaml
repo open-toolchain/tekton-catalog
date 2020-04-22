@@ -4,7 +4,7 @@ metadata:
   name: fetch-iks-cluster-config
 spec:
   params:
-    - name: ibmcloudApi
+    - name: ibmcloud-api
       description: the ibmcloud api
       default: https://test.cloud.ibm.com
     - name: continuous-delivery-context-secret
@@ -13,7 +13,7 @@ spec:
     - name: kubernetes-service-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud kubernetes service
       default: 'API_KEY'        
-    - name: resourceGroup
+    - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
       default: ''
     - name: clusterRegion
@@ -76,9 +76,9 @@ spec:
           else
             TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           fi
-          ibmcloud login -a $(params.ibmcloudApi) -r $TARGET_REGION --apikey $API_KEY
-          if [ "$(params.resourceGroup)" ]; then
-            ibmcloud target -g $(params.resourceGroup)
+          ibmcloud login -a $(params.ibmcloud-api) -r $TARGET_REGION --apikey $API_KEY
+          if [ "$(params.resource-group)" ]; then
+            ibmcloud target -g $(params.resource-group)
           fi
           # Look for the cluster
           if [ "$(resources.inputs.cluster.name)" == "" ]; then

@@ -8,7 +8,7 @@ spec:
       description: the ibmcloud api key
     - name: clusterName
       description: the name of the cluster to target
-    - name: resourceGroup
+    - name: resource-group
       description: Resource group for the ibmcloud operation
       default: "default"
   resourcetemplates:
@@ -39,8 +39,8 @@ spec:
         pipelineRef:
           name: kubernetes-service-no-resources
         params:
-          - name: resourceGroup
-            value: $(params.resourceGroup)
+          - name: resource-group
+            value: $(params.resource-group)
           - name: cluster-name
             value: $(params.clusterName)
         workspaces:

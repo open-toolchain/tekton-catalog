@@ -4,7 +4,7 @@ metadata:
   name: execute-in-dind-cluster-task
 spec:
   params:
-    - name: ibmcloudApi
+    - name: ibmcloud-api
       description: the ibmcloud api
       default: https://test.cloud.ibm.com
     - name: continuous-delivery-context-secret
@@ -16,7 +16,7 @@ spec:
     - name: ibmcloud-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud
       default: 'API_KEY'
-    - name: resourceGroup
+    - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
       default: ''
     - name: clusterRegion
@@ -57,7 +57,7 @@ spec:
         docker inspect ${IMAGE_URL}:${IMAGE_TAG}
         docker push ${IMAGE_URL}:${IMAGE_TAG}
     #
-    - name: propertiesFile
+    - name: properties-file
       description: file containing properties out of the docker in docker task
       default: build.properties
   resources:
@@ -86,9 +86,9 @@ spec:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.container-registry-apikey-secret-key)
         - name: IBMCLOUD_API
-          value: $(params.ibmcloudApi)
+          value: $(params.ibmcloud-api)
         - name: IBMCLOUD_RESOURCE_GROUP
-          value: $(params.resourceGroup)
+          value: $(params.resource-group)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -134,7 +134,7 @@ spec:
       workingDir: /artifacts
       env:
         - name: PROPERTIES_FILE
-          value: $(params.propertiesFile)
+          value: $(params.properties-file)
         # variabled exposed to docker command
         - name: PATH_TO_CONTEXT
           value: $(params.pathToContext)
@@ -245,7 +245,7 @@ spec:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.ibmcloud-apikey-secret-key)
         - name: IBMCLOUD_TARGET_RESOURCE_GROUP
-          value: $(params.resourceGroup)
+          value: $(params.resource-group)
         - name: IBMCLOUD_TARGET_REGION
           value: $(params.clusterRegion)
         - name: BUILD_CLUSTER_NAMESPACE

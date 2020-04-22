@@ -4,7 +4,7 @@ metadata:
   name: kubernetes-service-no-resources
 spec:
   params:
-    - name: resourceGroup
+    - name: resource-group
     - name: cluster-name
   workspaces:
     - name: pipeline-ws
@@ -13,8 +13,8 @@ spec:
       taskRef:
         name: fetch-iks-cluster-config
       params:
-        - name: resourceGroup
-          value: $(params.resourceGroup)
+        - name: resource-group
+          value: $(params.resource-group)
         - name: cluster-name
           value: $(params.cluster-name)
         - name: clusterPipelineResourcesDirectoryFallback

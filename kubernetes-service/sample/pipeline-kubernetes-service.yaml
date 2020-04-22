@@ -4,7 +4,7 @@ metadata:
   name: pipeline-kubernetes-service
 spec:
   params:
-    - name: resourceGroup
+    - name: resource-group
   resources:
   - name: target-cluster
     type: cluster
@@ -15,8 +15,8 @@ spec:
       taskRef:
         name: fetch-iks-cluster-config
       params:
-        - name: resourceGroup
-          value: $(params.resourceGroup)
+        - name: resource-group
+          value: $(params.resource-group)
         - name: clusterPipelineResourcesDirectoryFallback
           value: .tekton-clusters
       workspaces:

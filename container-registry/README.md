@@ -35,8 +35,8 @@
 * **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
 * **additionalTags**: (optional) comma-separated list of tags for the built image
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
 ### Outputs
 
@@ -67,8 +67,8 @@
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **additionalTags**: (optional) comma-separated list of tags for the built image
 * **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
 ## Workspaces
 
@@ -108,7 +108,7 @@ and is available only during the task's lifespan.
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
 * **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
 * **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **dockerCommands**: (optional) The docker command(s) to run. Default commands:
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
@@ -144,7 +144,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 #### Parameters
 
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **clusterRegion**: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
 * **clusterNamespace**: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed (default to `build`)
 * **cluster-name**: (optional) name of the docker build cluster - required if no cluster pipeline resource provided to this task
@@ -154,7 +154,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 * **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
 * **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
 * **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
-* **propertiesFile**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+* **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **dockerCommands**: (optional) The docker command(s) to run. Default commands:
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
@@ -199,7 +199,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 * **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
 * **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the workspace
 * **failOnScannedIssues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
 ## Workspaces
 

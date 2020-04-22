@@ -30,7 +30,7 @@
 
 #### Parameters
 
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation.
+* **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation.
 * **clusterRegion**: (optional) the ibmcloud region hosting the target cluster. If not specified, it will use the toolchain region as a default.
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
 * **clusterPipelineResourcesDirectoryFallback**: (optional) that will be used as a fallback mechanism to store the kubeconfig file for the target cluster (expressed by the inputs)

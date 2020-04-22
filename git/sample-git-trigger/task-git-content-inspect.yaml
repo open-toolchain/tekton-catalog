@@ -6,11 +6,11 @@ spec:
   params:
     - name: repository
       description: the git repo url
-    - name: directoryName
+    - name: directory-name
       default: '.'
-    - name: propertiesFile
+    - name: properties-file
       default: build.properties
-    - name: gitCredentialsJsonFile
+    - name: git-credentials-json-file
       default: ''
   workspaces:
   - name: workspace
@@ -22,7 +22,7 @@ spec:
         - name: REPOSITORY
           value: $(params.repository)
         - name: DIRECTORY_NAME
-          value: $(params.directoryName)
+          value: $(params.directory-name)
       workingDir: /artifacts
       command: ["/bin/sh", "-c"]
       args:
@@ -49,11 +49,11 @@ spec:
           cat README.md
           echo ""
           echo "##############"
-          echo "Executing 'cat $(workspaces.workspace.path)/$(params.propertiesFile)'"
-          cat $(workspaces.workspace.path)/$(params.propertiesFile)
+          echo "Executing 'cat $(workspaces.workspace.path)/$(params.properties-file)'"
+          cat $(workspaces.workspace.path)/$(params.properties-file)
           echo ""
-          if [ "$(params.gitCredentialsJsonFile)" ]; then
+          if [ "$(params.git-credentials-json-file)" ]; then
             echo "##############"
-            echo "Executing 'jq $(workspaces.workspace.path)/$(params.gitCredentialsJsonFile)'"
-            cat $(workspaces.workspace.path)/$(params.gitCredentialsJsonFile) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
+            echo "Executing 'jq $(workspaces.workspace.path)/$(params.git-credentials-json-file)'"
+            cat $(workspaces.workspace.path)/$(params.git-credentials-json-file) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
           fi
