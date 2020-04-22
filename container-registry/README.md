@@ -30,11 +30,11 @@
 #### Parameters
 
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
-* **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
-* **buildkit_image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
-* **additionalTags**: (optional) comma-separated list of tags for the built image
-* **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
+* **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
+* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+* **buildkit-image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
+* **additional-tags**: (optional) comma-separated list of tags for the built image
+* **additional-tags-script**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
@@ -63,10 +63,10 @@
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
-* **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
-* **additionalTags**: (optional) comma-separated list of tags for the built image
-* **additionalTagsScript**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
+* **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
+* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+* **additional-tags**: (optional) comma-separated list of tags for the built image
+* **additional-tags-script**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
@@ -103,13 +103,13 @@ and is available only during the task's lifespan.
 #### Parameters
 
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
-* **imageTag**: (optional) the tag for the built image (default to `latest`) 
-* **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
+* **image-tag**: (optional) the tag for the built image (default to `latest`) 
+* **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
+* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
 * **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
-* **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
+* **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
-* **dockerCommands**: (optional) The docker command(s) to run. Default commands:
+* **docker-commands**: (optional) The docker command(s) to run. Default commands:
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
 docker inspect ${IMAGE_URL}:${IMAGE_TAG}
@@ -145,17 +145,17 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 #### Parameters
 
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
-* **clusterRegion**: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
-* **clusterNamespace**: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed (default to `build`)
+* **cluster-region**: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
+* **cluster-namespace**: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed (default to `build`)
 * **cluster-name**: (optional) name of the docker build cluster - required if no cluster pipeline resource provided to this task
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
-* **imageTag**: (optional) the tag for the built image (default to `latest`) 
-* **pathToContext**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **pathToDockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
+* **image-tag**: (optional) the tag for the built image (default to `latest`) 
+* **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
+* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
 * **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
-* **dockerClientImage**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
+* **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
-* **dockerCommands**: (optional) The docker command(s) to run. Default commands:
+* **docker-commands**: (optional) The docker command(s) to run. Default commands:
 ```
 docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
 docker inspect ${IMAGE_URL}:${IMAGE_TAG}
@@ -193,12 +193,12 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 #### Parameters
 
 * **image-url**: (optional) url of the image to VA scan - required if no image pipeline resource provided to this task
-* **image-digest**: (optional) SHA id of the image to VA scan - required if no image pipeline resource provided and no `imagePropertiesFile` value provided
-* **imagePropertiesFile**: file containing properties of the image to be scanned (default to 'build.properties')
-* **maxIteration**: maximum number of iterations allowed while loop to check for va report (default to 30 iterations maximum)
-* **sleepTime**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
-* **scanReportFile**: (optional) filename for the scan report (json format) of the given image. It will be copied in the workspace
-* **failOnScannedIssues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
+* **image-digest**: (optional) SHA id of the image to VA scan - required if no image pipeline resource provided and no `image-properties-file` value provided
+* **image-properties-file**: file containing properties of the image to be scanned (default to 'build.properties')
+* **max-iteration**: maximum number of iterations allowed while loop to check for va report (default to 30 iterations maximum)
+* **sleep-time**: sleep time (in seconds) between invocation of ibmcloud cr va in the loop (default to 10 seconds between scan result inquiry)
+* **scan-report-file**: (optional) filename for the scan report (json format) of the given image. It will be copied in the workspace
+* **fail-on-scanned-issues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
 ## Workspaces

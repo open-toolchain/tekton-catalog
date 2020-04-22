@@ -19,22 +19,22 @@ spec:
     - name: image-url
       description: "url of the image to build - required if no image pipeline resource provided to this task"
       default: ""
-    - name: pathToContext
+    - name: path-to-context
       default: .
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
       default: "Dockerfile"
-    - name: buildArgs
+    - name: build-args
       description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
       default: ""
-    - name: additionalTags
-      description: comma-separated list of additionalTags
+    - name: additional-tags
+      description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array
       # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
       default: ''
-    - name: additionalTagsScript
+    - name: additional-tags-script
       description: Shell script that allows to add tags for the image to be build.
       default: ''
     - name: properties-file
@@ -131,7 +131,7 @@ spec:
           # Manage multiple tags for an image
           # Add dynamically computed tags
           printf "#!/bin/bash\n" > /steps/additionnalTags.sh
-          printf "%s " '$(params.additionalTagsScript)' >> /steps/additionnalTags.sh
+          printf "%s " '$(params.additional-tags-script)' >> /steps/additionnalTags.sh
           chmod +x /steps/additionnalTags.sh
           /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
           # Add image pipeline resource
@@ -139,8 +139,8 @@ spec:
             echo "${IMAGE_TAG}" >> /steps/tags.lst
           fi
           # Add tags provided using task parameter
-          if [ "$(params.additionalTags)" ];  then
-            echo "$(params.additionalTags)" | sed 's/,/\n/g' >> /steps/tags.lst
+          if [ "$(params.additional-tags)" ];  then
+            echo "$(params.additional-tags)" | sed 's/,/\n/g' >> /steps/tags.lst
           fi
           echo "#######################"
           echo "Image Tags:"
@@ -160,7 +160,7 @@ spec:
             echo "Define a minimal image tag: $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:latest"
           fi
 
-          BUILD_ARG_LIST='$(params.buildArgs)'
+          BUILD_ARG_LIST='$(params.build-args)'
           for buildArg in $BUILD_ARG_LIST; do
             BUILD_ARGS="${BUILD_ARGS} --build-arg $buildArg "
           done
@@ -168,9 +168,9 @@ spec:
           # Build the image using ibmcloud cr build for the first tag in the file
           ibmcloud cr build \
             ${BUILD_ARGS} \
-            --file $(params.pathToDockerfile)/$(params.dockerfile) \
+            --file $(params.path-to-dockerfile)/$(params.dockerfile) \
             --tag $(head --lines=1 /steps/tags.lst) \
-            $(params.pathToContext)
+            $(params.path-to-context)
 
           # Create remaining tags for the image
           for tag in $(tail --lines=+2 /steps/tags.lst)

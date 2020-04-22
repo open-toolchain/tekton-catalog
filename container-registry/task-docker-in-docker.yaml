@@ -20,24 +20,24 @@ spec:
     - name: image-url
       description: "url of the image to build - required if no image pipeline resource provided to this task"
       default: ""
-    - name: imageTag
+    - name: image-tag
       description: the default image tag if none is provided using the builtImage url
       default: latest
     # Dockerfile location
-    - name: pathToContext
+    - name: path-to-context
       default: .
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       description: the path to the Docker file
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
       default: "Dockerfile"
     # Docker Client configuration
-    - name: dockerClientImage
+    - name: docker-client-image
       description: The Docker image to use to run the Docker client
       default: docker
     # Docker commands
-    - name: dockerCommands
+    - name: docker-commands
       description: The docker command(s) to run.
       default: |
         # Default docker build / inspect / push command
@@ -113,16 +113,16 @@ spec:
         - mountPath: /scripts
           name: check-registry-script
     - name: run-docker-commands
-      image: $(params.dockerClientImage)
+      image: $(params.docker-client-image)
       workingDir: /artifacts
       env:
         - name: PROPERTIES_FILE
           value: $(params.properties-file)
         # variabled exposed to docker command
         - name: PATH_TO_CONTEXT
-          value: $(params.pathToContext)
+          value: $(params.path-to-context)
         - name: PATH_TO_DOCKERFILE
-          value: $(params.pathToDockerfile)
+          value: $(params.path-to-dockerfile)
         - name: DOCKERFILE
           value: $(params.dockerfile)
         # Docker client configuration
@@ -184,7 +184,7 @@ spec:
           IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
           IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
           if [ -z "$IMAGE_TAG" ]; then
-            IMAGE_TAG="$(params.imageTag)"
+            IMAGE_TAG="$(params.image-tag)"
           fi
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
@@ -194,7 +194,7 @@ spec:
           echo "Running docker command(s)..."
           echo ""
 
-          $(params.dockerCommands)
+          $(params.docker-commands)
 
           echo ""
           # Persist registry and image information in an output properties file

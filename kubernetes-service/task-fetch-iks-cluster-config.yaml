@@ -16,7 +16,7 @@ spec:
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
       default: ''
-    - name: clusterRegion
+    - name: cluster-region
       description: (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
       default: ''
     - name: cluster-name
@@ -71,8 +71,8 @@ spec:
           export HOME="/root"
           ##########################################################################
           ibmcloud config --check-version false
-          if [ "$(params.clusterRegion)" ]; then
-            TARGET_REGION=$(params.clusterRegion)
+          if [ "$(params.cluster-region)" ]; then
+            TARGET_REGION=$(params.cluster-region)
           else
             TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           fi

@@ -19,25 +19,25 @@ spec:
     - name: image-url
       description: "url of the image to build - required if no image pipeline resource provided to this task"
       default: ""
-    - name: pathToContext
+    - name: path-to-context
       default: .
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
       default: "Dockerfile"
-    - name: buildArgs
+    - name: build-args
       description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
       default: ""
-    - name: buildkit_image
+    - name: buildkit-image
       description: The name of the BuildKit image
       default: "moby/buildkit:v0.6.3-rootless"
-    - name: additionalTags
-      description: comma-separated list of additionalTags
+    - name: additional-tags
+      description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array
       # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
       default: ''
-    - name: additionalTagsScript
+    - name: additional-tags-script
       description: Shell script that allows to add tags for the image to be build.
       default: ''
     - name: properties-file
@@ -126,7 +126,7 @@ spec:
         - mountPath: /scripts
           name: check-registry-script
     - name: build-image
-      image: $(params.buildkit_image)
+      image: $(params.buildkit-image)
       workingDir: /artifacts
       env:
         # specifying DOCKER_CONFIG is required to allow buildkit to detect docker credentials
@@ -179,7 +179,7 @@ spec:
           # Manage multiple tags for an image
           # Add dynamically computed tags
           printf "#!/bin/sh\n" > /steps/additionnalTags.sh
-          printf "%s " '$(params.additionalTagsScript)' >> /steps/additionnalTags.sh
+          printf "%s " '$(params.additional-tags-script)' >> /steps/additionnalTags.sh
           chmod +x /steps/additionnalTags.sh
           /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
           # Add image pipeline resource
@@ -187,8 +187,8 @@ spec:
             echo "${IMAGE_TAG}" >> /steps/tags.lst
           fi
           # Add tags provided using task parameter
-          if [ "$(params.additionalTags)" ];  then
-            echo "$(params.additionalTags)" | sed 's/,/\n/g' >> /steps/tags.lst
+          if [ "$(params.additional-tags)" ];  then
+            echo "$(params.additional-tags)" | sed 's/,/\n/g' >> /steps/tags.lst
           fi
           echo "#######################"
           echo "Image Tags:"
@@ -207,7 +207,7 @@ spec:
           fi
           echo "Buildkit Image names: $BUILDKIT_IMAGE_NAMES"
 
-          BUILD_ARG_LIST='$(params.buildArgs)'
+          BUILD_ARG_LIST='$(params.build-args)'
           for buildArg in $BUILD_ARG_LIST; do
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
@@ -223,7 +223,7 @@ spec:
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
             ${BUILD_ARGS} \
-            --local context=$(workspaces.workspace.path)/$(params.pathToContext) --local dockerfile=$(workspaces.workspace.path)/$(params.pathToDockerfile) \
+            --local context=$(workspaces.workspace.path)/$(params.path-to-context) --local dockerfile=$(workspaces.workspace.path)/$(params.path-to-dockerfile) \
             --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
             --export-cache type=inline \
             --import-cache type=registry,ref=$IMAGE_RESOURCE_URL 2>&1 | tee /steps/build.log
@@ -234,7 +234,7 @@ spec:
 
           # it is not possible to specify multiple exporters for now
           # --output type=oci,dest=/builder/home/image-outputs/builtImage/output.tar \
-          # It is possible to assign multiple tags to the image with latest version of buildkit_image
+          # It is possible to assign multiple tags to the image with latest version of buildkit-image
           # see https://github.com/moby/buildkit/issues/797
 
       volumeMounts:

@@ -8,7 +8,7 @@ spec:
       description: the git repo
     - name: branch
       description: the branch for the git repo
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       default: '.'
     - name: pipeline-debug
       default: "0"
@@ -36,13 +36,13 @@ spec:
       taskRef:
         name: containerize-task
       params:
-        - name: pathToContext
-          value: $(params.pathToDockerfile)
-        - name: pathToDockerfile
-          value: $(params.pathToDockerfile)
-        - name: additionalTags
+        - name: path-to-context
+          value: $(params.path-to-dockerfile)
+        - name: path-to-dockerfile
+          value: $(params.path-to-dockerfile)
+        - name: additional-tags
           value: 'latest'
-        - name: additionalTagsScript
+        - name: additional-tags-script
           value: |
             # Include the clone task output variables in the environment
             source /artifacts/build.properties
@@ -66,13 +66,13 @@ spec:
       taskRef:
         name: vulnerability-advisor-task
       params:
-        - name: scanReportFile
+        - name: scan-report-file
           value: 'app-image-va-report.json'
-        # - name: maxIteration
+        # - name: max-iteration
         #   value: '5'
-        # - name: sleepTime
+        # - name: sleep-time
         #   value: '3'
-        # - name: failOnScannedIssues
+        # - name: fail-on-scanned-issues
         #   value: 'false'
         - name: pipeline-debug
           value: $(params.pipeline-debug)

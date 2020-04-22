@@ -12,7 +12,7 @@ spec:
       description: the ibmcloud api key
     - name: imageUrl
       description: The image url in your container registry
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       default: '.'
     - name: pipeline-debug
       default: "0"
@@ -62,8 +62,8 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: pathToDockerfile
-            value: $(params.pathToDockerfile)
+          - name: path-to-dockerfile
+            value: $(params.path-to-dockerfile)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
