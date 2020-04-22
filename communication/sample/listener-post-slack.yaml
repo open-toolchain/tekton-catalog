@@ -13,19 +13,19 @@ spec:
     - name: channel
       description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
       default: ' '
-    - name: messageFormat
+    - name: message-format
       description: the format of the message. text(default) or JSON.
       default: text
     - name: message
       description: the message to send to Slack
       default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
-    - name: messageScript
+    - name: message-script
       description: |
           any custom script that will be executed by the task to provide a message.
           Reference: https://api.slack.com/reference/surfaces/formatting
-          For instance: echo "Message injected by messageScript. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
+          For instance: echo "Message injected by message-script. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
       default: ' '
-    - name: exitOnError
+    - name: exit-on-error
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
       default: 'false'
   resourcetemplates:
@@ -55,12 +55,12 @@ spec:
             value: $(params.channel)
           - name: message
             value: $(params.message)
-          - name: messageFormat
-            value: $(params.messageFormat)
-          - name: messageScript
-            value: $(params.messageScript)
-          - name: exitOnError
-            value: $(params.exitOnError)
+          - name: message-format
+            value: $(params.message-format)
+          - name: message-script
+            value: $(params.message-script)
+          - name: exit-on-error
+            value: $(params.exit-on-error)
         workspaces:
         - name: pipeline-ws
           persistentVolumeClaim:

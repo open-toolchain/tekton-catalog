@@ -8,13 +8,13 @@ spec:
       description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
     - name: channel
       description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-    - name: messageFormat
+    - name: message-format
       description: the format of the message. text(default) or JSON.
-    - name: messageScript
+    - name: message-script
       description: Shell script that provides messsage content.
     - name: message
       description: the message to send to Slack
-    - name: exitOnError
+    - name: exit-on-error
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
   workspaces:
     - name: pipeline-ws
@@ -27,14 +27,14 @@ spec:
           value: $(params.domain)
         - name: channel
           value: $(params.channel)
-        - name: messageFormat
-          value: $(params.messageFormat)
+        - name: message-format
+          value: $(params.message-format)
         - name: message
           value: $(params.message)
-        - name: messageScript
-          value: $(params.messageScript)
-        - name: exitOnError
-          value: $(params.exitOnError)
+        - name: message-script
+          value: $(params.message-script)
+        - name: exit-on-error
+          value: $(params.exit-on-error)
       workspaces:
         - name: workspace
           workspace: pipeline-ws

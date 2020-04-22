@@ -10,16 +10,16 @@ spec:
     - name: channel
       description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
       default: ''
-    - name: messageFormat
+    - name: message-format
       description: the format of the message. text(default) or JSON payload.
       default: text
-    - name: messageScript
+    - name: message-script
       description: Shell script that provides messsage content.
       default: ''
     - name: message
       description: the message to send to Slack
       default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
-    - name: exitOnError
+    - name: exit-on-error
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
       default: 'false'
   workspaces:
@@ -70,15 +70,15 @@ spec:
           export TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           export TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
 
-          # Dynamically set message if messageScript param is set
-          printf "#!/bin/sh\n" > /steps/messageScript.sh
-          printf "%s " '$(params.messageScript)' >> /steps/messageScript.sh
-          chmod +x /steps/messageScript.sh
-          /steps/messageScript.sh 2 >& 1 > /steps/message.content
+          # Dynamically set message if message-script param is set
+          printf "#!/bin/sh\n" > /steps/message-script.sh
+          printf "%s " '$(params.message-script)' >> /steps/message-script.sh
+          chmod +x /steps/message-script.sh
+          /steps/message-script.sh 2 >& 1 > /steps/message.content
           if [ -s /steps/message.content ]; then
             echo "************************************"
             echo "Snippet for dynamic message content:"
-            cat /steps/messageScript.sh
+            cat /steps/message-script.sh
             echo ""
             echo "************************************"
           else
@@ -86,7 +86,7 @@ spec:
           fi
 
           # message.content was passed as a slack json payload: keep it as-is
-          if [[ "$(params.messageFormat)" != "text" ]]; then
+          if [[ "$(params.message-format)" != "text" ]]; then
             mv /steps/message.content /steps/payload.json
           fi
 
@@ -109,7 +109,7 @@ spec:
           for SLACK_INTEGRATION in $(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECT_DOMAIN}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
           do
             WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
-            if [[ "$(params.messageFormat)" == "text" ]]; then
+            if [[ "$(params.message-format)" == "text" ]]; then
               if [ "$SLACK_CHANNEL" ]; then
                 CHANNEL=$SLACK_CHANNEL
                 echo "Posting to channel $CHANNEL as passed as parameter."
@@ -147,7 +147,7 @@ spec:
           echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failure(s))."
 
           # Handle exit based on error if any
-          if [[ $msgFail -ne 0 ]] && [[ "$(params.exitOnError)" == "true" ]]; then
+          if [[ $msgFail -ne 0 ]] && [[ "$(params.exit-on-error)" == "true" ]]; then
             exit 1
           fi
       volumeMounts:
