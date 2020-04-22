@@ -238,7 +238,7 @@ spec:
         - key: toolchain.json
           path: toolchain.json
     - name: check-registry-script
-      configmap: 
+      configMap: 
         name: check-registry-script
         items: 
         - key: check_registry.sh
