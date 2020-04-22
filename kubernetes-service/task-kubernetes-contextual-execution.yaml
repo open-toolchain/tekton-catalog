@@ -6,7 +6,7 @@ spec:
   params:
     # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
     # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
-    - name: clusterPipelineResourcesDirectory
+    - name: cluster-pipeline-resources-directory
       description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
       default: /clusters
     - name: cluster-name
@@ -67,7 +67,7 @@ spec:
           else
             export CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
-          export KUBECONFIG=$(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectory)/$CLUSTER_NAME/kubeconfig
+          export KUBECONFIG=$(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory)/$CLUSTER_NAME/kubeconfig
 
           # Validate KUBECONFIG
           if test -f "$KUBECONFIG"; then

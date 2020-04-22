@@ -22,16 +22,16 @@ spec:
     - name: cluster-name
       description: name of the cluster - required if no cluster pipeline resource provided to this task
       default: ""
-    - name: kubeAPIServerAccessible
+    - name: kube-api-server-accessible
       description: |
         indicates if the kubeAPIServer is exposed which is not the case for IBM Cloud Public Shared Workers (Calico network policy).
         If 'true', the task is trying to update the Cluster Pipeline Resources definition with the appropriate informations
         When 'false', the fallback mechanism (copy file(s)) is used.
       default: 'false'
-    - name: clusterPipelineResourcesDirectoryFallback
+    - name: cluster-pipeline-resources-directory-fallback
       description: directory in the workspace that will be used as a fallback mechanism to store the kubeconfig file
       default: .tekton-cluster-pipeline-resources
-    - name: clusterAndWorkerNodesJsonExport
+    - name: cluster-and-worker-nodes-json-export
       description: directory in the workspace that will be used to store the cluster and worker nodes export json files
       default: ''
   resources:
@@ -99,7 +99,7 @@ spec:
           # that has been given (using kubectl patch commands)
           # Verifying the access to pipeline resources
           updateClusterPipelineResource="false"
-          if [ "$(params.kubeAPIServerAccessible)" == "true" ]; then
+          if [ "$(params.kube-api-server-accessible)" == "true" ]; then
             if kubectl auth can-i get pipelineresources.tekton.dev > /dev/null 2>&1; then
               updateClusterPipelineResource="true"
             fi
@@ -121,15 +121,15 @@ spec:
           else
             echo "Access to pipelineresources.tekton.dev is required to update Cluser Pipeline Resource accordingly"
             echo "Falling back to copy of $(basename $KUBECONFIG_FILE) to the pipeline run volume"
-            mkdir -p $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME
-            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME
-            cp $KUBECONFIG_FILE $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME/kubeconfig
-            echo "Kubeconfig file(s) copied to $(workspaces.workspace.path)/$(params.clusterPipelineResourcesDirectoryFallback)/$CLUSTER_NAME"
+            mkdir -p $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
+            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
+            cp $KUBECONFIG_FILE $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
+            echo "Kubeconfig file(s) copied to $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME"
           fi
-          if [ "$(params.clusterAndWorkerNodesJsonExport)" ]; then
-            mkdir -p $(workspaces.workspace.path)/$(params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME
-            ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME/$CLUSTER_NAME.json
-            ibmcloud ks worker ls --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.clusterAndWorkerNodesJsonExport)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
+          if [ "$(params.cluster-and-worker-nodes-json-export)" ]; then
+            mkdir -p $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME
+            ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME.json
+            ibmcloud ks worker ls --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
           fi
       volumeMounts:
         - mountPath: /cd-config

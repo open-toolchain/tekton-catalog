@@ -17,7 +17,7 @@ spec:
       params:
         - name: resource-group
           value: $(params.resource-group)
-        - name: clusterPipelineResourcesDirectoryFallback
+        - name: cluster-pipeline-resources-directory-fallback
           value: .tekton-clusters
       workspaces:
         - name: workspace
@@ -33,7 +33,7 @@ spec:
       taskRef:
         name: kubernetes-contextual-execution
       params:
-        - name: clusterPipelineResourcesDirectory
+        - name: cluster-pipeline-resources-directory
           value: .tekton-clusters
         - name: script
           value: |

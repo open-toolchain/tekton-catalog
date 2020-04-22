@@ -33,7 +33,7 @@
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation.
 * **cluster-region**: (optional) the ibmcloud region hosting the target cluster. If not specified, it will use the toolchain region as a default.
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
-* **clusterPipelineResourcesDirectoryFallback**: (optional) that will be used as a fallback mechanism to store the kubeconfig file for the target cluster (expressed by the inputs)
+* **cluster-pipeline-resources-directory-fallback**: (optional) that will be used as a fallback mechanism to store the kubeconfig file for the target cluster (expressed by the inputs)
 
 ## Workspaces
 
@@ -67,7 +67,7 @@
 #### Parameters
 
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
-* **clusterPipelineResourcesDirectory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be a combination of `task-pvc-mountpath` and `fetch-iks-cluster-config#clusterPipelineResourcesDirectoryFallback` if cluster pipeline resource update is not made by the `fetch-iks-cluster-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
+* **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be a combination of `task-pvc-mountpath` and `fetch-iks-cluster-config#cluster-pipeline-resources-directory-fallback` if cluster pipeline resource update is not made by the `fetch-iks-cluster-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
 
 ## Workspaces
