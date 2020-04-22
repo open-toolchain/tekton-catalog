@@ -37,6 +37,8 @@ data:
         REGISTRY_REGION="uk-south"
       elif [ "$REGISTRY_REGION" == "us" ]; then
         REGISTRY_REGION="us-south"
+      elif [ "$REGISTRY_REGION" == "stg" ]; then
+        REGISTRY_REGION="us-south"
       else
         echo "No IBM Cloud Container Registry region found for the registry url $REGISTRY_URL"
         exit 1
