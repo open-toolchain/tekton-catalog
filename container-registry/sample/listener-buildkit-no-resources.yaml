@@ -10,7 +10,7 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: imageUrl
+    - name: image-url
       description: The image url in your container registry
     - name: path-to-dockerfile
       default: '.'
@@ -50,7 +50,7 @@ spec:
           - name: branch
             value: $(params.branch)
           - name: image-url
-            value: $(params.imageUrl)
+            value: $(params.image-url)
           - name: path-to-dockerfile
             value: $(params.path-to-dockerfile)
           - name: pipeline-debug

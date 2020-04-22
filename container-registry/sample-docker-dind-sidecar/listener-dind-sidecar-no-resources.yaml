@@ -10,7 +10,7 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: imageUrl
+    - name: image-url
       description: The image url in your container registry
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
@@ -46,7 +46,7 @@ spec:
           - name: branch
             value: $(params.branch)
           - name: image-url
-            value: $(params.imageUrl)
+            value: $(params.image-url)
         workspaces:
         - name: pipeline-ws
           persistentVolumeClaim:

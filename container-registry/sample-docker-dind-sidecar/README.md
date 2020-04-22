@@ -24,7 +24,7 @@ It also contains a `dind-no-resources` EventListener definition which is the pro
 
    - `apikey` to provide an API key used for the ibmcloud login/access
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
-   - `imageUrl` to indicate the URL of the image to push to the IBM Cloud Container Registry
+   - `image-url` to indicate the URL of the image to push to the IBM Cloud Container Registry
 
    ![Tekton pipeline environment properties](./images/dind-sample-tekton-pipeline-environment-properties.png)
 

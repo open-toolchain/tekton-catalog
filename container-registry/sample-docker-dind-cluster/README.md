@@ -23,8 +23,8 @@ It also contains a `dind-cluster-no-resources` EventListener definition which is
 3) Add the environment properties:
 
    - `apikey` to provide an API key used for the ibmcloud login/access
-   - `buildCluster` to provide the kubernetes cluster name that will be used as a build cluster (ie hosting the Docker DinD)
-   - `imageUrl` to indicate the URL of the image to push to the IBM Cloud Container Registry
+   - `build-cluster` to provide the kubernetes cluster name that will be used as a build cluster (ie hosting the Docker DinD)
+   - `image-url` to indicate the URL of the image to push to the IBM Cloud Container Registry
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
 
    ![Tekton pipeline environment properties](./images/dind-cluster-sample-tekton-pipeline-environment-properties.png)
