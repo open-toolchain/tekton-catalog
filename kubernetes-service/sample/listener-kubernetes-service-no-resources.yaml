@@ -6,7 +6,7 @@ spec:
   params:
     - name: apikey
       description: the ibmcloud api key
-    - name: clusterName
+    - name: cluster-name
       description: the name of the cluster to target
     - name: resource-group
       description: Resource group for the ibmcloud operation
@@ -42,7 +42,7 @@ spec:
           - name: resource-group
             value: $(params.resource-group)
           - name: cluster-name
-            value: $(params.clusterName)
+            value: $(params.cluster-name)
         workspaces:
         - name: pipeline-ws
           persistentVolumeClaim:

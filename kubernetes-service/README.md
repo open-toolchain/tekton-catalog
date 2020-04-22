@@ -96,7 +96,7 @@ It also contains a `kubernetes-service-no-resources` EventListener definition wh
 3) Add the environment properties:
 
    - `apikey` to provide an API key used for the ibmcloud login/access
-   - `clusterName` to indicate the name of the IKS cluster that you want to target
+   - `cluster-name` to indicate the name of the IKS cluster that you want to target
 
    ![Tekton pipeline environment properties](./sample/kubernetes-service-sample-tekton-pipeline-environment-properties.png)
 

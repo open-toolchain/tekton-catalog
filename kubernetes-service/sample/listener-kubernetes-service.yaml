@@ -6,7 +6,7 @@ spec:
   params:
     - name: apikey
       description: the ibmcloud api key
-    - name: clusterName
+    - name: cluster-name
       description: the name of the cluster to target
     - name: resource-group
       description: Resource group for the ibmcloud operation
@@ -22,13 +22,13 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
-        name: $(params.clusterName)
+        name: $(params.cluster-name)
       spec:
         type: cluster
         params:
           # name is required in tekton v0.7 but not in v0.10.1
           - name: name
-            value: $(params.clusterName)
+            value: $(params.cluster-name)
           #
           - name: url
             value: https://fake.value
@@ -60,7 +60,7 @@ spec:
         resources:
           - name: target-cluster
             resourceRef:
-              name: $(params.clusterName)
+              name: $(params.cluster-name)
         params:
           - name: resource-group
             value: $(params.resource-group)
