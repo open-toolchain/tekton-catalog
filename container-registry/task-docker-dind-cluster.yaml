@@ -244,6 +244,8 @@ spec:
             secretKeyRef:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.ibmcloud-apikey-secret-key)
+        - name: IBMCLOUD_API
+          value: $(params.ibmcloud-api)
         - name: IBMCLOUD_TARGET_RESOURCE_GROUP
           value: $(params.resource-group)
         - name: IBMCLOUD_TARGET_REGION
@@ -277,7 +279,7 @@ spec:
 
           echo "Logging in to build cluster account..."
           ibmcloud config --check-version false
-          ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
+          ibmcloud login -a $IBMCLOUD_API --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
 
           if [ -z "$IBMCLOUD_TARGET_RESOURCE_GROUP" ]; then
             echo "Using default resource group" 
