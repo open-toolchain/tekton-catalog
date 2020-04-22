@@ -1,18 +1,17 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: inspect-content-task
 spec:
-  inputs:
-    params:
-      - name: repository
-        description: the git repo url
-      - name: directoryName
-        default: '.'
-      - name: propertiesFile
-        default: build.properties
-      - name: gitCredentialsJsonFile
-        default: ''
+  params:
+    - name: repository
+      description: the git repo url
+    - name: directory-name
+      default: '.'
+    - name: properties-file
+      default: build.properties
+    - name: git-credentials-json-file
+      default: ''
   workspaces:
   - name: workspace
     mountPath: /artifacts
@@ -21,9 +20,9 @@ spec:
       image: ibmcom/pipeline-base-image:2.6
       env:
         - name: REPOSITORY
-          value: $(inputs.params.repository)
+          value: $(params.repository)
         - name: DIRECTORY_NAME
-          value: $(inputs.params.directoryName)
+          value: $(params.directory-name)
       workingDir: /artifacts
       command: ["/bin/sh", "-c"]
       args:
@@ -50,11 +49,11 @@ spec:
           cat README.md
           echo ""
           echo "##############"
-          echo "Executing 'cat $(workspaces.workspace.path)/$(inputs.params.propertiesFile)'"
-          cat $(workspaces.workspace.path)/$(inputs.params.propertiesFile)
+          echo "Executing 'cat $(workspaces.workspace.path)/$(params.properties-file)'"
+          cat $(workspaces.workspace.path)/$(params.properties-file)
           echo ""
-          if [ "$(inputs.params.gitCredentialsJsonFile)" ]; then
+          if [ "$(params.git-credentials-json-file)" ]; then
             echo "##############"
-            echo "Executing 'jq $(workspaces.workspace.path)/$(inputs.params.gitCredentialsJsonFile)'"
-            cat $(workspaces.workspace.path)/$(inputs.params.gitCredentialsJsonFile) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
+            echo "Executing 'jq $(workspaces.workspace.path)/$(params.git-credentials-json-file)'"
+            cat $(workspaces.workspace.path)/$(params.git-credentials-json-file) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
           fi

@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: pipeline-git-event-processing
@@ -11,21 +11,21 @@ spec:
     - name: revision
       description: the commit id/sha for the clone action
       default: ''
-    - name: pr_repository
+    - name: pr-repository
       description: The source git repo for the PullRequest
       default: ''
-    - name: pr_branch
+    - name: pr-branch
       description: The source branch for the PullRequest
       default: ''
-    - name: pr_revision
+    - name: pr-revision
       description: the commit id/sha for the PullRequest
       default: ''
-    - name: gitAccessToken
+    - name: git-access-token
       description: the token to access the git repository for the clone operations
       default: ''
-    - name: propertiesFile
+    - name: properties-file
       default: 'output/thebuild.properties'
-    - name: gitCredentialsJsonFile
+    - name: git-credentials-json-file
       default: 'output/secrets/thecredentials.json'
   workspaces:
     - name: pipeline-ws
@@ -40,20 +40,20 @@ spec:
           value: $(params.branch)
         - name: revision
           value: $(params.revision)
-        - name: pr_repository
-          value: $(params.pr_repository)
-        - name: pr_branch
-          value: $(params.pr_branch)
-        - name: pr_revision
-          value: $(params.pr_revision)
-        - name: gitAccessToken
-          value: $(params.gitAccessToken)
-        - name: directoryName
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
+        - name: pr-revision
+          value: $(params.pr-revision)
+        - name: git-access-token
+          value: $(params.git-access-token)
+        - name: directory-name
           value: '.'
-        - name: propertiesFile
-          value: $(params.propertiesFile)
-        - name: gitCredentialsJsonFile
-          value: $(params.gitCredentialsJsonFile)
+        - name: properties-file
+          value: $(params.properties-file)
+        - name: git-credentials-json-file
+          value: $(params.git-credentials-json-file)
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -67,9 +67,9 @@ spec:
       params:
         - name: repository
           value: $(params.repository)
-        - name: directoryName
+        - name: directory-name
           value: '.'
-        - name: propertiesFile
-          value: $(params.propertiesFile)
-        - name: gitCredentialsJsonFile
-          value: $(params.gitCredentialsJsonFile)
+        - name: properties-file
+          value: $(params.properties-file)
+        - name: git-credentials-json-file
+          value: $(params.git-credentials-json-file)

@@ -1,55 +1,54 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cr-build-task
 spec:
-  inputs:
-    params:
-      - name: ibmcloudApi
-        description: the ibmcloud api
-        default: https://cloud.ibm.com
-      - name: continuous-delivery-context-secret
-        description: name of the configmap containing the continuous delivery pipeline context secrets
-        default: cd-secret
-      - name: container-registry-apikey-secret-key
-        description: field in the secret that contains the api key used to login to ibmcloud container registry
-        default: 'API_KEY'
-      - name: resourceGroup
-        description: target resource group (name or id) for the ibmcloud login operation
-        default: ''
-      - name: image-url
-        description: "url of the image to build - required if no image pipeline resource provided to this task"
-        default: ""
-      - name: pathToContext
-        default: .
-      - name: pathToDockerfile
-        default: .
-      - name: dockerfile
-        description: The name of the Dockerfile
-        default: "Dockerfile"
-      - name: buildArgs
-        description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
-        default: ""
-      - name: additionalTags
-        description: comma-separated list of additionalTags
-        # can not be defined as an array because of variable substition error for array
-        # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
-        default: ''
-      - name: additionalTagsScript
-        description: Shell script that allows to add tags for the image to be build.
-        default: ''
-      - name: propertiesFile
-        description: file containing properties out of containerize task
-        default: build.properties
-      - name: pipeline-debug
-        description: Pipeline debug mode
-        default: "0"
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the configmap containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: container-registry-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud container registry
+      default: 'API_KEY'
+    - name: resource-group
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ''
+    - name: image-url
+      description: "url of the image to build - required if no image pipeline resource provided to this task"
+      default: ""
+    - name: path-to-context
+      default: .
+    - name: path-to-dockerfile
+      default: .
+    - name: dockerfile
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    - name: build-args
+      description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
+      default: ""
+    - name: additional-tags
+      description: comma-separated list of additional-tags
+      # can not be defined as an array because of variable substition error for array
+      # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
+      default: ''
+    - name: additional-tags-script
+      description: Shell script that allows to add tags for the image to be build.
+      default: ''
+    - name: properties-file
+      description: file containing properties out of containerize task
+      default: build.properties
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
   workspaces:
     - name: workspace
       description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
       mountPath: /artifacts
-  outputs:
-    resources:
+  resources:
+    outputs:
       - name: builtImage
         type: image
         description: "(Optional) The image to build"
@@ -62,16 +61,16 @@ spec:
         - name: API_KEY
           valueFrom:
             secretKeyRef:
-              name: $(inputs.params.continuous-delivery-context-secret)
-              key: $(inputs.params.container-registry-apikey-secret-key)
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.container-registry-apikey-secret-key)
         - name: IBMCLOUD_API
-          value: $(inputs.params.ibmcloudApi)
+          value: $(params.ibmcloud-api)
         - name: IBMCLOUD_RESOURCE_GROUP
-          value: $(inputs.params.resourceGroup)
+          value: $(params.resource-group)
         - name: PROPERTIES_FILE
-          value: $(inputs.params.propertiesFile)
+          value: $(params.properties-file)
         - name: PIPELINE_DEBUG
-          value: $(inputs.params.pipeline-debug)            
+          value: $(params.pipeline-debug)            
         # CD execution context injection
         - name: PIPELINE_RUN_NAME
           valueFrom:
@@ -120,10 +119,10 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
           fi
 
           # Ensure login to the container registry and namespace available
@@ -132,7 +131,7 @@ spec:
           # Manage multiple tags for an image
           # Add dynamically computed tags
           printf "#!/bin/bash\n" > /steps/additionnalTags.sh
-          printf "%s " '$(inputs.params.additionalTagsScript)' >> /steps/additionnalTags.sh
+          printf "%s " '$(params.additional-tags-script)' >> /steps/additionnalTags.sh
           chmod +x /steps/additionnalTags.sh
           /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
           # Add image pipeline resource
@@ -140,8 +139,8 @@ spec:
             echo "${IMAGE_TAG}" >> /steps/tags.lst
           fi
           # Add tags provided using task parameter
-          if [ "$(inputs.params.additionalTags)" ];  then
-            echo "$(inputs.params.additionalTags)" | sed 's/,/\n/g' >> /steps/tags.lst
+          if [ "$(params.additional-tags)" ];  then
+            echo "$(params.additional-tags)" | sed 's/,/\n/g' >> /steps/tags.lst
           fi
           echo "#######################"
           echo "Image Tags:"
@@ -161,7 +160,7 @@ spec:
             echo "Define a minimal image tag: $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:latest"
           fi
 
-          BUILD_ARG_LIST='$(inputs.params.buildArgs)'
+          BUILD_ARG_LIST='$(params.build-args)'
           for buildArg in $BUILD_ARG_LIST; do
             BUILD_ARGS="${BUILD_ARGS} --build-arg $buildArg "
           done
@@ -169,9 +168,9 @@ spec:
           # Build the image using ibmcloud cr build for the first tag in the file
           ibmcloud cr build \
             ${BUILD_ARGS} \
-            --file $(inputs.params.pathToDockerfile)/$(inputs.params.dockerfile) \
+            --file $(params.path-to-dockerfile)/$(params.dockerfile) \
             --tag $(head --lines=1 /steps/tags.lst) \
-            $(inputs.params.pathToContext)
+            $(params.path-to-context)
 
           # Create remaining tags for the image
           for tag in $(tail --lines=+2 /steps/tags.lst)

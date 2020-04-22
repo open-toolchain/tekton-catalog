@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: kubernetes-service-no-resources
@@ -6,9 +6,9 @@ spec:
   params:
     - name: apikey
       description: the ibmcloud api key
-    - name: clusterName
+    - name: cluster-name
       description: the name of the cluster to target
-    - name: resourceGroup
+    - name: resource-group
       description: Resource group for the ibmcloud operation
       default: "default"
   resourcetemplates:
@@ -31,7 +31,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)
@@ -39,23 +39,23 @@ spec:
         pipelineRef:
           name: kubernetes-service-no-resources
         params:
-          - name: resourceGroup
-            value: $(params.resourceGroup)
+          - name: resource-group
+            value: $(params.resource-group)
           - name: cluster-name
-            value: $(params.clusterName)
+            value: $(params.cluster-name)
         workspaces:
         - name: pipeline-ws
           persistentVolumeClaim:
             claimName: pipelinerun-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: kubernetes-service-no-resources
 spec:
   params:
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: kubernetes-service-no-resources

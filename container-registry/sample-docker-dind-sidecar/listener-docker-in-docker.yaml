@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: trigger-template-dind
@@ -10,7 +10,7 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: imageUrl
+    - name: image-url
       description: The image url in your container registry
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
@@ -29,7 +29,7 @@ spec:
         type: image
         params:
           - name: url
-            value: $(params.imageUrl)
+            value: $(params.image-url)
     # PVC definition like pre-tekton-0.10.1
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -42,7 +42,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: dind-$(uid)
@@ -63,7 +63,7 @@ spec:
           persistentVolumeClaim:
             claimName: dind-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: trigger-binding-dind
@@ -72,7 +72,7 @@ spec:
     - name: branch
       value: "master"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: event-listener-dind

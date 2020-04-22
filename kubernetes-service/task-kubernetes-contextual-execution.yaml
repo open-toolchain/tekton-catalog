@@ -1,22 +1,22 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: kubernetes-contextual-execution
 spec:
-  inputs:
-    params:
-      # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
-      # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
-      - name: clusterPipelineResourcesDirectory
-        description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
-        default: /clusters
-      - name: cluster-name
-        description: name of the cluster - required if no cluster pipeline resource provided to this task
-        default: ""
-      - name: script
-        description: the bash snippet to execute within the context of the kubernetes configuration
-        default: 'kubectl version'
-    resources:
+  params:
+    # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
+    # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
+    - name: cluster-pipeline-resources-directory
+      description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
+      default: /clusters
+    - name: cluster-name
+      description: name of the cluster - required if no cluster pipeline resource provided to this task
+      default: ""
+    - name: script
+      description: the bash snippet to execute within the context of the kubernetes configuration
+      default: 'kubectl version'
+  resources:
+    inputs:
       - name: cluster
         type: cluster
         optional: true        
@@ -62,12 +62,12 @@ spec:
         - |
 
           # Find cluster information
-          if [ "$(inputs.resources.cluster.name)" == "" ]; then
-            export CLUSTER_NAME="$(inputs.params.cluster-name)"
+          if [ "$(resources.inputs.cluster.name)" == "" ]; then
+            export CLUSTER_NAME="$(params.cluster-name)"
           else
-            export CLUSTER_NAME="$(inputs.resources.cluster.name)"
+            export CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
-          export KUBECONFIG=$(workspaces.workspace.path)/$(inputs.params.clusterPipelineResourcesDirectory)/$CLUSTER_NAME/kubeconfig
+          export KUBECONFIG=$(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory)/$CLUSTER_NAME/kubeconfig
 
           # Validate KUBECONFIG
           if test -f "$KUBECONFIG"; then
@@ -77,7 +77,7 @@ spec:
             exit 1
           fi
           # User-defined snippet/script
-          $(inputs.params.script)
+          $(params.script)
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume

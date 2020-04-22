@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: trigger-template-kubernetes-service
@@ -6,9 +6,9 @@ spec:
   params:
     - name: apikey
       description: the ibmcloud api key
-    - name: clusterName
+    - name: cluster-name
       description: the name of the cluster to target
-    - name: resourceGroup
+    - name: resource-group
       description: Resource group for the ibmcloud operation
       default: "default"
   resourcetemplates:
@@ -22,13 +22,13 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
-        name: $(params.clusterName)
+        name: $(params.cluster-name)
       spec:
         type: cluster
         params:
           # name is required in tekton v0.7 but not in v0.10.1
           - name: name
-            value: $(params.clusterName)
+            value: $(params.cluster-name)
           #
           - name: url
             value: https://fake.value
@@ -50,7 +50,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)
@@ -60,23 +60,23 @@ spec:
         resources:
           - name: target-cluster
             resourceRef:
-              name: $(params.clusterName)
+              name: $(params.cluster-name)
         params:
-          - name: resourceGroup
-            value: $(params.resourceGroup)
+          - name: resource-group
+            value: $(params.resource-group)
         workspaces:
         - name: pipeline-ws
           persistentVolumeClaim:
             claimName: pipelinerun-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: trigger-binding-kubernetes-service
 spec:
   params:
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: event-listener-kubernetes-service

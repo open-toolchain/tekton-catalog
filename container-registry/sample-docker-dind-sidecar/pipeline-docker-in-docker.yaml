@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: pipeline-dind
@@ -41,13 +41,13 @@ spec:
       taskRef:
         name: vulnerability-advisor-task
       params:
-        - name: scanReportFile
+        - name: scan-report-file
           value: 'app-image-va-report.json'
-        # - name: maxIteration
+        # - name: max-iteration
         #   value: '5'
-        # - name: sleepTime
+        # - name: sleep-time
         #   value: '3'
-        # - name: failOnScannedIssues
+        # - name: fail-on-scanned-issues
         #   value: 'false'
       workspaces:
         - name: workspace

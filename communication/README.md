@@ -28,10 +28,10 @@ Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery
 
 * **domain**: (optional) the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
 * **channel**: (optional) the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-* **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
-* **messageScript**: (optional) Shell script that provides messsage content.
+* **message-format**: (optional) the format of the message. Value: text(default) or JSON.
+* **message-script**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
-* **exitOnError**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
+* **exit-on-error**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
 
 ## Workspaces
 
@@ -58,8 +58,8 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
    - `domain` (optional) the Slack domain to send the message to.
    - `channel` (optional) the channel to post to (overrides the dafault channel as set in the Slack webhook).
-   - `messageFormat` (optional) the format of the message (text or JSON).
-   - `messageScript` (optional) Shell script that provides messsage content.
+   - `message-format` (optional) the format of the message (text or JSON).
+   - `message-script` (optional) Shell script that provides messsage content.
    - `message` (optional) the message to post to Slack.
 
 **Note:** when using JSON format, the message is posted as-is to Slack. 
@@ -83,9 +83,9 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
 8) Optionnal: Create a message using snippet 
 
-   a) Define the snippet in the `messageScript` environment property of the pipeline
+   a) Define the snippet in the `message-script` environment property of the pipeline
 
-       messageScript: `echo 'Message sent from PipelineRun' ${PIPELINE_RUN_NAME}; echo 'uid:' ${PIPELINE_RUN_ID}; echo 'buildNumber:' ${BUILD_NUMBER};`
+       message-script: `echo 'Message sent from PipelineRun' ${PIPELINE_RUN_NAME}; echo 'uid:' ${PIPELINE_RUN_ID}; echo 'buildNumber:' ${BUILD_NUMBER};`
 
       Note: this could also be done in the trigger-template or pipeline definition
 

@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: trigger-template-container-registry
@@ -10,9 +10,9 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: imageUrl
+    - name: image-url
       description: The image url in your container registry
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       default: '.'
     - name: pipeline-debug
       default: "0"
@@ -33,7 +33,7 @@ spec:
         type: image
         params:
           - name: url
-            value: $(params.imageUrl)
+            value: $(params.image-url)
     # PVC definition like pre-tekton-0.10.1
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -46,7 +46,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: containerize-$(uid)
@@ -62,8 +62,8 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: pathToDockerfile
-            value: $(params.pathToDockerfile)
+          - name: path-to-dockerfile
+            value: $(params.path-to-dockerfile)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
@@ -71,7 +71,7 @@ spec:
           persistentVolumeClaim:
             claimName: containerize-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: trigger-binding-container-registry
@@ -80,7 +80,7 @@ spec:
     - name: branch
       value: "master"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: event-listener-container-registry

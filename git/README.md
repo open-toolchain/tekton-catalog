@@ -26,18 +26,18 @@
 
 #### Parameters
 
-* **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
+* **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default value to `master`). This param can also be given as a full _git ref_ like `refs/heads/master` (as described by [Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References))
 * **revision**: (optional) the git revision/commit to update the git HEAD to (default to empty meaning only use the branch information)
-* **pr_repository**: the originated repository where the PullRequest come from (in case of a fork). Default to '' means same repository (not a fork) or it can be the same as repository to clone.
-* **pr_branch**: the branch that is the source of this PullRequest. Default to ''.
-* **pr_revision**: the commit/revision in the source branch of the PullRequest that is to be built. Defaults to ''.
-* **directoryName**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
-* **propertiesFile**: (optional) name of the properties file that will be created as an additional outcome of this task in the workspace `workspace`. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **pr-repository**: the originated repository where the PullRequest come from (in case of a fork). Default to '' means same repository (not a fork) or it can be the same as repository to clone.
+* **pr-branch**: the branch that is the source of this PullRequest. Default to ''.
+* **pr-revision**: the commit/revision in the source branch of the PullRequest that is to be built. Defaults to ''.
+* **directory-name**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
+* **properties-file**: (optional) name of the properties file that will be created as an additional outcome of this task in the workspace `workspace`. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
+* **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
-* **gitCredentialsJsonFile**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to the workspace `workspace` backed by a volume). Default to '' meaning no output of this information.
+* **git-credentials-json-file**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to the workspace `workspace` backed by a volume). Default to '' meaning no output of this information.
 
 ## Workspaces
 
@@ -65,21 +65,21 @@ The output of this task is the repository cloned into the directory on the works
 
 #### Parameters
 
-* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
 * **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
-* **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
+* **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
 * **revision**: the git revision/commit to update the status
 * **description**: A short description of the status.
 * **context**: (optional) A string label to differentiate this status from the status of other systems. (default to `continuous-integration/tekton`)
 * **state**: The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled` or a value meaningful for the target git repository (gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled` - github/integrated github: `pending`, `success`, `failure`, `error` - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED`)
-* **state-var**: Customized variable stored in `propertiesFile` (like `build-properties` for instance) to use as state if `state` input param is empty.
-* **propertiesFile**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
+* **state-var**: Customized variable stored in `properties-file` (like `build-properties` for instance) to use as state if `state` input param is empty.
+* **properties-file**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
 
 ## Workspaces
 
-* **workspace**: the workspace where the properties file (like `build.properties` defined in `propertiesFile` parameter) would be stored
+* **workspace**: the workspace where the properties file (like `build.properties` defined in `properties-file` parameter) would be stored
 
 ## Usages
 

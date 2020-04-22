@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: buildkit-no-resources
@@ -10,9 +10,9 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: imageUrl
+    - name: image-url
       description: The image url in your container registry
-    - name: pathToDockerfile
+    - name: path-to-dockerfile
       default: '.'
     - name: pipeline-debug
       default: "0"
@@ -37,7 +37,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: buildkit-nr-$(uid)
@@ -50,9 +50,9 @@ spec:
           - name: branch
             value: $(params.branch)
           - name: image-url
-            value: $(params.imageUrl)
-          - name: pathToDockerfile
-            value: $(params.pathToDockerfile)
+            value: $(params.image-url)
+          - name: path-to-dockerfile
+            value: $(params.path-to-dockerfile)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
@@ -60,7 +60,7 @@ spec:
           persistentVolumeClaim:
             claimName: buildkit-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: buildkit-no-resources
@@ -69,7 +69,7 @@ spec:
     - name: branch
       value: "master"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: buildkit-no-resources
