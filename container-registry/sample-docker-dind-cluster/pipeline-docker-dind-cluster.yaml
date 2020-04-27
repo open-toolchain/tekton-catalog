@@ -40,7 +40,7 @@ spec:
           - name: cluster
             resource: build-cluster
         outputs:
-          - name: builtImage
+          - name: built-image
             resource: app-image
     - name: va-scan-task
       taskRef:

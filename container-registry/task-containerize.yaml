@@ -52,7 +52,7 @@ spec:
       mountPath: /artifacts
   resources:
     outputs:
-      - name: builtImage
+      - name: built-image
         type: image
         description: "(Optional) The image to build"
         optional: true
@@ -93,10 +93,10 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
           # Ensure login to the container registry and namespace available
@@ -212,10 +212,10 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
-          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
           buildctl-daemonless.sh build \
@@ -230,10 +230,10 @@ spec:
 
           # Using the deprecated --exporter option for now as the multiple name/tags using --output option
           # is not working as expected: https://github.com/moby/buildkit/issues/797#issuecomment-581346240
-          #  --output type=image,"name=$(resources.outputs.builtImage.url):1.0.0,$(resources.outputs.builtImage.url)",push=true \
+          #  --output type=image,"name=$(resources.outputs.built-image.url):1.0.0,$(resources.outputs.built-image.url)",push=true \
 
           # it is not possible to specify multiple exporters for now
-          # --output type=oci,dest=/builder/home/image-outputs/builtImage/output.tar \
+          # --output type=oci,dest=/builder/home/image-outputs/built-image/output.tar \
           # It is possible to assign multiple tags to the image with latest version of buildkit-image
           # see https://github.com/moby/buildkit/issues/797
 
@@ -273,16 +273,16 @@ spec:
           CONFIG_SHA=$(grep -i 'exporting config' build.log | grep -i 'done' | awk '{print $4}')
           FULLY_QUALIFIED_IMAGE=$(grep -i 'pushing manifest' build.log | grep -i 'done' | awk '{print $5}')
 
-          if [ "$(resources.outputs.builtImage.url)" ]; then
+          if [ "$(resources.outputs.built-image.url)" ]; then
             echo "Creating OCI image index - index.json - out of the build.log to reference image sha: $MANIFEST_SHA"
             # ibmcloud container-registry image manifest is: application/vnd.docker.distribution.manifest.v2+json
             echo "{}" | \
             jq --arg manifest_sha "$MANIFEST_SHA" '{schemaVersion:2,manifests:[{"mediaType": "application/vnd.oci.image.manifest.v1+json", digest:$manifest_sha}]}' 2>&1 | \
-            tee /workspace/output/builtImage/index.json
+            tee /workspace/output/built-image/index.json
 
             # Copy the index.json to the legacy location - v0.7.0 - for such imageoutput
-            mkdir -p /builder/home/image-outputs/builtImage
-            cp /workspace/output/builtImage/index.json /builder/home/image-outputs/builtImage
+            mkdir -p /builder/home/image-outputs/built-image
+            cp /workspace/output/built-image/index.json /builder/home/image-outputs/built-image
           fi
 
           # Because of https://github.com/tektoncd/pipeline/issues/216

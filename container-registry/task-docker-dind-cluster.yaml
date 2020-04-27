@@ -33,7 +33,7 @@ spec:
       description: "url of the image to build - required if no image pipeline resource provided to this task"
       default: ""
     - name: image-tag
-      description: the default image tag if none is provided using the builtImage url
+      description: the default image tag if none is provided using the built-image url
       default: latest
     # Dockerfile location
     - name: path-to-context
@@ -67,7 +67,7 @@ spec:
         description: "(Optional) The cluster used for Docker build"
         optional: true
     outputs:
-      - name: builtImage
+      - name: built-image
         type: image
         description: "(Optional) The image to build"
         optional: true
@@ -100,10 +100,10 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
           # Ensure login to the container registry and namespace available
@@ -183,10 +183,10 @@ spec:
         - |
           set -e -o pipefail
 
-          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
           # Parse the image url to find information (region, namespace, image name and eventually tag)
