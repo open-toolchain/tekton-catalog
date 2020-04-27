@@ -60,7 +60,7 @@ spec:
           workspace: pipeline-ws
       resources:
         outputs:
-          - name: builtImage
+          - name: built-image
             resource: app-image
     - name: pipeline-3-va-task
       taskRef:

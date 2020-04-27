@@ -49,7 +49,7 @@ spec:
       mountPath: /artifacts
   resources:
     outputs:
-      - name: builtImage
+      - name: built-image
         type: image
         description: "(Optional) The image to build"
         optional: true
@@ -119,10 +119,10 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(resources.outputs.builtImage.url)" == "" ]; then
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
           # Ensure login to the container registry and namespace available

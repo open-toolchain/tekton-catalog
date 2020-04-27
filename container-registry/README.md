@@ -42,7 +42,7 @@
 
 #### Resources
 
-* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
+* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Build Image helper task: cr-build-task
 
@@ -78,7 +78,7 @@
 
 #### Resources
 
-* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
+* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Docker In Docker (DIND) helper task: execute-in-dind-task
 This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind,
@@ -124,7 +124,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 #### Resources
 
-* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
+* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task: execute-in-dind-cluster-task
 This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
@@ -173,7 +173,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
 #### Resources
 
-* **builtImage**: (optional) The Image PipelineResource that will be created as output of this task.
+* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Vulnerability Advisor helper task: vulnerability-advisor-task
 
