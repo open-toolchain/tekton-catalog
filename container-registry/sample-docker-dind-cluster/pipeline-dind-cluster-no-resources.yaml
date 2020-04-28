@@ -39,6 +39,8 @@ spec:
           value: 1.0.0-$(tasks.clone-repository.results.git-branch)-$(tasks.clone-repository.results.git-commit)
         - name: cluster-name
           value: $(params.cluster-name)
+        - name: properties-file
+          value: ''
       workspaces:
         - name: workspace
           workspace: pipeline-ws

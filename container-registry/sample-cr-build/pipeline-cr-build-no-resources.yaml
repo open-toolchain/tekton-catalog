@@ -54,7 +54,7 @@ spec:
             echo "1.0.0-${BUILD_NUMBER}"            
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: properties-file          
+        - name: properties-file
           value: ''
       workspaces:
         - name: workspace
