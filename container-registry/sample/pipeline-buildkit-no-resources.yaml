@@ -44,7 +44,7 @@ spec:
         - name: additional-tags
           value: |
             latest
-            echo "1.0.0-$(tasks.pipeline-1-clone-task.results.git-branch)-$(tasks.pipeline-1-clone-task.results.git-commit)"
+            1.0.0-$(tasks.pipeline-1-clone-task.results.git-branch)-$(tasks.pipeline-1-clone-task.results.git-commit)
         - name: additional-tags-script
           value: |
             # The script is providing tag(s) as output
