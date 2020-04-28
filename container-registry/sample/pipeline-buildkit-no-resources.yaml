@@ -51,7 +51,7 @@ spec:
             # But logs can be written as error stderr
             echo "Providing an image tag with build number" >&2
             # Add a specific tag with cd build number
-            echo "1.0.0-${BUILD_NUMBER}"
+            echo -n "1.0.0-${BUILD_NUMBER}"
         - name: image-url
           value: $(params.image-url)
         - name: properties-file          
