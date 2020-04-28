@@ -27,6 +27,8 @@ spec:
           value: $(params.branch)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: properties-file
+          value: ''
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -40,20 +42,20 @@ spec:
         - name: path-to-dockerfile
           value: $(params.path-to-dockerfile)
         - name: additional-tags
-          value: 'latest'
+          value: |
+            latest
+            echo "1.0.0-$(tasks.pipeline-1-clone-task.results.git-branch)-$(tasks.pipeline-1-clone-task.results.git-commit)"
         - name: additional-tags-script
           value: |
-            # Include the clone task output variables in the environment
-            source /artifacts/build.properties
             # The script is providing tag(s) as output
             # But logs can be written as error stderr
-            echo "Providing an image tag including git branch and commit" >&2
-            # Add a specific tag with branch and commit
-            echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
+            echo "Providing an image tag with build number" >&2
             # Add a specific tag with cd build number
             echo "1.0.0-${BUILD_NUMBER}"
         - name: image-url
           value: $(params.image-url)
+        - name: properties-file          
+          value: ''
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -74,6 +76,8 @@ spec:
         #   value: 'false'
         - name: image-url
           value: $(params.image-url)
+        - name: image-digest
+          value: $(tasks.pipeline-2-containerize-task.results.image-digest)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
