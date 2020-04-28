@@ -42,16 +42,14 @@ spec:
         - name: path-to-dockerfile
           value: $(params.path-to-dockerfile)
         - name: additional-tags
-          value: |
-            latest
-            1.0.0-$(tasks.pipeline-1-clone-task.results.git-branch)-$(tasks.pipeline-1-clone-task.results.git-commit)
+          value: latest,1.0.0-$(tasks.pipeline-1-clone-task.results.git-branch)-$(tasks.pipeline-1-clone-task.results.git-commit)
         - name: additional-tags-script
           value: |
             # The script is providing tag(s) as output
             # But logs can be written as error stderr
             echo "Providing an image tag with build number" >&2
             # Add a specific tag with cd build number
-            echo -n "1.0.0-${BUILD_NUMBER}"
+            echo "1.0.0-${BUILD_NUMBER}"
         - name: image-url
           value: $(params.image-url)
         - name: properties-file          
