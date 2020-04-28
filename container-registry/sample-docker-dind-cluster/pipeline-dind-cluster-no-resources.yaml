@@ -23,6 +23,8 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: properties-file
+          value: ''
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -33,6 +35,8 @@ spec:
       params:
         - name: image-url
           value: $(params.image-url)
+        - name: image-tag
+          value: 1.0.0-$(tasks.clone-repository.results.git-branch)-$(tasks.clone-repository.results.git-commit)
         - name: cluster-name
           value: $(params.cluster-name)
       workspaces:
@@ -53,6 +57,8 @@ spec:
         #   value: 'false'
         - name: image-url
           value: $(params.image-url)
+        - name: image-digest
+          value: $(tasks.build-and-push-docker.results.image-digest)
       workspaces:
         - name: workspace
           workspace: pipeline-ws
