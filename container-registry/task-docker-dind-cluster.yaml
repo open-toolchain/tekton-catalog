@@ -60,6 +60,15 @@ spec:
     - name: properties-file
       description: file containing properties out of the docker in docker task
       default: build.properties
+  results:
+    - name: image-tags
+      description: the tags for the built image
+    - name: image-digest
+      description: the image digest (sha-256 hash) for the built image
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+      mountPath: /artifacts
   resources:
     inputs:
       - name: cluster
@@ -71,10 +80,6 @@ spec:
         type: image
         description: "(Optional) The image to build"
         optional: true
-  workspaces:
-    - name: workspace
-      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
-      mountPath: /artifacts
   steps:
     - name: check-registry
       image: ibmcom/pipeline-base-image:2.6
@@ -227,6 +232,11 @@ spec:
             cat $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo ""
           fi
+
+          # Record task results
+          echo -n "${IMAGE_TAG}" > $(results.image-tags.path)
+          echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
+
           echo "Done."
       volumeMounts:
         - mountPath: /steps

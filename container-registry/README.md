@@ -14,9 +14,7 @@
 
 ## Build Image helper task: containerize-task
 
-### Inputs
-
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resources to be defined:
 
@@ -27,7 +25,7 @@
 
   See this [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Parameters
+### Parameters
 
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
@@ -38,17 +36,24 @@
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
-### Outputs
+### Results
 
-#### Resources
+* **image-tags**: the tags for the built image
+* **image-digest**: the image digest (sha-256 hash) for the built image
+
+### Workspaces
+
+* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
+
+### Resources
+
+#### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Build Image helper task: cr-build-task
 
-### Inputs
-
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resources to be defined:
 
@@ -59,7 +64,7 @@
 
   See this [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Parameters
+### Parameters
 
 * **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
@@ -70,13 +75,18 @@
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
-## Workspaces
+### Results
+
+* **image-tags**: the tags for the built image
+* **image-digest**: the image digest (sha-256 hash) for the built image
+
+### Workspaces
 
 * **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
-### Outputs
+### Resources
 
-#### Resources
+#### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
@@ -86,8 +96,6 @@ and pushes the resulting image to the IBM Cloud Container Registry.
 
 **Note:** the **Docker engine** used to execute the commands is **transient**, created by the task as a sidecar container,
 and is available only during the task's lifespan.
-
-### Inputs
 
 #### Context - ConfigMap/Secret
 
@@ -100,7 +108,7 @@ and is available only during the task's lifespan.
 
   See this [sample TriggerTemplate](./sample-docker-dind-sidecar/listener-docker-in-docker.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Parameters
+### Parameters
 
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
 * **image-tag**: (optional) the tag for the built image (default to `latest`) 
@@ -110,26 +118,29 @@ and is available only during the task's lifespan.
 * **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **docker-commands**: (optional) The docker command(s) to run. Default commands:
-```
-docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
-docker inspect ${IMAGE_URL}:${IMAGE_TAG}
-docker push ${IMAGE_URL}:${IMAGE_TAG}
-```
+  ```
+  docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
+  docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+  docker push ${IMAGE_URL}:${IMAGE_TAG}
+  ```
 
-## Workspaces
+### Results
+
+* **image-tags**: the tags for the built image
+* **image-digest**: the image digest (sha-256 hash) for the built image
+
+### Workspaces
 
 * **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
-### Outputs
+### Resources
 
-#### Resources
+#### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task: execute-in-dind-cluster-task
 This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
-
-### Inputs
 
 #### Context - ConfigMap/Secret
 
@@ -142,7 +153,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
   See this [sample TriggerTemplate](./sample-docker-dind-cluster/listener-docker-dind-cluster.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Parameters
+### Parameters
 
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **cluster-region**: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
@@ -156,30 +167,34 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 * **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **docker-commands**: (optional) The docker command(s) to run. Default commands:
-```
-docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
-docker inspect ${IMAGE_URL}:${IMAGE_TAG}
-docker push ${IMAGE_URL}:${IMAGE_TAG}
-```
-#### Resources
+  ```
+  docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
+  docker inspect ${IMAGE_URL}:${IMAGE_TAG}
+  docker push ${IMAGE_URL}:${IMAGE_TAG}
+  ```
 
-* **cluster**: (optional) The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
+### Results
 
-## Workspaces
+* **image-tags**: the tags for the built image
+* **image-digest**: the image digest (sha-256 hash) for the built image
+
+### Workspaces
 
 * **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
-### Outputs
-
 #### Resources
+
+##### Inputs
+
+* **cluster**: (optional) The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
+
+##### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## Vulnerability Advisor helper task: vulnerability-advisor-task
 
-### Inputs
-
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resources to be defined:
 
@@ -190,7 +205,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
   See this [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Parameters
+### Parameters
 
 * **image-url**: (optional) url of the image to VA scan - required if no image pipeline resource provided to this task
 * **image-digest**: (optional) SHA id of the image to VA scan - required if no image pipeline resource provided and no `image-properties-file` value provided
@@ -201,11 +216,18 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 * **fail-on-scanned-issues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 
-## Workspaces
+### Results
+
+* **scan-report-file**: the filename if the scan report for the image stored in the workspace
+* **scan-status**: the status from Vulnerability Advisor - possible values: OK, WARN, FAIL, UNSUPPORTED, INCOMPLETE, UNSCANNED
+
+### Workspaces
 
 * **workspace**: The workspace backing by a volume that will be used to store output file
 
 #### Resources
+
+#### Inputs
 
 * **image**: (optional) The Image PipelineResource that this task will process the Vulnerability Advisor scan result.
 
