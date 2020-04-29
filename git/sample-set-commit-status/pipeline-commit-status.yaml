@@ -29,9 +29,9 @@ spec:
           value: $(params.revision)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: git-set-commit-status
+    - name: set-commit-status
       taskRef:
-        name: set-commit-status
+        name: git-set-commit-status
       runAfter: [clone-repository]
       workspaces:
         - name: workspace
