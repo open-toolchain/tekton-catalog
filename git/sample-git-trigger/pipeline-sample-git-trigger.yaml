@@ -32,7 +32,7 @@ spec:
   tasks:
     - name: pipeline-git-event-clone-task
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       params:
         - name: repository
           value: $(params.repository)

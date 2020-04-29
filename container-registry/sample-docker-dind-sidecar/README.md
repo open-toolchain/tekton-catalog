@@ -15,7 +15,7 @@ It also contains a `dind-no-resources` EventListener definition which is the pro
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
+   - for the `git-clone-repo` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample-docker-dind-sidecar` paths)
 
    ![Tekton pipeline definitions](./images/dind-sample-tekton-pipeline-definitions.png)

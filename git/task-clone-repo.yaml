@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: clone-repo-task
+  name: git-clone-repo
 spec:
   params:
     - name: ibmcloud-api

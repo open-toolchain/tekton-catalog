@@ -1,8 +1,8 @@
 ## Git event trigger with clone task sample usage ##
 
-This `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `clone-repo-task` in the context of a CD Tekton pipeline triggered by a Git event (Commit push or PullRequest push/update).
+This `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `git-clone-repo` in the context of a CD Tekton pipeline triggered by a Git event (Commit push or PullRequest push/update).
 
-This sample illustrates the PullRequest support provided by the `clone-repo-task` (il n'y a pas de git-clone task, correct?) that results in a Git repository content that would be identical to the one obtained after a merge action on the given PullRequest (or Merge Request for a Gitlab or GRIT server).
+This sample illustrates the PullRequest support provided by the `git-clone-repo` (il n'y a pas de git-clone task, correct?) that results in a Git repository content that would be identical to the one obtained after a merge action on the given PullRequest (or Merge Request for a Gitlab or GRIT server).
 
 1) Create or update a Toolchain to include:
 

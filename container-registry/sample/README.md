@@ -15,7 +15,7 @@ It also contains a `buildkit-no-resources` EventListener definition which is the
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
+   - for the `git-clone-repo` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample` paths)
 
    ![Tekton pipeline definitions](./images/container-registry-sample-tekton-pipeline-definitions.png)

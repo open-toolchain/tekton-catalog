@@ -15,7 +15,7 @@ It also contains a `dind-cluster-no-resources` EventListener definition which is
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
+   - for the `git-clone-repo` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample-docker-dind-cluster` paths)
 
    ![Tekton pipeline definitions](./images/dind-cluster-sample-tekton-pipeline-definitions.png)

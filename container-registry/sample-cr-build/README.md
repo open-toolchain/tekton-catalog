@@ -15,7 +15,7 @@ It also contains a `cr-build-no-resources` EventListener definition which is the
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
+   - for the `git-clone-repo` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample-cr-build` paths)
 
    ![Tekton pipeline definitions](./images/container-registry-sample-cr-build-tekton-pipeline-definitions.png)
