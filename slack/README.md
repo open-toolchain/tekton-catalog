@@ -22,7 +22,7 @@ Create a [Slack Webhook](https://api.slack.com/messaging/webhooks).
 Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack) to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
 ## Install the Task
 - Add a github integration in your Toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
-- Add that github integration to the Definitions tab of your Continuous Delivery Tekton pipeline, with the Path set to `communication`.
+- Add that github integration to the Definitions tab of your Continuous Delivery Tekton pipeline, with the Path set to `slack`.
 
 ### Parameters
 
