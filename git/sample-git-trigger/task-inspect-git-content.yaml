@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: inspect-content-task
+  name: inspect-git-content
 spec:
   params:
     - name: repository

@@ -60,7 +60,7 @@ spec:
     - name: pipeline-git-event-content-inspect
       runAfter: [pipeline-git-event-clone-task]
       taskRef:
-        name: inspect-content-task
+        name: inspect-git-content
       workspaces:
         - name: workspace
           workspace: pipeline-ws
