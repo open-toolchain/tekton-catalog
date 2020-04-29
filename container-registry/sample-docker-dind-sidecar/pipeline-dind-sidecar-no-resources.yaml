@@ -43,7 +43,7 @@ spec:
     - name: va-scan-task
       runAfter: [build-and-push-docker]
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
       params:
         - name: scan-report-file
           value: 'app-image-va-report.json'

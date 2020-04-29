@@ -39,7 +39,7 @@ spec:
             resource: app-image
     - name: va-scan-task
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
       params:
         - name: scan-report-file
           value: 'app-image-va-report.json'
