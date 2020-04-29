@@ -13,7 +13,7 @@ spec:
   tasks:
     - name: pipeline-0-setup-task
       taskRef:
-        name: fetch-iks-cluster-config
+        name: iks-fetch-config
       params:
         - name: resource-group
           value: $(params.resource-group)
@@ -31,7 +31,7 @@ spec:
             resource: target-cluster
     - name: pipeline-1-kubectl-task
       taskRef:
-        name: kubernetes-contextual-execution
+        name: iks-contextual-execution
       params:
         - name: cluster-pipeline-resources-directory
           value: .tekton-clusters

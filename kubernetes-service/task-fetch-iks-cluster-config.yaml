@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: fetch-iks-cluster-config
+  name: iks-fetch-config
 spec:
   params:
     - name: ibmcloud-api

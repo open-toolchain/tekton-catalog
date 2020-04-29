@@ -11,7 +11,7 @@ spec:
   tasks:
     - name: pipeline-0-setup-task
       taskRef:
-        name: fetch-iks-cluster-config
+        name: iks-fetch-config
       params:
         - name: resource-group
           value: $(params.resource-group)
@@ -25,7 +25,7 @@ spec:
     - name: pipeline-1-kubectl-task
       runAfter: [pipeline-0-setup-task]
       taskRef:
-        name: kubernetes-contextual-execution
+        name: iks-contextual-execution
       params:
         - name: cluster-name
           value: $(params.cluster-name)

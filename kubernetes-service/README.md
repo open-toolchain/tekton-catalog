@@ -1,7 +1,7 @@
 # Kubernetes-Service related tasks
 
-- **fetch-iks-cluster-config**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
-- **kubernetes-contextual-execution**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
+- **iks-fetch-config**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
+- **iks-contextual-execution**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
 
 **WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.16. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 
@@ -67,7 +67,7 @@
 #### Parameters
 
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
-* **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be a combination of `task-pvc-mountpath` and `fetch-iks-cluster-config#cluster-pipeline-resources-directory-fallback` if cluster pipeline resource update is not made by the `fetch-iks-cluster-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
+* **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be a combination of `task-pvc-mountpath` and `iks-fetch-config#cluster-pipeline-resources-directory-fallback` if cluster pipeline resource update is not made by the `iks-fetch-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
 
 ## Workspaces
@@ -75,7 +75,7 @@
 * **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
 
 # Usage
-The `sample` sub-directory contains an EventListener definition `kubernetes-service` that you can include in your tekton pipeline configuration to run an example usage of the `fetch-iks-cluster-config` and `kubernetes-contextual-execution` tasks.
+The `sample` sub-directory contains an EventListener definition `kubernetes-service` that you can include in your tekton pipeline configuration to run an example usage of the `iks-fetch-config` and `iks-contextual-execution` tasks.
 
 It also contains a `kubernetes-service-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for cluster as it uses the task's parameter `cluster-name` to provide the information
 
