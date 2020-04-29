@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: execute-in-dind-cluster-task
+  name: icr-execute-in-dind-cluster
 spec:
   params:
     - name: ibmcloud-api

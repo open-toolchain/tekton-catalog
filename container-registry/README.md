@@ -139,7 +139,7 @@ and is available only during the task's lifespan.
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
-## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task: execute-in-dind-cluster-task
+## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task: icr-execute-in-dind-cluster
 This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
 
 #### Context - ConfigMap/Secret
@@ -248,7 +248,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
   See the documentation [here](./sample-docker-dind-sidecar/README.md)
 
-- The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-cluster` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-cluster-task` and `vulnerability-advisor-task`.
+- The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-cluster` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind-cluster` and `vulnerability-advisor-task`.
   It also contains a `dind-cluster-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
   See the documentation [here](./sample-docker-dind-cluster/README.md)
