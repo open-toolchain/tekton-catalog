@@ -1,8 +1,8 @@
 # Container-Registry related tasks
 
-- **containerize-task**: this task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
-- **cr-build-task**: this task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image.
-- **execute-in-dind-task**: this task runs `docker` commands (build, inspect...) against a Docker engine running as a sidecar container, and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
+- **icr-containerize**: this task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **icr-cr-build**: this task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image.
+- **icr-execute-in-dind**: this task runs `docker` commands (build, inspect...) against a Docker engine running as a sidecar container, and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
 - **execute-in-dind-cluster-task**: this task runs `docker` commands (build, inspect...) against a Docker engine running in a Kubernetes cluster (a Docker DinD instance will be deployed if none is available on the build cluster), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
 - **vulnerability-advisor-task**: this task verifies that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and processes the outcome of the scan.
 
@@ -12,7 +12,7 @@
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
 - Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `container-registry`
 
-## Build Image helper task: containerize-task
+## Build Image helper task: icr-containerize
 
 ### Context - ConfigMap/Secret
 
@@ -51,7 +51,7 @@
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
-## Build Image helper task: cr-build-task
+## Build Image helper task: icr-cr-build
 
 ### Context - ConfigMap/Secret
 
@@ -90,7 +90,7 @@
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
-## Docker In Docker (DIND) helper task: execute-in-dind-task
+## Docker In Docker (DIND) helper task: icr-execute-in-dind
 This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind,
 and pushes the resulting image to the IBM Cloud Container Registry.
 
@@ -233,17 +233,17 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 ## Usages
 
-- The `sample` sub-directory contains an `event-listener-container-registry` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `containerize-task` and `vulnerability-advisor-task`.
+- The `sample` sub-directory contains an `event-listener-container-registry` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-containerize` and `vulnerability-advisor-task`.
   It also contains a `buildkit-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
   See the documentation [here](./sample/README.md)
 
-- The `sample-cr-build` sub-directory contains an `cr-build` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `cr-build-task` and `vulnerability-advisor-task`.
+- The `sample-cr-build` sub-directory contains an `cr-build` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-cr-build` and `vulnerability-advisor-task`.
   It also contains a `cr-build-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information.
 
   See the documentation [here](./sample-cr-build/README.md)
 
-- The `sample-docker-dind-sidecar` sub-directory contains an `event-listener-dind` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-task` and `vulnerability-advisor-task`.
+- The `sample-docker-dind-sidecar` sub-directory contains an `event-listener-dind` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind` and `vulnerability-advisor-task`.
   It also contains a `dind-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
   See the documentation [here](./sample-docker-dind-sidecar/README.md)

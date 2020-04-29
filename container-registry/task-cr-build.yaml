@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: cr-build-task
+  name: icr-cr-build
 spec:
   params:
     - name: ibmcloud-api

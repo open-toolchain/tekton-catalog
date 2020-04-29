@@ -35,7 +35,7 @@ spec:
     - name: pipeline-2-containerize-task
       runAfter: [pipeline-1-clone-task]
       taskRef:
-        name: containerize-task
+        name: icr-containerize
       params:
         - name: path-to-context
           value: $(params.path-to-dockerfile)

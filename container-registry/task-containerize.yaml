@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: containerize-task
+  name: icr-containerize
 spec:
   params:
     - name: ibmcloud-api

@@ -29,7 +29,7 @@ spec:
     - name: build-and-push-docker
       runAfter: [clone-repository]
       taskRef:
-        name: execute-in-dind-task
+        name: icr-execute-in-dind
       params:
         - name: image-url
           value: $(params.image-url)
