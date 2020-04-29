@@ -26,7 +26,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   | container-registry | containerize-task | icr-containerize |
   | container-registry | cr-build-task | icr-cr-build |
   | container-registry | execute-in-dind-task | icr-execute-in-dind |
-  | container-registry | execute-in-dind-cluster-task | icr-icr-execute-in-dind-cluster |
+  | container-registry | execute-in-dind-cluster-task | icr-execute-in-dind-cluster |
   | container-registry | vulnerability-advisor-task | icr-check-va-scan |
   | git | clone-repo-task | git-clone-repo |
   | git | set-commit-status | git-set-commit-status |
