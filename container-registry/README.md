@@ -66,7 +66,6 @@
 
 ### Parameters
 
-* **task-pvc**: the output pvc - this is the name of the PVC that is mounted for the execution of the task
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)

@@ -2,7 +2,7 @@
 
 This `sample-set-commit-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `git-set-commit-status` task in the context of a CD Tekton pipeline triggered by a Git event (Commit push).
 
-This sample illustrates the commit status support provided by the `set-commit-status` task that results in a git commit on the target git repository updated with a status (`success` by default).
+This sample illustrates the commit status support provided by the `git-set-commit-status` task that results in a git commit on the target git repository updated with a status (`success` by default).
 
 1) Create or update a Toolchain to include:
 
