@@ -19,7 +19,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   | slack | slack |
   | toolchain | otc |
 
-  The task new names are listed in the followin table:
+  The task new names are listed in the following table:
 
   | Folder | Old task name | New task name |
   |--------|---------------|---------------|
