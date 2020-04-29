@@ -2,7 +2,9 @@
 
 Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 
-**Note**: These tasks use tekton pre-0.10.1 mode as for PVC declaration in the listeners(s) and are compliant with Tekton Pipeline [0.7.0, 0.10.1]. There is work in progress to replace the PVC mechanism/declaration by workspace usage in the tasks (in the branch https://github.com/open-toolchain/tekton-catalog/tree/tkn_pipeline_beta_support).
+**Note**: 
+- These tasks use tekton pre-0.10.1 mode as for PVC declaration in the listeners(s) and are compliant with Tekton Pipeline [0.7.0, 0.10.1]. There is work in progress to replace the PVC mechanism/declaration by workspace usage in the tasks (in the branch https://github.com/open-toolchain/tekton-catalog/tree/tkn_pipeline_beta_support).
+- Tasks compliant with Tekton Beta (v0.11.2) are defined in the branch `tkn_v1beta1` - https://github.com/open-toolchain/tekton-catalog/tree/tkn_v1beta1 - and are using Tekton#workspace and Tasks#results
 
 ## Git related tasks
 
