@@ -1,17 +1,15 @@
 # Git related tasks
 
-- **clone-repo-task**: This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository.
-- **set-commit-status**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
+- **git-clone-repo**: This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository.
+- **git-set-commit-status**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
 
 ## Install the Tasks
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
 - Add that github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `git`
 
-## Git integration clone task - clone-repo-task
+## Git integration clone task - git-clone-repo
 
-### Inputs
-
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resource to be defined:
 
@@ -24,7 +22,7 @@
 
   See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Parameters
+### Parameters
 
 * **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
@@ -39,18 +37,23 @@
 * **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
 * **git-credentials-json-file**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to the workspace `workspace` backed by a volume). Default to '' meaning no output of this information.
 
-## Workspaces
+### Workspaces
 
 * **workspace**: The git repo will be cloned onto the volume backing this workspace
 
-## Outputs
+### Results
+* **git-repository**: The cloned repository
+* **git-branch**: The active branch for the repository
+* **git-commit**: The current commit id that was cloned
+* **git-user**: The auth user that cloned the repository
+* **git-token**: The auth token that cloned the repository
+
+### Outcome
 The output of this task is the repository cloned into the directory on the workspace `workspace`.
 
-## Git commit status setter task - set-commit-status
+## Git commit status setter task - git-set-commit-status
 
-### Inputs
-
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resource to be defined:
 
@@ -63,7 +66,7 @@ The output of this task is the repository cloned into the directory on the works
 
   See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Parameters
+### Parameters
 
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 * **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
@@ -77,21 +80,21 @@ The output of this task is the repository cloned into the directory on the works
 * **state-var**: Customized variable stored in `properties-file` (like `build-properties` for instance) to use as state if `state` input param is empty.
 * **properties-file**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
 
-## Workspaces
+### Workspaces
 
 * **workspace**: the workspace where the properties file (like `build.properties` defined in `properties-file` parameter) would be stored
 
 ## Usages
 
-- The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `clone-repo-task`.
+- The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `git-clone-repo`.
 
   See the documentation [here](./sample/README.md)
 
-- The `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example showing usage of the clone-repo-task in the context of CD tekton pipeline triggered by git event(s) (Commit pushed or PullRequest opened/updated)
+- The `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example showing usage of the git-clone-repo in the context of CD tekton pipeline triggered by git event(s) (Commit pushed or PullRequest opened/updated)
 
   See the documentation [here](./sample-git-trigger/README.md)
 
-- The `sample-set-commit-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `set-commit-status` task in the context of a CD Tekton pipeline triggered by a Git event (Commit push).
+- The `sample-set-commit-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `git-set-commit-status` task in the context of a CD Tekton pipeline triggered by a Git event (Commit push).
 
   See the documentation [here](./sample-set-commit-status/README.md)
 

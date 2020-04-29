@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: inspect-content-task
+  name: inspect-git-content
 spec:
   params:
     - name: repository
@@ -12,6 +12,14 @@ spec:
       default: build.properties
     - name: git-credentials-json-file
       default: ''
+    - name: git-branch
+      description: The active branch for the repository
+    - name: git-commit
+      description: The current commit id that was cloned
+    - name: git-user
+      description: The auth user that cloned the repository
+    - name: git-token
+      description: The auth token that cloned the repository
   workspaces:
   - name: workspace
     mountPath: /artifacts
@@ -57,3 +65,10 @@ spec:
             echo "Executing 'jq $(workspaces.workspace.path)/$(params.git-credentials-json-file)'"
             cat $(workspaces.workspace.path)/$(params.git-credentials-json-file) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
           fi
+          echo "##############"
+          echo "Showing task inputs:"
+          echo "params.repository: $(params.repository)"
+          echo "params.git-branch: $(params.git-branch)"
+          echo "params.git-commit: $(params.git-commit)"
+          echo "params.git-user: $(params.git-user)"
+          echo "params.git-token: ***"

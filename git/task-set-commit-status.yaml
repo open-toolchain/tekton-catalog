@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: set-commit-status
+  name: git-set-commit-status
   description: This task will set CI status on the commit
 spec:
   params:

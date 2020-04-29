@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: containerize-task
+  name: icr-containerize
 spec:
   params:
     - name: ibmcloud-api
@@ -46,6 +46,11 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
+  results:
+    - name: image-tags
+      description: the tags for the built image
+    - name: image-digest
+      description: the image digest (sha-256 hash) for the built image
   workspaces:
     - name: workspace
       description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
@@ -293,18 +298,23 @@ spec:
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
           # Here the workaround will be to add registry and image information in an output properties file
+          IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')          
           if [ "$PROPERTIES_FILE" ]; then
             mkdir -p $(workspaces.workspace.path)/$(dirname "$PROPERTIES_FILE")
             echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            echo "IMAGE_TAGS=${IMAGE_TAGS}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
             cat $(workspaces.workspace.path)/$PROPERTIES_FILE
             echo ""
           fi
+
+          # Record task results
+          echo -n "${IMAGE_TAGS}" > $(results.image-tags.path)
+          echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
       volumeMounts:
         - mountPath: /steps
           name: steps-volume

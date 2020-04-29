@@ -22,7 +22,7 @@ Create a [Slack Webhook](https://api.slack.com/messaging/webhooks).
 Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack) to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
 ## Install the Task
 - Add a github integration in your Toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
-- Add that github integration to the Definitions tab of your Continuous Delivery Tekton pipeline, with the Path set to `communication`.
+- Add that github integration to the Definitions tab of your Continuous Delivery Tekton pipeline, with the Path set to `slack`.
 
 ### Parameters
 
@@ -41,7 +41,7 @@ Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery
 None.
 
 ## Usage
-The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the `post-slack` task.
+The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the `slack-post-message` task.
 
 1) Create or update a Toolchain so it includes:
    - a Slack integration
@@ -50,7 +50,7 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
    ![Toolchain overview](./sample/sample-toolchain-overview.png)
 
-2) Add the definitions of this task and the sample (`communication` and `communication/sample` paths)
+2) Add the definitions of this task and the sample (`slack` and `slack/sample` paths)
 
    ![Tekton pipeline definitions](./sample/sample-tekton-pipeline-definitions.png)
 

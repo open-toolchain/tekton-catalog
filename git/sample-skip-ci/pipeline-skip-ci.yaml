@@ -15,7 +15,7 @@ spec:
   tasks:
     - name: clone-task
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       conditions:
         - conditionRef: skip-ci
           params:

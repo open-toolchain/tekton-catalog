@@ -15,29 +15,35 @@ spec:
   tasks:
     - name: clone-repository
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       params:
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: properties-file
+          value: ''
       workspaces:
         - name: workspace
           workspace: pipeline-ws
     - name: build-and-push-docker
       runAfter: [clone-repository]
       taskRef:
-        name: execute-in-dind-task
+        name: icr-execute-in-dind
       params:
         - name: image-url
           value: $(params.image-url)
+        - name: image-tag
+          value: 1.0.0-$(tasks.clone-repository.results.git-branch)-$(tasks.clone-repository.results.git-commit)
+        - name: properties-file
+          value: ''
       workspaces:
         - name: workspace
           workspace: pipeline-ws
     - name: va-scan-task
       runAfter: [build-and-push-docker]
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
       params:
         - name: scan-report-file
           value: 'app-image-va-report.json'
@@ -49,6 +55,8 @@ spec:
         #   value: 'false'
         - name: image-url
           value: $(params.image-url)
+        - name: image-digest
+          value: $(tasks.build-and-push-docker.results.image-digest)
       workspaces:
         - name: workspace
           workspace: pipeline-ws

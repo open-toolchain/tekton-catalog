@@ -18,7 +18,7 @@ spec:
   tasks:
     - name: clone-repository
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       params:
         - name: repository
           value: $(params.repository)
@@ -30,7 +30,7 @@ spec:
     - name: build-and-push-docker
       runAfter: [clone-repository]
       taskRef:
-        name: execute-in-dind-cluster-task
+        name: icr-execute-in-dind-cluster
       params:
       workspaces:
         - name: workspace
@@ -44,7 +44,7 @@ spec:
             resource: app-image
     - name: va-scan-task
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
       params:
         - name: scan-report-file
           value: 'app-image-va-report.json'

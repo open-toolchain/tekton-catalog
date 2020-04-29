@@ -16,7 +16,7 @@ spec:
   tasks:
     - name: clone-repository
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -31,7 +31,7 @@ spec:
           value: $(params.pipeline-debug)
     - name: set-commit-status
       taskRef:
-        name: set-commit-status
+        name: git-set-commit-status
       runAfter: [clone-repository]
       workspaces:
         - name: workspace

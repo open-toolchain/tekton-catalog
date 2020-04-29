@@ -1,5 +1,5 @@
 # Docker In Docker (DIND) Task example usage
-The `sample-docker-dind-sidecar` sub-directory contains an `event-listener-dind` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-task` and `vulnerability-advisor-task`.
+The `sample-docker-dind-sidecar` sub-directory contains an `event-listener-dind` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind` and `icr-check-va-scan`.
 
 It also contains a `dind-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information.
 
@@ -15,7 +15,7 @@ It also contains a `dind-no-resources` EventListener definition which is the pro
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
+   - for the `git-clone-repo` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample-docker-dind-sidecar` paths)
 
    ![Tekton pipeline definitions](./images/dind-sample-tekton-pipeline-definitions.png)

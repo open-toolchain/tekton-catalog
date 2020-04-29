@@ -21,7 +21,7 @@ spec:
   tasks:
     - name: post-to-slack
       taskRef:
-        name: post-slack
+        name: slack-post-message
       params:
         - name: domain
           value: $(params.domain)

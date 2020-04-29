@@ -13,7 +13,7 @@ spec:
   tasks:
     - name: pipeline-simple-clone-task
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       workspaces:
         - name: workspace
           workspace: pipeline-ws

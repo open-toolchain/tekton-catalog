@@ -20,7 +20,7 @@ spec:
   tasks:
     - name: pipeline-1-clone-task
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       params:
         - name: repository
           value: $(params.repository)
@@ -34,7 +34,7 @@ spec:
     - name: pipeline-2-cr-build-task
       runAfter: [pipeline-1-clone-task]
       taskRef:
-        name: cr-build-task
+        name: icr-cr-build
       params:
         - name: path-to-context
           value: $(params.path-to-dockerfile)
@@ -64,7 +64,7 @@ spec:
             resource: app-image
     - name: pipeline-3-va-task
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
       params:
         - name: scan-report-file
           value: 'app-image-va-report.json'

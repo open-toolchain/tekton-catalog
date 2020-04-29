@@ -1,6 +1,6 @@
 ## Simple clone-task usage ##
 
-This `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run an example showing a simple usage of the `clone-repo-task`
+This `sample` sub-directory contains an EventListener definition that you can include in your tekton pipeline configuration to run an example showing a simple usage of the `git-clone-repo`
 
 1) Create a toolchain (or update a toolchain) to include:
 

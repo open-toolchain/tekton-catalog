@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: cr-build-task
+  name: icr-cr-build
 spec:
   params:
     - name: ibmcloud-api
@@ -43,6 +43,11 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
+  results:
+    - name: image-tags
+      description: the tags for the built image
+    - name: image-digest
+      description: the image digest (sha-256 hash) for the built image
   workspaces:
     - name: workspace
       description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
@@ -202,6 +207,7 @@ spec:
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
           # Here the workaround will be to add registry and image information in an output properties file
+          IMAGE_TAGS=$(sed "s#^$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:##" /steps/tags.lst | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
           if [ "$PROPERTIES_FILE" ]; then
             cd /artifacts
             # Ensure directory is there
@@ -210,13 +216,15 @@ spec:
             echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
             echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE
             echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
-            IMAGE_TAGS=$(sed "s#^$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:##" /steps/tags.lst | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
             echo "IMAGE_TAGS=$IMAGE_TAGS" >> $PROPERTIES_FILE
             echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
             cat $PROPERTIES_FILE
           fi
 
+          # Record task results
+          echo -n "${IMAGE_TAGS}" > $(results.image-tags.path)
+          echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume

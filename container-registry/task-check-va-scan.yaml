@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: vulnerability-advisor-task
+  name: icr-check-va-scan
 spec:
   params:
     - name: ibmcloud-api
@@ -39,16 +39,22 @@ spec:
       default: 'true'
     - name: pipeline-debug
       default: "0"
+  results:
+    - name: scan-report-file
+      description: the filename if the scan report for the image stored in the workspace
+    - name: scan-status
+      description: |
+        the status from Vulnerability Advisor - possible values: OK, WARN, FAIL, UNSUPPORTED, INCOMPLETE, UNSCANNED
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume where the report will be stored
+      mountPath: /artifacts
   resources:
     inputs:
       - name: image
         type: image
         description: "(Optional) The image that has to be VA scanned"
         optional: true
-  workspaces:
-    - name: workspace
-      description: A workspace backing by a volume where the report will be stored
-      mountPath: /artifacts
   steps:
     - name: run-vulnerability-advisor-scan
       image: ibmcom/pipeline-base-image:2.6
@@ -147,6 +153,7 @@ spec:
               PIPELINE_IMAGE_URL="$INPUT_IMAGE_URL"
             else
               # Look for the digest in the image-properties-file
+              echo "Search for digest in the $(params.image-properties-file)"
               source $(params.image-properties-file)
               PIPELINE_IMAGE_URL="$INPUT_IMAGE_URL@$IMAGE_MANIFEST_SHA"
             fi
@@ -194,6 +201,11 @@ spec:
             echo "Copy Vulnerability Advisor scan report (JSON format) to $(workspaces.workspace.path)/$(params.scan-report-file)"
             cp /steps/vareport.json $(workspaces.workspace.path)/$(params.scan-report-file)
           fi
+
+          # Record task results
+          echo -n "$(params.scan-report-file)" > $(results.scan-report-file.path)
+          echo -n "${STATUS}" > $(results.scan-status.path)
+
           if [[ "${STATUS}" == "OK" ]] || [[ "${STATUS}" == "UNSUPPORTED" ]] || [[ "${STATUS}" == "WARN" ]]; then
             echo "The vulnerability scan status is ${STATUS}"
           else
