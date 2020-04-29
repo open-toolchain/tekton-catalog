@@ -5,7 +5,8 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 **Note**: 
 - These tasks are usable with Tekton Beta Worker Agent (Tekon definition with apiVersion: v1beta1). These tasks have been updated from `tkn_pipeline_beta_support` branch (that consists mainly of v0.10.1 tekton posture) following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
 
-**Breaking Changes**:
+## Breaking Changes
+
 - These tasks are using **kebab-case style for EVERY parameters names**. So parameter `pathToContext` (in previous versions of the tasks) has been renamed as `path-to-context`, parameter `clusterName` has been renamed to `cluster-name` and so on...
 - `communication` folder has been renamed to `slack` folder
 - Some tasks has been renamed to match the following name format `<category alias>-<task>` where category alias is depending on the folder containing the tasks:
@@ -33,6 +34,8 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   | kubernetes-service | fetch-iks-cluster-config | iks-fetch-config |
   | kubernetes-service | kubernetes-contextual-execution | iks-contextual-execution |
   | slack | post-slack | slack-post-message |
+
+# Tasks 
 
 ## Git related tasks
 
