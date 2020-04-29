@@ -50,7 +50,7 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
    ![Toolchain overview](./sample/sample-toolchain-overview.png)
 
-2) Add the definitions of this task and the sample (`communication` and `communication/sample` paths)
+2) Add the definitions of this task and the sample (`slack` and `slack/sample` paths)
 
    ![Tekton pipeline definitions](./sample/sample-tekton-pipeline-definitions.png)
 
