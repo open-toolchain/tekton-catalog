@@ -41,7 +41,7 @@ spec:
         # Record task results
         echo -n "${TEST_STATUS}" > $(results.test-status.path)
         echo -n "./tests/server/mochatest.xml;./tests/server/coverage/reports/coverage-summary.json" > $(results.file-locations.path)
-        echo -n "code" > $(results.test-types.path)
+        echo -n "unittest;code" > $(results.test-types.path)
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
