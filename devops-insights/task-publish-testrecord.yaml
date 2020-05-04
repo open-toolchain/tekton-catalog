@@ -54,6 +54,10 @@ spec:
           value: $(params.file-locations)
         - name: TEST_TYPES
           value: $(params.test-types)
+        - name: PIPELINE_BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
       workingDir: /artifacts
       script: |
         #!/bin/bash
