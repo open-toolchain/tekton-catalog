@@ -47,6 +47,9 @@ spec:
       runAfter: [publish-buildrecord-task]
       taskRef:
         name: unit-tests
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
     - name: publish-testrecord-task
       runAfter: [unit-tests-task]
       taskRef:
@@ -58,6 +61,9 @@ spec:
           value: $(tasks.unit-tests-task.file-locations)
         - name: test-types
           value: $(tasks.unit-tests-task.test-types)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
     - name: evaluate-gate-task
       runAfter: [publish-testrecord-task]
       taskRef:
