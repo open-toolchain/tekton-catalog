@@ -29,8 +29,8 @@ spec:
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "API_KEY"
   workspaces:
-    - name: workspace
-      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+    - name: artifacts
+      description: A workspace containing the test results file to pubslih to DOI
       mountPath: /artifacts
   steps:
     - name: publish-testrecord
