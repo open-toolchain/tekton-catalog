@@ -1,0 +1,116 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: doi-publish-testrecord
+spec:
+  params:
+    - name: app-name
+      description: Logical application name for DevOps Insights
+    - name: toolchain-id
+      description: Toolchain service instance id - Default to the toolchain containing the CD Tekton PipelineRun currently executed
+      default: ""
+    - name: build-number
+      description: Devops Inisghts build number reference. Default to the CD Tekton Pipeline build number
+      default: ""
+    - name: file-locations
+      description: Semi-colon separated list of test result file locations
+    - name: test-types
+      description: Semi-colon separated list of test result types
+    - name: environment
+      description: Optional, The environment name to associate with the test results. This option is ignored for unit tests, code coverage tests, and static security scans.
+      default: ""
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the configmap containing the continuous delivery pipeline context secrets
+      default: "secure-properties"
+    - name: toolchain-apikey-secret-key
+      description: field in the secret that contains the api key used to access toolchain and DOI instance
+      default: "toolchain-apikey"
+  workspaces:
+    - name: artifacts
+      description: A workspace containing the test results file to pubslih to DOI
+      mountPath: /artifacts
+  steps:
+    - name: publish-testrecord
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBM_CLOUD_API
+          value: $(params.ibmcloud-api)
+        - name: IBM_CLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.toolchain-apikey-secret-key)
+              optional: true
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: TOOLCHAIN_ID
+          value: $(params.toolchain-id)
+        - name: BUILD_NUMBER
+          value: $(params.build-number)
+        - name: FILE_LOCATIONS
+          value: $(params.file-locations)
+        - name: TEST_TYPES
+          value: $(params.test-types)
+        - name: PIPELINE_BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+      workingDir: /artifacts
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        ##########################################################################
+        # Setting HOME explicitly to have ibmcloud plugins available
+        # doing the export rather than env definition is a workaround
+        # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+        export HOME="/root"
+        ##########################################################################
+        if [[ "$IBM_CLOUD_API" == *test* ]]; then
+          export IBM_CLOUD_DEVOPS_ENV=dev
+        fi
+
+        # Default Toolchain ID if needed
+        if [ -z "$TOOLCHAIN_ID" ]; then
+          TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+        fi
+
+        # Default Job URL if needed
+        if [ -z "$JOB_URL" ]; then
+          JOB_URL="$PIPELINE_RUN_URL"
+        fi
+
+        # Default build number if needed
+        if [ -z "$BUILD_NUMBER" ]; then
+          BUILD_NUMBER="$PIPELINE_BUILD_NUMBER"
+        fi
+
+        if [ "$(params.environment)" ]; then
+          ENVIRONMENT=" --env \"$(params.environment)\""
+        else
+          ENVIRONMENT=""
+        fi
+
+        export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
+        ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
+
+        IFS=';' read -ra locations <<< "$FILE_LOCATIONS"
+        IFS=';' read -ra types <<< "$TEST_TYPES"
+        for i in "${!locations[@]}"
+        do
+            echo "$i ${locations[i]} ${types[i]}"
+            ibmcloud doi publishtestrecord --logicalappname="$APP_NAME" --buildnumber=$BUILD_NUMBER \
+              --filelocation=${locations[i]} --type=${types[i]} $ENVIRONMENT
+        done
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

@@ -51,6 +51,13 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 - **icr-execute-in-dind-cluster**: This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./container-registry/README.md)
 - **icr-check-va-scan**: This task is verifying that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and process the outcome of the scan. [Documentation is here](./container-registry/README.md)
 
+## IBM Cloud Devops Insights related tasks
+
+- **doi-publish-buildrecord**: This task publishes build record to DevOps Insights
+- **doi-publish-testrecord**: This task publishes test record to DevOps Insights
+- **doi-publish-deployrecord**: This task publishes deploy record to DevOps Insights
+- **doi-evaluate-gate**: This task evaluates DevOps Insights gate policy
+
 ## IBM Cloud Kubernetes Service related tasks
 
 - **iks-fetch-config**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands. [Documentation is here](./kubernetes-service/README.md)
