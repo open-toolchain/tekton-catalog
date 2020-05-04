@@ -58,9 +58,9 @@ spec:
         - name: app-name
           value: $(params.app-name)
         - name: file-locations
-          value: $(tasks.unit-tests-task.file-locations)
+          value: $(tasks.unit-tests-task.results.file-locations)
         - name: test-types
-          value: $(tasks.unit-tests-task.test-types)
+          value: $(tasks.unit-tests-task.results.test-types)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
