@@ -11,7 +11,7 @@ spec:
     - name: image-url
       description: the url of the image to build
     - name: path-to-dockerfile
-      default: '.'
+      default: "."
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -28,7 +28,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: properties-file
-          value: ''
+          value: ""
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -51,11 +51,11 @@ spec:
             # But logs can be written as error stderr
             echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with cd build number
-            echo "1.0.0-${BUILD_NUMBER}"            
+            echo "1.0.0-${BUILD_NUMBER}"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: properties-file
-          value: ''
+          value: ""
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -65,7 +65,7 @@ spec:
         name: icr-check-va-scan
       params:
         - name: scan-report-file
-          value: 'app-image-va-report.json'
+          value: "app-image-va-report.json"
         # - name: max-iteration
         #   value: '5'
         # - name: sleep-time

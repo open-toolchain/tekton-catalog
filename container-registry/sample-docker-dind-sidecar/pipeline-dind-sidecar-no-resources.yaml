@@ -22,7 +22,7 @@ spec:
         - name: branch
           value: $(params.branch)
         - name: properties-file
-          value: ''
+          value: ""
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -36,7 +36,7 @@ spec:
         - name: image-tag
           value: 1.0.0-$(tasks.clone-repository.results.git-branch)-$(tasks.clone-repository.results.git-commit)
         - name: properties-file
-          value: ''
+          value: ""
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -46,7 +46,7 @@ spec:
         name: icr-check-va-scan
       params:
         - name: scan-report-file
-          value: 'app-image-va-report.json'
+          value: "app-image-va-report.json"
         # - name: max-iteration
         #   value: '5'
         # - name: sleep-time

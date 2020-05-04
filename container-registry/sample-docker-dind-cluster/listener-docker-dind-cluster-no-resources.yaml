@@ -31,7 +31,7 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
@@ -52,9 +52,9 @@ spec:
           - name: cluster-name
             value: $(params.build-cluster)
         workspaces:
-        - name: pipeline-ws
-          persistentVolumeClaim:
-            claimName: dind-cluster-$(uid)-pvc
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: dind-cluster-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding

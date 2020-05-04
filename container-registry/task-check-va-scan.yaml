@@ -12,10 +12,10 @@ spec:
       default: cd-secret
     - name: container-registry-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud container registry
-      default: 'API_KEY'
+      default: "API_KEY"
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
-      default: ''
+      default: ""
     - name: image-url
       description: "url of the image to VA scan - required if no image pipeline resource provided to this task"
       default: ""
@@ -24,19 +24,19 @@ spec:
       default: ""
     - name: image-properties-file
       description: file containing properties of the image to be scanned
-      default: 'build.properties'
+      default: "build.properties"
     - name: max-iteration
       description: maximum number of iterations allowed while loop to check for va report
-      default: '30'
+      default: "30"
     - name: sleep-time
       description: sleep time (in seconds) between invocation of ibmcloud cr va in the loop
-      default: '10'
+      default: "10"
     - name: scan-report-file
       description: filename for the scan report (json format) of the given image. It will be copied in the workspace
-      default: ''
+      default: ""
     - name: fail-on-scanned-issues
       description: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result
-      default: 'true'
+      default: "true"
     - name: pipeline-debug
       default: "0"
   results:
@@ -66,7 +66,7 @@ spec:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.container-registry-apikey-secret-key)
         - name: PIPELINE_DEBUG
-          value: $(params.pipeline-debug)            
+          value: $(params.pipeline-debug)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -224,7 +224,7 @@ spec:
       configMap:
         name: toolchain
         items:
-        - key: toolchain.json
-          path: toolchain.json
+          - key: toolchain.json
+            path: toolchain.json
     - name: steps-volume
       emptyDir: {}

@@ -12,10 +12,10 @@ spec:
       default: cd-secret
     - name: container-registry-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud container registry
-      default: 'API_KEY'
+      default: "API_KEY"
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
-      default: ''
+      default: ""
     - name: image-url
       description: "url of the image to build - required if no image pipeline resource provided to this task"
       default: ""
@@ -36,10 +36,10 @@ spec:
       description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array
       # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
-      default: ''
+      default: ""
     - name: additional-tags-script
       description: Shell script that allows to add tags for the image to be build.
-      default: ''
+      default: ""
     - name: properties-file
       description: file containing properties out of containerize task
       default: build.properties
@@ -325,11 +325,11 @@ spec:
       configMap:
         name: toolchain
         items:
-        - key: toolchain.json
-          path: toolchain.json
+          - key: toolchain.json
+            path: toolchain.json
     - name: check-registry-script
-      configMap: 
+      configMap:
         name: check-registry-script
-        items: 
-        - key: check_registry.sh
-          path: check_registry.sh          
+        items:
+          - key: check_registry.sh
+            path: check_registry.sh

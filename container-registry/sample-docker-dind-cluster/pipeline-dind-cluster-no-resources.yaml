@@ -24,7 +24,7 @@ spec:
         - name: branch
           value: $(params.branch)
         - name: properties-file
-          value: ''
+          value: ""
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -40,7 +40,7 @@ spec:
         - name: cluster-name
           value: $(params.cluster-name)
         - name: properties-file
-          value: ''
+          value: ""
       workspaces:
         - name: workspace
           workspace: pipeline-ws
@@ -50,7 +50,7 @@ spec:
         name: icr-check-va-scan
       params:
         - name: scan-report-file
-          value: 'app-image-va-report.json'
+          value: "app-image-va-report.json"
         # - name: max-iteration
         #   value: '5'
         # - name: sleep-time

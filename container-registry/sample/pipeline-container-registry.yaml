@@ -9,12 +9,12 @@ spec:
     - name: branch
       description: the branch for the git repo
     - name: path-to-dockerfile
-      default: '.'
+      default: "."
     - name: pipeline-debug
       default: "0"
   resources:
-  - name: app-image
-    type: image
+    - name: app-image
+      type: image
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -41,7 +41,7 @@ spec:
         - name: path-to-dockerfile
           value: $(params.path-to-dockerfile)
         - name: additional-tags
-          value: 'latest'
+          value: "latest"
         - name: additional-tags-script
           value: |
             # Include the clone task output variables in the environment
@@ -52,7 +52,7 @@ spec:
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
             # Add a specific tag with cd build number
-            echo "1.0.0-${BUILD_NUMBER}"            
+            echo "1.0.0-${BUILD_NUMBER}"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -67,7 +67,7 @@ spec:
         name: icr-check-va-scan
       params:
         - name: scan-report-file
-          value: 'app-image-va-report.json'
+          value: "app-image-va-report.json"
         # - name: max-iteration
         #   value: '5'
         # - name: sleep-time
