@@ -86,7 +86,7 @@ spec:
         export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
         ibmcloud doi evaluategate --policy "$(inputs.params.policy)" --buildnumber "${BUILD_NUMBER}" \
-          --logicalappname "${IBM_CLOUD_DEVOPS_APP_NAME}" ${FORCE_DECISION}
+          --logicalappname "${APP_NAME}" ${FORCE_DECISION}
 
       volumeMounts:
         - mountPath: /cd-config
