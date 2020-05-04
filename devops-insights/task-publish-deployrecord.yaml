@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: doi-publish-testrecord
+  name: doi-publish-deployrecord
 spec:
   params:
     - name: app-name
@@ -12,12 +12,16 @@ spec:
     - name: build-number
       description: Devops Inisghts build number reference. Default to the CD Tekton Pipeline build number
       default: ""
-    - name: file-locations
-      description: Semi-colon separated list of test result file locations
-    - name: test-types
-      description: Semi-colon separated list of test result types
     - name: environment
-      description: Optional, The environment name to associate with the test results. This option is ignored for unit tests, code coverage tests, and static security scans.
+      description: The environment where the pipeline job deployed the app.
+    - name: deploy-status
+      description:  The deployment status (can be either pass | fail)
+      default: "pass"
+    - name: job-url
+      description: The url to the job's deployment logs. Default to the CD Tekton PipelineRun currently executed
+      default: ""
+    - name: app-url
+      description:  The URL where the deployed app is running
       default: ""
     - name: ibmcloud-api
       description: the ibmcloud api
@@ -50,10 +54,16 @@ spec:
           value: $(params.toolchain-id)
         - name: BUILD_NUMBER
           value: $(params.build-number)
-        - name: FILE_LOCATIONS
-          value: $(params.file-locations)
-        - name: TEST_TYPES
-          value: $(params.test-types)
+        - name: DEPLOY_STATUS
+          value: $(params.deploy-status)
+        - name: ENVIRONMENT
+          value: $(params.environment)
+        - name: JOB_URL
+          value: $(params.job-url)
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
         - name: PIPELINE_BUILD_NUMBER
           valueFrom:
             fieldRef:
@@ -87,23 +97,16 @@ spec:
           BUILD_NUMBER="$PIPELINE_BUILD_NUMBER"
         fi
 
-        if [ "$(params.environment)" ]; then
-          ENVIRONMENT=" --env \"$(params.environment)\""
+        if [ "$(params.app-url)" ]; then
+          APP_URL=" --appurl \"$(params.app-url)\""
         else
-          ENVIRONMENT=""
+          APP_URL=""
         fi
 
         export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
-
-        IFS=';' read -ra locations <<< "$FILE_LOCATIONS"
-        IFS=';' read -ra types <<< "$TEST_TYPES"
-        for i in "${!locations[@]}"
-        do
-            echo "$i ${locations[i]} ${types[i]}"
-            ibmcloud doi publishtestrecord --logicalappname="$APP_NAME" --buildnumber=$BUILD_NUMBER \
-              --filelocation=${locations[i]} --type=${types[i]} $ENVIRONMENT
-        done
+        ibmcloud doi publishdeployrecord --env "${ENVIRONMENT}" --status=${DEPLOY_STATUS} --joburl="${JOB_URL}" \
+          --buildnumber="${BUILD_NUMBER}" --logicalappname="${APP_NAME}" ${APP_URL}
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume

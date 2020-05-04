@@ -58,7 +58,7 @@ spec:
         export HOME="/root"
         ##########################################################################
 
-        if [ -z "$(inputs.params.policy)" ]; then
+        if [ -z "$(params.policy)" ]; then
             echo "No Policy specified. Exiting successully"
             exit 0
         fi
@@ -77,7 +77,7 @@ spec:
           BUILD_NUMBER="$PIPELINE_BUILD_NUMBER"
         fi
 
-        if [ "$(inputs.params.force)" == "true" ]; then
+        if [ "$(params.force)" == "true" ]; then
           FORCE_DECISION=" --forcedecision"
         else
           FORCE_DECISION=""
@@ -85,7 +85,7 @@ spec:
 
         export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
-        ibmcloud doi evaluategate --policy "$(inputs.params.policy)" --buildnumber "${BUILD_NUMBER}" \
+        ibmcloud doi evaluategate --policy "$(params.policy)" --buildnumber "${BUILD_NUMBER}" \
           --logicalappname "${APP_NAME}" ${FORCE_DECISION}
 
       volumeMounts:

@@ -73,3 +73,12 @@ spec:
           value: $(params.app-name)
         - name: policy
           value: "my-policy"
+    - name: publish-deployrecord-task
+      runAfter: [evaluate-gate-task]
+      taskRef:
+        name: doi-publish-deployrecord
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: environment
+          value: "my-faked-env"
