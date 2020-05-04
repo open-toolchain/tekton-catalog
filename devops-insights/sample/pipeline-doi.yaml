@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: doi-sample
+spec:
+  params:
+    - name: app-name
+      description: name of the application
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: pipeline-debug
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: clone-task
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: properties-file
+          value: ""
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+    - name: publish-buildrecord-task
+      runAfter: [clone-task]
+      taskRef:
+        name: doi-publish-buildrecord
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: git-repository
+          value: $(tasks.clone-task.results.git-repository)
+        - name: git-branch
+          value: $(tasks.clone-task.results.git-branch)
+        - name: git-commit
+          value: $(tasks.clone-task.results.git-commit)
+    - name: evaluate-gate-task
+      runAfter: [publish-buildrecord-task]
+      taskRef:
+        name: doi-evaluate-gate
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: policy
+          value: "my-policy"
