@@ -9,11 +9,11 @@ spec:
     - name: repository
       description: The git repo
     - name: branch
-      default: 'master'
+      default: "master"
     - name: revision
-      default: ''
+      default: ""
     - name: state
-      default: 'success'
+      default: "success"
     - name: description
       default: "status from cd tekton"
     - name: pipeline-debug
@@ -35,7 +35,7 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
@@ -60,9 +60,9 @@ spec:
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
-        - name: pipeline-ws
-          persistentVolumeClaim:
-            claimName: pipelinerun-$(uid)-pvc
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding

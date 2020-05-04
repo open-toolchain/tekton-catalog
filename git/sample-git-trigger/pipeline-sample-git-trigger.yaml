@@ -10,23 +10,23 @@ spec:
       description: the branch for the git repo
     - name: revision
       description: the commit id/sha for the clone action
-      default: ''
+      default: ""
     - name: pr-repository
       description: The source git repo for the PullRequest
-      default: ''
+      default: ""
     - name: pr-branch
       description: The source branch for the PullRequest
-      default: ''
+      default: ""
     - name: pr-revision
       description: the commit id/sha for the PullRequest
-      default: ''
+      default: ""
     - name: git-access-token
       description: the token to access the git repository for the clone operations
-      default: ''
+      default: ""
     - name: properties-file
-      default: 'output/thebuild.properties'
+      default: "output/thebuild.properties"
     - name: git-credentials-json-file
-      default: 'output/secrets/thecredentials.json'
+      default: "output/secrets/thecredentials.json"
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -49,7 +49,7 @@ spec:
         - name: git-access-token
           value: $(params.git-access-token)
         - name: directory-name
-          value: '.'
+          value: "."
         - name: properties-file
           value: $(params.properties-file)
         - name: git-credentials-json-file
@@ -68,11 +68,11 @@ spec:
         - name: repository
           value: $(tasks.pipeline-git-event-clone-task.results.git-repository)
         - name: directory-name
-          value: '.'
+          value: "."
         - name: properties-file
           value: $(params.properties-file)
         - name: git-credentials-json-file
-          value: $(params.git-credentials-json-file)          
+          value: $(params.git-credentials-json-file)
         - name: git-branch
           value: $(tasks.pipeline-git-event-clone-task.results.git-branch)
         - name: git-commit

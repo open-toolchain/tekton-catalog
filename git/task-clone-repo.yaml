@@ -12,15 +12,15 @@ spec:
       default: cd-secret
     - name: ibmcloud-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud
-      default: 'API_KEY'
+      default: "API_KEY"
     - name: git-access-token
       description: |
         (optional) token to access the git repository. If this token is provided, there will not be an attempt
         to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-      default: ''
+      default: ""
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
-      default: ''
+      default: ""
     - name: repository
       description: the git repo url
     - name: branch
@@ -41,8 +41,7 @@ spec:
         the branch that is the source of this PullRequest
       default: ""
     - name: pr-revision
-      description:
-        the commit/revision in the source branch of the PullRequest that is to be built
+      description: the commit/revision in the source branch of the PullRequest that is to be built
       default: ""
     - name: directory-name
       description: |
@@ -57,10 +56,10 @@ spec:
       description: |
         JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace).
         Default to '' meaning no output of this information
-      default: ''
+      default: ""
     - name: pipeline-debug
       description: Pipeline debug mode
-      default: "0"        
+      default: "0"
   results:
     - name: git-repository
       description: The cloned repository
@@ -85,7 +84,7 @@ spec:
             key: $(params.ibmcloud-apikey-secret-key)
             optional: true
       - name: PIPELINE_DEBUG
-        value: $(params.pipeline-debug)            
+        value: $(params.pipeline-debug)
   steps:
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image:2.6
@@ -350,5 +349,5 @@ spec:
       configMap:
         name: toolchain
         items:
-        - key: toolchain.json
-          path: toolchain.json
+          - key: toolchain.json
+            path: toolchain.json

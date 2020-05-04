@@ -27,7 +27,7 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
@@ -44,9 +44,9 @@ spec:
           - name: branch
             value: $(params.branch)
         workspaces:
-        - name: pipeline-ws
-          persistentVolumeClaim:
-            claimName: pipelinerun-$(uid)-pvc
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
