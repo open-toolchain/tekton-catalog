@@ -22,10 +22,10 @@ spec:
       default: https://cloud.ibm.com
     - name: continuous-delivery-context-secret
       description: name of the configmap containing the continuous delivery pipeline context secrets
-      default: cd-secret
+      default: "secure-properties"
     - name: toolchain-apikey-secret-key
       description: field in the secret that contains the api key used to access toolchain and DOI instance
-      default: "API_KEY"
+      default: "toolchain-apikey"
   steps:
     - name: evaluate-gate
       image: ibmcom/pipeline-base-image:2.6

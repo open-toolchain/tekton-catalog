@@ -19,6 +19,10 @@ spec:
       taskRef:
         name: git-clone-repo
       params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "toolchain-apikey"
         - name: repository
           value: $(params.repository)
         - name: branch
