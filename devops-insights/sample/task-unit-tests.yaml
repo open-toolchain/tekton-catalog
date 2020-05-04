@@ -1,0 +1,54 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: unit-tests
+spec:
+  results:
+    - name: test-status
+      description: Test status
+    - name: file-locations
+      description: Semi-colon separated list of test result file locations
+    - name: test-types
+      description: Semi-colon separated list of test result types
+  workspaces:
+    - name: artifacts
+      description: the artifacts folder for this task
+      mountPath: /artifacts
+  steps:
+    - name: run-tests
+      image: ibmcom/pipeline-base-image:2.6
+      workingDir: /artifacts
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        ##########################################################################
+        # Setting HOME explicitly to have ibmcloud plugins available
+        # doing the export rather than env definition is a workaround
+        # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+        # and until 0.11 - https://ibm.ent.box.com/notes/599948660131?s=rqk76zkkdsz1cenvpw0ad8enxul6j0nv
+        export HOME=/root && source ~/.nvm/nvm.sh
+        ##########################################################################
+        TEST_STATUS=0
+
+        npm install
+        npm install -g grunt-cli
+
+        set +e
+        grunt dev-test-cov --no-color --gruntfile ./tests/Gruntfile.js --base .
+        TEST_STATUS=$?
+        set -e
+
+        # Record task results
+        echo -n "${TEST_STATUS}" > $(results.test-status.path)
+        echo -n "./tests/server/mochatest.xml;./tests/server/coverage/reports/coverage-summary.json" > $(results.file-locations.path)
+        echo -n "code" > $(results.test-types.path)
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

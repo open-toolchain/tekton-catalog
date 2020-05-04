@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: publish-testrecord
+  name: doi-publish-testrecord
 spec:
   params:
     - name: app-name
@@ -11,12 +11,14 @@ spec:
       default: ""
     - name: build-number
       description: Devops Inisghts build number reference. Default to the CD Tekton Pipeline build number
+      default: ""
     - name: file-locations
       description: Semi-colon separated list of test result file locations
     - name: test-types
       description: Semi-colon separated list of test result types
     - name: environment
       description: Optional, The environment name to associate with the test results. This option is ignored for unit tests, code coverage tests, and static security scans.
+      default: ""
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
