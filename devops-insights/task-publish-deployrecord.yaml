@@ -15,13 +15,13 @@ spec:
     - name: environment
       description: The environment where the pipeline job deployed the app.
     - name: deploy-status
-      description:  The deployment status (can be either pass | fail)
+      description: The deployment status (can be either pass | fail)
       default: "pass"
     - name: job-url
       description: The url to the job's deployment logs. Default to the CD Tekton PipelineRun currently executed
       default: ""
     - name: app-url
-      description:  The URL where the deployed app is running
+      description: The URL where the deployed app is running
       default: ""
     - name: ibmcloud-api
       description: the ibmcloud api
