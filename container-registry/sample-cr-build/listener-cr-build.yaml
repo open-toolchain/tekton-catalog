@@ -13,7 +13,7 @@ spec:
     - name: image-url
       description: The image url in your container registry
     - name: path-to-dockerfile
-      default: '.'
+      default: "."
     - name: pipeline-debug
       default: "0"
   resourcetemplates:
@@ -42,7 +42,7 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
@@ -67,9 +67,9 @@ spec:
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:
-        - name: pipeline-ws
-          persistentVolumeClaim:
-            claimName: containerize-$(uid)-pvc
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: containerize-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding

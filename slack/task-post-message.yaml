@@ -6,22 +6,22 @@ spec:
   params:
     - name: domain
       description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-      default: ''
+      default: ""
     - name: channel
       description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-      default: ''
+      default: ""
     - name: message-format
       description: the format of the message. text(default) or JSON payload.
       default: text
     - name: message-script
       description: Shell script that provides messsage content.
-      default: ''
+      default: ""
     - name: message
       description: the message to send to Slack
       default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
     - name: exit-on-error
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
-      default: 'false'
+      default: "false"
   workspaces:
     - name: workspace
       description: A workspace that contain data useful for the script/slack message resolution. Should be marked as optional when Tekton will permit it

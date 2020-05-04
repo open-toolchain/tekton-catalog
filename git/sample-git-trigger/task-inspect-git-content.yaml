@@ -7,11 +7,11 @@ spec:
     - name: repository
       description: the git repo url
     - name: directory-name
-      default: '.'
+      default: "."
     - name: properties-file
       default: build.properties
     - name: git-credentials-json-file
-      default: ''
+      default: ""
     - name: git-branch
       description: The active branch for the repository
     - name: git-commit
@@ -21,8 +21,8 @@ spec:
     - name: git-token
       description: The auth token that cloned the repository
   workspaces:
-  - name: workspace
-    mountPath: /artifacts
+    - name: workspace
+      mountPath: /artifacts
   steps:
     - name: inspect-git-content
       image: ibmcom/pipeline-base-image:2.6

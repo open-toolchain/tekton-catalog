@@ -14,15 +14,15 @@ spec:
       default: cd-secret
     - name: ibmcloud-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud
-      default: 'API_KEY'
+      default: "API_KEY"
     - name: git-access-token
       description: |
         (optional) token to access the git repository. If this token is provided, there will not be an attempt
         to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-      default: ''
+      default: ""
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
-      default: ''
+      default: ""
     - name: repository
       description: |
         The git repository url
@@ -30,7 +30,7 @@ spec:
       description: |
         (optional) Commit SHA to set the status for.
         If left empty, will attempt to read GIT_COMMIT from build-properties
-      default: ''
+      default: ""
     - name: description
       description: |
         A short description of the status.
@@ -46,18 +46,18 @@ spec:
         - gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled`
         - github/integrated github: `pending`, `success`, `failure`, `error`
         - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED`
-      default: ''
+      default: ""
     - name: state-var
       description: |
         Customized variable stored in build-properties to use as state if state params is empty.
       type: string
-      default: ''
+      default: ""
     - name: build-properties
       description: file containing properties out of clone task (can be a filepath name relative to the workspace/volume)
       default: build.properties
     - name: pipeline-debug
       description: Pipeline debug mode
-      default: "0"        
+      default: "0"
   workspaces:
     - name: workspace
       description: The git repo will be cloned onto the volume backing this workspace
@@ -65,7 +65,7 @@ spec:
   stepTemplate:
     env:
       - name: PIPELINE_DEBUG
-        value: $(params.pipeline-debug)            
+        value: $(params.pipeline-debug)
   steps:
     - name: fetch-git-information
       image: ibmcom/pipeline-base-image:2.6

@@ -42,4 +42,3 @@ spec:
       workspaces:
         - name: workspace
           workspace: pipeline-ws
-

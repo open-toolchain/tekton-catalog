@@ -14,12 +14,12 @@ spec:
       default: ""
     - name: script
       description: the bash snippet to execute within the context of the kubernetes configuration
-      default: 'kubectl version'
+      default: "kubectl version"
   resources:
     inputs:
       - name: cluster
         type: cluster
-        optional: true        
+        optional: true
   workspaces:
     - name: workspace
       description: A workspace backing by a volume
@@ -56,7 +56,7 @@ spec:
         - name: TRIGGERED_BY
           valueFrom:
             fieldRef:
-              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']          
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -86,5 +86,5 @@ spec:
       configMap:
         name: toolchain
         items:
-        - key: toolchain.json
-          path: toolchain.json
+          - key: toolchain.json
+            path: toolchain.json

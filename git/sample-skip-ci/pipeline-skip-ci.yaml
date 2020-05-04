@@ -9,7 +9,7 @@ spec:
     - name: branch
       description: the branch for the git repo
     - name: commit-message
-      default: ''
+      default: ""
   workspaces:
     - name: pipeline-ws
   tasks:

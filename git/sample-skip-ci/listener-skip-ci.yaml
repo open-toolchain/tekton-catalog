@@ -11,7 +11,7 @@ spec:
     - name: apikey
       description: the ibmcloud api key
     - name: commit-message
-      default: ''
+      default: ""
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
@@ -29,7 +29,7 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
@@ -48,9 +48,9 @@ spec:
           - name: commit-message
             value: $(params.commit-message)
         workspaces:
-        - name: pipeline-ws
-          persistentVolumeClaim:
-            claimName: pipelinerun-$(uid)-pvc
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -65,7 +65,7 @@ spec:
     - name: branch
       value: "$(event.ref)"
     - name: commit-message
-      value: "$(event.head_commit.message)"        
+      value: "$(event.head_commit.message)"
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener

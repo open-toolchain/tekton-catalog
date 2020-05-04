@@ -9,10 +9,10 @@ spec:
     # https://github.ibm.com/org-ids/roadmap/issues/11640
     - name: domain
       description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-      default: ' '
+      default: " "
     - name: channel
       description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-      default: ' '
+      default: " "
     - name: message-format
       description: the format of the message. text(default) or JSON.
       default: text
@@ -21,13 +21,13 @@ spec:
       default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
     - name: message-script
       description: |
-          any custom script that will be executed by the task to provide a message.
-          Reference: https://api.slack.com/reference/surfaces/formatting
-          For instance: echo "Message injected by message-script. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
-      default: ' '
+        any custom script that will be executed by the task to provide a message.
+        Reference: https://api.slack.com/reference/surfaces/formatting
+        For instance: echo "Message injected by message-script. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
+      default: " "
     - name: exit-on-error
       description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
-      default: 'false'
+      default: "false"
   resourcetemplates:
     # PVC definition like pre-tekton-0.10.1
     - apiVersion: v1
@@ -37,7 +37,7 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
@@ -62,9 +62,9 @@ spec:
           - name: exit-on-error
             value: $(params.exit-on-error)
         workspaces:
-        - name: pipeline-ws
-          persistentVolumeClaim:
-            claimName: post-a-message-to-slack-$(uid)-pvc
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: post-a-message-to-slack-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding

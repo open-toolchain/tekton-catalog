@@ -9,10 +9,10 @@ spec:
     - name: branch
       description: the branch for the git repo
   resources:
-  - name: app-image
-    type: image
-  - name: build-cluster
-    type: cluster
+    - name: app-image
+      type: image
+    - name: build-cluster
+      type: cluster
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -47,7 +47,7 @@ spec:
         name: icr-check-va-scan
       params:
         - name: scan-report-file
-          value: 'app-image-va-report.json'
+          value: "app-image-va-report.json"
         # - name: max-iteration
         #   value: '5'
         # - name: sleep-time
