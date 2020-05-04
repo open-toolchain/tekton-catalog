@@ -6,8 +6,8 @@ spec:
   params:
     - name: resource-group
   resources:
-  - name: target-cluster
-    type: cluster
+    - name: target-cluster
+      type: cluster
   workspaces:
     - name: pipeline-ws
   tasks:
