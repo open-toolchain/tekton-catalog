@@ -8,8 +8,8 @@ spec:
       description: the pipeline pvc name
     - name: resourceGroup
   resources:
-  - name: target-cluster
-    type: cluster
+    - name: target-cluster
+      type: cluster
   tasks:
     - name: pipeline-0-setup-task
       taskRef:
