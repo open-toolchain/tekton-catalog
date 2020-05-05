@@ -60,7 +60,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
-        - name: PIPELINE_BUILD_NUMBER
+        - name: DEFAULT_BUILD_NUMBER
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
@@ -90,7 +90,7 @@ spec:
 
         # Default build number if needed
         if [ -z "$BUILD_NUMBER" ]; then
-          BUILD_NUMBER="$PIPELINE_BUILD_NUMBER"
+          BUILD_NUMBER="$DEFAULT_BUILD_NUMBER"
         fi
 
         if [ "$(params.app-url)" ]; then
