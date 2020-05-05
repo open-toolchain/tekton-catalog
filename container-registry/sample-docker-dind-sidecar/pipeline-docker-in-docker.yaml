@@ -11,8 +11,8 @@ spec:
     - name: branch
       description: the branch for the git repo
   resources:
-  - name: app-image
-    type: image
+    - name: app-image
+      type: image
   tasks:
     - name: clone-repository
       taskRef:

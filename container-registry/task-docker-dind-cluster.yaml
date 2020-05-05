@@ -372,11 +372,11 @@ spec:
       configMap:
         name: toolchain
         items:
-        - key: toolchain.json
-          path: toolchain.json
+          - key: toolchain.json
+            path: toolchain.json
     - name: check-registry-script
       configMap: 
         name: check-registry-script
         items: 
-        - key: check_registry.sh
-          path: check_registry.sh
+          - key: check_registry.sh
+            path: check_registry.sh

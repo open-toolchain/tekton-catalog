@@ -11,10 +11,10 @@ spec:
     - name: branch
       description: the branch for the git repo
   resources:
-  - name: app-image
-    type: image
-  - name: build-cluster
-    type: cluster
+    - name: app-image
+      type: image
+    - name: build-cluster
+      type: cluster
   tasks:
     - name: clone-repository
       taskRef:
