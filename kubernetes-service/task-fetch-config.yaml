@@ -43,6 +43,17 @@ spec:
       - name: cluster
         type: cluster
         optional: true
+  results:
+    - name: cluster-name
+      description: The cluster name
+    - name: cluster-id
+      description: The cluster identifier
+    - name: resource-group-name
+      description: The resource-group name that this cluster is part of
+    - name: resource-group-id
+      description: The resource-group identifier that this cluster is part of
+    - name: region
+      description: The region (ie us-south) where the cluster is located
   workspaces:
     - name: workspace
       description: A workspace backing by a volume
@@ -126,15 +137,29 @@ spec:
             cp $KUBECONFIG_FILE $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
             echo "Kubeconfig file(s) copied to $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME"
           fi
+
+          ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > /steps/$CLUSTER_NAME.json
+
           if [ "$(params.cluster-and-worker-nodes-json-export)" ]; then
             mkdir -p $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME
-            ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME.json
+            cp /steps/$CLUSTER_NAME.json $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME.json
             ibmcloud ks worker ls --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
           fi
+
+          # Record task results
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.name')" > $(results.cluster-name.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.id')" > $(results.cluster-id.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.resourceGroupName')" > $(results.resource-group-name.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.resourceGroup')" > $(results.resource-group-id.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.region')" > $(results.region.path)
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
   volumes:
+    - name: steps-volume
+      emptyDir: {}
     - name: cd-config-volume
       configMap:
         name: toolchain
