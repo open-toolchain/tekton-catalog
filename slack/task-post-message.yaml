@@ -101,25 +101,25 @@ spec:
           if [[ "$SLACK_DOMAIN" && "$SLACK_CHANNEL" ]]; then
             echo "Retrieving the Slack webhook for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
             SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'") | select (.parameters.channel_name=="'"${SLACK_CHANNEL}"'")'
-            SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
-            
-            if [ "$SLACK_INTEGRATIONS" ]; then
-              echo "Integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
-            else
-              echo "No matching integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
-              # no domain set: will use all integrations
-              if [ -z "$SLACK_DOMAIN" ]; then
-                echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
-              else
-                # domain was set: use it to filter corresponding integrations       
-                echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
-                # to be added to jq query
-                SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'")'
-              fi
-              SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
-            fi          
-          fi          
+            SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')                     
+          fi 
 
+          if [ "$SLACK_INTEGRATIONS" ]; then
+            echo "Integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
+          else
+            echo "No matching integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
+            # no domain set: will use all integrations
+            if [ -z "$SLACK_DOMAIN" ]; then
+              echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
+            else
+              # domain was set: use it to filter corresponding integrations       
+              echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
+              # to be added to jq query
+              SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'")'
+            fi
+            SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
+          fi 
+          
           # Post message
           msgSent=0
           msgFail=0
@@ -127,7 +127,7 @@ spec:
           do
             WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
             if [[ "$(params.message-format)" == "text" ]]; then
-              if [[ -z "$SLACK_DOMAIN" && "$SLACK_CHANNEL" ]]; then
+              if [ "$SLACK_CHANNEL" ]; then
                 CHANNEL=$SLACK_CHANNEL
                 echo "Posting to channel $CHANNEL as passed as parameter."
               else
