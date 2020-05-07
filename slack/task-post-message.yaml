@@ -162,7 +162,7 @@ spec:
               # keep track of failures
               msgFail=$((msgFail+1))
             fi
-            webhooks=$webhooks WEBHOOK
+            webhooks=$webhooks $WEBHOOK
           done
           echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failure(s))."
 
