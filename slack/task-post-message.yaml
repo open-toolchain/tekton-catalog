@@ -71,10 +71,13 @@ spec:
           export TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
 
           # Dynamically set message if message-script param is set
-          printf "#!/bin/sh\n" > /steps/message-script.sh
-          printf "%s " '$(params.message-script)' >> /steps/message-script.sh
-          chmod +x /steps/message-script.sh
-          /steps/message-script.sh 2 >& 1 > /steps/message.content
+          if [ "$(params.message-script)" ]; then
+            printf "#!/bin/sh\n" > /steps/message-script.sh
+            printf "%s " '$(params.message-script)' >> /steps/message-script.sh
+            chmod +x /steps/message-script.sh
+            /steps/message-script.sh 2 >& 1 > /steps/message.content
+          fi
+          
           if [ -s /steps/message.content ]; then
             echo "************************************"
             echo "Snippet for dynamic message content:"
