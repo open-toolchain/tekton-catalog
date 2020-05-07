@@ -67,6 +67,9 @@ spec:
         - |
           set -e -o pipefail
 
+          cat /cd-config/toolchain.json
+          exit 1
+
           export TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           export TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
 
