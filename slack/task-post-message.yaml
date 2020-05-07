@@ -99,7 +99,7 @@ spec:
           
           # Domain and channel were set: search the matching integration
           if [[ "$SLACK_DOMAIN" && "$SLACK_CHANNEL" ]]; then
-            "Retrieving the Slack webhook for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
+            echo "Retrieving the Slack webhook for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
             SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'") | select (.parameters.channel_name=="'"${SLACK_CHANNEL}"'")'
             SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
             
@@ -123,7 +123,7 @@ spec:
           # Post message
           msgSent=0
           msgFail=0
-          for SLACK_INTEGRATION in SLACK_INTEGRATIONS
+          for SLACK_INTEGRATION in $SLACK_INTEGRATIONS
           do
             WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
             if [[ "$(params.message-format)" == "text" ]]; then
