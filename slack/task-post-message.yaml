@@ -119,13 +119,19 @@ spec:
             fi
             SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
           fi 
-          
+
           # Post message
           msgSent=0
           msgFail=0
+          webhooks=''
           for SLACK_INTEGRATION in $SLACK_INTEGRATIONS
           do
-            WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
+            WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')    
+            # don't send the same message more than once        
+            if [[ $webhooks == *$WEBHOOK* ]]; then
+              echo "Message was already send to this channel: skipping."
+              continue
+            fi
             if [[ "$(params.message-format)" == "text" ]]; then
               if [ "$SLACK_CHANNEL" ]; then
                 CHANNEL=$SLACK_CHANNEL
@@ -156,10 +162,7 @@ spec:
               # keep track of failures
               msgFail=$((msgFail+1))
             fi
-            if [ "$SLACK_CHANNEL" ]; then
-              # don't send the same message more than once if channel was specified
-              break
-            fi
+            webhooks=$webhooks WEBHOOK
           done
           echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failure(s))."
 
