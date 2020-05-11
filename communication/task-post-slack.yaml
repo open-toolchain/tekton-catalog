@@ -9,22 +9,22 @@ spec:
         description: the output pvc
       - name: domain
         description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-        default: ''
+        default: ""
       - name: channel
         description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-        default: ''
+        default: ""
       - name: messageFormat
         description: the format of the message. text(default) or JSON payload.
         default: text
       - name: messageScript
         description: Shell script that provides messsage content.
-        default: ''
+        default: ""
       - name: message
         description: the message to send to Slack
         default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
       - name: exitOnError
         description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
-        default: 'false'
+        default: "false"
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
@@ -65,7 +65,6 @@ spec:
       args:
         - |
           set -e -o pipefail
-
           export TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           export TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
 
@@ -83,29 +82,42 @@ spec:
           else
              echo "${SLACK_MESSAGE}" > /steps/message.content
           fi
-
           # message.content was passed as a slack json payload: keep it as-is
           if [[ "$(inputs.params.messageFormat)" != "text" ]]; then
             mv /steps/message.content /steps/payload.json
           fi
 
-          # Handle domain
+          # Use domain and channel parameters if set, to retrieve corresponding integration(s)
           SLACK_DOMAIN=$(echo $(inputs.params.domain))
-          if [ -z "$SLACK_DOMAIN" ]; then
-            echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
-          else
-            echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
-            # to be added to jq query
-            SELECT_DOMAIN='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'")'
-          fi
-
-          # Handle channel
           SLACK_CHANNEL=$(echo $(inputs.params.channel))
+
+          # Domain and channel were set: search the matching integration
+          if [[ "$SLACK_DOMAIN" && "$SLACK_CHANNEL" ]]; then
+            echo "Retrieving the Slack webhook for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
+            SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'") | select (.parameters.channel_name=="'"${SLACK_CHANNEL}"'")'
+            SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')                     
+          fi 
+
+          if [ "$SLACK_INTEGRATIONS" ]; then
+            echo "Integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
+          else
+            echo "No matching integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
+            # no domain set: will use all integrations
+            if [ -z "$SLACK_DOMAIN" ]; then
+              echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
+            else
+              # domain was set: use it to filter corresponding integrations       
+              echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
+              # to be added to jq query
+              SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'")'
+            fi
+            SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
+          fi 
 
           # Post message
           msgSent=0
           msgFail=0
-          for SLACK_INTEGRATION in $(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECT_DOMAIN}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
+          for SLACK_INTEGRATION in $SLACK_INTEGRATIONS
           do
             WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
             if [[ "$(inputs.params.messageFormat)" == "text" ]]; then
@@ -137,10 +149,6 @@ spec:
               echo ""
               # keep track of failures
               msgFail=$((msgFail+1))
-            fi
-            if [ "$SLACK_CHANNEL" ]; then
-              # don't send the same message more than once if channel was specified
-              break
             fi
           done
           echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failure(s))."
