@@ -15,6 +15,8 @@ spec:
     - name: script
       description: the bash snippet to execute within the context of the kubernetes configuration
       default: "kubectl version"
+    - name: pipeline-debug
+      default: "0"      
   resources:
     inputs:
       - name: cluster
@@ -28,6 +30,8 @@ spec:
       image: ibmcom/pipeline-base-image:2.6
       workingDir: $(workspaces.workspace.path)
       env:
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
         # CD execution context injection
         - name: PIPELINE_RUN_NAME
           valueFrom:
@@ -60,6 +64,12 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |
+          if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+          fi
 
           # Find cluster information
           if [ "$(resources.inputs.cluster.name)" == "" ]; then
