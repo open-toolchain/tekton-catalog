@@ -38,6 +38,20 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   | kubernetes-service | kubernetes-contextual-execution | iks-contextual-execution |
   | slack | post-slack | slack-post-message |
 
+- Tasks that use workspace(s) may have changed the expected workspace name. Here is the list of the breaking changes for the expected workspace name
+
+  | Folder | Task | Old workspace name | New workspace name | Description |
+  | -- | -- | -- | -- | -- | 
+  | container-registry | icr-containerize | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-cr-build | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-execute-in-dind | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-execute-in-dind-cluster | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-check-va-scan | workspace | artifacts | Workspace that may contain image information and will have the va report from the VA scan after this task exection |
+  | git | git-clone-repo | workspace | output | Workspace where the git repository will be cloned into |
+  | git | git-set-commit-status | workspace | artifacts | Workspace that may contain git repository information (ie build.properties). Should be marked as optional when Tekton will permit it |
+  | kubernetes-service | iks-fetch-config | workspace | cluster-configuration | A workspace where the kubernetes cluster config is exported |
+  | kubernetes-service | iks-contextual-execution | workspace | cluster-configuration | A workspace that contain the kubectl cluster config to be used |
+  
 # Tasks 
 
 ## Git related tasks

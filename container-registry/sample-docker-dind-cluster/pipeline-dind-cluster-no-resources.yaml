@@ -26,7 +26,7 @@ spec:
         - name: properties-file
           value: ""
       workspaces:
-        - name: workspace
+        - name: output
           workspace: pipeline-ws
     - name: build-and-push-docker
       runAfter: [clone-repository]
@@ -42,7 +42,7 @@ spec:
         - name: properties-file
           value: ""
       workspaces:
-        - name: workspace
+        - name: source
           workspace: pipeline-ws
     - name: va-scan-task
       runAfter: [build-and-push-docker]
@@ -62,5 +62,5 @@ spec:
         - name: image-digest
           value: $(tasks.build-and-push-docker.results.image-digest)
       workspaces:
-        - name: workspace
+        - name: artifacts
           workspace: pipeline-ws

@@ -30,7 +30,7 @@ spec:
         - name: properties-file
           value: ""
       workspaces:
-        - name: workspace
+        - name: output
           workspace: pipeline-ws
     - name: pipeline-2-cr-build-task
       runAfter: [pipeline-1-clone-task]
@@ -57,7 +57,7 @@ spec:
         - name: properties-file
           value: ""
       workspaces:
-        - name: workspace
+        - name: source
           workspace: pipeline-ws
     - name: pipeline-3-va-task
       runAfter: [pipeline-2-cr-build-task]
@@ -79,5 +79,5 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
-        - name: workspace
+        - name: artifacts
           workspace: pipeline-ws

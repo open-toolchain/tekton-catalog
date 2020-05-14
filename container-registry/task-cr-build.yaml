@@ -49,8 +49,8 @@ spec:
     - name: image-digest
       description: the image digest (sha-256 hash) for the built image
   workspaces:
-    - name: workspace
-      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+    - name: source
+      description: A workspace containing the source (Dockerfile, Docker context) to create the image
       mountPath: /artifacts
   resources:
     outputs:

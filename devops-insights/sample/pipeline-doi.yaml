@@ -32,7 +32,7 @@ spec:
         - name: properties-file
           value: ""
       workspaces:
-        - name: workspace
+        - name: output
           workspace: pipeline-ws
     - name: publish-buildrecord-task
       runAfter: [clone-task]

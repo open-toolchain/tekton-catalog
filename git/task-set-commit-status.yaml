@@ -59,8 +59,8 @@ spec:
       description: Pipeline debug mode
       default: "0"
   workspaces:
-    - name: workspace
-      description: The git repo will be cloned onto the volume backing this workspace
+    - name: artifacts
+      description: Workspace that may contain git repository information (ie build.properties). Should be marked as optional when Tekton will permit it
       mountPath: /artifacts
   stepTemplate:
     env:

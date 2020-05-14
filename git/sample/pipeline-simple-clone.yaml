@@ -15,7 +15,7 @@ spec:
       taskRef:
         name: git-clone-repo
       workspaces:
-        - name: workspace
+        - name: output
           workspace: pipeline-ws
       params:
         - name: repository

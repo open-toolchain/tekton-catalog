@@ -20,7 +20,7 @@ spec:
         - name: cluster-pipeline-resources-directory-fallback
           value: .tekton-clusters
       workspaces:
-        - name: workspace
+        - name: cluster-configuration
           workspace: pipeline-ws
       resources:
         inputs:
@@ -44,7 +44,7 @@ spec:
             echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
       workspaces:
-        - name: workspace
+        - name: cluster-configuration
           workspace: pipeline-ws
       resources:
         inputs:

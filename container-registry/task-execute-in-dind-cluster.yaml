@@ -66,8 +66,8 @@ spec:
     - name: image-digest
       description: the image digest (sha-256 hash) for the built image
   workspaces:
-    - name: workspace
-      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+    - name: source
+      description: A workspace containing the source (Dockerfile, Docker context) to create the image
       mountPath: /artifacts
   resources:
     inputs:
@@ -222,14 +222,14 @@ spec:
 
           if [ "$PROPERTIES_FILE" ]; then
             # Ensure directory is there
-            mkdir -p $(workspaces.workspace.path)/$(dirname "$PROPERTIES_FILE")
-            echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "IMAGE_TAGS=${IMAGE_TAG}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            mkdir -p $(workspaces.source.path)/$(dirname "$PROPERTIES_FILE")
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_TAGS=${IMAGE_TAG}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.source.path)/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat $(workspaces.workspace.path)/$PROPERTIES_FILE
+            cat $(workspaces.source.path)/$PROPERTIES_FILE
             echo ""
           fi
 
