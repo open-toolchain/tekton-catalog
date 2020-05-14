@@ -34,6 +34,8 @@ spec:
     - name: cluster-and-worker-nodes-json-export
       description: directory in the workspace that will be used to store the cluster and worker nodes export json files
       default: ""
+    - name: pipeline-debug
+      default: "0"      
   resources:
     inputs:
       - name: cluster
@@ -71,10 +73,20 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)              
       command: ["/bin/bash", "-c"]
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
           ##########################################################################
           # Setting HOME explicitly to have ibmcloud plugins available
           # doing the export rather than env definition is a workaround
