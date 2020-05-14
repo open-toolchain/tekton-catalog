@@ -25,7 +25,7 @@ spec:
         - name: branch
           value: $(params.branch)
       workspaces:
-        - name: workspace
+        - name: output
           workspace: pipeline-ws
     - name: build-and-push-docker
       runAfter: [clone-repository]
@@ -33,7 +33,7 @@ spec:
         name: icr-execute-in-dind-cluster
       params:
       workspaces:
-        - name: workspace
+        - name: source
           workspace: pipeline-ws
       resources:
         inputs:
@@ -55,7 +55,7 @@ spec:
         # - name: fail-on-scanned-issues
         #   value: 'false'
       workspaces:
-        - name: workspace
+        - name: artifacts
           workspace: pipeline-ws
       resources:
         inputs:

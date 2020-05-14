@@ -46,8 +46,8 @@ spec:
       description: |
         the status from Vulnerability Advisor - possible values: OK, WARN, FAIL, UNSUPPORTED, INCOMPLETE, UNSCANNED
   workspaces:
-    - name: workspace
-      description: A workspace backing by a volume where the report will be stored
+    - name: artifacts
+      description: Workspace that may contain image information and will have the va report from the VA scan after this task exection
       mountPath: /artifacts
   resources:
     inputs:
@@ -198,8 +198,8 @@ spec:
           ibmcloud cr va -e ${PIPELINE_IMAGE_URL} || true
           set -e
           if [ "$(params.scan-report-file)" ]; then
-            echo "Copy Vulnerability Advisor scan report (JSON format) to $(workspaces.workspace.path)/$(params.scan-report-file)"
-            cp /steps/vareport.json $(workspaces.workspace.path)/$(params.scan-report-file)
+            echo "Copy Vulnerability Advisor scan report (JSON format) to $(workspaces.artifacts.path)/$(params.scan-report-file)"
+            cp /steps/vareport.json $(workspaces.artifacts.path)/$(params.scan-report-file)
           fi
 
           # Record task results

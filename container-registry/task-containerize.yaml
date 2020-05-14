@@ -52,8 +52,8 @@ spec:
     - name: image-digest
       description: the image digest (sha-256 hash) for the built image
   workspaces:
-    - name: workspace
-      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+    - name: source
+      description: A workspace containing the source (Dockerfile, Docker context) to create the image
       mountPath: /artifacts
   resources:
     outputs:
@@ -228,7 +228,7 @@ spec:
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
             ${BUILD_ARGS} \
-            --local context=$(workspaces.workspace.path)/$(params.path-to-context) --local dockerfile=$(workspaces.workspace.path)/$(params.path-to-dockerfile) \
+            --local context=$(workspaces.source.path)/$(params.path-to-context) --local dockerfile=$(workspaces.source.path)/$(params.path-to-dockerfile) \
             --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
             --export-cache type=inline \
             --import-cache type=registry,ref=$IMAGE_RESOURCE_URL 2>&1 | tee /steps/build.log
@@ -300,15 +300,15 @@ spec:
           # Here the workaround will be to add registry and image information in an output properties file
           IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')          
           if [ "$PROPERTIES_FILE" ]; then
-            mkdir -p $(workspaces.workspace.path)/$(dirname "$PROPERTIES_FILE")
-            echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "IMAGE_TAGS=${IMAGE_TAGS}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
-            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.workspace.path)/$PROPERTIES_FILE
+            mkdir -p $(workspaces.source.path)/$(dirname "$PROPERTIES_FILE")
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_TAGS=${IMAGE_TAGS}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.source.path)/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat $(workspaces.workspace.path)/$PROPERTIES_FILE
+            cat $(workspaces.source.path)/$PROPERTIES_FILE
             echo ""
           fi
 

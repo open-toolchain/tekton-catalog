@@ -57,12 +57,12 @@ spec:
     - name: region
       description: The region (ie us-south) where the cluster is located
   workspaces:
-    - name: workspace
-      description: A workspace backing by a volume
+    - name: cluster-configuration
+      description: A workspace where the kubernetes cluster config is exported
   steps:
     - name: setup
       image: ibmcom/pipeline-base-image:2.6
-      workingDir: $(workspaces.workspace.path)
+      workingDir: $(workspaces.cluster-configuration.path)
       env:
         - name: API_KEY
           valueFrom:
@@ -144,18 +144,18 @@ spec:
           else
             echo "Access to pipelineresources.tekton.dev is required to update Cluser Pipeline Resource accordingly"
             echo "Falling back to copy of $(basename $KUBECONFIG_FILE) to the pipeline run volume"
-            mkdir -p $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
-            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
-            cp $KUBECONFIG_FILE $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
-            echo "Kubeconfig file(s) copied to $(workspaces.workspace.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME"
+            mkdir -p $(workspaces.cluster-configuration.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
+            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) $(workspaces.cluster-configuration.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
+            cp $KUBECONFIG_FILE $(workspaces.cluster-configuration.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
+            echo "Kubeconfig file(s) copied to $(workspaces.cluster-configuration.path)/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME"
           fi
 
           ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > /steps/$CLUSTER_NAME.json
 
           if [ "$(params.cluster-and-worker-nodes-json-export)" ]; then
-            mkdir -p $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME
-            cp /steps/$CLUSTER_NAME.json $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME.json
-            ibmcloud ks worker ls --cluster $CLUSTER_NAME --json > $(workspaces.workspace.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
+            mkdir -p $(workspaces.cluster-configuration.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME
+            cp /steps/$CLUSTER_NAME.json $(workspaces.cluster-configuration.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME.json
+            ibmcloud ks worker ls --cluster $CLUSTER_NAME --json > $(workspaces.cluster-configuration.path)/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
           fi
 
           # Record task results

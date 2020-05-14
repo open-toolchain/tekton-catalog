@@ -22,7 +22,7 @@ spec:
             - name: commit-message
               value: $(params.commit-message)
       workspaces:
-        - name: workspace
+        - name: output
           workspace: pipeline-ws
       params:
         - name: repository
