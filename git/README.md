@@ -39,7 +39,7 @@
 
 ### Workspaces
 
-* **workspace**: The git repo will be cloned onto the volume backing this workspace
+* **output**: The git repo will be cloned onto the volume backing this workspace
 
 ### Results
 * **git-repository**: The cloned repository
@@ -82,7 +82,7 @@ The output of this task is the repository cloned into the directory on the works
 
 ### Workspaces
 
-* **workspace**: the workspace where the properties file (like `build.properties` defined in `properties-file` parameter) would be stored
+* **artifacts**: Workspace that may contain git repository information (ie build.properties). Should be marked as optional when Tekton will permit it
 
 ## Usages
 

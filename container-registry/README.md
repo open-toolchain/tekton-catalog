@@ -43,7 +43,7 @@
 
 ### Workspaces
 
-* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
+* **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
 
 ### Resources
 
@@ -81,7 +81,7 @@
 
 ### Workspaces
 
-* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
+* **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
 
 ### Resources
 
@@ -130,7 +130,7 @@ and is available only during the task's lifespan.
 
 ### Workspaces
 
-* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
+* **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
 
 ### Resources
 
@@ -179,15 +179,15 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 ### Workspaces
 
-* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
+* **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
 
-#### Resources
+### Resources
 
-##### Inputs
+#### Inputs
 
 * **cluster**: (optional) The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
 
-##### Outputs
+#### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
@@ -222,9 +222,9 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 ### Workspaces
 
-* **workspace**: The workspace backing by a volume that will be used to store output file
+* **artifacts**: Workspace that may contain image information and will have the va report from the VA scan after this task execution
 
-#### Resources
+### Resources
 
 #### Inputs
 

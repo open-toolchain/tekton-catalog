@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -20,7 +21,9 @@ spec:
       description: target resource group (name or id) for the ibmcloud login operation
       default: ""
     - name: cluster-region
-      description: (optional) the ibmcloud region hosting the cluster (if value is `` it will default to the toolchain region)
+      description: |
+        (optional) the ibmcloud region hosting the cluster
+        (if value is `` it will default to the toolchain region)
       default: ""
     - name: cluster-name
       description: "name of the docker build cluster - required if no cluster pipeline resource provided to this task"
@@ -218,7 +221,8 @@ spec:
           REGISTRY_NAMESPACE=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $2}')
           # Image name is remaining part after the repository and namespace and can contains /
           IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
-          MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG"  --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
+          MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG" \
+            --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
 
           if [ "$PROPERTIES_FILE" ]; then
             # Ensure directory is there
@@ -292,7 +296,7 @@ spec:
           ibmcloud login -a $IBMCLOUD_API --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
 
           if [ -z "$IBMCLOUD_TARGET_RESOURCE_GROUP" ]; then
-            echo "Using default resource group" 
+            echo "Using default resource group"
           else
             ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
           fi
@@ -354,10 +358,12 @@ spec:
           # We need to include the POD IP in the addresses because the readinessProbe will try to open
           # a socket on <POD_IP>:PORT
           # Be sure to use a running POD (not an evicted one)
-          kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" get pods           
+          kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" get pods
           kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" port-forward \
             --address=localhost,${THE_POD_IP} \
-            $(kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" get pods | grep docker | grep -i running | awk '{print $1;}') \
+            $(kubectl --namespace "$BUILD_CLUSTER_NAMESPACE" get pods | \
+              grep docker | grep -i running | awk '{print $1;}' \
+             ) \
             2375:2375
       volumeMounts:
         - mountPath: /cd-config

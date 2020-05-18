@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -5,9 +6,13 @@ metadata:
 spec:
   params:
     - name: domain
-      description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
+      description: |
+        the Slack domain to send the message to.
+        If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
     - name: channel
-      description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
+      description: |
+        the Slack channel to send the message to.
+        When set, overrides the default channel as set in the Slack Webhook URL.
     - name: message-format
       description: the format of the message. text(default) or JSON.
     - name: message-script
@@ -15,7 +20,9 @@ spec:
     - name: message
       description: the message to send to Slack
     - name: exit-on-error
-      description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
+      description: |
+        flag (`true` | `false`) to indicate if the task should fail
+        or continue if unable to process the message or post to Slack.
   workspaces:
     - name: pipeline-ws
   tasks:

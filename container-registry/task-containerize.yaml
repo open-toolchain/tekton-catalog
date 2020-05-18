@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -228,14 +229,15 @@ spec:
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
             ${BUILD_ARGS} \
-            --local context=$(workspaces.source.path)/$(params.path-to-context) --local dockerfile=$(workspaces.source.path)/$(params.path-to-dockerfile) \
+            --local context=$(workspaces.source.path)/$(params.path-to-context) \
+            --local dockerfile=$(workspaces.source.path)/$(params.path-to-dockerfile) \
             --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
             --export-cache type=inline \
             --import-cache type=registry,ref=$IMAGE_RESOURCE_URL 2>&1 | tee /steps/build.log
 
           # Using the deprecated --exporter option for now as the multiple name/tags using --output option
           # is not working as expected: https://github.com/moby/buildkit/issues/797#issuecomment-581346240
-          #  --output type=image,"name=$(resources.outputs.built-image.url):1.0.0,$(resources.outputs.built-image.url)",push=true \
+          # --output type=image,"name=$(params.image-url):1.0.0,$(params.image-url)",push=true
 
           # it is not possible to specify multiple exporters for now
           # --output type=oci,dest=/builder/home/image-outputs/built-image/output.tar \
@@ -282,8 +284,9 @@ spec:
             echo "Creating OCI image index - index.json - out of the build.log to reference image sha: $MANIFEST_SHA"
             # ibmcloud container-registry image manifest is: application/vnd.docker.distribution.manifest.v2+json
             echo "{}" | \
-            jq --arg manifest_sha "$MANIFEST_SHA" '{schemaVersion:2,manifests:[{"mediaType": "application/vnd.oci.image.manifest.v1+json", digest:$manifest_sha}]}' 2>&1 | \
-            tee /workspace/output/built-image/index.json
+            jq --arg manifest_sha "$MANIFEST_SHA" \
+              '{schemaVersion:2,manifests:[{"mediaType": "application/vnd.oci.image.manifest.v1+json", digest:$manifest_sha}]}' 2>&1 | \
+              tee /workspace/output/built-image/index.json
 
             # Copy the index.json to the legacy location - v0.7.0 - for such imageoutput
             mkdir -p /builder/home/image-outputs/built-image
@@ -298,7 +301,8 @@ spec:
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
           # Here the workaround will be to add registry and image information in an output properties file
-          IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')          
+          IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | \
+            awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
           if [ "$PROPERTIES_FILE" ]; then
             mkdir -p $(workspaces.source.path)/$(dirname "$PROPERTIES_FILE")
             echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.source.path)/$PROPERTIES_FILE

@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -7,7 +8,9 @@ spec:
     - name: app-name
       description: Logical application name for DevOps Insights
     - name: toolchain-id
-      description: Toolchain service instance id - Default to the toolchain containing the CD Tekton PipelineRun currently executed
+      description: |
+        Toolchain service instance id.
+        Default to the toolchain containing the CD Tekton PipelineRun currently executed
       default: ""
     - name: build-number
       description: Devops Inisghts build number reference. Default to the CD Tekton Pipeline build number
@@ -33,7 +36,7 @@ spec:
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
   steps:
-    - name: publish-testrecord
+    - name: publish-deployrecord
       image: ibmcom/pipeline-base-image:2.6
       env:
         - name: IBM_CLOUD_API

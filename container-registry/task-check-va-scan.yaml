@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -35,7 +36,9 @@ spec:
       description: filename for the scan report (json format) of the given image. It will be copied in the workspace
       default: ""
     - name: fail-on-scanned-issues
-      description: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result
+      description: |
+        flag (`true` | `false`) to indicate if the task should fail or continue
+        if issues are found in the image scan result
       default: "true"
     - name: pipeline-debug
       default: "0"
@@ -47,7 +50,9 @@ spec:
         the status from Vulnerability Advisor - possible values: OK, WARN, FAIL, UNSUPPORTED, INCOMPLETE, UNSCANNED
   workspaces:
     - name: artifacts
-      description: Workspace that may contain image information and will have the va report from the VA scan after this task exection
+      description: |
+        Workspace that may contain image information and will have the va report from the VA scan
+        after this task execution.
       mountPath: /artifacts
   resources:
     inputs:
@@ -183,7 +188,7 @@ spec:
             set -e
             echo "VA scan status is ${STATUS}"
             # Possible status from Vulnerability Advisor: OK, WARN, FAIL, UNSUPPORTED, INCOMPLETE, UNSCANNED
-            # cf https://cloud.ibm.com/apidocs/container-registry/va#get-the-vulnerability-assessment-for-the-list-of-r            
+            # cf https://cloud.ibm.com/apidocs/container-registry/va#get-the-vulnerability-assessment-for-the-list-of-r
             if [[ "${STATUS}" != "INCOMPLETE" && "${STATUS}" != "UNSCANNED" ]]; then
               # status is one of the terminated scan action - break the loop
               break
@@ -198,7 +203,8 @@ spec:
           ibmcloud cr va -e ${PIPELINE_IMAGE_URL} || true
           set -e
           if [ "$(params.scan-report-file)" ]; then
-            echo "Copy Vulnerability Advisor scan report (JSON format) to $(workspaces.artifacts.path)/$(params.scan-report-file)"
+            echo -n "Copy Vulnerability Advisor scan report (JSON format) to "
+            echo "$(workspaces.artifacts.path)/$(params.scan-report-file)"
             cp /steps/vareport.json $(workspaces.artifacts.path)/$(params.scan-report-file)
           fi
 
@@ -209,7 +215,8 @@ spec:
           if [[ "${STATUS}" == "OK" ]] || [[ "${STATUS}" == "UNSUPPORTED" ]] || [[ "${STATUS}" == "WARN" ]]; then
             echo "The vulnerability scan status is ${STATUS}"
           else
-            echo "ERROR: The vulnerability scan was not successful (status being ${STATUS}), check the OUTPUT of the command and try again."
+            echo -n "ERROR: The vulnerability scan was not successful (status being ${STATUS}), "
+            echo "check the OUTPUT of the command and try again."
             if [ "$(params.fail-on-scanned-issues)" == "true" ]; then
               exit 1;
             fi

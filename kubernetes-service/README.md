@@ -11,9 +11,7 @@
 
 ## Fetch IKS Cluster Configuration helper task
 
-### Inputs
-
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resources to be defined:
 
@@ -24,11 +22,7 @@
 
   See [sample TriggerTemplate](./sample/listener-kubernetes-service.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Resources
-
-* **cluster**: The Cluster PipelineResource that will be updated as output of this task. Only the name property is used to identify the cluster name.
-
-#### Parameters
+### Parameters
 
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation.
 * **cluster-region**: (optional) the ibmcloud region hosting the target cluster. If not specified, it will use the toolchain region as a default.
@@ -36,21 +30,23 @@
 * **cluster-pipeline-resources-directory-fallback**: (optional) that will be used as a fallback mechanism to store the kubeconfig file for the target cluster (expressed by the inputs)
 * **pipeline-debug**: (optional) turn on task script context debugging
 
-## Workspaces
+### Workspaces
 
-* **workspace**: The workspace backing by a volume
+* **cluster-configuration**: A workspace where the kubernetes cluster config is exported
 
-### Outputs
+### Resources
 
-#### Resources
+#### Inputs
+
+* **cluster**: (optional) the Cluster PipelineResource that will be updated as output of this task. Only the name property is used to identify the cluster name.
+
+#### Outputs
 
 * **cluster**: (optional) The Cluster PipelineResource that will be updated as output of this task.
 
 ## Kubernetes Contextual Execution helper task
 
-### Inputs
-
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task expects the following kubernetes resources to be defined:
 
@@ -61,20 +57,22 @@
 
   See [sample TriggerTemplate](./sample/listener-kubernetes-service.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-#### Resources
-
-* **cluster**: (optional) The Cluster PipelineResource that corresponds to the kubernetes cluster target for the kubectl command execution.
-
-#### Parameters
+### Parameters
 
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
 * **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be value of `iks-fetch-config#cluster-pipeline-resources-directory-fallback` if cluster pipeline resource update is not made by the `iks-fetch-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
 * **pipeline-debug**: (optional) turn on task script context debugging
 
-## Workspaces
+### Workspaces
 
-* **workspace**: The workspace backing by a volume that contains the Dockerfile and Docker context
+* **cluster-configuration**: A workspace that contain the kubectl cluster config to be used
+
+### Resources
+
+#### Inputs
+
+* **cluster**: (optional) The Cluster PipelineResource that corresponds to the kubernetes cluster target for the kubectl command execution.
 
 # Usage
 The `sample` sub-directory contains an EventListener definition `kubernetes-service` that you can include in your tekton pipeline configuration to run an example usage of the `iks-fetch-config` and `iks-contextual-execution` tasks.
