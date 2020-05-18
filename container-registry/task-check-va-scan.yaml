@@ -47,7 +47,7 @@ spec:
         the status from Vulnerability Advisor - possible values: OK, WARN, FAIL, UNSUPPORTED, INCOMPLETE, UNSCANNED
   workspaces:
     - name: artifacts
-      description: Workspace that may contain image information and will have the va report from the VA scan after this task exection
+      description: Workspace that may contain image information and will have the va report from the VA scan after this task execution
       mountPath: /artifacts
   resources:
     inputs:
