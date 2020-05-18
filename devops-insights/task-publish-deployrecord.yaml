@@ -36,7 +36,7 @@ spec:
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
   steps:
-    - name: publish-testrecord
+    - name: publish-deployrecord
       image: ibmcom/pipeline-base-image:2.6
       env:
         - name: IBM_CLOUD_API
