@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -7,7 +8,9 @@ spec:
     - name: app-name
       description: Logical application name for DevOps Insights
     - name: toolchain-id
-      description: Toolchain service instance id - Default to the toolchain containing the CD Tekton PipelineRun currently executed
+      description: |
+        Toolchain service instance id.
+        Default to the toolchain containing the CD Tekton PipelineRun currently executed
       default: ""
     - name: build-number
       description: Devops Inisghts build number reference. Default to the CD Tekton Pipeline build number
