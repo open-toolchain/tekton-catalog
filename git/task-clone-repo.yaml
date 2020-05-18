@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -54,7 +55,8 @@ spec:
       default: build.properties
     - name: git-credentials-json-file
       description: |
-        JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace).
+        JSON file containing the git credentials as found out of the clone task
+        (can be a file path relative to the workspace).
         Default to '' meaning no output of this information
       default: ""
     - name: pipeline-debug
@@ -115,12 +117,14 @@ spec:
             echo "Adding .git suffix to Repository URL"
             REPOSITORY="${REPOSITORY}.git"
           fi
-          GIT_SERVICE_INSTANCE_ID=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .instance_id' /cd-config/toolchain.json)
+          GIT_SERVICE_INSTANCE_ID=$(jq -r --arg git_repo "$REPOSITORY" \
+            '.services[] | select (.parameters.repo_url==$git_repo) | .instance_id' /cd-config/toolchain.json)
           if [ -z "$GIT_SERVICE_INSTANCE_ID" ]; then
             echo "No Git integration (repository url: $REPOSITORY) found in the toolchain"
             exit 1
           fi
-          GIT_SERVICE_TYPE=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .service_id' /cd-config/toolchain.json)
+          GIT_SERVICE_TYPE=$(jq -r --arg git_repo "$REPOSITORY" \
+            '.services[] | select (.parameters.repo_url==$git_repo) | .service_id' /cd-config/toolchain.json)
 
           if [ "$GIT_SERVICE_TYPE" == "github" ]; then
             GIT_AUTH_USER="x-oauth-basic"
@@ -145,13 +149,19 @@ spec:
               ibmcloud target -g $(params.resource-group)
             fi
             TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
-            GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' /cd-config/toolchain.json)
+            GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" \
+              '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.token_url' \
+              /cd-config/toolchain.json)
 
-            # GIT_TOKEN_URL is like https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
+            # GIT_TOKEN_URL is something like
+            # https://otc-github-consolidated-broker.us-south.devops.cloud.ibm.com/github/token?git_id=github
             # as there is already an url param git_id, just put the additional ones using &
-            echo "Doing cURL to ${GIT_TOKEN_URL}&toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
 
-            curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" -H "Authorization: $TOKEN" "${GIT_TOKEN_URL}&toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+            GIT_BROKER_URL="${GIT_TOKEN_URL}&toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
+            echo "Doing cURL to ${GIT_BROKER_URL}"
+
+            curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" \
+              -H "Authorization: $TOKEN" "$GIT_BROKER_URL"
             if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
               GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
               echo "Access token found for the Git integration (repository url: $REPOSITORY)"
@@ -282,7 +292,8 @@ spec:
                   exit 1
                 fi
               fi
-              echo "git merge of $GIT_REPOSITORY (pr-branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
+              echo -n "git merge of $GIT_REPOSITORY (pr-branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to "
+              echo "(branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
             else
               # Assuming the PR is from a fork
               # Expect that the same creds will be sufficient for the git pull from the forked repository
@@ -302,7 +313,8 @@ spec:
               # Step 2
               git checkout -q "${BRANCH}"
               if git merge cd-tekton-pipeline-temp-branch-for-pr; then
-                echo "git merge of $PR_REPOSITORY (pr-branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to $REPOSITORY (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
+                echo -n "git merge of $PR_REPOSITORY (pr-branch ${PR_BRANCH} - pr_commit ${PR_REVISION}) to $REPOSITORY"
+                echo " (branch $BRANCH - commit $REVISION) done in directory $DIRECTORY_NAME"
               else
                 exit 1
               fi
