@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
@@ -8,25 +9,34 @@ spec:
     # hence put a single space string value as workaround
     # https://github.ibm.com/org-ids/roadmap/issues/11640
     - name: domain
-      description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
+      description: |
+        the Slack domain to send the message to.
+        If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
       default: " "
     - name: channel
-      description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
+      description: |
+        the Slack channel to send the message to.
+        When set, overrides the default channel as set in the Slack Webhook URL.
       default: " "
     - name: message-format
       description: the format of the message. text(default) or JSON.
       default: text
     - name: message
       description: the message to send to Slack
-      default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
+      default: |
+        Tekton Pipeline completed successfully. :heavy_check_mark:
+        Visit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*
     - name: message-script
       description: |
         any custom script that will be executed by the task to provide a message.
         Reference: https://api.slack.com/reference/surfaces/formatting
-        For instance: echo "Message injected by message-script. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
+        For instance: echo "Message injected by message-script. :heavy_check_mark:\nVisit
+         *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*"
       default: " "
     - name: exit-on-error
-      description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
+      description: |
+        flag (`true` | `false`) to indicate if the task should fail or continue
+        if unable to process the message or post to Slack.
       default: "false"
   resourcetemplates:
     # PVC definition like pre-tekton-0.10.1
