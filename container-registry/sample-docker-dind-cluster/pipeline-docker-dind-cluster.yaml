@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -48,12 +49,6 @@ spec:
       params:
         - name: scan-report-file
           value: "app-image-va-report.json"
-        # - name: max-iteration
-        #   value: '5'
-        # - name: sleep-time
-        #   value: '3'
-        # - name: fail-on-scanned-issues
-        #   value: 'false'
       workspaces:
         - name: artifacts
           workspace: pipeline-ws

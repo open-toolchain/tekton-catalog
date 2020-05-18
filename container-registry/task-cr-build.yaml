@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
@@ -188,16 +189,19 @@ spec:
             echo "ibmcloud cr plugin has an appropriate version containing image-digests command"
           else
             ibmcloud plugin update container-registry --force
-          fi            
+          fi
 
           IMAGE_TAG=$(head --lines=1 /steps/tags.lst |  awk -F: '{print $2}')
           echo "**"
           echo "** ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
           ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME}
-          echo "** ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}'"
-          ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}'
+          echo -n "** ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
+          echo " --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}'"
+          ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} \
+            --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}'
           echo "**"
-          MANIFEST_SHA=$(ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}' | grep "${IMAGE_TAG}" | awk '{print $NF}')
+          MANIFEST_SHA=$(ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME} \
+            --format '{{ .Repository}}:{{ .Tags }} {{ .Digest }}' | grep "${IMAGE_TAG}" | awk '{print $NF}')
 
           # Because of https://github.com/tektoncd/pipeline/issues/216
           # the image digest for input is/will always empty
@@ -207,7 +211,8 @@ spec:
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
           # Here the workaround will be to add registry and image information in an output properties file
-          IMAGE_TAGS=$(sed "s#^$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:##" /steps/tags.lst | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
+          IMAGE_TAGS=$(sed "s#^$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:##" /steps/tags.lst | \
+            tr -s '\r\n' ',' | sed -e 's/,$/\n/')
           if [ "$PROPERTIES_FILE" ]; then
             cd /artifacts
             # Ensure directory is there
