@@ -211,7 +211,6 @@ spec:
           # Record task results
           echo -n "$(params.scan-report-file)" > $(results.scan-report-file.path)
           echo -n "${STATUS}" > $(results.scan-status.path)
-          echo -n "vulnerabilityadvisor" > $(results.test-types.path)
 
           if [[ "${STATUS}" == "OK" ]] || [[ "${STATUS}" == "UNSUPPORTED" ]] || [[ "${STATUS}" == "WARN" ]]; then
             echo "The vulnerability scan status is ${STATUS}"
