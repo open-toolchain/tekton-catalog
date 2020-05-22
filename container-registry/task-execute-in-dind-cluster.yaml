@@ -63,6 +63,9 @@ spec:
     - name: properties-file
       description: file containing properties out of the docker in docker task
       default: build.properties
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
   results:
     - name: image-tags
       description: the tags for the built image
@@ -83,6 +86,10 @@ spec:
         type: image
         description: "(Optional) The image to build"
         optional: true
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
   steps:
     - name: check-registry
       image: ibmcom/pipeline-base-image:2.6
@@ -194,6 +201,13 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
 
           if [ "$(resources.outputs.built-image.url)" == "" ]; then
             export IMAGE_RESOURCE_URL="$(params.image-url)"
