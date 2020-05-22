@@ -31,12 +31,19 @@ spec:
         flag (`true` | `false`) to indicate if the task should fail or continue
         if unable to process the message or post to Slack.
       default: "false"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
   workspaces:
     - name: workspace
       description: |
         A workspace that contain data useful for the script/slack message resolution.
         Should be marked as optional when Tekton will permit it
       mountPath: /artifacts
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
@@ -81,6 +88,14 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+          
           export TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           export TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           # Dynamically set message if message-script param is set

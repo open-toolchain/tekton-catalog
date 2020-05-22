@@ -13,7 +13,7 @@ spec:
         Default to the toolchain containing the CD Tekton PipelineRun currently executed
       default: ""
     - name: build-number
-      description: Devops Inisghts build number reference. Default to the CD Tekton Pipeline build number
+      description: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
       default: ""
     - name: build-status
       description: the build status (can be either pass | fail)
@@ -36,6 +36,16 @@ spec:
     - name: toolchain-apikey-secret-key
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  results:
+    - name: build-number
+      description: Devops Insights build number reference used
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
   steps:
     - name: publish-build-record
       image: ibmcom/pipeline-base-image:2.6
@@ -75,6 +85,14 @@ spec:
       script: |
         #!/bin/bash
         set -e -o pipefail
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+        fi
+
         ##########################################################################
         # Setting HOME explicitly to have ibmcloud plugins available
         # doing the export rather than env definition is a workaround
@@ -105,6 +123,10 @@ spec:
         ibmcloud doi publishbuildrecord --logicalappname="${APP_NAME}" --buildnumber=${BUILD_NUMBER} \
           --branch=${GIT_BRANCH} --repositoryurl=${GIT_URL} --commitid=${GIT_COMMIT} \
           --status=${BUILD_STATUS} --joburl="$JOB_URL"
+
+        # Record task results
+        echo -n "${BUILD_NUMBER}" > $(results.build-number.path)
+
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
