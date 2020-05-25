@@ -120,9 +120,13 @@ spec:
         IFS=';' read -ra types <<< "$TEST_TYPES"
         for i in "${!locations[@]}"
         do
-            echo "$i ${locations[i]} ${types[i]}"
+            # check if type exists for the given index. If not, keep the last found.
+            if [[ ! -z "${types[i]}" ]]; then
+              TEST_TYPE=${types[i]}
+            fi
+            echo "$i ${locations[i]} ${TEST_TYPE}"
             ibmcloud doi publishtestrecord --logicalappname="$APP_NAME" --buildnumber=$BUILD_NUMBER \
-              --filelocation=${locations[i]} --type=${types[i]} $ENVIRONMENT
+              --filelocation=${locations[i]} --type=${TEST_TYPE} $ENVIRONMENT
         done
       volumeMounts:
         - mountPath: /cd-config
