@@ -121,7 +121,7 @@ spec:
         for i in "${!locations[@]}"
         do
             # check if type exists for the given index. If not, keep the last found.
-            if [[ ! -z "${types[i]}" ]]; then
+            if [[ "${types[i]}" ]]; then
               TEST_TYPE=${types[i]}
             fi
             echo "$i ${locations[i]} ${TEST_TYPE}"
