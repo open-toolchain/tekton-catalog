@@ -1,6 +1,6 @@
 # Cloud Foundry related tasks
 
-- **cf-deploy-cf-app**: this task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands
+- **cf-deploy-app**: this task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands
 
 **WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.16. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 

@@ -57,7 +57,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 ## Cloud Foundry related tasks
 
-- **cf-deploy-cf-app**: this task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands. [Documentation is here](./cloudfoundry/README.md)
+- **cf-deploy-app**: this task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands. [Documentation is here](./cloudfoundry/README.md)
 
 ## Git related tasks
 

@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: cf-deploy-cf-app
+  name: cf-deploy-app
 spec:
   params:
     - name: region

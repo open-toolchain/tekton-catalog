@@ -14,7 +14,7 @@ spec:
   tasks:
     - name: deploy-cf-app-task
       taskRef:
-        name: cf-deploy-cf-app
+        name: cf-deploy-app
       params:
         - name: continuous-delivery-context-secret
           value: "secure-properties"
