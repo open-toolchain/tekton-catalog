@@ -8,7 +8,7 @@
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
 - Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `cloudfoundry`
 
-## Mappings between Toolchains & Deployables helper task: toolchain-publish-deployable-mapping
+## Cloud Foundry Application Deployment helper task: cf-deploy-app
 
 ### Context - ConfigMap/Secret
 
