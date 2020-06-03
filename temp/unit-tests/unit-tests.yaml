@@ -1,0 +1,41 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: unit-tests-task
+spec:
+  params:
+    - name: continuous-delivery-context-secret
+      description: name of the configmap containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: properties-file
+      description: file containing properties out of containerize task
+      default: build.properties
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+      mountPath: /artifacts
+  steps:
+    - name: run-unit-tests
+      image: ibmcom/pipeline-base-image
+      env:
+        - name: PROPERTIES_FILE
+          value: $(params.properties-file)
+      script: |
+        #!/bin/bash
+          # set -x
+          if [ -f ./tests/run-tests.sh ]; then
+            source ./tests/run-tests.sh
+            RESULT=$?
+            if [ ! -z "${FILE_LOCATION}"]; then
+              if [ ${RESULT} -ne 0 ]; then STATUS=fail; else STATUS=pass; fi
+                if jq -e '.services[] | select(.service_id=="draservicebroker")' _toolchain.json; then
+                  ibmcloud login --apikey ${IBM_CLOUD_API_KEY} --no-region
+                  ibmcloud doi publishtestrecord --type unittest --buildnumber ${BUILD_NUMBER} --filelocation ${FILE_LOCATION} \
+                    --buildnumber ${BUILD_NUMBER} --logicalappname ${IMAGE_NAME} --status ${STATUS}
+                fi
+              exit $RESULT
+            fi
+          else
+            echo "Test runner script not found: ./tests/run-tests.sh"
+          fi

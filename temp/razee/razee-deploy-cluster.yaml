@@ -1,0 +1,169 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: razee-deploy-task
+spec:
+  params:
+    - name: continuous-delivery-context-secret
+      description: name of the configmap containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: resource-group
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: 'default'
+    - name: repository
+      description: The git repo
+    - name: cluster-name
+      description: The IBM Cloud cluster name
+    - name: cluster-region
+      description: The IBM Cloud region for your cluster
+    - name: cluster-namespace
+      description: The IBM Cloud cluster namespace
+      default: "default"
+    - name: ibmcloud-api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: ibmcloud-api
+      description: the ibmcloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: path-to-context
+      default: .
+    - name: deployment-file
+      description: Kubernetes Deployment resource file to use for deploy
+      default: "deployment.yml"
+    - name: allow-create-route
+      description: Allow the task to create a Route resource (if there is none)
+        to access the deployed app
+      default: "false"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+      mountPath: /artifacts
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+  # resources:
+  # TODO consider an optional git repository as the source of the image to build
+  # when cd tekton support will be to tekton pipeline v 0.10
+  #   - name: workspace
+  #     type: git
+  #     optional: true
+  steps:
+    - name: prepare-razee-deploy
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBMCLOUD_API_KEY
+          value: $(params.ibmcloud-api-key)
+        - name: API
+          value: $(params.ibmcloud-api)
+        - name: REGION
+          value: $(params.cluster-region)
+        - name: HOME
+          value: "/root"
+        - name: DEPLOYMENT_FILE
+          value: $(params.deployment-file)
+        - name: CLUSTER_NAMESPACE
+          value: $(params.cluster-namespace)
+        - name: PIPELINE_KUBERNETES_CLUSTER_NAME
+          value: $(params.cluster-name)
+        - name: ALLOW_CREATE_ROUTE
+          value: $(params.allow-create-route)
+        - name: CHART_ROOT
+          value: "/artifacts/chart"
+        - name: CONFIG_REPO_NAME
+          value: ''
+        - name: CONFIG_REPO_URL
+          value: ''
+        - name: CONFIG_REPO_BRANCH
+          value: master
+        - name: buildprops
+          value: build.properties
+        - name: CLUSTER_REGION
+          value: $(params.cluster-region)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        source /artifacts/build.properties
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          env
+          cat /cd-config/toolchain.json
+          trap env EXIT
+          set -x
+        fi
+        
+
+        ibmcloud login -a $API -r $REGION
+        $(ibmcloud ks cluster config --cluster "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --export)
+        if which oc > /dev/null && ibmcloud ks cluster get "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --json | jq -e '.type=="openshift"' > /dev/null; then oc login -u apikey -p "${IBMCLOUD_API_KEY}" ; fi
+        while read line; do export $line; done < /artifacts/build.properties
+        cp /artifacts/build.properties .
+        kubectl get secret --namespace ${CLUSTER_NAMESPACE}
+        echo "RAZEE"
+        cat /cd-config/toolchain.json
+        ls
+        cd /artifacts
+        ls
+        source <(curl -s -S -L "https://raw.githubusercontent.com/huayuenh/testrun/master/.bluemix/prepare_deploy.sh")
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+    - name: health-check
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBMCLOUD_API_KEY
+          value: $(params.ibmcloud-api-key)
+        - name: API
+          value: $(params.ibmcloud-api)
+        - name: REGION
+          value: $(params.cluster-region)
+        - name: HOME
+          value: "/root"
+        - name: DEPLOYMENT_FILE
+          value: $(params.deployment-file)
+        - name: CLUSTER_NAMESPACE
+          value: $(params.cluster-namespace)
+        - name: PIPELINE_KUBERNETES_CLUSTER_NAME
+          value: $(params.cluster-name)
+        - name: ALLOW_CREATE_ROUTE
+          value: $(params.allow-create-route)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        source /artifacts/build.properties
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          env
+          cat /cd-config/toolchain.json
+          trap env EXIT
+          set -x
+        fi
+
+        IMAGE_TAG=$IMAGE_TAGS
+
+        ibmcloud login -a $API -r $REGION
+        $(ibmcloud ks cluster config --cluster "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --export)
+        if which oc > /dev/null && ibmcloud ks cluster get "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --json | jq -e '.type=="openshift"' > /dev/null; then oc login -u apikey -p "${IBMCLOUD_API_KEY}" ; fi
+        while read line; do export $line; done < /artifacts/build.properties
+        cp /artifacts/build.properties .
+        # copy the script below into your app code repo (e.g. ./scripts/check_health.sh) and 'source' it from your pipeline job
+        #    source ./scripts/check_health.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
+        # ------------------
+        # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh
+        # Check liveness and readiness probes to confirm application is healthy
+        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")

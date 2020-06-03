@@ -1,0 +1,273 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: docker-check-task2
+spec:
+  params:
+    - name: continuous-delivery-context-secret
+      description: name of the configmap containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: resource-group
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: 'default'
+    - name: repository
+      description: The git repo
+    - name: cluster-name
+      description: The IBM Cloud cluster name
+    - name: cluster-region
+      description: The IBM Cloud region for your cluster
+    - name: cluster-namespace
+      description: The IBM Cloud cluster namespace
+      default: "default"
+    - name: ibmcloud-api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: ibmcloud-api
+      description: the ibmcloud api endpoint
+      default: "https://cloud.ibm.com"
+    - name: path-to-context
+      default: .
+    - name: deployment-file
+      description: Kubernetes Deployment resource file to use for deploy
+      default: "deployment.yml"
+    - name: allow-create-route
+      description: Allow the task to create a Route resource (if there is none)
+        to access the deployed app
+      default: "false"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+      mountPath: /artifacts
+  # resources:
+  # TODO consider an optional git repository as the source of the image to build
+  # when cd tekton support will be to tekton pipeline v 0.10
+  #   - name: workspace
+  #     type: git
+  #     optional: true
+  steps:
+    - name: deploy-to-kubernetes
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBMCLOUD_API_KEY
+          value: $(params.ibmcloud-api-key)
+        - name: API
+          value: $(params.ibmcloud-api)
+        - name: REGION
+          value: $(params.cluster-region)
+        - name: HOME
+          value: "/root"
+        - name: DEPLOYMENT_FILE
+          value: $(params.deployment-file)
+        - name: CLUSTER_NAMESPACE
+          value: $(params.cluster-namespace)
+        - name: PIPELINE_KUBERNETES_CLUSTER_NAME
+          value: $(params.cluster-name)
+        - name: ALLOW_CREATE_ROUTE
+          value: $(params.allow-create-route)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        source /artifacts/build.properties
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          env
+          cat /cd-config/toolchain.json
+          trap env EXIT
+          set -x
+        fi
+
+        IMAGE_TAG=$IMAGE_TAGS
+
+        ibmcloud login -a $API -r $REGION
+        $(ibmcloud ks cluster config --cluster "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --export)
+        if which oc > /dev/null && ibmcloud ks cluster get "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --json | jq -e '.type=="openshift"' > /dev/null; then oc login -u apikey -p "${IBMCLOUD_API_KEY}" ; fi
+        while read line; do export $line; done < /artifacts/build.properties
+        cp /artifacts/build.properties .
+
+        #!/bin/bash
+        # uncomment to debug the script
+        #set -x
+        # copy the script below into your app code repo (e.g. ./scripts/deploy_kubectl.sh) and 'source' it from your pipeline job
+        #    source ./scripts/deploy_kubectl.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/deploy_kubectl.sh")
+        # ------------------
+        # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/deploy_kubectl.sh
+
+        # Input env variables (can be received via a pipeline environment properties.file.
+        DEPLOYMENT_FILE="/artifacts/${APP_DIRECTORY}/${DEPLOYMENT_FILE}"
+        echo "IMAGE_NAME=${IMAGE_NAME}"
+        echo "IMAGE_TAG=${IMAGE_TAG}"
+        echo "REGISTRY_URL=${REGISTRY_URL}"
+        echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}"
+        echo "DEPLOYMENT_FILE=${DEPLOYMENT_FILE}"
+
+        #View build properties
+        # cat build.properties
+        # also run 'env' command to find all available env variables
+        # or learn more about the available environment variables at:
+        # https://console.bluemix.net/docs/services/ContinuousDelivery/pipeline_deploy_var.html#deliverypipeline_environment
+
+        # Input env variables from pipeline job
+        echo "PIPELINE_KUBERNETES_CLUSTER_NAME=${PIPELINE_KUBERNETES_CLUSTER_NAME}"
+        if [ -z "${CLUSTER_NAMESPACE}" ]; then CLUSTER_NAMESPACE=default ; fi
+        echo "CLUSTER_NAMESPACE=${CLUSTER_NAMESPACE}"
+
+        echo "=========================================================="
+        echo "DEPLOYING using manifest"
+        echo -e "Updating ${DEPLOYMENT_FILE} with image name: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}"
+        if [ -z "${DEPLOYMENT_FILE}" ]; then DEPLOYMENT_FILE=deployment.yml ; fi
+        if [ -f ${DEPLOYMENT_FILE} ]; then
+            sed -i "s~^\([[:blank:]]*\)image:.*$~\1image: ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG}~" ${DEPLOYMENT_FILE}
+            cat ${DEPLOYMENT_FILE}
+        else
+            echo -e "${red}Kubernetes deployment file '${DEPLOYMENT_FILE}' not found${no_color}"
+            exit 1
+        fi
+        set -x
+        kubectl apply --namespace ${CLUSTER_NAMESPACE} -f ${DEPLOYMENT_FILE}
+        set +x
+
+        echo ""
+        echo "=========================================================="
+        IMAGE_REPOSITORY=${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}
+        echo -e "CHECKING deployment status of ${IMAGE_REPOSITORY}:${IMAGE_TAG}"
+        echo ""
+
+        for ITERATION in {1..30}
+        do
+          DATA=$( kubectl get pods --namespace ${CLUSTER_NAMESPACE} -o json )
+          NOT_READY=$( echo $DATA | jq '.items[].status | select(.containerStatuses!=null) | .containerStatuses[] | select(.image=="'"${IMAGE_REPOSITORY}:${IMAGE_TAG}"'") | select(.ready==false) ' )
+          if [[ -z "$NOT_READY" ]]; then
+            echo -e "All pods are ready:"
+            echo $DATA | jq '.items[].status | select(.containerStatuses!=null) | .containerStatuses[] | select(.image=="'"${IMAGE_REPOSITORY}:${IMAGE_TAG}"'") | select(.ready==true) '
+            break # deployment succeeded
+          fi
+          REASON=$(echo $DATA | jq '.items[].status | select(.containerStatuses!=null) | .containerStatuses[] | select(.image=="'"${IMAGE_REPOSITORY}:${IMAGE_TAG}"'") | .state.waiting.reason')
+          echo -e "${ITERATION} : Deployment still pending..."
+          echo -e "NOT_READY:${NOT_READY}"
+          echo -e "REASON: ${REASON}"
+          if [[ ${REASON} == *ErrImagePull* ]] || [[ ${REASON} == *ImagePullBackOff* ]]; then
+            echo "Detected ErrImagePull or ImagePullBackOff failure. "
+            echo "Please check proper authenticating to from cluster to image registry (e.g. image pull secret)"
+            break; # no need to wait longer, error is fatal
+          elif [[ ${REASON} == *CrashLoopBackOff* ]]; then
+            echo "Detected CrashLoopBackOff failure. "
+            echo "Application is unable to start, check the application startup logs"
+            break; # no need to wait longer, error is fatal
+          fi
+          sleep 5
+        done
+
+        APP_NAME=$(kubectl get pods --namespace ${CLUSTER_NAMESPACE} -o json | jq -r '[ .items[] | select(.spec.containers[]?.image=="'"${IMAGE_REPOSITORY}:${IMAGE_TAG}"'") | .metadata.labels.app] [1]')
+        echo -e "APP: ${APP_NAME}"
+        echo "DEPLOYED PODS:"
+        kubectl describe pods --selector app=${APP_NAME} --namespace ${CLUSTER_NAMESPACE}
+
+        if [ ! -z "${APP_NAME}" ]; then
+          APP_SERVICE=$(kubectl get services --namespace ${CLUSTER_NAMESPACE} -o json | jq -r ' .items[] | select (.spec.selector.app=="'"${APP_NAME}"'") | .metadata.name ')
+          echo -e "SERVICE: ${APP_SERVICE}"
+          echo "DEPLOYED SERVICES:"
+          kubectl describe services ${APP_SERVICE} --namespace ${CLUSTER_NAMESPACE}
+        fi
+
+        #echo "Application Logs"
+        #kubectl logs --selector app=${APP_NAME} --namespace ${CLUSTER_NAMESPACE}
+
+        echo ""
+        if [[ ! -z "$NOT_READY" ]]; then
+          echo ""
+          echo "=========================================================="
+          echo "DEPLOYMENT FAILED"
+          exit 1
+        fi
+
+        echo ""
+        echo "=========================================================="
+        echo "DEPLOYMENT SUCCEEDED"
+        if [ ! -z "${APP_SERVICE}" ]; then
+          echo ""
+          # check if a route resource exists in the this kubernetes cluster
+          if kubectl explain route > /dev/null 2>&1; then
+            # Assuming the kubernetes target cluster is an openshift cluster
+            # Check if a route exists for exposing the service ${APP_SERVICE}
+            if  kubectl get routes --namespace ${CLUSTER_NAMESPACE} -o json | jq --arg service "$APP_SERVICE" -e '.items[] | select(.spec.to.name==$service)'; then
+              echo "Existing route to expose service $APP_SERVICE"
+            else
+              # create OpenShift route
+        cat > test-route.json << EOF
+        {"apiVersion":"route.openshift.io/v1","kind":"Route","metadata":{"name":"${APP_SERVICE}"},"spec":{"to":{"kind":"Service","name":"${APP_SERVICE}"}}}
+        EOF
+              echo ""
+              cat test-route.json
+              kubectl apply -f test-route.json --validate=false --namespace ${CLUSTER_NAMESPACE}
+              kubectl get routes --namespace ${CLUSTER_NAMESPACE}
+            fi
+            echo "LOOKING for host in route exposing service $APP_SERVICE"
+            IP_ADDR=$(kubectl get routes --namespace ${CLUSTER_NAMESPACE} -o json | jq --arg service "$APP_SERVICE" -r '.items[] | select(.spec.to.name==$service) | .status.ingress[0].host')
+            PORT=80
+          else 
+            IP_ADDR=$(bx cs workers ${PIPELINE_KUBERNETES_CLUSTER_NAME} | grep normal | head -n 1 | awk '{ print $2 }')
+            PORT=$( kubectl get services --namespace ${CLUSTER_NAMESPACE} | grep ${APP_SERVICE} | sed 's/.*:\([0-9]*\).*/\1/g' )
+          fi
+          echo ""
+          export APP_URL=http://${IP_ADDR}:${PORT} # using 'export', the env var gets passed to next job in stage
+          echo "APP_URL=${APP_URL}" >> /artifacts/build.properties
+          echo -e "VIEW THE APPLICATION AT: ${APP_URL}"
+        fi
+    - name: health-check
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBMCLOUD_API_KEY
+          value: $(params.ibmcloud-api-key)
+        - name: API
+          value: $(params.ibmcloud-api)
+        - name: REGION
+          value: $(params.cluster-region)
+        - name: HOME
+          value: "/root"
+        - name: DEPLOYMENT_FILE
+          value: $(params.deployment-file)
+        - name: CLUSTER_NAMESPACE
+          value: $(params.cluster-namespace)
+        - name: PIPELINE_KUBERNETES_CLUSTER_NAME
+          value: $(params.cluster-name)
+        - name: ALLOW_CREATE_ROUTE
+          value: $(params.allow-create-route)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        source /artifacts/build.properties
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          env
+          cat /cd-config/toolchain.json
+          trap env EXIT
+          set -x
+        fi
+
+        IMAGE_TAG=$IMAGE_TAGS
+
+        ibmcloud login -a $API -r $REGION
+        $(ibmcloud ks cluster config --cluster "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --export)
+        if which oc > /dev/null && ibmcloud ks cluster get "${PIPELINE_KUBERNETES_CLUSTER_NAME}" --json | jq -e '.type=="openshift"' > /dev/null; then oc login -u apikey -p "${IBMCLOUD_API_KEY}" ; fi
+        while read line; do export $line; done < /artifacts/build.properties
+        cp /artifacts/build.properties .
+        # copy the script below into your app code repo (e.g. ./scripts/check_health.sh) and 'source' it from your pipeline job
+        #    source ./scripts/check_health.sh
+        # alternatively, you can source it from online script:
+        #    source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")
+        # ------------------
+        # source: https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh
+        # Check liveness and readiness probes to confirm application is healthy
+        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_health.sh")

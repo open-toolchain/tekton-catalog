@@ -1,0 +1,87 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: docker-check-task
+spec:
+  params:
+    - name: continuous-delivery-context-secret
+      description: name of the configmap containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: resource-group
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ''
+    - name: path-to-context
+      default: .
+    - name: path-to-dockerfile
+      default: .
+    - name: dockerfile
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    - name: properties-file
+      description: file containing properties out of containerize task
+      default: build.properties
+  workspaces:
+    - name: workspace
+      description: A workspace backing by a volume where the files (Dockerfile etc..) are expected to be
+      mountPath: /artifacts
+  # resources:
+  # TODO consider an optional git repository as the source of the image to build
+  # when cd tekton support will be to tekton pipeline v 0.10
+  #   - name: workspace
+  #     type: git
+  #     optional: true
+  steps:
+    - name: check-dockerfile
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: DOCKER_FILE
+          value: 'Dockerfile'
+        - name: DOCKER_ROOT
+          value: '/artifacts'
+        - name: HOME
+          value: "/root"
+        - name: PROPERTIES_FILE
+          value: $(params.properties-file)
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail;
+          export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+          fi
+
+          # View build properties
+          if [ -f /artifacts/$PROPERTIES_FILE ]; then
+            source /artifacts/$PROPERTIES_FILE
+          else
+            echo "${PROPERTIES_FILE} : not found"
+          fi
+
+          # Input env variables (can be received via a pipeline environment properties.file.
+          DOCKER_ROOT=${DOCKER_ROOT}/${APP_DIRECTORY}
+          echo "DOCKER_ROOT=${DOCKER_ROOT}"
+          echo "DOCKER_FILE=${DOCKER_FILE}"
+
+          # also run 'env' command to find all available env variables
+          # or learn more about the available environment variables at:
+          # https://cloud.ibm.com/docs/services/ContinuousDelivery/pipeline_deploy_var.html#deliverypipeline_environment
+
+          echo "=========================================================="
+          echo "Checking for Dockerfile at the repository root"
+          if [ -z "${DOCKER_ROOT}" ]; then DOCKER_ROOT=. ; fi
+          if [ -z "${DOCKER_FILE}" ]; then DOCKER_FILE=Dockerfile ; fi
+          if [ -f ${DOCKER_ROOT}/${DOCKER_FILE} ]; then
+              echo -e "Dockerfile found at: ${DOCKER_FILE}"
+          else
+              echo "Dockerfile not found at: ${DOCKER_FILE}"
+              exit 1
+          fi
+          echo "Linting Dockerfile"
+          npm install -g dockerlint
+          dockerlint -f ${DOCKER_ROOT}/${DOCKER_FILE}
