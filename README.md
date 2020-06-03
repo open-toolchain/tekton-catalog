@@ -16,12 +16,13 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
   | Folder/Category | Category alias |
   |--------|----------------|
+  | cloudfoundry | cf |
   | container-registry | icr |
   | devops-insights | doi |
   | git | git |
   | kubernetes-service | iks |
   | slack | slack |
-  | toolchain | otc |
+  | toolchain | toolchain |
 
   The task new names are listed in the following table:
 
@@ -53,6 +54,10 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   | kubernetes-service | iks-contextual-execution | workspace | cluster-configuration | A workspace that contain the kubectl cluster config to be used |
   
 # Tasks 
+
+## Cloud Foundry related tasks
+
+- **cf-deploy-cf-app**: this task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands. [Documentation is here](./cloudfoundry/README.md)
 
 ## Git related tasks
 

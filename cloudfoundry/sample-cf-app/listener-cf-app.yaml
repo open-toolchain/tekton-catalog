@@ -1,0 +1,73 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: sample-cf-app
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: cf-org
+    - name: cf-space
+    - name: cf-app
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: sample-cf-app-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: sample-cf-app-$(uid)
+      spec:
+        pipelineRef:
+          name: sample-cf-app
+        params:
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: cf-org
+            value: $(params.cf-org)
+          - name: cf-space
+            value: $(params.cf-space)
+          - name: cf-app
+            value: $(params.cf-app)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: sample-cf-app-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: sample-cf-app
+spec:
+  params:
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: sample-cf-app
+spec:
+  triggers:
+    - binding:
+        name: sample-cf-app
+      template:
+        name: sample-cf-app
