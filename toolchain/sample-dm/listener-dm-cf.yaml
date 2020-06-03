@@ -1,0 +1,71 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: toolchain-dm-cf
+spec:
+  params:
+    - name: cf-org
+    - name: cf-space
+    - name: cf-app
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: toolchain-dm-cf-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: toolchain-dm-cf-$(uid)
+      spec:
+        pipelineRef:
+          name: toolchain-dm-cf
+        params:
+          - name: cf-org
+            value: $(params.cf-org)
+          - name: cf-space
+            value: $(params.cf-space)
+          - name: cf-app
+            value: $(params.cf-app)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: toolchain-dm-cf-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: toolchain-dm-cf
+spec:
+  params:
+    - name: cf-org
+      value: $(params.cf-org)
+    - name: cf-space
+      value: $(params.cf-space)
+    - name: cf-app
+      value: $(params.cf-app)
+    - name: pipeline-debug
+      value: $(params.pipeline-debug)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: toolchain-dm-cf
+spec:
+  triggers:
+    - binding:
+        name: toolchain-dm-cf
+      template:
+        name: toolchain-dm-cf

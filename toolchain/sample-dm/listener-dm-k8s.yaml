@@ -1,0 +1,61 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: toolchain-dm-k8s
+spec:
+  params:
+    - name: cluster-name
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    # PVC definition like pre-tekton-0.10.1
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: toolchain-dm-k8s-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: toolchain-dm-k8s-$(uid)
+      spec:
+        pipelineRef:
+          name: toolchain-dm-k8s
+        params:
+          - name: cluster-name
+            value: $(params.cluster-name)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: toolchain-dm-k8s-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: toolchain-dm-k8s
+spec:
+  params:
+    - name: cluster-name
+      value: $(params.cluster-name)
+    - name: pipeline-debug
+      value: $(params.pipeline-debug)
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: toolchain-dm-k8s
+spec:
+  triggers:
+    - binding:
+        name: toolchain-dm-k8s
+      template:
+        name: toolchain-dm-k8s
