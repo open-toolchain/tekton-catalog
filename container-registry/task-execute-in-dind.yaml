@@ -246,7 +246,7 @@ spec:
           fi
 
           # Record task results
-          echo -n "${IMAGE_TAGS}" > $(results.image-tags.path)
+          echo -n "${IMAGE_TAG}" > $(results.image-tags.path)
           echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
 
           echo "Done."
