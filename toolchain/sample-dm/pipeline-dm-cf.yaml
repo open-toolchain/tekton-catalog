@@ -1,0 +1,54 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: toolchain-dm-cf
+spec:
+  params:
+    - name: cf-org
+    - name: cf-space
+    - name: cf-app
+    - name: pipeline-debug
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: deploy-cf-app-task
+      taskRef:
+        name: cf-deploy-app
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: cloud-foundry-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: cf-org
+          value: $(params.cf-org)
+        - name: cf-space
+          value: $(params.cf-space)
+        - name: cf-app
+          value: $(params.cf-app)
+        - name: cf-commands
+          value: |
+            # only dump list of cf apps
+            # ibmcloud cf apps
+            cf apps
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: source
+          workspace: pipeline-ws
+    - name: publish-deployable-task
+      taskRef:
+        name: toolchain-publish-deployable-mapping
+      params:
+        - name: deployable-type
+          value: "app"
+        - name: deployable-region-id
+          value: $(tasks.deploy-cf-app-task.results.region)
+        - name: deployable-guid
+          value: $(tasks.deploy-cf-app-task.results.cf-app-guid)
+        - name: deployable-cf-org-id
+          value: $(tasks.deploy-cf-app-task.results.cf-org-id)
+        - name: deployable-cf-space-id
+          value: $(tasks.deploy-cf-app-task.results.cf-space-id)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

@@ -1,0 +1,39 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: toolchain-dm-k8s
+spec:
+  params:
+    - name: cluster-name
+    - name: pipeline-debug
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: fetch-cluster-config-task
+      taskRef:
+        name: iks-fetch-config
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: kubernetes-service-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: cluster-name
+          value: $(params.cluster-name)
+      workspaces:
+        - name: cluster-configuration
+          workspace: pipeline-ws
+    - name: publish-deployable-task
+      taskRef:
+        name: toolchain-publish-deployable-mapping
+      params:
+        - name: deployable-type
+          value: "kubernetes_cluster"
+        - name: deployable-region-id
+          value: $(tasks.fetch-cluster-config-task.results.region)
+        - name: deployable-guid
+          value: $(tasks.fetch-cluster-config-task.results.cluster-id)
+        - name: deployable-rg-id
+          value: $(tasks.fetch-cluster-config-task.results.resource-group-id)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

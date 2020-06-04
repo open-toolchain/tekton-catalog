@@ -95,7 +95,7 @@ spec:
               trap env EXIT
               set -x
           fi
-          
+
           export TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           export TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           # Dynamically set message if message-script param is set

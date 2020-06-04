@@ -16,12 +16,13 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
   | Folder/Category | Category alias |
   |--------|----------------|
+  | cloudfoundry | cf |
   | container-registry | icr |
   | devops-insights | doi |
   | git | git |
   | kubernetes-service | iks |
   | slack | slack |
-  | toolchain | otc |
+  | toolchain | toolchain |
 
   The task new names are listed in the following table:
 
@@ -54,6 +55,10 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   
 # Tasks 
 
+## Cloud Foundry related tasks
+
+- **cf-deploy-app**: This task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands. [Documentation is here](./cloudfoundry/README.md)
+
 ## Git related tasks
 
 - **git-clone-repo**: This Task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo. [Documentation is here](./git/README.md)
@@ -63,7 +68,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 ## IBM Cloud Container Registry related tasks
 
 - **icr-containerize**: This task is building and pushing an image to [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image. [Documentation is here](./container-registry/README.md)
-- **icr-cr-build**: this task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image. [Documentation is here](./container-registry/README.md)
+- **icr-cr-build**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image. [Documentation is here](./container-registry/README.md)
 - **icr-execute-in-dind**: This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind, and push the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./container-registry/README.md)
 - **icr-execute-in-dind-cluster**: This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./container-registry/README.md)
 - **icr-check-va-scan**: This task is verifying that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and process the outcome of the scan. [Documentation is here](./container-registry/README.md)
@@ -79,6 +84,10 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 - **iks-fetch-config**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands. [Documentation is here](./kubernetes-service/README.md)
 - **iks-contextual-execution**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration. [Documentation is here](./kubernetes-service/README.md)
+
+## Open-Toolchain related tasks
+
+- **toolchain-publish-deployable-mapping**: This task creates or updates a toolchain deployable mapping for the toolchain [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./toolchain/README.md)
 
 ## Slack related tasks
 
