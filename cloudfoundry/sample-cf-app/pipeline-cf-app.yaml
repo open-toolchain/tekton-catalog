@@ -61,12 +61,12 @@ spec:
           value: |
             #!/bin/bash
             # Push app
-            if ! cf app "$CF_APP"; then  
+            if ! cf app "$CF_APP"; then
               cf push "$CF_APP"
             else
               OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
               rollback() {
-                set +e  
+                set +e
                 if cf app "$OLD_CF_APP"; then
                   cf logs "$CF_APP" --recent
                   cf delete "$CF_APP" -f

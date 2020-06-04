@@ -37,13 +37,13 @@ spec:
     - name: region
       description: Name of the region where Cloud Foundry commands were executed
     - name: cf-target-url
-      description:  Cloud Foundry API endpoint
+      description: Cloud Foundry API endpoint
     - name: cf-org-id
-      description:  Id of the Cloud Foundry organization
+      description: Id of the Cloud Foundry organization
     - name: cf-space-id
-      description:  Id of the Cloud Foundry space
+      description: Id of the Cloud Foundry space
     - name: cf-app-guid
-      description:  GUID of the Cloud Foundry application managed using this tasks
+      description: GUID of the Cloud Foundry application managed using this tasks
   workspaces:
     - name: source
       description: A workspace containing the source of the CF application to deploy
