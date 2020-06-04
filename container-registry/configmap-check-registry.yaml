@@ -2,15 +2,21 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: check-registry-script
+  name: check-registry-scripts
 data:
-  check_registry.sh: |
-    TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
-    TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
+  parse_image_url.sh: |
     ##########################################################################
     # Parse the image url to find information (region, namespace, image name and eventually tag)
     # as url of Image PipelineResource is the complete path to the image, including the registry
     # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
+    # Environment variables:
+    # - IMAGE_RESOURCE_URL (input) : can include a tag
+    # - IMAGE_URL (output)
+    # - REGISTRY_REGION (output)
+    # - REGISTRY_NAMESPACE (output)
+    # - IMAGE_NAME (output)
+    # - IMAGE_TAG (output)
+    ##########################################################################
     IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
     IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
     REGISTRY_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $1}')
@@ -44,7 +50,18 @@ data:
         echo "No IBM Cloud Container Registry region found for the registry url $REGISTRY_URL"
         exit 1
       fi
-    fi
+    fi      
+  check_registry.sh: |
+    ##########################################################################
+    # Environment variables:
+    # - IBMCLOUD_API (input)
+    # - IBMCLOUD_RESOURCE_GROUP (input)
+    # - REGISTRY_REGION (input)
+    # - REGISTRY_NAMESPACE (input)
+    ##########################################################################
+
+    TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+    TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
 
     # ibmcloud login
     ibmcloud config --check-version false

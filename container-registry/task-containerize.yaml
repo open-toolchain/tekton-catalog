@@ -105,6 +105,9 @@ spec:
             export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
+          # Parse the image url to find registry information
+          source /scripts/parse_image_url.sh
+
           # Ensure login to the container registry and namespace available
           source /scripts/check_registry.sh
 
@@ -130,7 +133,7 @@ spec:
         - mountPath: /steps
           name: steps-volume
         - mountPath: /scripts
-          name: check-registry-script
+          name: check-registry-scripts
     - name: build-image
       image: $(params.buildkit-image)
       workingDir: /artifacts
@@ -331,9 +334,11 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
-    - name: check-registry-script
+    - name: check-registry-scripts
       configMap:
-        name: check-registry-script
+        name: check-registry-scripts
         items:
           - key: check_registry.sh
             path: check_registry.sh
+          - key: parse_image_url.sh
+            path: parse_image_url.sh
