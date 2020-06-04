@@ -39,7 +39,7 @@ spec:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
-        name: containerize-$(uid)-pvc
+        name: cr-build-$(uid)-pvc
       spec:
         resources:
           requests:
@@ -50,7 +50,7 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: containerize-$(uid)
+        name: cr-build-$(uid)
       spec:
         pipelineRef:
           name: cr-build
@@ -70,7 +70,7 @@ spec:
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
-              claimName: containerize-$(uid)-pvc
+              claimName: cr-build-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
