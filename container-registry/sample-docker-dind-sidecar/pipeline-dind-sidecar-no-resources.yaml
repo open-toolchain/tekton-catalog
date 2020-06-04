@@ -55,7 +55,7 @@ spec:
         # - name: fail-on-scanned-issues
         #   value: 'false'
         - name: image-url
-          value: $(params.image-url)
+          value: $(tasks.build-and-push-docker.results.image-repository)
         - name: image-digest
           value: $(tasks.build-and-push-docker.results.image-digest)
       workspaces:

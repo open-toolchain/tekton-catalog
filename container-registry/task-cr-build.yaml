@@ -45,6 +45,8 @@ spec:
       description: Pipeline debug mode
       default: "0"
   results:
+    - name: image-repository
+      description: the repository for the built image
     - name: image-tags
       description: the tags for the built image
     - name: image-digest
@@ -231,6 +233,7 @@ spec:
           fi
 
           # Record task results
+          echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}" > $(results.image-repository.path)
           echo -n "${IMAGE_TAGS}" > $(results.image-tags.path)
           echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
       volumeMounts:
