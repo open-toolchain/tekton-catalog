@@ -74,7 +74,7 @@ spec:
         # - name: fail-on-scanned-issues
         #   value: 'false'
         - name: image-url
-          value: $(params.image-url)
+          value: $(tasks.pipeline-2-cr-build-task.results.image-repository)
         - name: image-digest
           value: $(tasks.pipeline-2-cr-build-task.results.image-digest)
         - name: pipeline-debug

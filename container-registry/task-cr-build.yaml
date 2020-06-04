@@ -45,6 +45,8 @@ spec:
       description: Pipeline debug mode
       default: "0"
   results:
+    - name: image-repository
+      description: the repository for the built image
     - name: image-tags
       description: the tags for the built image
     - name: image-digest
@@ -130,6 +132,9 @@ spec:
           else
             export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
+
+          # Parse the image url to find registry information
+          source /scripts/parse_image_url.sh
 
           # Ensure login to the container registry and namespace available
           source /scripts/check_registry.sh
@@ -228,6 +233,7 @@ spec:
           fi
 
           # Record task results
+          echo -n "${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}" > $(results.image-repository.path)
           echo -n "${IMAGE_TAGS}" > $(results.image-tags.path)
           echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
       volumeMounts:
@@ -236,7 +242,7 @@ spec:
         - mountPath: /steps
           name: steps-volume
         - mountPath: /scripts
-          name: check-registry-script
+          name: check-registry-scripts
   volumes:
     - name: steps-volume
       emptyDir: {}
@@ -246,9 +252,11 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
-    - name: check-registry-script
+    - name: check-registry-scripts
       configMap:
-        name: check-registry-script
+        name: check-registry-scripts
         items:
           - key: check_registry.sh
             path: check_registry.sh
+          - key: parse_image_url.sh
+            path: parse_image_url.sh
