@@ -226,13 +226,6 @@ spec:
             ibmcloud cr image-tag $(head --lines=1 /steps/tags.lst) $tag
           done
 
-          # Workaround to reference the latest ibmcloud cr plugin
-          if ibmcloud cr image-digests; then
-            echo "ibmcloud cr plugin has an appropriate version containing image-digests command"
-          else
-            ibmcloud plugin update container-registry --force
-          fi
-
           IMAGE_TAG=$(head --lines=1 /steps/tags.lst |  awk -F: '{print $2}')
           echo "**"
           echo "** ibmcloud cr image-digests --restrict ${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
