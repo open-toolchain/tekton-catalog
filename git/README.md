@@ -11,12 +11,12 @@
 
 ### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resource to be defined:
+  The task may rely on the following kubernetes resources to be defined:
 
-* **Secret cd-secret (optional)**
+* **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (and `Git Repos and Issue Tracking` service if used)
+  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and `Git Repos and Issue Tracking` service if used). Note: secret name and secret key can be configured using Task's params.
 
   If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
 
@@ -34,7 +34,8 @@
 * **directory-name**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
 * **properties-file**: (optional) name of the properties file that will be created as an additional outcome of this task in the workspace `workspace`. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
-* **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
+* **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secret (default to `cd-secret`)
+* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
 * **git-credentials-json-file**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to the workspace `workspace` backed by a volume). Default to '' meaning no output of this information.
 
 ### Workspaces
@@ -55,12 +56,12 @@ The output of this task is the repository cloned into the directory on the works
 
 ### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resource to be defined:
+  The task may rely on the following kubernetes resources to be defined:
 
-* **Secret cd-secret (optional)**
+* **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (and `Git Repos and Issue Tracking` service if used)
+  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and `Git Repos and Issue Tracking` service if used). Note: secret name and secret key can be configured using Task's params.
 
   If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
 
@@ -69,7 +70,7 @@ The output of this task is the repository cloned into the directory on the works
 ### Parameters
 
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
-* **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
+* **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secret (default to `cd-secret`)
 * **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
 * **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
 * **repository**: the git repository url that the toolchain is integrating

@@ -27,7 +27,7 @@
 *  **cf-app**: Name of the CF application to be managed. Accessible as `${CF_APP}` in the cf commands snippet.
 *  **cf-commands**: (Optional) The snippet with ibmcloud cf command(s) to run. Default to `ibmcloud cf push "${CF_APP}"`
 *  **ibmcloud-api**: (Optional) the ibmcloud api. Default to https://cloud.ibm.com
-*  **continuous-delivery-context-secret**: (Optional) Name of the configmap containing the continuous delivery pipeline context secrets. Default to `secure-properties`
+*  **continuous-delivery-context-secret**: (Optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 *  **cloud-foundry-apikey-secret-key**: field in the secret that contains the api key used to connect to cloud foundry. Default to `cf-apikey`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
