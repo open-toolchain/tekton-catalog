@@ -19,8 +19,6 @@ spec:
       description: The current commit id that was cloned
     - name: git-user
       description: The auth user that cloned the repository
-    - name: git-token
-      description: The auth token that cloned the repository
   workspaces:
     - name: workspace
       mountPath: /artifacts
@@ -72,4 +70,4 @@ spec:
           echo "params.git-branch: $(params.git-branch)"
           echo "params.git-commit: $(params.git-commit)"
           echo "params.git-user: $(params.git-user)"
-          echo "params.git-token: ***"
+

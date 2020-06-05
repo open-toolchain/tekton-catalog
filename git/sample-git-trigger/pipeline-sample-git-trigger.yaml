@@ -80,5 +80,3 @@ spec:
           value: $(tasks.pipeline-git-event-clone-task.results.git-commit)
         - name: git-user
           value: $(tasks.pipeline-git-event-clone-task.results.git-user)
-        - name: git-token
-          value: $(tasks.pipeline-git-event-clone-task.results.git-token)

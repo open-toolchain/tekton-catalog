@@ -47,7 +47,6 @@
 * **git-branch**: The active branch for the repository
 * **git-commit**: The current commit id that was cloned
 * **git-user**: The auth user that cloned the repository
-* **git-token**: The auth token that cloned the repository
 
 ### Outcome
 The output of this task is the repository cloned into the directory on the workspace `workspace`.
