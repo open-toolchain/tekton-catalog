@@ -71,8 +71,6 @@ spec:
       description: The current commit id that was cloned
     - name: git-user
       description: The auth user that cloned the repository
-    - name: git-token
-      description: The auth token that cloned the repository
   workspaces:
     - name: output
       description: The git repo will be cloned onto the volume backing this workspace
@@ -350,7 +348,6 @@ spec:
           echo -n "${BRANCH}" > $(results.git-branch.path)
           echo -n "${GIT_COMMIT}" > $(results.git-commit.path)
           echo -n "${GIT_AUTH_USER}" > $(results.git-user.path)
-          echo -n "${GIT_TOKEN}" > $(results.git-token.path)
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
