@@ -16,18 +16,21 @@
 
 ### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resources to be defined:
+  The task may rely on the following kubernetes resources to be defined:
 
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
+  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service (secret name and secret key can be configured using Task's params).
 
   See this [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
 ### Parameters
 
-* **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
+* **image-url** : (optional) the url of the image to build required if no image pipeline resource provided or no registry region, namespace and image name parameters are provided to this task.
+* **registry-region**: (optional) container registry region id. required if no image-url or no image pipeline resources provided.
+* **registry-namespace**: (optional) container registry namespace. required if no image-url or no image pipeline resources provided.
+* **image-name**: (optional) image name. required if no image-url or no image pipeline resources provided.
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **buildkit-image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
@@ -35,9 +38,12 @@
 * **additional-tags-script**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
+*  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `cd-secret`
+*  **container-registry-apikey-secret-key**: field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `API_KEY`
 
 ### Results
 
+* **image-repository**: the repository for the built image
 * **image-tags**: the tags for the built image
 * **image-digest**: the image digest (sha-256 hash) for the built image
 
@@ -55,27 +61,33 @@
 
 ### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resources to be defined:
+  The task may rely on the following kubernetes resources to be defined:
 
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
+  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service (secret name and secret key can be configured using Task's params).
 
   See this [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
 ### Parameters
 
-* **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
+* **image-url** : (optional) the url of the image to build required if no image pipeline resource provided or no registry region, namespace and image name parameters are provided to this task.
+* **registry-region**: (optional) container registry region id. required if no image-url or no image pipeline resources provided.
+* **registry-namespace**: (optional) container registry namespace. required if no image-url or no image pipeline resources provided.
+* **image-name**: (optional) image name. required if no image-url or no image pipeline resources provided.
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **additional-tags**: (optional) comma-separated list of tags for the built image
 * **additional-tags-script**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
+*  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `cd-secret`
+*  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `API_KEY`
 
 ### Results
 
+* **image-repository**: the repository for the built image
 * **image-tags**: the tags for the built image
 * **image-digest**: the image digest (sha-256 hash) for the built image
 
@@ -98,12 +110,12 @@ and is available only during the task's lifespan.
 
 #### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resources to be defined:
+  The task may rely on the following kubernetes resources to be defined:
 
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
+  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service (secret name and secret key can be configured using Task's params).
 
   See this [sample TriggerTemplate](./sample-docker-dind-sidecar/listener-docker-in-docker.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
@@ -122,9 +134,12 @@ and is available only during the task's lifespan.
   docker inspect ${IMAGE_URL}:${IMAGE_TAG}
   docker push ${IMAGE_URL}:${IMAGE_TAG}
   ```
+*  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `cd-secret`
+*  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `API_KEY`
 
 ### Results
 
+* **image-repository**: the repository for the built image
 * **image-tags**: the tags for the built image
 * **image-digest**: the image digest (sha-256 hash) for the built image
 
@@ -143,12 +158,12 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 #### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resources to be defined:
+  The task may rely on the following kubernetes resources to be defined:
 
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
+  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service (secret name and secret key can be configured using Task's params).
 
   See this [sample TriggerTemplate](./sample-docker-dind-cluster/listener-docker-dind-cluster.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
@@ -171,9 +186,12 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
   docker inspect ${IMAGE_URL}:${IMAGE_TAG}
   docker push ${IMAGE_URL}:${IMAGE_TAG}
   ```
+*  **continuous-delivery-context-secret**: (Optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `cd-secret`
+*  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `API_KEY`
 
 ### Results
 
+* **image-repository**: the repository for the built image
 * **image-tags**: the tags for the built image
 * **image-digest**: the image digest (sha-256 hash) for the built image
 
@@ -195,12 +213,12 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 ### Context - ConfigMap/Secret
 
-  The task expects the following kubernetes resources to be defined:
+  The task may rely on the following kubernetes resources to be defined:
 
 * **Secret cd-secret**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
+  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service (secret name and secret key can be configured using Task's params).
 
   See this [sample TriggerTemplate](./sample/listener-containerize.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
@@ -214,6 +232,8 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 * **scan-report-file**: (optional) filename for the scan report (json format) of the given image. It will be copied in the workspace
 * **fail-on-scanned-issues**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the image scan result (default to 'true')
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
+*  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `cd-secret`
+*  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `API_KEY`
 
 ### Results
 

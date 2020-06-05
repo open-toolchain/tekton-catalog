@@ -9,7 +9,7 @@ spec:
       description: the ibmcloud api
       default: https://cloud.ibm.com
     - name: continuous-delivery-context-secret
-      description: name of the configmap containing the continuous delivery pipeline context secrets
+      description: Name of the secret containing the continuous delivery pipeline context secrets
       default: cd-secret
     - name: container-registry-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud container registry
@@ -18,7 +18,19 @@ spec:
       description: target resource group (name or id) for the ibmcloud login operation
       default: ""
     - name: image-url
-      description: "url of the image to build - required if no image pipeline resource provided to this task"
+      description: |
+        url of the image to build
+        required if no image pipeline resource provided or no registry region, namespace and image name parameters
+        are provided to this task
+      default: ""
+    - name: registry-region
+      description: container registry region id. required if no image-url or no image pipeline resources provided
+      default: ""
+    - name: registry-namespace
+      description: container registry namespace. required if no image-url or no image pipeline resources provided
+      default: ""
+    - name: image-name
+      description: image name. required if no image-url or no image pipeline resources provided
       default: ""
     - name: path-to-context
       default: .
@@ -133,11 +145,36 @@ spec:
             export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
-          # Parse the image url to find registry information
-          source /scripts/parse_image_url.sh
+          if [ "$IMAGE_RESOURCE_URL" ]; then
+            # Parse the image url to find registry information
+            source /scripts/parse_image_url.sh
+          else
+            # export the expected environment variables based on the required registry parameters
+            export REGISTRY_REGION=$(params.registry-region)
+            if [ -z "$REGISTRY_REGION" ]; then
+              echo "No registry region provided"
+              exit 1
+            fi
+            export REGISTRY_NAMESPACE=$(params.registry-namespace)
+            if [ -z "$REGISTRY_NAMESPACE" ]; then
+              echo "No registry namespace provided"
+              exit 1
+            fi
+          fi
 
-          # Ensure login to the container registry and namespace available
+          # Login to the container registry and ensure namespace is available
           source /scripts/check_registry.sh
+
+          if [ -z "$IMAGE_RESOURCE_URL" ]; then
+            export IMAGE_NAME=$(params.image-name)
+            if [ -z "$IMAGE_NAME" ]; then
+              echo "No image name provided"
+              exit 1
+            fi
+            # export the expected environment variables now that the container registry is logged in
+            export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+            export IMAGE_URL="${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
+          fi
 
           # Manage multiple tags for an image
           # Add dynamically computed tags
