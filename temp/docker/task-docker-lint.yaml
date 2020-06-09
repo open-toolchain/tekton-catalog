@@ -12,6 +12,15 @@ spec:
       default: "Dockerfile"
     - name: path-to-hadolint-config
       default: ""
+    - name: hadolint-ignored-rules
+      default: ""
+    - name: trusted-registries
+      default: ""
+    - name: fail-on-lint-errors
+      description: |
+        flag (`true` | `false`) to indicate if the task should fail or continue
+        if issues are found in the Dockerfile lint
+      default: "true"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -28,7 +37,7 @@ spec:
           value: $(params.dockerfile)
         - name: DOCKER_FILE_PATH
           value: $(params.path-to-dockerfile)
-        - name: LINTER_CONFIG
+        - name: HADOLINT_CONFIG
           value: $(params.path-to-hadolint-config)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
@@ -47,10 +56,17 @@ spec:
             echo "Dockerfile not found at: ${DOCKER_FILE_PATH}/${DOCKER_FILE}"
             exit 1
         fi
+
         echo "Linting Dockerfile"
         hadolint --version
-        if [ -z "$LINTER_CONFIG" ]; then
-          hadolint ${DOCKER_FILE_PATH}/${DOCKER_FILE}
+        if [ "$HADOLINT_CONFIG" ]; then
+          HADOLINT_CONFIG="--config $HADOLINT_CONFIG"
+        fi
+
+        if hadolint ${HADOLINT_CONFIG} ${DOCKER_FILE_PATH}/${DOCKER_FILE}; then
         else
-          hadolint --config ${LINTER_CONFIG} ${DOCKER_FILE_PATH}/${DOCKER_FILE}
+          # Failures in the lint
+          if [ "$(params.fail-on-lint-errors)" == "true" ]; then
+            exit 1;
+          fi
         fi
