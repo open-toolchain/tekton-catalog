@@ -39,6 +39,10 @@ spec:
           value: $(params.path-to-dockerfile)
         - name: HADOLINT_CONFIG
           value: $(params.path-to-hadolint-config)
+        - name: HADOLINT_IGNORED_RULES
+          value: $(params.hadolint-ignored-rules)
+        - name: TRUSTED_REGISTRIES
+          value: $(params.trusted-registries)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
       script: |
@@ -46,6 +50,7 @@ spec:
         if [ $PIPELINE_DEBUG == 1 ]; then
           pwd
           env
+          hadolint --version
           trap env EXIT
           set -x
         fi
@@ -58,12 +63,22 @@ spec:
         fi
 
         echo "Linting Dockerfile"
-        hadolint --version
+
         if [ "$HADOLINT_CONFIG" ]; then
           HADOLINT_CONFIG="--config $HADOLINT_CONFIG"
         fi
 
-        if hadolint ${HADOLINT_CONFIG} ${DOCKER_FILE_PATH}/${DOCKER_FILE}; then
+        if [ "$HADOLINT_IGNORED_RULES" ]; then
+          HADOLINT_IGNORED_RULES=$(echo $HADOLINT_IGNORED_RULES | sed "s/,/ --ignore /g")
+          HADOLINT_IGNORED_RULES="--ignore $HADOLINT_IGNORED_RULES"
+        fi
+
+        if [ "$TRUSTED_REGISTRIES" ]; then
+          TRUSTED_REGISTRIES=$(echo $TRUSTED_REGISTRIES | sed "s/,/ --trusted-registry /g")
+          TRUSTED_REGISTRIES="--trusted-registry $TRUSTED_REGISTRIES"
+        fi
+
+        if hadolint ${HADOLINT_CONFIG} ${HADOLINT_IGNORED_RULES} ${TRUSTED_REGISTRIES} ${DOCKER_FILE_PATH}/${DOCKER_FILE}; then
           echo "No lint errors found"
         else
           # Failures in the lint
