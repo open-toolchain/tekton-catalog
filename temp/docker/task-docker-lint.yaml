@@ -64,6 +64,7 @@ spec:
         fi
 
         if hadolint ${HADOLINT_CONFIG} ${DOCKER_FILE_PATH}/${DOCKER_FILE}; then
+          echo "No lint errors found"
         else
           # Failures in the lint
           if [ "$(params.fail-on-lint-errors)" == "true" ]; then
