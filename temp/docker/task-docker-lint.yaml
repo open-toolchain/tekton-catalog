@@ -12,6 +12,9 @@ spec:
       default: "Dockerfile"
     - name: path-to-hadolint-config
       default: ""
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
   workspaces:
     - name: workspace
       description: A workspace where the Dockerfile is expected to be
@@ -27,10 +30,10 @@ spec:
           value: $(params.path-to-dockerfile)
         - name: LINTER_CONFIG
           value: $(params.path-to-hadolint-config)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
       script: |
         #!/bin/sh
-        set -e
-
         if [ $PIPELINE_DEBUG == 1 ]; then
           pwd
           env
