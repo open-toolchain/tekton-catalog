@@ -1,0 +1,53 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: docker-lint
+spec:
+  params:
+    - name: path-to-dockerfile
+      default: .
+    - name: dockerfile
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    - name: path-to-hadolint-config
+      default: ""
+  workspaces:
+    - name: workspace
+      description: A workspace where the Dockerfile is expected to be
+      mountPath: /artifacts
+  steps:
+    - name: check-dockerfile
+      image: hadolint/hadolint:v1.18.0-alpine
+      workingDir: /artifacts
+      env:
+        - name: DOCKER_FILE
+          value: $(params.dockerfile)
+        - name: DOCKER_FILE_PATH
+          value: $(params.path-to-dockerfile)
+        - name: LINTER_CONFIG
+          value: $(params.path-to-hadolint-config)
+      script: |
+        #!/bin/sh
+        set -e
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
+
+        if [ -f ${DOCKER_FILE_PATH}/${DOCKER_FILE} ]; then
+            echo -e "Dockerfile found at: ${DOCKER_FILE_PATH}/${DOCKER_FILE}"
+        else
+            echo "Dockerfile not found at: ${DOCKER_FILE_PATH}/${DOCKER_FILE}"
+            exit 1
+        fi
+        echo "Linting Dockerfile"
+        hadolint --version
+        if [ -z "$LINTER_CONFIG" ]; then
+          hadolint ${DOCKER_FILE_PATH}/${DOCKER_FILE}
+        else
+          hadolint --config ${LINTER_CONFIG} ${DOCKER_FILE_PATH}/${DOCKER_FILE}
+        fi
