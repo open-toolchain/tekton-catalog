@@ -28,7 +28,11 @@ spec:
       default: ""
     - name: shuttle-properties-file
       default: ""
+    - name: setup-script
+      default: ""
     - name: script
+      default: ""
+    - name: post-execution-script
       default: ""
     - name: pipeline-debug
       default: "0"
@@ -118,14 +122,17 @@ spec:
 
         export PIPELINE_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
 
-        # SETUP END
-
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
           source $SHUTTLE_PROPERTIES_FILE
           export $(cut -d= -f1 SHUTTLE_PROPERTIES_FILE)
         fi
 
+        $(params.setup-script)
+
+        # DO THE WORK
         $(params.script)
+
+        $(params.post-execution-script)
 
         # Record task results
         echo -n "$(cat /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json | jq -r '.name')" > $(results.cluster-name.path)
