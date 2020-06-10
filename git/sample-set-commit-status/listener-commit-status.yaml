@@ -23,7 +23,7 @@ spec:
     - apiVersion: v1
       kind: Secret
       metadata:
-        name: cd-secret
+        name: secure-properties
       type: Opaque
       stringData:
         API_KEY: $(params.apikey)

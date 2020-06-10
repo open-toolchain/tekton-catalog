@@ -20,7 +20,7 @@
 
   The task expects the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
   * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
@@ -53,7 +53,7 @@
 
   The task expects the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
   * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
@@ -90,7 +90,7 @@ and is available only during the task's lifespan.
 
   The task expects the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
   * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
@@ -129,7 +129,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
   The task expects the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
   * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.
@@ -174,7 +174,7 @@ docker push ${IMAGE_URL}:${IMAGE_TAG}
 
   The task expects the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
   * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the IBM Cloud Container registry service.

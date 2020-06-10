@@ -17,7 +17,7 @@
 
   The task expects the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
   * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
@@ -50,7 +50,7 @@
 
   The task expects the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
   * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
