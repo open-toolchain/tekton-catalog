@@ -94,6 +94,7 @@ spec:
         if [ $PIPELINE_DEBUG == 1 ]; then
             pwd
             env
+            ls -l
             trap env EXIT
             set -x
         fi
@@ -146,6 +147,9 @@ spec:
           name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
+        - mountPath: /artifacts/_toolchain.json
+          subPath: toolchain.json
+          name: cd-config-volume
   volumes:
     - name: steps-volume
       emptyDir: {}
