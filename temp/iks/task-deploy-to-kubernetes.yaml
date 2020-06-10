@@ -92,12 +92,9 @@ spec:
         set -e -o pipefail
 
         if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
             env
+            pwd
             ls -l
-            echo "=== cat /cd-config/toolchain.json ==="
-            cat /cd-config/toolchain.json
-            echo ""
             echo "=== cat /artifacts/_toolchain.json ==="
             cat /artifacts/_toolchain.json
             echo ""
