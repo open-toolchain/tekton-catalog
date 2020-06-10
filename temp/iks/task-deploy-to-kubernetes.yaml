@@ -97,8 +97,10 @@ spec:
             ls -l
             echo "=== cat /cd-config/toolchain.json ==="
             cat /cd-config/toolchain.json
+            echo ""
             echo "=== cat /artifacts/_toolchain.json ==="
             cat /artifacts/_toolchain.json
+            echo ""
             echo "======================================"
             trap env EXIT
             set -x
