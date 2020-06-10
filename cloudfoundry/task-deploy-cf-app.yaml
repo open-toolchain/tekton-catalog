@@ -16,11 +16,17 @@ spec:
       description: Name of space to be targeted
     - name: cf-app
       description: Name of the CF application to be managed
+    - name: setup-script
+      default: ""
     - name: cf-commands
       description: The ibmcloud cf command(s) to run.
       default: |
         # Push app
         ibmcloud cf push "${CF_APP}"
+    - name: post-execution-script
+      default: ""
+    - name: shuttle-properties-file
+      default: ""
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
@@ -63,12 +69,30 @@ spec:
           value: $(params.region)
         - name: IBM_CLOUD_API
           value: $(params.ibmcloud-api)
-        - name: IBM_CLOUD_API_KEY
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: PIPELINE_STAGE_EXECUTION_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: PIPELINE_TRIGGERING_USER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+        - name: PIPELINE_BLUEMIX_API_KEY
           valueFrom:
             secretKeyRef:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.cloud-foundry-apikey-secret-key)
               optional: true
+        - name: SHUTTLE_PROPERTIES_FILE
+          value: $(params.shuttle-properties-file)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
         - name: HOME
@@ -77,22 +101,27 @@ spec:
         #!/bin/bash
         set -e -o pipefail
         if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
             env
+            pwd
+            ls -l
+            echo "=== cat /artifacts/_toolchain.json ==="
+            cat /artifacts/_toolchain.json
+            echo ""
+            echo "======================================"
             trap env EXIT
             set -x
         fi
 
-        TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
-        TOOLCHAIN_REGION_ID=$(jq -r '.region_id' /cd-config/toolchain.json)
-        TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
+        export PIPELINE_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /artifacts/_toolchain.json)
+        TOOLCHAIN_REGION_ID=$(jq -r '.region_id' /artifacts/_toolchain.json)
+        TOOLCHAIN_REGION=$(jq -r '.region_id' /artifacts/_toolchain.json | awk -F: '{print $3}')
 
         if [ -z "$CF_REGION" ]; then
           export CF_REGION="$TOOLCHAIN_REGION"
         fi
 
         ibmcloud config --check-version false
-        ibmcloud login -a $(params.ibmcloud-api) -r $CF_REGION --apikey $IBM_CLOUD_API_KEY
+        ibmcloud login -a $(params.ibmcloud-api) -r $CF_REGION --apikey $PIPELINE_BLUEMIX_API_KEY
         ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
 
         # Provide additional deployment properties related to CF
@@ -108,11 +137,19 @@ spec:
         # Remove the cf-post script content as this script is only relevant for classic pipeline
         echo "" > /opt/IBM/pipeline/bin/cf-post
 
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          source $SHUTTLE_PROPERTIES_FILE
+          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
+        fi
+        $(params.setup-script)
+
         # Perform the cf-commands
         $(params.cf-commands)
 
         # Find CF_APP guid
         export CF_APP_GUID=$(ibmcloud cf app "$CF_APP" --guid | tail -n1)
+
+        $(params.post-execution-script)
 
         # Record task results
         echo -n "$CF_REGION" > $(results.region.path)
@@ -124,6 +161,9 @@ spec:
         - name: steps-volume
           mountPath: /steps
         - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /artifacts/_toolchain.json
+          subPath: toolchain.json
           name: cd-config-volume
   volumes:
     - name: steps-volume
