@@ -125,7 +125,7 @@ spec:
 
         if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
           source $SHUTTLE_PROPERTIES_FILE
-          export $(cut -d= -f1 SHUTTLE_PROPERTIES_FILE)
+          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
 
         $(params.setup-script)
