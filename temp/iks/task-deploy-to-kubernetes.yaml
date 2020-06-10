@@ -95,6 +95,11 @@ spec:
             pwd
             env
             ls -l
+            echo "=== cat /cd-config/toolchain.json ==="
+            cat /cd-config/toolchain.json
+            echo "=== cat /artifacts/_toolchain.json ==="
+            cat /artifacts/_toolchain.json
+            echo "======================================"
             trap env EXIT
             set -x
         fi
