@@ -34,7 +34,7 @@ spec:
       description: A workspace backing by a volume
       mountPath: /artifacts
   steps:
-    - name: run-unit-tests
+    - name: run-tests
       image: $(params.tests-image)
       workingDir: /artifacts
       env:
