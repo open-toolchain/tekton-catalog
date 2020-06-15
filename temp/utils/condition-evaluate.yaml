@@ -1,0 +1,22 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Condition
+metadata:
+  name: utils-evaluate
+spec:
+  params:
+    - name: value
+    - name: condition
+      default: '='
+    - name: expected
+      default: 'true'
+  check:
+    image: alpine
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+        if [ "$(params.value)" $(params.condition) "$(params.expected)" ]; then
+          exit 0
+        else
+          exit 1
+        fi
