@@ -3,7 +3,7 @@
 Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 
 **If you want `v1alpha1` resources, you need to reference the [`tekton_pipeline0.10.1`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1) tag (or
-[`tekton_pipeline0.10.1_workspace`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1_workspace) tag to have `v1alpha1` resources using workspaces)**
+[`tekton_pipeline0.10.1_workspace`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1_workspace) tag to have `v1alpha1` resources using workspaces). The master branch will be synced with tkn_v1beta1 on 2020, 17th June.**
 
 **Note**: 
 - These tasks are usable with Tekton Beta Worker Agent (Tekon definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
