@@ -6,9 +6,9 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 [`tekton_pipeline0.10.1_workspace`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1_workspace) tag to have `v1alpha1` resources using workspaces).**
 
 **Note**: 
-- These tasks are usable with Tekton Beta Worker Agent (Tekon definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
+- These tasks are usable with Continuous Delivery Tekton Pipeline Worker Agent (Tekton definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
 
-## Breaking Changes when moving from tekton_pipeline0.10.1
+## Breaking Changes when moving from tag "tekton_pipeline0.10.1"
 
 - These tasks are using **kebab-case style for EVERY parameters names**. So parameter `pathToContext` (in previous versions of the tasks) has been renamed as `path-to-context`, parameter `clusterName` has been renamed to `cluster-name` and so on...
 - `communication` folder has been renamed to `slack` folder
@@ -61,7 +61,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 ## Git related tasks
 
-- **git-clone-repo**: This Task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo. [Documentation is here](./git/README.md)
+- **git-clone-repo**: This task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo. [Documentation is here](./git/README.md)
 - **git-set-commit-status**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using). [Documentation is here](./git/README.md)
 
 
@@ -88,7 +88,8 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 ## Open-Toolchain related tasks
 
 - **toolchain-publish-deployable-mapping**: This task creates or updates a toolchain deployable mapping for the toolchain [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./toolchain/README.md)
+- **toolchain-extract-value**: This task extracts values from the desired config map with a given jq expression. [Documentation is here](./toolchain/README.md)
 
 ## Slack related tasks
 
-- **slack-post-message**: This Task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack). [Documentation is here](./slack/README.md)
+- **slack-post-message**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack). [Documentation is here](./slack/README.md)
