@@ -1,5 +1,5 @@
 # Container-Registry Build Task example usage
-The `sample-cr-build` sub-directory contains an `cr-build` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `cr-build-task` and `vulnerability-advisor-task`.
+The `sample-cr-build` sub-directory contains an `cr-build` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-cr-build` and `icr-check-va-scan`.
 
 It also contains a `cr-build-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information.
 
@@ -15,7 +15,7 @@ It also contains a `cr-build-no-resources` EventListener definition which is the
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
+   - for the `git-clone-repo` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample-cr-build` paths)
 
    ![Tekton pipeline definitions](./images/container-registry-sample-cr-build-tekton-pipeline-definitions.png)
@@ -24,7 +24,7 @@ It also contains a `cr-build-no-resources` EventListener definition which is the
 
    - `apikey` to provide an API key used for the ibmcloud login/access
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
-   - `imageUrl` to indicate the URL of the image to push to the IBM Cloud Container Registry
+   - `image-url` to indicate the URL of the image to push to the IBM Cloud Container Registry
 
    ![Tekton pipeline environment properties](./images/container-registry-sample-cr-build-tekton-pipeline-environment-properties.png)
 

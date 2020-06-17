@@ -22,23 +22,26 @@ Create a [Slack Webhook](https://api.slack.com/messaging/webhooks).
 Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack) to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
 ## Install the Task
 - Add a github integration in your Toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
-- Add that github integration to the Definitions tab of your Continuous Delivery Tekton pipeline, with the Path set to `communication`.
+- Add that github integration to the Definitions tab of your Continuous Delivery Tekton pipeline, with the Path set to `slack`.
 
 ### Parameters
 
-* **task-pvc**: the output pvc.
 * **domain**: (optional) the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
 * **channel**: (optional) the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-* **messageFormat**: (optional) the format of the message. Value: text(default) or JSON.
-* **messageScript**: (optional) Shell script that provides messsage content.
+* **message-format**: (optional) the format of the message. Value: text(default) or JSON.
+* **message-script**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
-* **exitOnError**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
+* **exit-on-error**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
+
+## Workspaces
+
+* **workspace**: A workspace that contain data useful for the script/slack message resolution. Should be marked as optional when Tekton will permit it.
 
 ## Outputs
 None.
 
 ## Usage
-The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the `post-slack` task.
+The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the `slack-post-message` task.
 
 1) Create or update a Toolchain so it includes:
    - a Slack integration
@@ -47,7 +50,7 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
    ![Toolchain overview](./sample/sample-toolchain-overview.png)
 
-2) Add the definitions of this task and the sample (`communication` and `communication/sample` paths)
+2) Add the definitions of this task and the sample (`slack` and `slack/sample` paths)
 
    ![Tekton pipeline definitions](./sample/sample-tekton-pipeline-definitions.png)
 
@@ -55,8 +58,8 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
    - `domain` (optional) the Slack domain to send the message to.
    - `channel` (optional) the channel to post to (overrides the dafault channel as set in the Slack webhook).
-   - `messageFormat` (optional) the format of the message (text or JSON).
-   - `messageScript` (optional) Shell script that provides messsage content.
+   - `message-format` (optional) the format of the message (text or JSON).
+   - `message-script` (optional) Shell script that provides messsage content.
    - `message` (optional) the message to post to Slack.
 
 **Note:** when using JSON format, the message is posted as-is to Slack. 
@@ -80,9 +83,9 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
 8) Optionnal: Create a message using snippet 
 
-   a) Define the snippet in the `messageScript` environment property of the pipeline
+   a) Define the snippet in the `message-script` environment property of the pipeline
 
-       messageScript: `echo 'Message sent from PipelineRun' ${PIPELINE_RUN_NAME}; echo 'uid:' ${PIPELINE_RUN_ID}; echo 'buildNumber:' ${BUILD_NUMBER};`
+       message-script: `echo 'Message sent from PipelineRun' ${PIPELINE_RUN_NAME}; echo 'uid:' ${PIPELINE_RUN_ID}; echo 'buildNumber:' ${BUILD_NUMBER};`
 
       Note: this could also be done in the trigger-template or pipeline definition
 

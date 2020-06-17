@@ -1,0 +1,173 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: toolchain-publish-deployable-mapping
+spec:
+  params:
+    - name: deployable-type
+      description: |
+        type of the deployable. Can be either:
+        - `app` for a CF application
+        or
+        - `kubernetes_cluster` for K8S deployment
+    - name: deployable-region-id
+      description: |
+       IBM Cloud Region where the deployable is located.
+       A fully qualified id is expected (such as ibm:yp:us-south)
+       If not fully qualified, the ibmcloud production prefix is appended (ie 'ibm:yp:')
+    - name: deployable-guid
+      description: GUID of the deployable (either cluster guid or cf app guid)
+    - name: deployable-cf-org-id
+      description: CF organization id (only required when deployable-type is `app`)
+      default: ""
+    - name: deployable-cf-space-id
+      description: CF space id (only required when deployable-type is `app`)
+      default: ""
+    - name: deployable-rg-id
+      description: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
+      default: ""
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: Name of the secret containing the continuous delivery pipeline context secrets
+      default: "secure-properties"
+    - name: toolchain-apikey-secret-key
+      description: field in the secret that contains the api key used to access toolchain and DOI instance
+      default: "toolchain-apikey"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  steps:
+    - name: publish-deployable-mapping
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: DEPLOYABLE_TYPE
+          value: $(params.deployable-type)
+        - name: DEPLOYABLE_GUID
+          value: $(params.deployable-guid)
+        - name: REGION_ID
+          value: $(params.deployable-region-id)
+        - name: RESOURCE_GROUP_ID
+          value: $(params.deployable-rg-id)
+        - name: CF_ORG_ID
+          value: $(params.deployable-cf-org-id)
+        - name: CF_SPACE_ID
+          value: $(params.deployable-cf-space-id)
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: IBM_CLOUD_API
+          value: $(params.ibmcloud-api)
+        - name: IBM_CLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.toolchain-apikey-secret-key)
+              optional: true
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+        fi
+        ##########################################################################
+        # Setting HOME explicitly to have ibmcloud plugins available
+        # doing the export rather than env definition is a workaround
+        # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+        export HOME="/root"
+        ##########################################################################
+        TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+        TOOLCHAIN_REGION_ID=$(jq -r '.region_id' /cd-config/toolchain.json)
+        TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
+
+        ibmcloud config --check-version false
+        ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $IBM_CLOUD_API_KEY
+        TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
+
+        if [ $(echo "$REGION_ID" | grep -c ':' -) -ne 1 ]; then
+          # no ':' found so append ibmcloud production prefix to region id
+          export REGION_ID="ibm:yp:$REGION_ID"
+        fi
+
+        echo "{}" | jq '.deployable={} | .toolchain={} | .source={}' > deployable_mapping.json
+
+        cat deployable_mapping.json | \
+        jq --arg DEPL_TYPE "$DEPLOYABLE_TYPE" --arg REGION_ID "$REGION_ID" \
+           --arg DEPL_GUID "$DEPLOYABLE_GUID" \
+          '.deployable.type=$DEPL_TYPE | .deployable.region_id=$REGION_ID | .deployable.deployable_guid=$DEPL_GUID' \
+          > tmp_deployable_mapping.json
+        mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+        if [ "$DEPLOYABLE_TYPE" == "app" ]; then
+          cat deployable_mapping.json | jq --arg ORG_ID "$CF_ORG_ID" \
+            --arg SPACE_ID "$CF_SPACE_ID" \
+            '.deployable.organization_guid=$ORG_ID | .deployable.space_guid=$SPACE_ID' > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
+        elif [ "$DEPLOYABLE_TYPE" == "kubernetes_cluster" ]; then
+          cat deployable_mapping.json | jq --arg RG_ID "$RESOURCE_GROUP_ID" \
+            '.deployable.container={} | .deployable.container.guid=$RG_ID | .deployable.container.type="resource_group_id"' \
+            > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
+        else
+          echo "Deployable type $DEPLOYABLE_TYPE not expected"
+          exit 1
+        fi
+
+        cat deployable_mapping.json | jq --arg TC_ID "$TOOLCHAIN_ID" --arg REGION_ID "$TOOLCHAIN_REGION_ID" \
+          '.toolchain.toolchain_guid=$TC_ID | .toolchain.region_id=$REGION_ID ' > tmp_deployable_mapping.json
+        mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+        cat deployable_mapping.json | jq --arg PIPELINE_ID "$PIPELINE_ID" \
+          '.source.type="service_instance" | .source.source_guid=$PIPELINE_ID ' > tmp_deployable_mapping.json
+        mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+        OTC_API_DM_URL="https://otc-api.${TOOLCHAIN_REGION}.devops.cloud.ibm.com/api/v1/toolchain_deployable_mappings"
+        # Check if an existing mapping exist with the given deployable guid in toolchain
+        EXISTING_DEPLOYABLE_MAPPING=$(curl -H "accept: application/json" -H "Authorization: ${TOKEN}" \
+          "$OTC_API_DM_URL?toolchain_guid=${TOOLCHAIN_ID}&deployable_guid=${DEPLOYABLE_GUID}" | \
+          jq -r '.items[0].mapping_guid')
+
+        if [ "$EXISTING_DEPLOYABLE_MAPPING" == "null" ]; then
+          HTTP_VERB="POST"
+          URL_DM_SEGMENT=""
+        else
+          echo "Existing deployable mapping id found: $EXISTING_DEPLOYABLE_MAPPING"
+          HTTP_VERB="PUT"
+          URL_DM_SEGMENT="/$EXISTING_DEPLOYABLE_MAPPING"
+        fi
+
+        echo "Doing cURL -X $HTTP_VERB $OTC_API_DM_URL$URL_DM_SEGMENT with json payload:"
+        cat deployable_mapping.json
+
+        HTTP_STATUS_CODE=$(
+          curl -s -o /dev/null -w '%{http_code}' -X $HTTP_VERB \
+          -H "Authorization: ${TOKEN}" -H "content-type: application/json" \
+          -d @deployable_mapping.json $OTC_API_DM_URL$URL_DM_SEGMENT \
+        )
+
+        if [ "$HTTP_STATUS_CODE" == "201" ] || [ "$HTTP_STATUS_CODE" == "204" ]; then
+          echo "Deployable mapping created/updated. HTTP Status code = $HTTP_STATUS_CODE"
+        else
+          echo "Fail to create deployable mapping ! HTTP Status code = $HTTP_STATUS_CODE"
+          exit 1
+        fi
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

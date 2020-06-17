@@ -1,30 +1,49 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: post-slack
+  name: slack-post-message
 spec:
-  inputs:
-    params:
-      - name: task-pvc
-        description: the output pvc
-      - name: domain
-        description: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-        default: ""
-      - name: channel
-        description: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
-        default: ""
-      - name: messageFormat
-        description: the format of the message. text(default) or JSON payload.
-        default: text
-      - name: messageScript
-        description: Shell script that provides messsage content.
-        default: ""
-      - name: message
-        description: the message to send to Slack
-        default: 'Tekton Pipeline completed successfully. :heavy_check_mark:\nVisit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*'
-      - name: exitOnError
-        description: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack.
-        default: "false"
+  params:
+    - name: domain
+      description: |
+        the Slack domain to send the message to.
+        If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
+      default: ""
+    - name: channel
+      description: |
+        the Slack channel to send the message to.
+        When set, overrides the default channel as set in the Slack Webhook URL.
+      default: ""
+    - name: message-format
+      description: the format of the message. text(default) or JSON payload.
+      default: text
+    - name: message-script
+      description: Shell script that provides messsage content.
+      default: ""
+    - name: message
+      description: the message to send to Slack
+      default: |
+        Tekton Pipeline completed successfully. :heavy_check_mark:
+        Visit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*
+    - name: exit-on-error
+      description: |
+        flag (`true` | `false`) to indicate if the task should fail or continue
+        if unable to process the message or post to Slack.
+      default: "false"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  workspaces:
+    - name: workspace
+      description: |
+        A workspace that contain data useful for the script/slack message resolution.
+        Should be marked as optional when Tekton will permit it
+      mountPath: /artifacts
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
@@ -32,7 +51,7 @@ spec:
       env:
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
-          value: $(inputs.params.message)
+          value: $(params.message)
         - name: PIPELINE_RUN_NAME
           valueFrom:
             fieldRef:
@@ -41,6 +60,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
         - name: BUILD_NUMBER
           valueFrom:
             fieldRef:
@@ -65,38 +88,45 @@ spec:
       args:
         - |
           set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
           export TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           export TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
-
-          # Dynamically set message if messageScript param is set
-          printf "#!/bin/sh\n" > /steps/messageScript.sh
-          printf "%s " '$(inputs.params.messageScript)' >> /steps/messageScript.sh
-          chmod +x /steps/messageScript.sh
-          /steps/messageScript.sh 2 >& 1 > /steps/message.content
+          # Dynamically set message if message-script param is set
+          printf "#!/bin/sh\n" > /steps/message-script.sh
+          printf "%s " '$(params.message-script)' >> /steps/message-script.sh
+          chmod +x /steps/message-script.sh
+          /steps/message-script.sh 2 >& 1 > /steps/message.content
           if [ -s /steps/message.content ]; then
             echo "************************************"
             echo "Snippet for dynamic message content:"
-            cat /steps/messageScript.sh
+            cat /steps/message-script.sh
             echo ""
             echo "************************************"
           else
              echo "${SLACK_MESSAGE}" > /steps/message.content
           fi
           # message.content was passed as a slack json payload: keep it as-is
-          if [[ "$(inputs.params.messageFormat)" != "text" ]]; then
+          if [[ "$(params.message-format)" != "text" ]]; then
             mv /steps/message.content /steps/payload.json
           fi
 
           # Use domain and channel parameters if set, to retrieve corresponding integration(s)
-          SLACK_DOMAIN=$(echo $(inputs.params.domain))
-          SLACK_CHANNEL=$(echo $(inputs.params.channel))
+          SLACK_DOMAIN=$(echo $(params.domain))
+          SLACK_CHANNEL=$(echo $(params.channel))
 
           # Domain and channel were set: search the matching integration
           if [[ "$SLACK_DOMAIN" && "$SLACK_CHANNEL" ]]; then
             echo "Retrieving the Slack webhook for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
             SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'") | select (.parameters.channel_name=="'"${SLACK_CHANNEL}"'")'
-            SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')                     
-          fi 
+            SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
+          fi
 
           if [ "$SLACK_INTEGRATIONS" ]; then
             echo "Integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
@@ -104,15 +134,15 @@ spec:
             echo "No matching integration found for $SLACK_DOMAIN domain and $SLACK_CHANNEL channel."
             # no domain set: will use all integrations
             if [ -z "$SLACK_DOMAIN" ]; then
-              echo "No Slack domain passed as parameter. Sending to the Slack integration(s) as defined in the Toolchain."
+              echo "No Slack domain passed as parameter. Sending to Slack integration(s) as defined in the Toolchain."
             else
-              # domain was set: use it to filter corresponding integrations       
+              # domain was set: use it to filter corresponding integrations
               echo "Retrieving Slack webhook(s) for $SLACK_DOMAIN domain."
               # to be added to jq query
               SELECTOR='| select (.parameters.team_url=="'"${SLACK_DOMAIN}"'")'
             fi
             SLACK_INTEGRATIONS=$(cat /cd-config/toolchain.json | jq -c -r '.services[] | select (.service_id=="slack") '"${SELECTOR}"' | (.parameters) | ({"webhook":.api_token, "channel":.channel_name})')
-          fi 
+          fi
 
           # Post message
           msgSent=0
@@ -120,7 +150,7 @@ spec:
           for SLACK_INTEGRATION in $SLACK_INTEGRATIONS
           do
             WEBHOOK=$(echo ${SLACK_INTEGRATION} | jq -r ' .webhook')
-            if [[ "$(inputs.params.messageFormat)" == "text" ]]; then
+            if [[ "$(params.message-format)" == "text" ]]; then
               if [ "$SLACK_CHANNEL" ]; then
                 CHANNEL=$SLACK_CHANNEL
                 echo "Posting to channel $CHANNEL as passed as parameter."
@@ -130,13 +160,15 @@ spec:
               fi
               # format message to a Slack JSON payload
               echo "Formatting text message to JSON."
-              echo '{"channel": "'"${CHANNEL}"'", "type": "text"}' | jq --rawfile text /steps/message.content '.text=$text' > /steps/payload.json
+              echo '{"channel": "'"${CHANNEL}"'", "type": "text"}' | \
+                jq --rawfile text /steps/message.content '.text=$text' > /steps/payload.json
             fi
             echo "Slack Message payload:"
             cat /steps/payload.json
             echo ""
             echo "Posting Slack Message..."
-            status_code=$(curl -s -X POST -H 'Content-type: application/json' -d @/steps/payload.json -o /dev/null -w "%{http_code}" "$WEBHOOK")
+            status_code=$(curl -s -X POST -H 'Content-type: application/json' -d @/steps/payload.json \
+              -o /dev/null -w "%{http_code}" "$WEBHOOK")
             if [[ $status_code -eq 200 ]]; then
               echo ""
               echo "Message successfully posted to Slack."
@@ -154,22 +186,17 @@ spec:
           echo "Done: ${msgSent} message(s) posted to Slack (${msgFail} failure(s))."
 
           # Handle exit based on error if any
-          if [[ $msgFail -ne 0 ]] && [[ "$(inputs.params.exitOnError)" == "true" ]]; then
+          if [[ $msgFail -ne 0 ]] && [[ "$(params.exit-on-error)" == "true" ]]; then
             exit 1
           fi
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
-        - mountPath: /artifacts
-          name: task-volume
         - mountPath: /cd-config
           name: cd-config-volume
   volumes:
     - name: steps-volume
       emptyDir: {}
-    - name: task-volume
-      persistentVolumeClaim:
-        claimName: $(inputs.params.task-pvc)
     - name: cd-config-volume
       configMap:
         name: toolchain

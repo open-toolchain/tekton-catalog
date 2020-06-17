@@ -1,49 +1,49 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: pipeline-container-registry
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
       description: the branch for the git repo
-    - name: pathToDockerfile
-      default: '.'
+    - name: path-to-dockerfile
+      default: "."
     - name: pipeline-debug
       default: "0"
   resources:
     - name: app-image
       type: image
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: pipeline-1-clone-task
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
     - name: pipeline-2-containerize-task
       runAfter: [pipeline-1-clone-task]
       taskRef:
-        name: containerize-task
+        name: icr-containerize
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: pathToContext
-          value: $(params.pathToDockerfile)
-        - name: pathToDockerfile
-          value: $(params.pathToDockerfile)
-        - name: additionalTags
-          value: 'latest'
-        - name: additionalTagsScript
+        - name: path-to-context
+          value: $(params.path-to-dockerfile)
+        - name: path-to-dockerfile
+          value: $(params.path-to-dockerfile)
+        - name: additional-tags
+          value: "latest"
+        - name: additional-tags-script
           value: |
             # Include the clone task output variables in the environment
             source /artifacts/build.properties
@@ -53,29 +53,33 @@ spec:
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
             # Add a specific tag with cd build number
-            echo "1.0.0-${BUILD_NUMBER}"            
+            echo "1.0.0-${BUILD_NUMBER}"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+      workspaces:
+        - name: source
+          workspace: pipeline-ws
       resources:
         outputs:
-          - name: builtImage
+          - name: built-image
             resource: app-image
     - name: pipeline-3-va-task
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: scanReportFile
-          value: 'app-image-va-report.json'
-        # - name: maxIteration
+        - name: scan-report-file
+          value: "app-image-va-report.json"
+        # - name: max-iteration
         #   value: '5'
-        # - name: sleepTime
+        # - name: sleep-time
         #   value: '3'
-        # - name: failOnScannedIssues
+        # - name: fail-on-scanned-issues
         #   value: 'false'
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
       resources:
         inputs:
           - name: image

@@ -1,0 +1,176 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cf-deploy-app
+spec:
+  params:
+    - name: region
+      description: |
+        (optional) Name of the region for IBM Public Cloud Cloud Foundry operation.
+        Will default to the toolchain region if none or empty value.
+      default: ""
+    - name: cf-org
+      description: Name of organization to be targeted
+    - name: cf-space
+      description: Name of space to be targeted
+    - name: cf-app
+      description: Name of the CF application to be managed
+    - name: setup-script
+      default: ""
+    - name: cf-commands
+      description: The ibmcloud cf command(s) to run.
+      default: |
+        # Push app
+        ibmcloud cf push "${CF_APP}"
+    - name: post-execution-script
+      default: ""
+    - name: shuttle-properties-file
+      default: ""
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: Name of the secret containing the continuous delivery pipeline context secrets
+      default: "secure-properties"
+    - name: cloud-foundry-apikey-secret-key
+      description: field in the secret that contains the api key used to connect to cloud foundry
+      default: "cf-apikey"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  results:
+    - name: region
+      description: Name of the region where Cloud Foundry commands were executed
+    - name: cf-target-url
+      description: Cloud Foundry API endpoint
+    - name: cf-org-id
+      description: Id of the Cloud Foundry organization
+    - name: cf-space-id
+      description: Id of the Cloud Foundry space
+    - name: cf-app-guid
+      description: GUID of the Cloud Foundry application managed using this tasks
+  workspaces:
+    - name: source
+      description: A workspace containing the source of the CF application to deploy
+      mountPath: /artifacts
+  steps:
+    - name: deploy-cf-app
+      image: ibmcom/pipeline-base-image:2.6
+      workingDir: /artifacts
+      env:
+        - name: CF_APP
+          value: $(params.cf-app)
+        - name: CF_ORG
+          value: $(params.cf-org)
+        - name: CF_SPACE
+          value: $(params.cf-space)
+        - name: CF_REGION
+          value: $(params.region)
+        - name: IBM_CLOUD_API
+          value: $(params.ibmcloud-api)
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: PIPELINE_STAGE_EXECUTION_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: PIPELINE_TRIGGERING_USER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+        - name: PIPELINE_BLUEMIX_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.cloud-foundry-apikey-secret-key)
+              optional: true
+        - name: SHUTTLE_PROPERTIES_FILE
+          value: $(params.shuttle-properties-file)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: HOME
+          value: "/root"
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            env
+            pwd
+            ls -l
+            echo "=== cat /artifacts/_toolchain.json ==="
+            cat /artifacts/_toolchain.json
+            echo ""
+            echo "======================================"
+            trap env EXIT
+            set -x
+        fi
+
+        export PIPELINE_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /artifacts/_toolchain.json)
+        TOOLCHAIN_REGION_ID=$(jq -r '.region_id' /artifacts/_toolchain.json)
+        TOOLCHAIN_REGION=$(jq -r '.region_id' /artifacts/_toolchain.json | awk -F: '{print $3}')
+
+        if [ -z "$CF_REGION" ]; then
+          export CF_REGION="$TOOLCHAIN_REGION"
+        fi
+
+        ibmcloud config --check-version false
+        ibmcloud login -a $(params.ibmcloud-api) -r $CF_REGION --apikey $PIPELINE_BLUEMIX_API_KEY
+        ibmcloud target -o "$CF_ORG" -s "$CF_SPACE"
+
+        # Provide additional deployment properties related to CF
+        # https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-deliverypipeline_environment#deliverypipeline_environment&env_id=ibm:yp:us-south
+        ibmcloud target --output JSON > /steps/ic_target.json
+        export CF_ORGANIZATION_ID=$(jq -r '.cf.org.guid' /steps/ic_target.json)
+        export CF_SPACE_ID=$(jq -r '.cf.space.guid' /steps/ic_target.json)
+        export CF_TARGET_URL=$(jq -r '.cf.api_endpoint' /steps/ic_target.json)
+
+        # Set the appropriate alias for cf to allow user to only provide cf commands (not only ibmcloud cf commands)
+        export CF_EXEC="ibmcloud cf"
+
+        # Remove the cf-post script content as this script is only relevant for classic pipeline
+        echo "" > /opt/IBM/pipeline/bin/cf-post
+
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          source $SHUTTLE_PROPERTIES_FILE
+          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
+        fi
+        $(params.setup-script)
+
+        # Perform the cf-commands
+        $(params.cf-commands)
+
+        # Find CF_APP guid
+        export CF_APP_GUID=$(ibmcloud cf app "$CF_APP" --guid | tail -n1)
+
+        $(params.post-execution-script)
+
+        # Record task results
+        echo -n "$CF_REGION" > $(results.region.path)
+        echo -n "$CF_TARGET_URL" > $(results.cf-target-url.path)
+        echo -n "$CF_ORGANIZATION_ID" > $(results.cf-org-id.path)
+        echo -n "$CF_SPACE_ID" > $(results.cf-space-id.path)
+        echo -n "$CF_APP_GUID" > $(results.cf-app-guid.path)
+      volumeMounts:
+        - name: steps-volume
+          mountPath: /steps
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /artifacts/_toolchain.json
+          subPath: toolchain.json
+          name: cd-config-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

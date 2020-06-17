@@ -1,34 +1,39 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: kubernetes-contextual-execution
+  name: iks-contextual-execution
 spec:
-  inputs:
-    params:
-      - name: task-pvc
-        description: the task pvc - this is the volume valid for the lifetime of the pipelinerun
-      - name: task-pvc-mountpath
-        default: /artifacts
-      # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
-      # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
-      - name: clusterPipelineResourcesDirectory
-        description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
-        default: /workspace
-      - name: cluster-name
-        description: name of the cluster - required if no cluster pipeline resource provided to this task
-        default: ""
-      - name: script
-        description: the bash snippet to execute within the context of the kubernetes configuration
-        default: 'kubectl version'
-    resources:
+  params:
+    # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
+    # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
+    - name: cluster-pipeline-resources-directory
+      description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
+      default: /clusters
+    - name: cluster-name
+      description: name of the cluster - required if no cluster pipeline resource provided to this task
+      default: ""
+    - name: script
+      description: the bash snippet to execute within the context of the kubernetes configuration
+      default: "kubectl version"
+    - name: pipeline-debug
+      default: "0"
+  resources:
+    inputs:
       - name: cluster
         type: cluster
         optional: true
+  workspaces:
+    - name: cluster-configuration
+      description: A workspace that contain the kubectl cluster config to be used
+      mountPath: /clusterconfig
   steps:
     - name: execute
       image: ibmcom/pipeline-base-image:2.6
-      workingDir: $(inputs.params.task-pvc-mountpath)
+      workingDir: $(workspaces.cluster-configuration.path)
       env:
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
         # CD execution context injection
         - name: PIPELINE_RUN_NAME
           valueFrom:
@@ -38,6 +43,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
         - name: BUILD_NUMBER
           valueFrom:
             fieldRef:
@@ -61,14 +70,20 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |
+          if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+          fi
 
           # Find cluster information
-          if [ "$(inputs.resources.cluster.name)" == "" ]; then
-            export CLUSTER_NAME="$(inputs.params.cluster-name)"
+          if [ "$(resources.inputs.cluster.name)" == "" ]; then
+            export CLUSTER_NAME="$(params.cluster-name)"
           else
-            export CLUSTER_NAME="$(inputs.resources.cluster.name)"
+            export CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
-          export KUBECONFIG=$(inputs.params.clusterPipelineResourcesDirectory)/$CLUSTER_NAME/kubeconfig
+          export KUBECONFIG="/clusterconfig/$(params.cluster-pipeline-resources-directory)/$CLUSTER_NAME/kubeconfig"
 
           # Validate KUBECONFIG
           if test -f "$KUBECONFIG"; then
@@ -78,16 +93,11 @@ spec:
             exit 1
           fi
           # User-defined snippet/script
-          $(inputs.params.script)
+          $(params.script)
       volumeMounts:
-        - mountPath: $(inputs.params.task-pvc-mountpath)
-          name: task-volume
         - mountPath: /cd-config
           name: cd-config-volume
   volumes:
-    - name: task-volume
-      persistentVolumeClaim:
-        claimName: $(inputs.params.task-pvc)
     - name: cd-config-volume
       configMap:
         name: toolchain

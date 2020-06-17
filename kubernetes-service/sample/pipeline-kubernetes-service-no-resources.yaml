@@ -1,39 +1,37 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: kubernetes-service-no-resources
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
-    - name: resourceGroup
+    - name: resource-group
     - name: cluster-name
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: pipeline-0-setup-task
       taskRef:
-        name: fetch-iks-cluster-config
+        name: iks-fetch-config
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: resourceGroup
-          value: $(params.resourceGroup)
+        - name: resource-group
+          value: $(params.resource-group)
         - name: cluster-name
           value: $(params.cluster-name)
-        - name: clusterPipelineResourcesDirectoryFallback
+        - name: cluster-pipeline-resources-directory-fallback
           value: .tekton-clusters
+      workspaces:
+        - name: cluster-configuration
+          workspace: pipeline-ws
     - name: pipeline-1-kubectl-task
       runAfter: [pipeline-0-setup-task]
       taskRef:
-        name: kubernetes-contextual-execution
+        name: iks-contextual-execution
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: task-pvc-mountpath
-          value: /pipelinerun
         - name: cluster-name
           value: $(params.cluster-name)
-        - name: clusterPipelineResourcesDirectory
-          value: /pipelinerun/.tekton-clusters
+        - name: cluster-pipeline-resources-directory
+          value: .tekton-clusters
         - name: script
           value: |
             echo "** Here is the kubectl version:"
@@ -42,4 +40,6 @@ spec:
             kubectl cluster-info
             echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
-
+      workspaces:
+        - name: cluster-configuration
+          workspace: pipeline-ws

@@ -1,5 +1,7 @@
 # Docker In Docker (DIND) Kubernetes Cluster Hosted task example usage
-The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-cluster` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `execute-in-dind-cluster-task` and `vulnerability-advisor-task`.
+The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-cluster` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind-cluster` and `icr-check-va-scan`.
+
+It also contains a `dind-cluster-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
 It also contains a `dind-cluster-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
@@ -15,7 +17,7 @@ It also contains a `dind-cluster-no-resources` EventListener definition which is
 
 2) Add the definitions:
 
-   - for the `clone-repo-task` (`git` path)
+   - for the `git-clone-repo` (`git` path)
    - for this task and the sample (`container-registry` and `container-registry/sample-docker-dind-cluster` paths)
 
    ![Tekton pipeline definitions](./images/dind-cluster-sample-tekton-pipeline-definitions.png)
@@ -23,8 +25,8 @@ It also contains a `dind-cluster-no-resources` EventListener definition which is
 3) Add the environment properties:
 
    - `apikey` to provide an API key used for the ibmcloud login/access
-   - `buildCluster` to provide the kubernetes cluster name that will be used as a build cluster (ie hosting the Docker DinD)
-   - `imageUrl` to indicate the URL of the image to push to the IBM Cloud Container Registry
+   - `build-cluster` to provide the kubernetes cluster name that will be used as a build cluster (ie hosting the Docker DinD)
+   - `image-url` to indicate the URL of the image to push to the IBM Cloud Container Registry
    - `repository` to indicate the git repository url to clone (correspoding to the one integrated in the toolchain)
 
    ![Tekton pipeline environment properties](./images/dind-cluster-sample-tekton-pipeline-environment-properties.png)

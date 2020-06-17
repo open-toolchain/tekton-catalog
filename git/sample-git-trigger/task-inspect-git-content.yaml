@@ -1,0 +1,72 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: inspect-git-content
+spec:
+  params:
+    - name: repository
+      description: the git repo url
+    - name: directory-name
+      default: "."
+    - name: properties-file
+      default: build.properties
+    - name: git-credentials-json-file
+      default: ""
+    - name: git-branch
+      description: The active branch for the repository
+    - name: git-commit
+      description: The current commit id that was cloned
+    - name: git-user
+      description: The auth user that cloned the repository
+  workspaces:
+    - name: workspace
+      mountPath: /artifacts
+  steps:
+    - name: inspect-git-content
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: REPOSITORY
+          value: $(params.repository)
+        - name: DIRECTORY_NAME
+          value: $(params.directory-name)
+      workingDir: /artifacts
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          if [ -z "$DIRECTORY_NAME" ]; then
+            # Find the "humanish" part of the git source repository that corresponds to the clone directory
+            # REPOSITORY contains the repository url and may end with .git suffix
+            DIRECTORY_NAME=$(basename "${REPOSITORY##*/}" .git)
+          fi
+          cd "$DIRECTORY_NAME"
+          # show the git content
+          echo "Executing 'git show-branch --all'"
+          git show-branch --all
+          echo ""
+          # show the directory content as a tree
+          echo "##############"
+          apt-get install tree
+          echo "Executing 'tree'"
+          tree
+          echo ""
+          # show the README.md content
+          echo "##############"
+          echo "Executing 'cat README.md'"
+          cat README.md
+          echo ""
+          echo "##############"
+          echo "Executing 'cat $(workspaces.workspace.path)/$(params.properties-file)'"
+          cat $(workspaces.workspace.path)/$(params.properties-file)
+          echo ""
+          if [ "$(params.git-credentials-json-file)" ]; then
+            echo "##############"
+            echo "Executing 'jq $(workspaces.workspace.path)/$(params.git-credentials-json-file)'"
+            cat $(workspaces.workspace.path)/$(params.git-credentials-json-file) | jq '. | ."GIT_TOKEN"="<REDACTED>"'
+          fi
+          echo "##############"
+          echo "Showing task inputs:"
+          echo "params.repository: $(params.repository)"
+          echo "params.git-branch: $(params.git-branch)"
+          echo "params.git-commit: $(params.git-commit)"
+          echo "params.git-user: $(params.git-user)"

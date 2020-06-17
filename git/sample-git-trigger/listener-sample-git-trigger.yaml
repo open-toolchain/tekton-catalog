@@ -1,33 +1,34 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: triggertemplate-git-trigger
 spec:
   params:
-    - name: gitAccessToken
+    - name: git-access-token
       description: the token to access the git repository for the clone operations
     - name: apikey
       description: the ibmcloud api key
-      default: ' '
+      default: " "
     - name: repository
       description: The git repo
-      default: ' '
+      default: " "
     - name: branch
       description: the branch for the git repo
     - name: revision
       description: the commit id/sha for the clone action
-      default: ' '
-    - name: pr_repository
+      default: " "
+    - name: pr-repository
       description: The source git repo for the PullRequest
-      default: ' '
-    - name: pr_branch
+      default: " "
+    - name: pr-branch
       description: The source branch for the PullRequest
-      default: ' '
-    - name: pr_revision
+      default: " "
+    - name: pr-revision
       description: the commit id/sha for the PullRequest
-      default: ' '
+      default: " "
     - name: triggerName
-      default: 'git-pr-process'
+      default: "git-pr-process"
   resourcetemplates:
     # CD secret to provide API_KEY to access toolchain information
     - apiVersion: v1
@@ -45,11 +46,11 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: $(params.triggerName)-$(uid)
@@ -57,24 +58,26 @@ spec:
         pipelineRef:
           name: pipeline-git-event-processing
         params:
-          - name: pipeline-pvc
-            value: $(params.triggerName)-$(uid)-pvc
-          - name: gitAccessToken
-            value: $(params.gitAccessToken)
+          - name: git-access-token
+            value: $(params.git-access-token)
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
           - name: revision
             value: $(params.revision)
-          - name: pr_repository
-            value: $(params.pr_repository)
-          - name: pr_branch
-            value: $(params.pr_branch)
-          - name: pr_revision
-            value: $(params.pr_revision)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: pr-branch
+            value: $(params.pr-branch)
+          - name: pr-revision
+            value: $(params.pr-revision)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: $(params.triggerName)-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-manual
@@ -87,7 +90,7 @@ spec:
     - name: triggerName
       value: manual-trigger
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-manual
@@ -98,7 +101,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-github-pr
@@ -108,16 +111,16 @@ spec:
       value: "$(event.pull_request.base.repo.clone_url)"
     - name: branch
       value: "$(event.pull_request.base.ref)"
-    - name: pr_repository
+    - name: pr-repository
       value: "$(event.pull_request.head.repo.clone_url)"
-    - name: pr_branch
+    - name: pr-branch
       value: "$(event.pull_request.head.ref)"
-    - name: pr_revision
+    - name: pr-revision
       value: "$(event.pull_request.head.sha)"
     - name: triggerName
       value: "github-pullrequest"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-github-commit
@@ -132,7 +135,7 @@ spec:
     - name: triggerName
       value: "github-commit"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-github-pr
@@ -143,7 +146,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-github-commit
@@ -154,7 +157,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-grit-mr
@@ -164,16 +167,16 @@ spec:
       value: "$(event.object_attributes.target.git_http_url)"
     - name: branch
       value: "$(event.object_attributes.target_branch)"
-    - name: pr_repository
+    - name: pr-repository
       value: "$(event.object_attributes.source.git_http_url)"
-    - name: pr_branch
+    - name: pr-branch
       value: "$(event.object_attributes.source_branch)"
-    - name: pr_revision
+    - name: pr-revision
       value: "$(event.object_attributes.last_commit.id)"
     - name: triggerName
       value: "grit-mergerequest"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-grit-commit
@@ -188,7 +191,7 @@ spec:
     - name: triggerName
       value: "grit-commit"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-grit-mr
@@ -199,7 +202,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-grit-commit
@@ -210,7 +213,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-bitbucket-pr
@@ -220,16 +223,16 @@ spec:
       value: "$(event.pullrequest.destination.repository.links.html.href)"
     - name: branch
       value: "$(event.pullrequest.destination.branch.name)"
-    - name: pr_repository
+    - name: pr-repository
       value: "$(event.pullrequest.source.repository.links.html.href)"
-    - name: pr_branch
+    - name: pr-branch
       value: "$(event.pullrequest.source.branch.name)"
-    - name: pr_revision
+    - name: pr-revision
       value: "$(event.pullrequest.source.commit.hash)"
     - name: triggerName
       value: "bitbucket-pullrequest"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-bitbucket-commit
@@ -244,7 +247,7 @@ spec:
     - name: triggerName
       value: "bitbucket-commit"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-bitbucket-pr
@@ -255,7 +258,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-bitbucket-commit

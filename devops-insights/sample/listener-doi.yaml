@@ -1,0 +1,69 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: doi-sample
+spec:
+  params:
+    - name: app-name
+      description: the application name
+      default: "my-app"
+    - name: repository
+      description: The git repo - default to https://github.com/open-toolchain/Microservices_CatalogAPI_helm
+      default: "https://github.com/open-toolchain/Microservices_CatalogAPI_helm"
+    - name: branch
+      description: the branch for the git repo
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: doi-sample-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: doi-sample-$(uid)
+      spec:
+        pipelineRef:
+          name: doi-sample
+        params:
+          - name: app-name
+            value: $(params.app-name)
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: doi-sample-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: doi-sample
+spec:
+  params:
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: doi-sample
+spec:
+  triggers:
+    - binding:
+        name: doi-sample
+      template:
+        name: doi-sample

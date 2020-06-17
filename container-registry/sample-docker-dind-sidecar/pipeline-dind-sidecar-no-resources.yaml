@@ -1,52 +1,63 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: dind-no-resources
 spec:
   params:
-    - name: pipeline-pvc
-      description: the pipeline pvc name
     - name: repository
       description: the git repo
     - name: branch
       description: the branch for the git repo
     - name: image-url
       description: the url of the image to build
+  workspaces:
+    - name: pipeline-ws
   tasks:
     - name: clone-repository
       taskRef:
-        name: clone-repo-task
+        name: git-clone-repo
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: properties-file
+          value: ""
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
     - name: build-and-push-docker
       runAfter: [clone-repository]
       taskRef:
-        name: execute-in-dind-task
+        name: icr-execute-in-dind
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: image-url
           value: $(params.image-url)
+        - name: image-tag
+          value: 1.0.0-$(tasks.clone-repository.results.git-branch)-$(tasks.clone-repository.results.git-commit)
+        - name: properties-file
+          value: ""
+      workspaces:
+        - name: source
+          workspace: pipeline-ws
     - name: va-scan-task
       runAfter: [build-and-push-docker]
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: scanReportFile
-          value: 'app-image-va-report.json'
-        # - name: maxIteration
+        - name: scan-report-file
+          value: "app-image-va-report.json"
+        # - name: max-iteration
         #   value: '5'
-        # - name: sleepTime
+        # - name: sleep-time
         #   value: '3'
-        # - name: failOnScannedIssues
+        # - name: fail-on-scanned-issues
         #   value: 'false'
         - name: image-url
-          value: $(params.image-url)
-
+          value: $(tasks.build-and-push-docker.results.image-repository)
+        - name: image-digest
+          value: $(tasks.build-and-push-docker.results.image-digest)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws

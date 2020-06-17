@@ -1,0 +1,89 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: doi-sample
+spec:
+  params:
+    - name: app-name
+      description: name of the application
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: pipeline-debug
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: clone-task
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: properties-file
+          value: ""
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: publish-buildrecord-task
+      runAfter: [clone-task]
+      taskRef:
+        name: doi-publish-buildrecord
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: git-repository
+          value: $(tasks.clone-task.results.git-repository)
+        - name: git-branch
+          value: $(tasks.clone-task.results.git-branch)
+        - name: git-commit
+          value: $(tasks.clone-task.results.git-commit)
+    - name: unit-tests-task
+      runAfter: [publish-buildrecord-task]
+      taskRef:
+        name: unit-tests
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: publish-testrecord-task
+      runAfter: [unit-tests-task]
+      taskRef:
+        name: doi-publish-testrecord
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: file-locations
+          value: $(tasks.unit-tests-task.results.file-locations)
+        - name: test-types
+          value: $(tasks.unit-tests-task.results.test-types)
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+    - name: evaluate-gate-task
+      runAfter: [publish-testrecord-task]
+      taskRef:
+        name: doi-evaluate-gate
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: policy
+          value: "my-policy"
+    - name: publish-deployrecord-task
+      runAfter: [evaluate-gate-task]
+      taskRef:
+        name: doi-publish-deployrecord
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: environment
+          value: "my-faked-env"

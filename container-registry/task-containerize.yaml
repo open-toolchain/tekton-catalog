@@ -1,64 +1,85 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: containerize-task
+  name: icr-containerize
 spec:
-  inputs:
-    params:
-      - name: task-pvc
-        description: the task pvc - this is the volume where the files (Dockerfile etc..) are expected to be
-      - name: ibmcloudApi
-        description: the ibmcloud api
-        default: https://cloud.ibm.com
-      - name: continuous-delivery-context-secret
-        description: name of the configmap containing the continuous delivery pipeline context secrets
-        default: cd-secret
-      - name: container-registry-apikey-secret-key
-        description: field in the secret that contains the api key used to login to ibmcloud container registry
-        default: 'API_KEY'
-      - name: resourceGroup
-        description: target resource group (name or id) for the ibmcloud login operation
-        default: ''
-      - name: image-url
-        description: "url of the image to build - required if no image pipeline resource provided to this task"
-        default: ""
-      - name: pathToContext
-        default: .
-      - name: pathToDockerfile
-        default: .
-      - name: dockerfile
-        description: The name of the Dockerfile
-        default: "Dockerfile"
-      - name: buildArgs
-        description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
-        default: ""
-      - name: buildkit_image
-        description: The name of the BuildKit image
-        default: "moby/buildkit:v0.6.3-rootless"
-      - name: additionalTags
-        description: comma-separated list of additionalTags
-        # can not be defined as an array because of variable substition error for array
-        # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
-        default: ''
-      - name: additionalTagsScript
-        description: Shell script that allows to add tags for the image to be build.
-        default: ''
-      - name: propertiesFile
-        description: file containing properties out of containerize task
-        default: build.properties
-      - name: pipeline-debug
-        description: Pipeline debug mode
-        default: "0"
-  outputs:
-    resources:
-      - name: builtImage
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: Name of the secret containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: container-registry-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud container registry
+      default: "API_KEY"
+    - name: resource-group
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ""
+    - name: image-url
+      description: |
+        url of the image to build
+        required if no image pipeline resource provided or no registry region, namespace and image name parameters
+        are provided to this task
+      default: ""
+    - name: registry-region
+      description: container registry region id. required if no image-url or no image pipeline resources provided
+      default: ""
+    - name: registry-namespace
+      description: container registry namespace. required if no image-url or no image pipeline resources provided
+      default: ""
+    - name: image-name
+      description: image name. required if no image-url or no image pipeline resources provided
+      default: ""
+    - name: path-to-context
+      default: .
+    - name: path-to-dockerfile
+      default: .
+    - name: dockerfile
+      description: The name of the Dockerfile
+      default: "Dockerfile"
+    - name: build-args
+      description: build argument list in the format 'KEY=VALUE' with a key-value pair per line.
+      default: ""
+    - name: buildkit-image
+      description: The name of the BuildKit image
+      default: "moby/buildkit:v0.6.3-rootless"
+    - name: additional-tags
+      description: comma-separated list of additional-tags
+      # can not be defined as an array because of variable substition error for array
+      # https://github.com/tektoncd/pipeline/commit/86deacb04536f0f3e7176c6664cec8786678ed18
+      default: ""
+    - name: additional-tags-script
+      description: Shell script that allows to add tags for the image to be build.
+      default: ""
+    - name: properties-file
+      description: file containing properties out of containerize task
+      default: build.properties
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  results:
+    - name: image-repository
+      description: the repository for the built image
+    - name: image-tags
+      description: the tags for the built image
+    - name: image-digest
+      description: the image digest (sha-256 hash) for the built image
+  workspaces:
+    - name: source
+      description: A workspace containing the source (Dockerfile, Docker context) to create the image
+      mountPath: /artifacts
+  resources:
+    outputs:
+      - name: built-image
         type: image
         description: "(Optional) The image to build"
         optional: true
   stepTemplate:
     env:
       - name: PIPELINE_DEBUG
-        value: $(inputs.params.pipeline-debug)
+        value: $(params.pipeline-debug)
   steps:
     - name: check-registry
       image: ibmcom/pipeline-base-image:2.6
@@ -67,12 +88,12 @@ spec:
         - name: API_KEY
           valueFrom:
             secretKeyRef:
-              name: $(inputs.params.continuous-delivery-context-secret)
-              key: $(inputs.params.container-registry-apikey-secret-key)
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.container-registry-apikey-secret-key)
         - name: IBMCLOUD_API
-          value: $(inputs.params.ibmcloudApi)
+          value: $(params.ibmcloud-api)
         - name: IBMCLOUD_RESOURCE_GROUP
-          value: $(inputs.params.resourceGroup)
+          value: $(params.resource-group)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -92,14 +113,42 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
+          if [ "$(resources.outputs.built-image.url)" == "" ]; then
+            export IMAGE_RESOURCE_URL="$(params.image-url)"
           else
-            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
+            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
 
-          # Ensure login to the container registry and namespace available
+          if [ "$IMAGE_RESOURCE_URL" ]; then
+            # Parse the image url to find registry information
+            source /scripts/parse_image_url.sh
+          else
+            # export the expected environment variables based on the required registry parameters
+            export REGISTRY_REGION=$(params.registry-region)
+            if [ -z "$REGISTRY_REGION" ]; then
+              echo "No registry region provided"
+              exit 1
+            fi
+            export REGISTRY_NAMESPACE=$(params.registry-namespace)
+            if [ -z "$REGISTRY_NAMESPACE" ]; then
+              echo "No registry namespace provided"
+              exit 1
+            fi
+          fi
+
+          # Login to the container registry and ensure namespace is available
           source /scripts/check_registry.sh
+
+          if [ -z "$IMAGE_RESOURCE_URL" ]; then
+            export IMAGE_NAME=$(params.image-name)
+            if [ -z "$IMAGE_NAME" ]; then
+              echo "No image name provided"
+              exit 1
+            fi
+            # export the expected environment variables now that the container registry is logged in
+            export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+            export IMAGE_URL="${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
+          fi
 
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
@@ -123,9 +172,9 @@ spec:
         - mountPath: /steps
           name: steps-volume
         - mountPath: /scripts
-          name: check-registry-script
+          name: check-registry-scripts
     - name: build-image
-      image: $(inputs.params.buildkit_image)
+      image: $(params.buildkit-image)
       workingDir: /artifacts
       env:
         # specifying DOCKER_CONFIG is required to allow buildkit to detect docker credentials
@@ -178,7 +227,7 @@ spec:
           # Manage multiple tags for an image
           # Add dynamically computed tags
           printf "#!/bin/sh\n" > /steps/additionnalTags.sh
-          printf "%s " '$(inputs.params.additionalTagsScript)' >> /steps/additionnalTags.sh
+          printf "%s " '$(params.additional-tags-script)' >> /steps/additionnalTags.sh
           chmod +x /steps/additionnalTags.sh
           /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
           # Add image pipeline resource
@@ -186,15 +235,16 @@ spec:
             echo "${IMAGE_TAG}" >> /steps/tags.lst
           fi
           # Add tags provided using task parameter
-          if [ "$(inputs.params.additionalTags)" ];  then
-            echo "$(inputs.params.additionalTags)" | sed 's/,/\n/g' >> /steps/tags.lst
+          if [ "$(params.additional-tags)" ];  then
+            echo "$(params.additional-tags)" | sed 's/,/\n/g' >> /steps/tags.lst
           fi
           echo "#######################"
           echo "Image Tags:"
           cat /steps/tags.lst
           echo "#######################"
+          IMAGE_REPOSITORY="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
           # Add the full image url with tags - use # as separator in case IMAGE_NAME contains /
-          sed -i "s#^#$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:#" /steps/tags.lst
+          sed -i "s#^#$IMAGE_REPOSITORY:#" /steps/tags.lst
           sort -u -o /steps/tags.lst /steps/tags.lst
           echo "Full Image URLs:"
           cat /steps/tags.lst
@@ -206,39 +256,32 @@ spec:
           fi
           echo "Buildkit Image names: $BUILDKIT_IMAGE_NAMES"
 
-          BUILD_ARG_LIST='$(inputs.params.buildArgs)'
+          BUILD_ARG_LIST='$(params.build-args)'
           for buildArg in $BUILD_ARG_LIST; do
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
-          if [ "$(outputs.resources.builtImage.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(inputs.params.image-url)"
-          else
-            export IMAGE_RESOURCE_URL="$(outputs.resources.builtImage.url)"
-          fi
-
           buildctl-daemonless.sh build \
             --progress=plain \
             --frontend=dockerfile.v0 \
-            --opt filename=$(inputs.params.dockerfile) \
+            --opt filename=$(params.dockerfile) \
             ${BUILD_ARGS} \
-            --local context=/artifacts/$(inputs.params.pathToContext) --local dockerfile=/artifacts/$(inputs.params.pathToDockerfile) \
+            --local context=$(workspaces.source.path)/$(params.path-to-context) \
+            --local dockerfile=$(workspaces.source.path)/$(params.path-to-dockerfile) \
             --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
             --export-cache type=inline \
-            --import-cache type=registry,ref=$IMAGE_RESOURCE_URL 2>&1 | tee /steps/build.log
+            --import-cache type=registry,ref=$IMAGE_REPOSITORY 2>&1 | tee /steps/build.log
 
           # Using the deprecated --exporter option for now as the multiple name/tags using --output option
           # is not working as expected: https://github.com/moby/buildkit/issues/797#issuecomment-581346240
-          #  --output type=image,"name=$(outputs.resources.builtImage.url):1.0.0,$(outputs.resources.builtImage.url)",push=true \
+          # --output type=image,"name=$(params.image-url):1.0.0,$(params.image-url)",push=true
 
           # it is not possible to specify multiple exporters for now
-          # --output type=oci,dest=/builder/home/image-outputs/builtImage/output.tar \
-          # It is possible to assign multiple tags to the image with latest version of buildkit_image
+          # --output type=oci,dest=/builder/home/image-outputs/built-image/output.tar \
+          # It is possible to assign multiple tags to the image with latest version of buildkit-image
           # see https://github.com/moby/buildkit/issues/797
 
       volumeMounts:
-        - mountPath: /artifacts
-          name: task-volume
         - mountPath: /steps
           name: steps-volume
     - name: process-build-log
@@ -247,7 +290,7 @@ spec:
       workingDir: /steps
       env:
         - name: PROPERTIES_FILE
-          value: $(inputs.params.propertiesFile)
+          value: $(params.properties-file)
       command: ["/bin/bash", "-c"]
       args:
         - |
@@ -274,16 +317,17 @@ spec:
           CONFIG_SHA=$(grep -i 'exporting config' build.log | grep -i 'done' | awk '{print $4}')
           FULLY_QUALIFIED_IMAGE=$(grep -i 'pushing manifest' build.log | grep -i 'done' | awk '{print $5}')
 
-          if [ "$(outputs.resources.builtImage.url)" ]; then
+          if [ "$(resources.outputs.built-image.url)" ]; then
             echo "Creating OCI image index - index.json - out of the build.log to reference image sha: $MANIFEST_SHA"
             # ibmcloud container-registry image manifest is: application/vnd.docker.distribution.manifest.v2+json
             echo "{}" | \
-            jq --arg manifest_sha "$MANIFEST_SHA" '{schemaVersion:2,manifests:[{"mediaType": "application/vnd.oci.image.manifest.v1+json", digest:$manifest_sha}]}' 2>&1 | \
-            tee /workspace/output/builtImage/index.json
+            jq --arg manifest_sha "$MANIFEST_SHA" \
+              '{schemaVersion:2,manifests:[{"mediaType": "application/vnd.oci.image.manifest.v1+json", digest:$manifest_sha}]}' 2>&1 | \
+              tee /workspace/output/built-image/index.json
 
             # Copy the index.json to the legacy location - v0.7.0 - for such imageoutput
-            mkdir -p /builder/home/image-outputs/builtImage
-            cp /workspace/output/builtImage/index.json /builder/home/image-outputs/builtImage
+            mkdir -p /builder/home/image-outputs/built-image
+            cp /workspace/output/built-image/index.json /builder/home/image-outputs/built-image
           fi
 
           # Because of https://github.com/tektoncd/pipeline/issues/216
@@ -294,39 +338,42 @@ spec:
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
           # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
           # Here the workaround will be to add registry and image information in an output properties file
+          IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | \
+            awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
           if [ "$PROPERTIES_FILE" ]; then
-            cd /artifacts
-            # Ensure directory is there
-            mkdir -p /artifacts/$(dirname "$PROPERTIES_FILE")
-            echo "REGISTRY_URL=${REGISTRY_URL}" >> $PROPERTIES_FILE
-            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $PROPERTIES_FILE
-            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $PROPERTIES_FILE
-            echo "IMAGE_NAME=${IMAGE_NAME}" >> $PROPERTIES_FILE
-            echo "IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')" >> $PROPERTIES_FILE
-            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $PROPERTIES_FILE
+            mkdir -p $(workspaces.source.path)/$(dirname "$PROPERTIES_FILE")
+            echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "REGISTRY_REGION=${REGISTRY_REGION}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_NAME=${IMAGE_NAME}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_TAGS=${IMAGE_TAGS}" >> $(workspaces.source.path)/$PROPERTIES_FILE
+            echo "IMAGE_MANIFEST_SHA=${MANIFEST_SHA}" >> $(workspaces.source.path)/$PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
-            cat $PROPERTIES_FILE
+            cat $(workspaces.source.path)/$PROPERTIES_FILE
+            echo ""
           fi
+
+          # Record task results
+          echo -n "${IMAGE_URL}" > $(results.image-repository.path)
+          echo -n "${IMAGE_TAGS}" > $(results.image-tags.path)
+          echo -n "${MANIFEST_SHA}" > $(results.image-digest.path)
       volumeMounts:
-        - mountPath: /artifacts
-          name: task-volume
         - mountPath: /steps
           name: steps-volume
   volumes:
     - name: steps-volume
       emptyDir: {}
-    - name: task-volume
-      persistentVolumeClaim:
-        claimName: $(inputs.params.task-pvc)
     - name: cd-config-volume
       configMap:
         name: toolchain
         items:
           - key: toolchain.json
             path: toolchain.json
-    - name: check-registry-script
-      configMap: 
-        name: check-registry-script
-        items: 
+    - name: check-registry-scripts
+      configMap:
+        name: check-registry-scripts
+        items:
           - key: check_registry.sh
-            path: check_registry.sh          
+            path: check_registry.sh
+          - key: parse_image_url.sh
+            path: parse_image_url.sh

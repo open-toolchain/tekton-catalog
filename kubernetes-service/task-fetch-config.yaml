@@ -1,0 +1,188 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: iks-fetch-config
+spec:
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the secret containing the continuous delivery pipeline context secrets
+      default: cd-secret
+    - name: kubernetes-service-apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud kubernetes service
+      default: "API_KEY"
+    - name: resource-group
+      description: target resource group (name or id) for the ibmcloud login operation
+      default: ""
+    - name: cluster-region
+      description: |
+        (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+      default: ""
+    - name: cluster-name
+      description: name of the cluster - required if no cluster pipeline resource provided to this task
+      default: ""
+    - name: kube-api-server-accessible
+      description: |
+        indicates if the kubeAPIServer is exposed which is not the case for IBM Cloud Public Shared Workers
+        (Calico network policy). If 'true', the task is trying to update the Cluster Pipeline Resources definition
+        with the appropriate informations; When 'false', the fallback mechanism (copy file(s)) is used.
+      default: "false"
+    - name: cluster-pipeline-resources-directory-fallback
+      description: directory in the workspace that will be used as a fallback mechanism to store the kubeconfig file
+      default: .tekton-cluster-pipeline-resources
+    - name: cluster-and-worker-nodes-json-export
+      description: directory in the workspace that will be used to store the cluster and worker nodes export json files
+      default: ""
+    - name: pipeline-debug
+      default: "0"
+  resources:
+    inputs:
+      - name: cluster
+        type: cluster
+        optional: true
+    outputs:
+      - name: cluster
+        type: cluster
+        optional: true
+  results:
+    - name: cluster-name
+      description: The cluster name
+    - name: cluster-id
+      description: The cluster identifier
+    - name: resource-group-name
+      description: The resource-group name that this cluster is part of
+    - name: resource-group-id
+      description: The resource-group identifier that this cluster is part of
+    - name: region
+      description: The region (ie us-south) where the cluster is located
+  workspaces:
+    - name: cluster-configuration
+      description: A workspace where the kubernetes cluster config is exported
+      mountPath: /clusterconfig
+  steps:
+    - name: setup
+      image: ibmcom/pipeline-base-image:2.6
+      workingDir: /clusterconfig
+      env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.kubernetes-service-apikey-secret-key)
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          set -e -o pipefail
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+              pwd
+              env
+              trap env EXIT
+              set -x
+          fi
+
+          ##########################################################################
+          # Setting HOME explicitly to have ibmcloud plugins available
+          # doing the export rather than env definition is a workaround
+          # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+          export HOME="/root"
+          ##########################################################################
+          ibmcloud config --check-version false
+          if [ "$(params.cluster-region)" ]; then
+            TARGET_REGION=$(params.cluster-region)
+          else
+            TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
+          fi
+          ibmcloud login -a $(params.ibmcloud-api) -r $TARGET_REGION --apikey $API_KEY
+          if [ "$(params.resource-group)" ]; then
+            ibmcloud target -g $(params.resource-group)
+          fi
+          # Look for the cluster
+          if [ "$(resources.inputs.cluster.name)" == "" ]; then
+            export CLUSTER_NAME="$(params.cluster-name)"
+          else
+            export CLUSTER_NAME="$(resources.inputs.cluster.name)"
+          fi
+          if ibmcloud ks cluster get --cluster $CLUSTER_NAME; then
+            KUBECONFIG_FILE=$(ibmcloud ks cluster config --cluster $CLUSTER_NAME --export -s | awk -F= '{print $2}')
+          else
+            echo "Cluster $CLUSTER_NAME not found. Accessible clusters are:"
+            ibmcloud ks clusters
+            exit 1
+          fi
+
+          # PipelineResource Cluster are managed appropriately as input resources
+          # but not as output resources, attempting to update the PipelineResource Cluster
+          # that has been given (using kubectl patch commands)
+          # Verifying the access to pipeline resources
+          updateClusterPipelineResource="false"
+          if [ "$(params.kube-api-server-accessible)" == "true" ]; then
+            if kubectl auth can-i get pipelineresources.tekton.dev > /dev/null 2>&1; then
+              updateClusterPipelineResource="true"
+            fi
+          fi
+          if [ "$updateClusterPipelineResource" == "true" ]; then
+            # TODO Need to update the Cluster Pipeline Resource with this values
+            # This can only be done when TriggerTemplate#resourcetemplates will accept
+            # Role and Binding K8S resources definition
+            echo "TODO - Processing $KUBECONFIG_FILE"
+            K8S_USER_NAME=$(yq r $KUBECONFIG_FILE users[0].name)
+            K8S_USER_TOKEN=$(yq r $KUBECONFIG_FILE users[0].user.auth-provider.config.id-token)
+            K8S_CLUSTER_URL=$(yq r $KUBECONFIG_FILE clusters[0].cluster.server)
+            CA_PEM_FILE="$(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority)"
+            K8S_CLUSTER_CADATA=$(base64 -w0 $CA_PEM_FILE)
+            echo "K8S_USER_NAME=$K8S_USER_NAME"
+            #echo "K8S_USER_TOKEN=$K8S_USER_TOKEN"
+            echo "K8S_CLUSTER_URL=$K8S_CLUSTER_URL"
+            #echo "K8S_CLUSTER_CADATA=$K8S_CLUSTER_CADATA"
+          else
+            echo "Access to pipelineresources.tekton.dev is required to update Cluser Pipeline Resource accordingly"
+            echo "Falling back to copy of $(basename $KUBECONFIG_FILE) to the pipeline run volume"
+            mkdir -p /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
+            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) \
+              /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
+            cp $KUBECONFIG_FILE \
+              /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
+            echo -n "Kubeconfig file(s) copied to "
+            echo "/clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME"
+          fi
+
+          ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > /steps/$CLUSTER_NAME.json
+
+          if [ "$(params.cluster-and-worker-nodes-json-export)" ]; then
+            mkdir -p /clusterconfig/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME
+            cp /steps/$CLUSTER_NAME.json \
+              /clusterconfig/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME.json
+            ibmcloud ks worker ls --cluster $CLUSTER_NAME --json \
+              > /clusterconfig/$(params.cluster-and-worker-nodes-json-export)/$CLUSTER_NAME/$CLUSTER_NAME-workers.json
+          fi
+
+          # Record task results
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.name')" > $(results.cluster-name.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.id')" > $(results.cluster-id.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.resourceGroupName')" > $(results.resource-group-name.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.resourceGroup')" > $(results.resource-group-id.path)
+          echo -n "$(cat /steps/$CLUSTER_NAME.json | jq -r '.region')" > $(results.region.path)
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

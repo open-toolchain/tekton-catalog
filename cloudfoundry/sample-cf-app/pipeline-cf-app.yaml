@@ -1,0 +1,108 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sample-cf-app
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: region
+      description: Name of the region to deploy the CF app to. Default to the toolchain region
+      default: ""
+    - name: cf-org
+      description: Name of organization to deploy the CF app to
+    - name: cf-space
+      description: Name of space to deploy the CF app to
+    - name: cf-app
+      description: Name of the CF application to be deployed
+    - name: pipeline-debug
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: clone-task
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: rolling-deploy-task
+      runAfter: [clone-task]
+      taskRef:
+        name: cf-deploy-app
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: cloud-foundry-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: region
+          value: $(params.region)
+        - name: cf-org
+          value: $(params.cf-org)
+        - name: cf-space
+          value: $(params.cf-space)
+        - name: cf-app
+          value: $(params.cf-app)
+        - name: cf-commands
+          value: |
+            #!/bin/bash
+            # Push app
+            if ! cf app "$CF_APP"; then
+              cf push "$CF_APP"
+            else
+              OLD_CF_APP="${CF_APP}-OLD-$(date +"%s")"
+              rollback() {
+                set +e
+                if cf app "$OLD_CF_APP"; then
+                  cf logs "$CF_APP" --recent
+                  cf delete "$CF_APP" -f
+                  cf rename "$OLD_CF_APP" "$CF_APP"
+                fi
+                exit 1
+              }
+              set -e
+              trap rollback ERR
+              cf rename "$CF_APP" "$OLD_CF_APP"
+              cf push "$CF_APP"
+              cf delete "$OLD_CF_APP" -f
+            fi
+            # Export app name and URL for use in later Pipeline jobs
+            export CF_APP_NAME="$CF_APP"
+            export APP_URL=http://$(cf app $CF_APP_NAME | grep -e urls: -e routes: | awk '{print $2}')
+            # View logs
+            cf logs "${CF_APP}" --recent
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: source
+          workspace: pipeline-ws
+    - name: publish-deployable-task
+      taskRef:
+        name: toolchain-publish-deployable-mapping
+      params:
+        - name: deployable-type
+          value: "app"
+        - name: deployable-region-id
+          value: $(tasks.rolling-deploy-task.results.region)
+        - name: deployable-guid
+          value: $(tasks.rolling-deploy-task.results.cf-app-guid)
+        - name: deployable-cf-org-id
+          value: $(tasks.rolling-deploy-task.results.cf-org-id)
+        - name: deployable-cf-space-id
+          value: $(tasks.rolling-deploy-task.results.cf-space-id)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

@@ -1,0 +1,139 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: doi-publish-buildrecord
+spec:
+  params:
+    - name: app-name
+      description: Logical application name for DevOps Insights
+    - name: toolchain-id
+      description: |
+        Toolchain service instance id.
+        Default to the toolchain containing the CD Tekton PipelineRun currently executed
+      default: ""
+    - name: build-number
+      description: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
+      default: ""
+    - name: build-status
+      description: the build status (can be either pass | fail)
+      default: "pass"
+    - name: git-repository
+      description: The url of the git repository
+    - name: git-branch
+      description: The repository branch on which the build has been performed
+    - name: git-commit
+      description: The git commit id
+    - name: job-url
+      description: The url to the job's build logs. Default to the CD Tekton PipelineRun currently executed
+      default: ""
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: Name of the secret containing the continuous delivery pipeline context secrets
+      default: "secure-properties"
+    - name: toolchain-apikey-secret-key
+      description: field in the secret that contains the api key used to access toolchain and DOI instance
+      default: "toolchain-apikey"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  results:
+    - name: build-number
+      description: Devops Insights build number reference used
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+  steps:
+    - name: publish-build-record
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBM_CLOUD_API
+          value: $(params.ibmcloud-api)
+        - name: IBM_CLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.toolchain-apikey-secret-key)
+              optional: true
+        - name: APP_NAME
+          value: $(params.app-name)
+        - name: TOOLCHAIN_ID
+          value: $(params.toolchain-id)
+        - name: BUILD_NUMBER
+          value: $(params.build-number)
+        - name: BUILD_STATUS
+          value: $(params.build-status)
+        - name: GIT_URL
+          value: $(params.git-repository)
+        - name: GIT_BRANCH
+          value: $(params.git-branch)
+        - name: GIT_COMMIT
+          value: $(params.git-commit)
+        - name: JOB_URL
+          value: $(params.job-url)
+        - name: PIPELINE_RUN_URL
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+        - name: DEFAULT_BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+        fi
+
+        ##########################################################################
+        # Setting HOME explicitly to have ibmcloud plugins available
+        # doing the export rather than env definition is a workaround
+        # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
+        export HOME="/root"
+        ##########################################################################
+        if [[ "$IBM_CLOUD_API" == *test* ]]; then
+          export IBM_CLOUD_DEVOPS_ENV=dev
+        fi
+
+        # Default Toolchain ID if needed
+        if [ -z "$TOOLCHAIN_ID" ]; then
+          TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+        fi
+
+        # Default Job URL if needed
+        if [ -z "$JOB_URL" ]; then
+          JOB_URL="$PIPELINE_RUN_URL"
+        fi
+
+        # Default build number if needed
+        if [ -z "$BUILD_NUMBER" ]; then
+          BUILD_NUMBER="$DEFAULT_BUILD_NUMBER"
+        fi
+
+        export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
+        ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
+        ibmcloud doi publishbuildrecord --logicalappname="${APP_NAME}" --buildnumber=${BUILD_NUMBER} \
+          --branch=${GIT_BRANCH} --repositoryurl=${GIT_URL} --commitid=${GIT_COMMIT} \
+          --status=${BUILD_STATUS} --joburl="$JOB_URL"
+
+        # Record task results
+        echo -n "${BUILD_NUMBER}" > $(results.build-number.path)
+
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

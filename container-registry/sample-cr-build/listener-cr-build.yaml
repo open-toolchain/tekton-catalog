@@ -1,4 +1,5 @@
-apiVersion: tekton.dev/v1alpha1
+---
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: cr-build
@@ -10,10 +11,10 @@ spec:
       description: the branch for the git repo
     - name: apikey
       description: the ibmcloud api key
-    - name: imageUrl
+    - name: image-url
       description: The image url in your container registry
-    - name: pathToDockerfile
-      default: '.'
+    - name: path-to-dockerfile
+      default: "."
     - name: pipeline-debug
       default: "0"
   resourcetemplates:
@@ -33,23 +34,23 @@ spec:
         type: image
         params:
           - name: url
-            value: $(params.imageUrl)
+            value: $(params.image-url)
     # PVC definition like pre-tekton-0.10.1
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
-        name: containerize-$(uid)-pvc
+        name: cr-build-$(uid)-pvc
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: containerize-$(uid)
+        name: cr-build-$(uid)
       spec:
         pipelineRef:
           name: cr-build
@@ -58,18 +59,20 @@ spec:
             resourceRef:
               name: image-to-build
         params:
-          - name: pipeline-pvc
-            value: containerize-$(uid)-pvc
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: pathToDockerfile
-            value: $(params.pathToDockerfile)
+          - name: path-to-dockerfile
+            value: $(params.path-to-dockerfile)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: cr-build-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: cr-build
@@ -78,7 +81,7 @@ spec:
     - name: branch
       value: "master"
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: cr-build

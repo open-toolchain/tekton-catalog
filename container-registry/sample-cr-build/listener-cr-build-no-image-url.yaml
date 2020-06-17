@@ -1,0 +1,79 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: cr-build-no-image-url
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: registry-region
+      description: the container registry region
+    - name: registry-namespace
+      description: the container registry namespace
+    - name: image-name
+      description: the image name
+    - name: path-to-dockerfile
+      default: "."
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: cr-build-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: cr-build-no-image-url-$(uid)
+      spec:
+        pipelineRef:
+          name: cr-build-no-image-url
+        params:
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: registry-region
+            value: $(params.registry-region)
+          - name: registry-namespace
+            value: $(params.registry-namespace)
+          - name: image-name
+            value: $(params.image-name)
+          - name: path-to-dockerfile
+            value: $(params.path-to-dockerfile)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: cr-build-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: cr-build-no-image-url
+spec:
+  params:
+    - name: branch
+      value: "master"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: cr-build-no-image-url
+spec:
+  triggers:
+    - binding:
+        name: cr-build-no-image-url
+      template:
+        name: cr-build-no-image-url
