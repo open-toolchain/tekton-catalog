@@ -9,7 +9,7 @@
 
 ## Git integration clone task - git-clone-repo
 
-### Context - ConfigMap/Secret
+#### Context - ConfigMap/Secret
 
   The task may rely on the following kubernetes resources to be defined:
 
@@ -22,7 +22,7 @@
 
   See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
-### Parameters
+#### Parameters
 
 * **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
@@ -83,6 +83,38 @@ The output of this task is the repository cloned into the directory on the works
 ### Workspaces
 
 * **artifacts**: Workspace that may contain git repository information (ie build.properties). Should be marked as optional when Tekton will permit it
+
+## Git commit status setter task - set-commit-status
+
+### Inputs
+
+#### Context - ConfigMap/Secret
+
+  The task expects the following kubernetes resource to be defined:
+
+* **Secret cd-secret (optional)**
+
+  Secret containing:
+  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (and `Git Repos and Issue Tracking` service if used)
+
+  If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
+
+  See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+
+#### Parameters
+
+* **task-pvc**: the input pvc - this is where the properties file (like `build.properties` defined in `propertiesFile` parameter) would be stored
+* **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
+* **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
+* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
+* **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
+* **repository**: the git repository url that the toolchain is integrating
+* **revision**: the git revision/commit to update the status
+* **description**: A short description of the status.
+* **context**: (optional) A string label to differentiate this status from the status of other systems. (default to `continuous-integration/tekton`)
+* **state**: The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled` or a value meaningful for the target git repository (gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled` - github/integrated github: `pending`, `success`, `failure`, `error` - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED`)
+* **state-var**: Customized variable stored in `propertiesFile` (like `build-properties` for instance) to use as state if `state` input param is empty.
+* **propertiesFile**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
 
 ## Usages
 

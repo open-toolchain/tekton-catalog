@@ -303,7 +303,6 @@ spec:
           else:
             # No mapping found - use the state value provided
             bitbucket_state = state
-
           print("State value '" + state + "' mapped to bitbucket state '" + bitbucket_state + "'")
 
           data = {

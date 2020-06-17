@@ -3,6 +3,8 @@ The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-
 
 It also contains a `dind-cluster-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
 
+It also contains a `dind-cluster-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
+
 **Note:** this sample also relies on the clone-repo task to clone the application to containerize.
 
 1) Create or update a toolchain to include:

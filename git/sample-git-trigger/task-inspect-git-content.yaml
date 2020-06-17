@@ -70,4 +70,3 @@ spec:
           echo "params.git-branch: $(params.git-branch)"
           echo "params.git-commit: $(params.git-commit)"
           echo "params.git-user: $(params.git-user)"
-
