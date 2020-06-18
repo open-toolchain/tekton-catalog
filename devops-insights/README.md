@@ -9,7 +9,7 @@
 
 ## Install the Tasks
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
-- Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `container-registry`
+- Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `devops-insights`
 
 ## doi-publish-buildrecord
 This task publishes build record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
