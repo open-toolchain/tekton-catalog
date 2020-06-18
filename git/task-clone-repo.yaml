@@ -34,7 +34,7 @@ spec:
       default: ""
     - name: git-max-retry
       description: max retry for the git clone operation
-      default: "3"      
+      default: "2"
     - name: pr-repository
       description: |
         the originating repository where the PullRequest comes from (in case of a fork)
