@@ -1,7 +1,7 @@
 # Kubernetes-Service related tasks
 
-- **iks-fetch-config**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
-- **iks-contextual-execution**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
+- **[iks-fetch-config](#iks-fetch-config)**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
+- **[iks-contextual-execution](#iks-contextual-execution)**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
 
 **WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.16. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 
@@ -9,7 +9,9 @@
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
 - Add that github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `kubernetes-service`
 
-## Fetch IKS Cluster Configuration helper task
+## iks-fetch-config
+
+Fetch IKS Cluster Configuration helper task
 
 ### Context - ConfigMap/Secret
 
@@ -48,7 +50,9 @@
 
 * **cluster**: (optional) The Cluster PipelineResource that will be updated as output of this task.
 
-## Kubernetes Contextual Execution helper task
+## iks-contextual-execution
+
+Kubernetes Contextual Execution helper task
 
 ### Context - ConfigMap/Secret
 

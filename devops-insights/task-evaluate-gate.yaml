@@ -13,7 +13,7 @@ spec:
         Default to the toolchain containing the CD Tekton PipelineRun currently executed
       default: ""
     - name: build-number
-      description: Devops Inisghts build number reference. Default to the CD Tekton Pipeline build number
+      description: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
       default: ""
     - name: policy
       description: The name of the policy that the gate uses to make its decision

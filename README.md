@@ -57,39 +57,39 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 ## Cloud Foundry related tasks
 
-- **cf-deploy-app**: This task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands. [Documentation is here](./cloudfoundry/README.md)
+- **[cf-deploy-app](./cloudfoundry/README.md)**: This task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands.
 
 ## Git related tasks
 
-- **git-clone-repo**: This task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo. [Documentation is here](./git/README.md)
-- **git-set-commit-status**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using). [Documentation is here](./git/README.md)
+- **[git-clone-repo](./git/README.md#git-clone-repo)**: This task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo.
+- **[git-set-commit-status](./git/README.md#git-set-commit-status)**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
 
 
 ## IBM Cloud Container Registry related tasks
 
-- **icr-containerize**: This task is building and pushing an image to [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image. [Documentation is here](./container-registry/README.md)
-- **icr-cr-build**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image. [Documentation is here](./container-registry/README.md)
-- **icr-execute-in-dind**: This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind, and push the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./container-registry/README.md)
-- **icr-execute-in-dind-cluster**: This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./container-registry/README.md)
-- **icr-check-va-scan**: This task is verifying that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and process the outcome of the scan. [Documentation is here](./container-registry/README.md)
+- **[icr-containerize](./container-registry/README.md#icr-containerize)**: This task is building and pushing an image to [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **[icr-cr-build](./container-registry/README.md#icr-cr-build)**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image.
+- **[icr-execute-in-dind](./container-registry/README.md#icr-execute-in-dind)**: This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind, and push the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
+- **[icr-execute-in-dind-cluster](./container-registry/README.md#icr-execute-in-dind-cluster)**: This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
+- **[icr-check-va-scan](./container-registry/README.md#icr-check-va-scan)**: This task is verifying that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and process the outcome of the scan.
 
 ## IBM Cloud Devops Insights related tasks
 
-- **doi-publish-buildrecord**: This task publishes build record to DevOps Insights
-- **doi-publish-testrecord**: This task publishes test record to DevOps Insights
-- **doi-publish-deployrecord**: This task publishes deploy record to DevOps Insights
-- **doi-evaluate-gate**: This task evaluates DevOps Insights gate policy
+- **[doi-publish-buildrecord](./devops-insights/README.md#doi-publish-buildrecord)**: This task publishes build record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
+- **[doi-publish-testrecord](./devops-insights/README.md#doi-publish-testrecord)**: This task publishes test record(s) to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-publishing-test-data)
+- **[doi-publish-deployrecord](./devops-insights/README.md#doi-publish-deployrecord)**: This task publishes deploy record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
+- **[doi-evaluate-gate](./devops-insights/README.md#doi-evaluate-gate)**: This task evaluates [DevOps Insights gate policy](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-evaluate-gates-cli)
 
 ## IBM Cloud Kubernetes Service related tasks
 
-- **iks-fetch-config**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands. [Documentation is here](./kubernetes-service/README.md)
-- **iks-contextual-execution**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration. [Documentation is here](./kubernetes-service/README.md)
+- **[iks-fetch-config](./kubernetes-service/README.md#iks-fetch-config)**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
+- **[iks-contextual-execution](./kubernetes-service/README.md#iks-contextual-execution)**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
 
 ## Open-Toolchain related tasks
 
-- **toolchain-publish-deployable-mapping**: This task creates or updates a toolchain deployable mapping for the toolchain [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). [Documentation is here](./toolchain/README.md)
-- **toolchain-extract-value**: This task extracts values from the desired config map with a given jq expression. [Documentation is here](./toolchain/README.md)
+- **[toolchain-publish-deployable-mapping](./toolchain/README.md#toolchain-publish-deployable-mapping)**: This task creates or updates a toolchain deployable mapping for a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
+- **[toolchain-extract-value](./toolchain/README.md#toolchain-extract-value)**: This task extracts values from the desired config map with a given jq expression.
 
 ## Slack related tasks
 
-- **slack-post-message**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack). [Documentation is here](./slack/README.md)
+- **[slack-post-message](./slack/README.md)**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
