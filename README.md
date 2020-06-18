@@ -75,10 +75,10 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 ## IBM Cloud Devops Insights related tasks
 
-- **doi-publish-buildrecord**: This task publishes build record to DevOps Insights
-- **doi-publish-testrecord**: This task publishes test record to DevOps Insights
-- **doi-publish-deployrecord**: This task publishes deploy record to DevOps Insights
-- **doi-evaluate-gate**: This task evaluates DevOps Insights gate policy
+- **[doi-publish-buildrecord](./devops-insights/README.md#doi-publish-buildrecord)**: This task publishes build record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
+- **[doi-publish-testrecord](./devops-insights/README.md#doi-publish-testrecord)**: This task publishes test record(s) to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-publishing-test-data)
+- **[doi-publish-deployrecord](./devops-insights/README.md#doi-publish-deployrecord)**: This task publishes deploy record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
+- **[doi-evaluate-gate](./devops-insights/README.md#doi-evaluate-gate)**: This task evaluates [DevOps Insights gate policy](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-evaluate-gates-cli)
 
 ## IBM Cloud Kubernetes Service related tasks
 
