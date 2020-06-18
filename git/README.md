@@ -27,7 +27,7 @@ Git integration clone task
 #### Parameters
 
 * **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
-* **git-max-retry**: max retry for the git clone operation (default to "2")
+* **git-max-retry**: max retry for the git clone operation (default to "1")
 * **repository**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default value to `master`). This param can also be given as a full _git ref_ like `refs/heads/master` (as described by [Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References))
 * **revision**: (optional) the git revision/commit to update the git HEAD to (default to empty meaning only use the branch information)
