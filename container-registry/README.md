@@ -1,10 +1,10 @@
 # Container-Registry related tasks
 
-- **icr-containerize**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
-- **icr-cr-build**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image.
-- **icr-execute-in-dind**: This task runs `docker` commands (build, inspect...) against a Docker engine running as a sidecar container, and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
-- **iks-contextual-execution**: This task runs `docker` commands (build, inspect...) against a Docker engine running in a Kubernetes cluster (a Docker DinD instance will be deployed if none is available on the build cluster), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
-- **icr-check-va-scan**: This task verifies that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and processes the outcome of the scan.
+- **[icr-containerize](#icr-containerize)**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **[icr-cr-build](#icr-cr-build)**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image.
+- **[icr-execute-in-dind](#icr-execute-in-dind)**: This task runs `docker` commands (build, inspect...) against a Docker engine running as a sidecar container, and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
+- **[icr-execute-in-dind-cluster](#icr-execute-in-dind-cluster)**: This task runs `docker` commands (build, inspect...) against a Docker engine running in a Kubernetes cluster (a Docker DinD instance will be deployed if none is available on the build cluster), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
+- **[icr-check-va-scan](#icr-check-va-scan)**: This task verifies that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and processes the outcome of the scan.
 
 **WARNING: These tasks needs to run on Kubernetes cluster with minimal version 1.16. If you are using your own Delivery Pipeline Private Worker to run your tekton pipeline(s), ensure your cluster is updated to this version at least.**
 
@@ -12,7 +12,9 @@
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
 - Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `container-registry`
 
-## Build Image helper task: icr-containerize
+## icr-containerize
+
+Build Image helper task using buildkit
 
 ### Context - ConfigMap/Secret
 
@@ -57,7 +59,9 @@
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
-## Build Image helper task: icr-cr-build
+## icr-cr-build
+
+Build Image helper task using `ibmcloud cr build` command
 
 ### Context - ConfigMap/Secret
 
@@ -101,9 +105,9 @@
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
-## Docker In Docker (DIND) helper task: icr-execute-in-dind
-This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind,
-and pushes the resulting image to the IBM Cloud Container Registry.
+## icr-execute-in-dind
+
+This task runs `docker` commands (build, inspect...) that communicate with a sidecar _Docker-In-Docker_ (DIND), and pushes the resulting image to the IBM Cloud Container Registry.
 
 **Note:** the **Docker engine** used to execute the commands is **transient**, created by the task as a sidecar container,
 and is available only during the task's lifespan.
@@ -153,8 +157,9 @@ and is available only during the task's lifespan.
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
-## Docker In Docker (DIND) Kubernetes Cluster Hosted helper task: icr-execute-in-dind-cluster
-This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
+## icr-execute-in-dind-cluster
+
+This task runs `docker` commands (build, inspect...) that communicate with a  _Docker-In-Docker_ (DIND) instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
 
 #### Context - ConfigMap/Secret
 
@@ -209,7 +214,9 @@ This task runs `docker` commands (build, inspect...) that communicate with a doc
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
-## Vulnerability Advisor helper task: icr-check-va-scan
+## icr-check-va-scan
+
+Vulnerability Advisor helper task
 
 ### Context - ConfigMap/Secret
 
