@@ -9,6 +9,9 @@ spec:
       description: the git repo
     - name: branch
       description: the branch for the git repo
+    - name: git-access-token
+      description: illustrate alternate way to provide/get git access token
+      default: ""
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -23,3 +26,6 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: git-access-token
+          value: $(params.git-access-token)
+

@@ -1,13 +1,15 @@
 # Git related tasks
 
-- **git-clone-repo**: This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository.
-- **git-set-commit-status**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
+- **[git-clone-repo](#git-clone-repo)**: This Task fetches the credentials needed to perform git operations on a repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses it to clone (and/or perform the appropriate checkout if pull request parameters are given) of the repository.
+- **[git-set-commit-status](#git-set-commit-status)**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using)
 
 ## Install the Tasks
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
 - Add that github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `git`
 
-## Git integration clone task - git-clone-repo
+## git-clone-repo
+
+Git integration clone task
 
 #### Context - ConfigMap/Secret
 
@@ -25,6 +27,7 @@
 #### Parameters
 
 * **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
+* **git-max-retry**: max retry for the git clone operation (default to "1")
 * **repository**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default value to `master`). This param can also be given as a full _git ref_ like `refs/heads/master` (as described by [Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References))
 * **revision**: (optional) the git revision/commit to update the git HEAD to (default to empty meaning only use the branch information)
@@ -51,7 +54,9 @@
 ### Outcome
 The output of this task is the repository cloned into the directory on the workspace `workspace`.
 
-## Git commit status setter task - git-set-commit-status
+## git-set-commit-status
+
+Git commit status setter task
 
 ### Context - ConfigMap/Secret
 
