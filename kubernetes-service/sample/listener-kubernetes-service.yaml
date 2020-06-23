@@ -13,13 +13,6 @@ spec:
       description: Resource group for the ibmcloud operation
       default: "default"
   resourcetemplates:
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: cd-secret
-      type: Opaque
-      stringData:
-        API_KEY: $(params.apikey)
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
