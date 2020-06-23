@@ -15,18 +15,18 @@ Git integration clone task
 
   The task may rely on the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and `Git Repos and Issue Tracking` service if used). Note: secret name and secret key can be configured using Task's params.
+  * **apikey**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and `Git Repos and Issue Tracking` service if used). Note: secret name and secret key can be configured using Task's params.
 
   If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
 
-  See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+  Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
 
 #### Parameters
 
-* **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
+* **git-access-token**: (optional) token to access the git repository. Either `secure-properties` or git-access-token has to be provided.
 * **git-max-retry**: max retry for the git clone operation (default to "1")
 * **repository**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default value to `master`). This param can also be given as a full _git ref_ like `refs/heads/master` (as described by [Git References](https://git-scm.com/book/en/v2/Git-Internals-Git-References))
@@ -37,8 +37,8 @@ Git integration clone task
 * **directory-name**: (optional) name of the new directory to clone into (default to `.` in order to clone at the root of the volume mounted for the pipeline run). Note: It will be to the "humanish" part of the repository if this param is set to blank
 * **properties-file**: (optional) name of the properties file that will be created as an additional outcome of this task in the workspace `workspace`. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
-* **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secret (default to `cd-secret`)
-* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
+* **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secret (default to `secure-properties`)
+* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **git-credentials-json-file**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to the workspace `workspace` backed by a volume). Default to '' meaning no output of this information.
 
 ### Workspaces
@@ -62,21 +62,21 @@ Git commit status setter task
 
   The task may rely on the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and `Git Repos and Issue Tracking` service if used). Note: secret name and secret key can be configured using Task's params.
+  * **apikey**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and `Git Repos and Issue Tracking` service if used). Note: secret name and secret key can be configured using Task's params.
 
   If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
 
-  See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+  Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
 
 ### Parameters
 
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
-* **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secret (default to `cd-secret`)
-* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
-* **git-access-token**: (optional) token to access the git repository. Either `cd-secret` or git-access-token has to be provided.
+* **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secret (default to `secure-properties`)
+* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
+* **git-access-token**: (optional) token to access the git repository. Either `secure-properties` secret or `git-access-token` has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
 * **revision**: the git revision/commit to update the status
 * **description**: A short description of the status.
@@ -97,22 +97,22 @@ Git commit status setter task
 
   The task expects the following kubernetes resource to be defined:
 
-* **Secret cd-secret (optional)**
+* **Secret secure-properties (optional)**
 
   Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key allowing access to the toolchain (and `Git Repos and Issue Tracking` service if used)
+  * **apikey**: An IBM Cloud Api Key allowing access to the toolchain (and `Git Repos and Issue Tracking` service if used)
 
   If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
 
-  See [sample TriggerTemplate](./sample/listener-simple-clone.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+  Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
 
 #### Parameters
 
 * **task-pvc**: the input pvc - this is where the properties file (like `build.properties` defined in `propertiesFile` parameter) would be stored
 * **resourceGroup**: (optional) target resource group (name or id) for the ibmcloud login operation
-* **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `cd-secret`)
-* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
-* **gitAccessToken**: (optional) token to access the git repository. Either `cd-secret` or gitAccessToken has to be provided.
+* **continuous-delivery-context-secret**: (optional) name of the configmap containing the continuous delivery pipeline context secret (default to `secure-properties`)
+* **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
+* **gitAccessToken**: (optional) token to access the git repository. Either `secure-properties` or gitAccessToken has to be provided.
 * **repository**: the git repository url that the toolchain is integrating
 * **revision**: the git revision/commit to update the status
 * **description**: A short description of the status.
