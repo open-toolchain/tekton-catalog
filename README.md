@@ -8,7 +8,9 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 **Note**: 
 - These tasks are usable with Continuous Delivery Tekton Pipeline Worker Agent (Tekton definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
 
-## Breaking Changes when moving from tag "tekton_pipeline0.10.1"
+## Breaking Changes 
+
+### when moving from tag "tekton_pipeline0.10.1"
 
 - These tasks are using **kebab-case style for EVERY parameters names**. So parameter `pathToContext` (in previous versions of the tasks) has been renamed as `path-to-context`, parameter `clusterName` has been renamed to `cluster-name` and so on...
 - `communication` folder has been renamed to `slack` folder
@@ -53,6 +55,20 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   | kubernetes-service | iks-fetch-config | workspace | cluster-configuration | A workspace where the kubernetes cluster config is exported |
   | kubernetes-service | iks-contextual-execution | workspace | cluster-configuration | A workspace that contain the kubectl cluster config to be used |
   
+### when moving from tag "tekton_pipeline0.10.1" and/or branch "tkn_v1beta1"
+
+- Tasks that are expecting a secret to retrieve apikey and/or secret values have been updated to use the default secret `secure-properties` injected by Continuous Delivery Tekton Pipeline support. The updated tasks are:
+  - icr-check-va-scan
+  - icr-containerize
+  - icr-cr-build
+  - icr-execute-in-dind
+  - icr-execute-in-dind-cluster
+  - git-clone-repo
+  - git-set-commit-status
+  - iks-fetch-config
+
+  Note: As a reminder, in previous version (before `secure-properties` injection by CD tekton support), the default was set to `cd-secret`
+
 # Tasks 
 
 ## Cloud Foundry related tasks
