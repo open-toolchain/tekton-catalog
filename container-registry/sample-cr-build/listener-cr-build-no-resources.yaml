@@ -18,15 +18,6 @@ spec:
     - name: pipeline-debug
       default: "0"
   resourcetemplates:
-    # CD secret to provide API_KEY to access toolchain information
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: cd-secret
-      type: Opaque
-      stringData:
-        API_KEY: $(params.apikey)
-    # PVC definition like pre-tekton-0.10.1
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:

@@ -17,14 +17,14 @@ Fetch IKS Cluster Configuration helper task
 
   The task may rely on the following kubernetes resources to be defined:
 
-* **Secret cd-secret**
+* **Secret secure-properties**
 
   Secret containing:
-  * **API_KEY**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access IBM Cloud Kubernetes Service. Note: secret name and secret key can be configured using Task's params.
+  * **apikey**: An [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access IBM Cloud Kubernetes Service. Note: secret name and secret key can be configured using Task's params.
 
   If this secret is provided, it will be used to obtain the the git token for the git integration in the toolchain
 
-  See [sample TriggerTemplate](./sample/listener-kubernetes-service.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
+  Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
 
 ### Parameters
 
@@ -33,8 +33,8 @@ Fetch IKS Cluster Configuration helper task
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
 * **cluster-pipeline-resources-directory-fallback**: (optional) that will be used as a fallback mechanism to store the kubeconfig file for the target cluster (expressed by the inputs)
 * **pipeline-debug**: (optional) turn on task script context debugging
-* **continuous-delivery-context-secret**: (optional) name of the secret containing the continuous delivery pipeline context secret (default to `cd-secret`)
-* **kubernetes-service-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `API_KEY`)
+* **continuous-delivery-context-secret**: (optional) name of the secret containing the continuous delivery pipeline context secret (default to `secure-properties`)
+* **kubernetes-service-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 
 ### Workspaces
 
@@ -53,17 +53,6 @@ Fetch IKS Cluster Configuration helper task
 ## iks-contextual-execution
 
 Kubernetes Contextual Execution helper task
-
-### Context - ConfigMap/Secret
-
-  The task expects the following kubernetes resources to be defined:
-
-* **Secret cd-secret**
-
-  Secret containing:
-  * **API_KEY**: An IBM Cloud Api Key use to access to the IBM Cloud Container registry service (https://cloud.ibm.com/iam/apikeys)
-
-  See [sample TriggerTemplate](./sample/listener-kubernetes-service.yaml) on how to create the secret using `resourcetemplates` in a `TriggerTemplate`
 
 ### Parameters
 
