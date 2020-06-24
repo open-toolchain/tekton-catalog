@@ -1,0 +1,115 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: dct-verify
+spec:
+  params:
+    - name: app-name
+      description: The name of your app
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: build-signer
+      description: build signer
+      default: devops-build
+    - name: validation-signer
+      description: validation signer
+    - name: registry-namespace
+      description: The registry namespace
+    - name: registry-region
+      description: the registry region
+    - name: vault-name
+      description: the key protect instance name
+    - name: resource-group
+      description: the resource group
+    - name: cluster-name
+      description: the name of the targeted cluster
+    - name: region
+      description: target region
+    - name: working-dir
+      default: "/root"
+    - name: mount-path
+      description: mount path directory
+      default: /artifacts
+
+  steps:
+    - name: sign-image
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBM_CLOUD_API_KEY
+          value: $(params.api-key)
+        - name: HOME
+          value: $(params.working-dir)
+        - name: REGISTRY_NAMESPACE
+          value: $(params.registry-namespace)
+        - name: VAULT_INSTANCE
+          value: $(params.vault-name)
+        - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+          value: $(params.resource-group)
+        - name: REGISTRY_REGION
+          value: $(params.registry-region)
+        - name: IBMCLOUD_TARGET_REGION
+          value: $(params.region)
+        - name: BUILD_CLUSTER
+          value: $(params.cluster-name)
+        - name: ARCHIVE_DIR
+          value: $(params.mount-path)
+        - name: IMAGE_NAME
+          value: $(params.app-name)
+        - name: BUILD_CLUSTER_NAMESPACE
+          value: build
+        - name: BUILD_SIGNER
+          value: $(params.build-signer)
+        - name: VALIDATION_SIGNER
+          value: $(params.validation-signer)
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          #!/bin/bash
+          # uncomment to debug the script
+          # set -x
+          # This script inspect the docker image signatures to ensure compliance
+          source $ARCHIVE_DIR/build.properties
+          cat $ARCHIVE_DIR/build.properties
+          IMAGE_TAG=$IMAGE_TAGS
+          source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/\
+          scripts/image_signing/add_docker.sh")
+          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/\
+          scripts/setup_dind.sh")
+          # configure the container registry
+          REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
+          ibmcloud cr region-set $REGISTRY_REGION
+          # login docker to ibm container registry
+          ibmcloud cr login
+          # configure DCT and inspect the image
+          REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+          export DOCKER_CONTENT_TRUST_SERVER=https://${REGISTRY_URL}:4443
+          docker trust inspect ${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}:${IMAGE_TAG} |\
+          tee _image_inspect.json
+
+          # Check if the Builder signature is present
+          #if jq -e ".[] | select(.Name=\"$REGISTRY_URL/$REGISTRY_NAMESPACE/#$IMAGE_NAME:$IMAGE_TAG\") |
+          #.SignedTags[] | select(.#SignedTag=\"$IMAGE_TAG\") | select (.Signers[] |
+          # contains#(\"$BUILD_SIGNER\"))" _image_inspect.json; then
+          #  echo "Signature $BUILD_SIGNER found"
+          #else
+          #  echo "Signature $BUILD_SIGNER not found"
+          #  exit 1
+          #fi
+
+          # Check if the Validation signature is present
+          if jq -e ".[] | select(.Name=\"$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG\") |
+          .SignedTags[] | select(.SignedTag=\"$IMAGE_TAG\") | select (.Signers[] |
+          contains(\"$VALIDATION_SIGNER\"))" _image_inspect.json; then
+            echo "Signature $VALIDATION_SIGNER found"
+          else
+            echo "Signature $VALIDATION_SIGNER not found"
+            exit 1
+          fi
+
+  workspaces:
+    - name: artifacts
+      mountPath: $(params.mount-path)
