@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: tester-tests-run
+  name: tester-run-tests
 spec:
   params:
     - name: pipeline-secret
