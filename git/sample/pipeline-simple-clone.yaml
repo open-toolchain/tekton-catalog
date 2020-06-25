@@ -12,6 +12,8 @@ spec:
     - name: git-access-token
       description: illustrate alternate way to provide/get git access token
       default: ""
+    - name: pipeline-debug
+      default: "0"
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -28,4 +30,5 @@ spec:
           value: $(params.branch)
         - name: git-access-token
           value: $(params.git-access-token)
-
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
