@@ -1,0 +1,131 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: tester-run-tests
+spec:
+  params:
+    - name: pipeline-secret
+      description: name of the secret containing secret values for the task
+      default: secure-properties
+    - name: pipeline-configmap
+      description: name of the configmap containing values for the task
+      default: environment-properties
+    - name: tests-image
+      default: "ibmcom/pipeline-base-image:latest"
+    - name: shuttle-properties-file
+      description: file containing properties
+      default: ""
+    - name: tests-script
+      default: ""
+    - name: fail-on-test-errors
+      description: |
+        flag (`true` | `false`) to indicate if the task should fail or continue
+        tests script are failing with exit not 0
+      default: "true"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  results:
+    - name: tests-exit-code
+      description: The exit-code of the tests script
+  workspaces:
+    - name: artifacts
+      description: A workspace backing by a volume
+      mountPath: /artifacts
+  steps:
+    - name: run-tests
+      image: $(params.tests-image)
+      workingDir: /artifacts
+      env:
+        - name: BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: PIPELINE_STAGE_EXECUTION_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: PIPELINE_TRIGGERING_USER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+        - name: SHUTTLE_PROPERTIES_FILE
+          value: $(params.shuttle-properties-file)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+            env
+            pwd
+            trap env EXIT
+            set -x
+        fi
+
+        export PIPELINE_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /artifacts/_toolchain.json)
+
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          source $SHUTTLE_PROPERTIES_FILE
+          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
+        fi
+
+        printf "#!/bin/bash\n" > /steps/tests-script.sh
+        printf "%s " '$(params.tests-script)' >> /steps/tests-script.sh
+        chmod +x /steps/tests-script.sh
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          echo "== cat /steps/tests-script.sh =="
+          cat /steps/tests-script.sh
+          echo "================================"
+        fi
+
+        if /steps/tests-script.sh; then
+          echo -n $? > $(results.tests-exit-code.path)
+          echo "Tests executed successfully"
+        else
+          echo -n $? > $(results.tests-exit-code.path)
+          # Failures in the tests execution
+          if [ "$(params.fail-on-test-errors)" == "true" ]; then
+            echo "Tests failed [exit code: $(cat $(results.tests-exit-code.path))]"
+            EXIT=$(cat $(results.tests-exit-code.path))
+            exit $EXIT
+          else
+            echo "Tests failed [exit code: $(cat $(results.tests-exit-code.path))] but Task is configured to not fail"
+          fi
+        fi
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /artifacts/_toolchain.json
+          subPath: toolchain.json
+          name: cd-config-volume
+        - mountPath: /cd-config/secrets
+          name: pipeline-secrets
+        - mountPath: /cd-config/properties
+          name: pipeline-properties
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: pipeline-properties
+      configMap:
+        name: $(params.pipeline-configmap)
+        optional: true
+    - name: pipeline-secrets
+      secret:
+        secretName: $(params.pipeline-secret)
+        optional: true

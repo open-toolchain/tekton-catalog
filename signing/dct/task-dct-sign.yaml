@@ -1,0 +1,128 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: signing-dct-sign
+spec:
+  params:
+    - name: app-name
+      description: The name of your app
+    - name: api-key
+    - name: signer
+      description: current signer
+    - name: registry-namespace
+      description: The registry namespace
+    - name: registry-region
+      description: the registry region
+    - name: vault-name
+      description: the key protect instance name
+    - name: resource-group
+      description: the resource group
+    - name: cluster-name
+      description: the name of the targeted cluster
+    - name: region
+      description: target region
+    - name: api-endpoint
+      description: api endpoint
+      default: https://cloud.ibm.com
+    - name: working-dir
+      default: "/root"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+
+  steps:
+    - name: sign-image
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: IBM_CLOUD_API_KEY
+          value: $(params.api-key)
+        - name: API
+          value: $(params.api-endpoint)
+        - name: HOME
+          value: $(params.working-dir)
+        - name: REGISTRY_NAMESPACE
+          value: $(params.registry-namespace)
+        - name: VAULT_INSTANCE
+          value: $(params.vault-name)
+        - name: DEVOPS_SIGNER
+          value: $(params.signer)
+        - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+          value: $(params.resource-group)
+        - name: REGISTRY_REGION
+          value: $(params.registry-region)
+        - name: IBMCLOUD_TARGET_REGION
+          value: $(params.region)
+        - name: BUILD_CLUSTER
+          value: $(params.cluster-name)
+        - name: ARCHIVE_DIR
+          value: /artifacts
+        - name: IMAGE_NAME
+          value: $(params.app-name)
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          #!/bin/bash
+          echo "IBM_CLOUD_API_KEY $IBM_CLOUD_API_KEY"
+          cat /artifacts/build.properties
+          source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/\
+          scripts/image_signing/add_docker.sh")
+          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/\
+          scripts/setup_dind.sh")
+
+          if [ $PIPELINE_DEBUG == 1 ]; then
+           pwd
+           env
+           trap env EXIT
+           set -x
+          fi
+
+          # configure the container registry
+          REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
+          ibmcloud cr region-set $REGISTRY_REGION
+          ibmcloud cr login
+          export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+          export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
+          source "$ARCHIVE_DIR"/build.properties
+          IMAGE_TAG=$IMAGE_TAGS
+          echo "CHECKING $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+          docker trust inspect "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+
+          #Required Parameters
+          # $VAULT_INSTANCE - name of vault
+          # $IBMCLOUD_TARGET_REGION - region hosting Key Protect Vault instance
+          # $IBMCLOUD_TARGET_RESOURCE_GROUP of the Key Protect Vault Instance
+          # $REGISTRY_NAMESPACE namespace of registry
+          # $IMAGE_NAME
+          # $IMAGE_TAG
+          # $DEVOPS_SIGNER - current signer
+          echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
+          source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/\
+          image_signing/signing_utils.sh")
+          # Restore signer pem key
+          VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "$IBMCLOUD_TARGET_REGION" \
+          "$IBMCLOUD_TARGET_RESOURCE_GROUP")
+          JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
+          signerkey=$(getJSONValue "$DEVOPS_SIGNER" "$JSON_DATA")
+          writeFile "$signerkey"
+          # Retrieve the signer passphrase
+          export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
+
+          # Pull the image
+          #TODO support multiple signatures. This requires knowing if there is already a signature present.
+          #Need to set DOCKER_CONTENT_TRUST=1 before the image pull if singture present
+          docker pull "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+          # Sign the image
+          export DOCKER_CONTENT_TRUST=1
+          docker trust sign "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+          docker trust inspect --pretty "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
+
+  workspaces:
+    - name: artifacts
+      description: A workspace backing by a volume
+      mountPath: /artifacts
