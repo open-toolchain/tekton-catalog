@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: dct-apply-image-enforcement-policy
+  name: signing-dct-enforcement-policy
 spec:
   params:
     - name: app-name

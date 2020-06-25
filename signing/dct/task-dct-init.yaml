@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: dct-init
+  name: signing-dct-init
 spec:
   params:
     - name: api-key

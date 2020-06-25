@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: docker-lint
+  name: linter-docker-lint
 spec:
   params:
     - name: path-to-dockerfile
