@@ -48,6 +48,8 @@ spec:
           value: $(tasks.clone-task.results.git-branch)
         - name: git-commit
           value: $(tasks.clone-task.results.git-commit)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: unit-tests-task
       runAfter: [publish-buildrecord-task]
       taskRef:
@@ -66,6 +68,8 @@ spec:
           value: $(tasks.unit-tests-task.results.file-locations)
         - name: test-types
           value: $(tasks.unit-tests-task.results.test-types)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
@@ -78,6 +82,8 @@ spec:
           value: $(params.app-name)
         - name: policy
           value: "my-policy"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: publish-deployrecord-task
       runAfter: [evaluate-gate-task]
       taskRef:
@@ -87,3 +93,5 @@ spec:
           value: $(params.app-name)
         - name: environment
           value: "my-faked-env"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
