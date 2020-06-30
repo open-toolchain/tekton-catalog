@@ -12,6 +12,8 @@ spec:
     - name: resource-group
       description: Resource group for the ibmcloud operation
       default: "default"
+    - name: pipeline-debug
+      default: "0"
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
@@ -58,6 +60,8 @@ spec:
         params:
           - name: resource-group
             value: $(params.resource-group)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

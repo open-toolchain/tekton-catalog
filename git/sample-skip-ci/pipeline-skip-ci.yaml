@@ -11,6 +11,8 @@ spec:
       description: the branch for the git repo
     - name: commit-message
       default: ""
+    - name: pipeline-debug
+      default: "0"
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -30,3 +32,5 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

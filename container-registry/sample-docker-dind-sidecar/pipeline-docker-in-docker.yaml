@@ -9,6 +9,8 @@ spec:
       description: the git repo
     - name: branch
       description: the branch for the git repo
+    - name: pipeline-debug
+      default: "0"
   resources:
     - name: app-image
       type: image
@@ -23,6 +25,8 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -31,6 +35,8 @@ spec:
       taskRef:
         name: icr-execute-in-dind
       params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: source
           workspace: pipeline-ws
@@ -44,6 +50,8 @@ spec:
       params:
         - name: scan-report-file
           value: "app-image-va-report.json"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws

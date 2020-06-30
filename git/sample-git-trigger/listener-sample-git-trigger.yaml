@@ -29,6 +29,8 @@ spec:
       default: " "
     - name: triggerName
       default: "git-pr-process"
+    - name: pipeline-debug
+      default: "0"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -63,6 +65,8 @@ spec:
             value: $(params.pr-branch)
           - name: pr-revision
             value: $(params.pr-revision)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

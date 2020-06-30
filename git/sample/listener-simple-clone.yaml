@@ -14,6 +14,8 @@ spec:
     - name: git-access-token
       description: illustrate alternate way to provide/get git access token
       default: ""
+    - name: pipeline-debug
+      default: "0"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -40,6 +42,8 @@ spec:
             value: $(params.branch)
           - name: git-access-token
             value: $(params.git-access-token)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

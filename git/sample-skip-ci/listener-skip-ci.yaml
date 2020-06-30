@@ -13,6 +13,8 @@ spec:
       description: the ibmcloud api key
     - name: commit-message
       default: ""
+    - name: pipeline-debug
+      default: "0"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -39,6 +41,8 @@ spec:
             value: $(params.branch)
           - name: commit-message
             value: $(params.commit-message)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
