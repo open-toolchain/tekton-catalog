@@ -7,6 +7,8 @@ spec:
   params:
     - name: resource-group
     - name: cluster-name
+    - name: pipeline-debug
+      default: "0"
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -20,6 +22,8 @@ spec:
           value: $(params.cluster-name)
         - name: cluster-pipeline-resources-directory-fallback
           value: .tekton-clusters
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: cluster-configuration
           workspace: pipeline-ws
@@ -40,6 +44,8 @@ spec:
             kubectl cluster-info
             echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: cluster-configuration
           workspace: pipeline-ws
