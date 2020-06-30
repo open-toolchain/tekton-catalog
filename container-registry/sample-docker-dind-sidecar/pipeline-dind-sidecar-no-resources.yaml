@@ -11,6 +11,8 @@ spec:
       description: the branch for the git repo
     - name: image-url
       description: the url of the image to build
+    - name: pipeline-debug
+      default: "0"
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -24,6 +26,8 @@ spec:
           value: $(params.branch)
         - name: properties-file
           value: ""
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -38,6 +42,8 @@ spec:
           value: 1.0.0-$(tasks.clone-repository.results.git-branch)-$(tasks.clone-repository.results.git-commit)
         - name: properties-file
           value: ""
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: source
           workspace: pipeline-ws
@@ -58,6 +64,8 @@ spec:
           value: $(tasks.build-and-push-docker.results.image-repository)
         - name: image-digest
           value: $(tasks.build-and-push-docker.results.image-digest)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       workspaces:
         - name: artifacts
           workspace: pipeline-ws
