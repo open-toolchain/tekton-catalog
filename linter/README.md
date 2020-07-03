@@ -1,6 +1,6 @@
 # Linter related tasks
 
-- **[linter-docker-lint](#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint)
+- **[linter-docker-lint](#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://hub.docker.com/r/hadolint/hadolint)
 
 ## Install the Tasks
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
