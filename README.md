@@ -75,12 +75,6 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 - **[cf-deploy-app](./cloudfoundry/README.md)**: This task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands.
 
-## Git related tasks
-
-- **[git-clone-repo](./git/README.md#git-clone-repo)**: This task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo.
-- **[git-set-commit-status](./git/README.md#git-set-commit-status)**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
-
-
 ## IBM Cloud Container Registry related tasks
 
 - **[icr-containerize](./container-registry/README.md#icr-containerize)**: This task is building and pushing an image to [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
@@ -96,10 +90,18 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 - **[doi-publish-deployrecord](./devops-insights/README.md#doi-publish-deployrecord)**: This task publishes deploy record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
 - **[doi-evaluate-gate](./devops-insights/README.md#doi-evaluate-gate)**: This task evaluates [DevOps Insights gate policy](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-evaluate-gates-cli)
 
+## Git related tasks
+
+- **[git-clone-repo](./git/README.md#git-clone-repo)**: This task fetches the credentials needed to perform a git clone of a repo specified by a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using) and then uses them to clone the repo.
+- **[git-set-commit-status](./git/README.md#git-set-commit-status)**: This task is setting a git commit status for a given git commit (revision) in a git repository repository integrated in a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
+
 ## IBM Cloud Kubernetes Service related tasks
 
 - **[iks-fetch-config](./kubernetes-service/README.md#iks-fetch-config)**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
 - **[iks-contextual-execution](./kubernetes-service/README.md#iks-contextual-execution)**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
+
+## Linter related tasks
+- **[linter-docker-lint](./linter/README.md#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint).
 
 ## Open-Toolchain related tasks
 
