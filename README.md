@@ -114,6 +114,10 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 - **[slack-post-message](./slack/README.md)**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
+## Tester related tasks
+
+- **[tester-run-tests](./tester/README.md#tester-run-tests)**: This task allows to invoke a script to execute test.
+
 ## Open-Toolchain related tasks
 
 - **[toolchain-publish-deployable-mapping](./toolchain/README.md#toolchain-publish-deployable-mapping)**: This task creates or updates a toolchain deployable mapping for a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).

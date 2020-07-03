@@ -20,8 +20,8 @@ spec:
       default: ""
     - name: fail-on-test-errors
       description: |
-        flag (`true` | `false`) to indicate if the task should fail or continue
-        tests script are failing with exit not 0
+        flag ("true" | "false") to indicate if the task should be marked as fail or successfull
+        if _tests_ script is failing with exit not equal to 0. Default to "true"
       default: "true"
     - name: pipeline-debug
       description: Pipeline debug mode
