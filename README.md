@@ -102,7 +102,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 - **[iks-deploy-to-kubernetes](./kubernetes-service/README.md#iks-deploy-to-kubernetes)**: This task allows to perform scripts typically doing deployment of a Kubernetes application with `ibmcloud ks` cli and `kubectl` cli configured for a given cluster.
 
 ## Linter related tasks
-- **[linter-docker-lint](./linter/README.md#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint).
+- **[linter-docker-lint](./linter/README.md#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://hub.docker.com/r/hadolint/hadolint).
 
 ## Signing - Docker Content Trust related tasks
 
