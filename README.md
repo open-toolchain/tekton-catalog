@@ -99,15 +99,16 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 - **[iks-fetch-config](./kubernetes-service/README.md#iks-fetch-config)**: This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started) that is required to perform `kubectl` commands.
 - **[iks-contextual-execution](./kubernetes-service/README.md#iks-contextual-execution)**: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
+- **[iks-deploy-to-kubernetes](./kubernetes-service/README.md#iks-deploy-to-kubernetes)**: This task allows to perform scripts typically doing deployment of a Kubernetes application with `ibmcloud ks` cli and `kubectl` cli configured for a given cluster.
 
 ## Linter related tasks
 - **[linter-docker-lint](./linter/README.md#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint).
+
+## Slack related tasks
+
+- **[slack-post-message](./slack/README.md)**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
 ## Open-Toolchain related tasks
 
 - **[toolchain-publish-deployable-mapping](./toolchain/README.md#toolchain-publish-deployable-mapping)**: This task creates or updates a toolchain deployable mapping for a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
 - **[toolchain-extract-value](./toolchain/README.md#toolchain-extract-value)**: This task extracts values from the desired config map with a given jq expression.
-
-## Slack related tasks
-
-- **[slack-post-message](./slack/README.md)**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
