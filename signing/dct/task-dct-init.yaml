@@ -127,12 +127,14 @@ spec:
 
         # check the existence of the container registry namespace
         REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+
         echo "Check for $REGISTRY_NAMESPACE existence"
-        if ibmcloud cr namespaces | tail --lines=+4 | head --lines=-2 | grep "^$REGISTRY_NAMESPACE"; then
-          echo "$REGISTRY_NAMESPACE exists in $REGISTRY_URL"
-        else
+        NS=$( ibmcloud cr namespaces | tail --lines=+4 | head --lines=-2 | grep "^$REGISTRY_NAMESPACE" ||: )
+        if [ -z "${NS}" ]; then
           echo "Creating REGISTRY_NAMESPACE in $REGISTRY_URL"
           ibmcloud cr namespace-add $REGISTRY_NAMESPACE
+        else 
+          echo "$REGISTRY_NAMESPACE exists in $REGISTRY_URL"
         fi
 
         export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
