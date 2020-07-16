@@ -5,76 +5,56 @@ metadata:
   name: signing-dct-enforcement-policy
 spec:
   params:
-    - name: app-name
-      description: The name of your app
-    - name: api-key
-      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
-        Service API and interact with the cluster. You can obtain your API key with
-        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
-        by clicking **Create API key** (Each API key only can be viewed once).
-    - name: validation-signer
-      description: validation signer
-    - name: registry-namespace
-      description: The registry namespace
-    - name: registry-region
-      description: the registry region
-    - name: vault-name
-      description: the key protect instance name
+    - name: image-name
+      description: The name of your image
+    - name: region
+      description: target region
     - name: resource-group
       description: the resource group
     - name: cluster-name
       description: the name of the targeted cluster
-    - name: region
-      description: target region
-    - name: working-dir
-      default: "/root"
-    - name: mount-path
-      description: mount path directory
-      default: /artifacts
+    - name: cluster-namespace
+      description: The cluster namespace to deploy rules
     - name: helm-version
       description: specific helm version
       default: 2.16.1
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: name of the secret containing the continuous delivery pipeline context secrets
+      default: secure-properties
+    - name: apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud service
+      default: apikey
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
-
-  stepTemplate:
-    env:
-      - name: PIPELINE_DEBUG
-        value: $(params.pipeline-debug)
-
   steps:
     - name: apply-image-enforcement-policy
       image: ibmcom/pipeline-base-image:2.6
       env:
         - name: IBM_CLOUD_API_KEY
-          value: $(params.api-key)
-        - name: HOME
-          value: $(params.working-dir)
-        - name: REGISTRY_NAMESPACE
-          value: $(params.registry-namespace)
-        - name: VAULT_INSTANCE
-          value: $(params.vault-name)
-        - name: VALIDATION_SIGNER
-          value: $(params.validation-signer)
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.apikey-secret-key)
         - name: IBMCLOUD_TARGET_RESOURCE_GROUP
           value: $(params.resource-group)
-        - name: REGISTRY_REGION
-          value: $(params.registry-region)
         - name: IBMCLOUD_TARGET_REGION
           value: $(params.region)
-        - name: BUILD_CLUSTER
+        - name: TARGET_CLUSTER
           value: $(params.cluster-name)
-        - name: ARCHIVE_DIR
-          value: $(params.mount-path)
-        - name: IMAGE_NAME
-          value: $(params.app-name)
         - name: CLUSTER_NAMESPACE
-          value: "prod"
+          value: $(params.cluster-namespace)
+        - name: IMAGE_NAME
+          value: $(params.image-name)
         - name: DEFAULT_HELM_VERSION
           value: $(params.helm-version)
-        - name: ARTIFACTS
-          value: $(params.mount-path)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: HOME
+          value: /root
       command: ["/bin/bash", "-c"]
       workingDir: /artifacts
       # yamllint disable rule:line-length
@@ -89,50 +69,18 @@ spec:
             set -x
           fi
 
-          echo "LOG IN"
+          ibmcloud config --check-version false
           ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
           ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
-          $(ibmcloud ks cluster config --cluster "${BUILD_CLUSTER}" --export)
+          $(ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}" --export)
           if ! kubectl get namespace "$CLUSTER_NAMESPACE"; then
             echo "creating namespace"
             kubectl create namespace "$CLUSTER_NAMESPACE"
           fi
-          echo "CHECKING HELM VERSION: matching Helm Tiller (server) if detected. "
-          set +e
-          LOCAL_VERSION=$( helm version --client | grep SemVer: | sed "s/^.*SemVer:\"v\([0-9.]*\).*/\1/" )
-          TILLER_VERSION=$( helm version --server | grep SemVer: | sed "s/^.*SemVer:\"v\([0-9.]*\).*/\1/" )
-          set -e
-          if [ -z "${TILLER_VERSION}" ]; then
-            if [ -z "${DEFAULT_HELM_VERSION}" ]; then
-              CLIENT_VERSION=${DEFAULT_HELM_VERSION}
-            else
-              CLIENT_VERSION=${LOCAL_VERSION}
-            fi
-          else
-            echo -e "Helm Tiller ${TILLER_VERSION} already installed in cluster. Keeping it, and aligning client."
-            CLIENT_VERSION=${TILLER_VERSION}
-          fi
-          if [ "${CLIENT_VERSION}" != "${LOCAL_VERSION}" ]; then
-            echo -e "Installing Helm client ${CLIENT_VERSION}"
-            WORKING_DIR=$(pwd)
-            mkdir ~/tmpbin && cd ~/tmpbin
-            curl -L https://storage.googleapis.com/kubernetes-helm/helm-v${CLIENT_VERSION}-linux-amd64.tar.gz -o helm.tar.gz && tar -xzvf helm.tar.gz
-            cd linux-amd64
-            export PATH=$(pwd):$PATH
-            cd $WORKING_DIR
-          fi
-          set +e
-          if [ -z "${TILLER_VERSION}" ]; then
-              echo -e "Installing Helm Tiller ${CLIENT_VERSION} with cluster admin privileges (RBAC)"
-              kubectl -n kube-system create serviceaccount tiller
-              kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
-              helm init --service-account tiller
-              # helm init --upgrade --force-upgrade
-              kubectl --namespace=kube-system rollout status deploy/tiller-deploy
-              # kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-          fi
-          helm version
-          helm init
+
+          # Verify helm is up & running
+          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
+
           # Install CISE
           if helm list cise | grep '^cise'; then
             echo "Container Image Security Enforcement is already installed"
@@ -174,7 +122,11 @@ spec:
             "true"
           }
 
-          for signer_and_key in $(cat $ARTIFACTS/dct_signers.json | jq -r -c '.[] | {name:.Name, key: .Keys[0].ID}'); do
+          pwd
+          ls -l
+          cat dct_signers.json
+
+          for signer_and_key in $(cat dct_signers.json | jq -r -c '.[] | {name:.Name, key: .Keys[0].ID}'); do
             DEVOPS_SIGNER=$(echo $signer_and_key | jq -r '.name')
             echo "CURRENT SIGNER= $DEVOPS_SIGNER"
             createCISE_CRD | tee cise_crd_custom_policy.yaml
@@ -182,8 +134,6 @@ spec:
             kubectl apply -f cise_crd_custom_policy.yaml -n$CLUSTER_NAMESPACE
           done
       # yamllint enable rule:line-length
-
   workspaces:
     - name: artifacts
-      # mountPath: $(params.mount-path)
       mountPath: /artifacts
