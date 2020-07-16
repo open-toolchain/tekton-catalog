@@ -105,7 +105,7 @@ spec:
             DEVOPS_SIGNER=$(echo $signer_and_key | jq -r '.name')
             DEVOPS_SIGNER_PRIVATE_KEY=$(echo $signer_and_key | jq -r '.key')
 
-            echo "CURRENT SIGNER= $DEVOPS_SIGNER"
+            echo "CURRENT SIGNER=$DEVOPS_SIGNER"
 
             createCISE_CRD | tee cise_crd_custom_policy.yaml
 
