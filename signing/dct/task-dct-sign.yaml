@@ -7,66 +7,61 @@ spec:
   params:
     - name: app-name
       description: The name of your app
-    - name: api-key
     - name: signer
       description: current signer
     - name: registry-namespace
       description: The registry namespace
     - name: registry-region
       description: the registry region
+    - name: vault-region
+      description: the region of the keyprotect instance
+    - name: vault-resource-group
+      description: the resource group of the keyprotect instance
     - name: vault-name
       description: the key protect instance name
-    - name: resource-group
-      description: the resource group
-    - name: cluster-name
-      description: the name of the targeted cluster
-    - name: region
-      description: target region
-    - name: api-endpoint
-      description: api endpoint
+    - name: ibmcloud-api
+      description: the ibmcloud api
       default: https://cloud.ibm.com
-    - name: working-dir
-      default: "/root"
+    - name: continuous-delivery-context-secret
+      description: name of the secret containing the continuous delivery pipeline context secrets
+      default: secure-properties
+    - name: apikey-secret-key
+      description: field in the secret that contains the api key used to login to ibmcloud service
+      default: apikey
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
-
-  stepTemplate:
-    env:
-      - name: PIPELINE_DEBUG
-        value: $(params.pipeline-debug)
-
   steps:
     - name: sign-image
       image: ibmcom/pipeline-base-image:2.6
       env:
         - name: IBM_CLOUD_API_KEY
-          value: $(params.api-key)
-        - name: API
-          value: $(params.api-endpoint)
-        - name: HOME
-          value: $(params.working-dir)
-        - name: REGISTRY_NAMESPACE
-          value: $(params.registry-namespace)
-        - name: VAULT_INSTANCE
-          value: $(params.vault-name)
-        - name: DEVOPS_SIGNER
-          value: $(params.signer)
-        - name: IBMCLOUD_TARGET_RESOURCE_GROUP
-          value: $(params.resource-group)
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.apikey-secret-key)
         - name: REGISTRY_REGION
           value: $(params.registry-region)
+        - name: REGISTRY_NAMESPACE
+          value: $(params.registry-namespace)
+        - name: DEVOPS_SIGNER
+          value: $(params.signer)
         - name: IBMCLOUD_TARGET_REGION
-          value: $(params.region)
-        - name: BUILD_CLUSTER
-          value: $(params.cluster-name)
+          value: $(params.vault-region)
+        - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+          value: $(params.vault-resource-group)
+        - name: VAULT_INSTANCE
+          value: $(params.vault-name)
         - name: ARCHIVE_DIR
           value: /artifacts
         - name: IMAGE_NAME
           value: $(params.app-name)
-      command: ["/bin/bash", "-c"]
-      args:
-        - |
+        - name: HOME
+          value: /root
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      workingDir: /artifacts
+      script: |
           #!/bin/bash
           echo "IBM_CLOUD_API_KEY $IBM_CLOUD_API_KEY"
           cat /artifacts/build.properties
