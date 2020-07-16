@@ -15,12 +15,6 @@ spec:
       default: ""
     - name: vault-name
       description: the key protect instance name
-    - name: region
-      description: the region of the target cluster
-    - name: resource-group
-      description: the resource group of the target cluster
-    - name: cluster-name
-      description: the name of the targeted cluster
     - name: registry-namespace
       description: The registry namespace
     - name: registry-region
@@ -58,12 +52,6 @@ spec:
               key: $(params.apikey-secret-key)
         - name: IMAGE_NAME
           value: $(params.image-name)
-        - name: IBMCLOUD_TARGET_REGION
-          value: $(params.region)
-        - name: IBMCLOUD_TARGET_RESOURCE_GROUP
-          value: $(params.resource-group)
-        - name: BUILD_CLUSTER
-          value: $(params.cluster-name)
         - name: VAULT_REGION
           value: $(params.vault-region)
         - name: VAULT_RESOURCE_GROUP
@@ -106,14 +94,25 @@ spec:
           trap env EXIT
           set -x
         fi
-        echo "DEVOPS_VALIDATION_SIGNER $DEVOPS_VALIDATION_SIGNER"
-        echo "DEVOPS_BUILD_SIGNER $DEVOPS_BUILD_SIGNER"
+
         echo "ADD DOCKER"
         source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
         # Get the notary binary
         curl -L https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -o /usr/local/bin/notary
         # Make it executable
         chmod +x /usr/local/bin/notary
+
+        # if vault region is in the 'ibm:yp:<region>' just keep the region part
+        export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
+
+        ibmcloud config --check-version false
+        ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$VAULT_REGION"
+
+        if [ -z "$VAULT_RESOURCE_GROUP" ]; then
+          echo "Using default resource group" 
+        else
+          ibmcloud target -g "$VAULT_RESOURCE_GROUP"
+        fi
 
         export DOCKER_CONTENT_TRUST=1
 
@@ -134,11 +133,6 @@ spec:
         else
           echo "Creating REGISTRY_NAMESPACE in $REGISTRY_URL"
           ibmcloud cr namespace-add $REGISTRY_NAMESPACE
-        fi
-
-        if [ "$VAULT_REGION" ]; then
-          # if vault region is in the 'ibm:yp:<region>' just keep the region part
-          export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
         fi
 
         export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
