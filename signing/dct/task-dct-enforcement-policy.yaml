@@ -7,6 +7,9 @@ spec:
   params:
     - name: image-name
       description: The name of your image
+    - name: shuttle-properties-file
+      description: properties file in the workspace that contains DCT initialization information
+      default: ""
     - name: region
       description: target region
     - name: resource-group
@@ -51,6 +54,8 @@ spec:
           value: $(params.image-name)
         - name: DEFAULT_HELM_VERSION
           value: $(params.helm-version)
+        - name: SHUTTLE_PROPERTIES_FILE
+          value: $(params.shuttle-properties-file)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
         - name: HOME
@@ -72,9 +77,11 @@ spec:
           ibmcloud config --check-version false
           ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
           ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
-          $(ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}" --export)
+
+          eval $(ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}" --export -s)
+
           if ! kubectl get namespace "$CLUSTER_NAMESPACE"; then
-            echo "creating namespace"
+            echo "creating namespace $CLUSTER_NAMESPACE"
             kubectl create namespace "$CLUSTER_NAMESPACE"
           fi
 
@@ -89,49 +96,39 @@ spec:
             helm install --name cise iks-charts/ibmcloud-image-enforcement
           fi
 
-          if [ -z "$REGISTRY_URL" ]; then
-            # Use the ibmcloud cr info to find the target registry url
-            export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+          if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+            source $SHUTTLE_PROPERTIES_FILE
+            export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
           fi
 
-          cise_crd_template=$(cat <<'EOT'
-          apiVersion: securityenforcement.admission.cloud.ibm.com/v1beta1
-          kind: %s
-          metadata:
-            name: %s
-          spec:
-            repositories:
-            - name: %s
-              policy:
-                trust:
-                  enabled: %s
-                  signerSecrets:
-                  - name: %s
-                va:
-                  enabled: %s
-          EOT
-          )
+          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
 
-          createCISE_CRD() {
-            printf "$cise_crd_template" \
-            "ImagePolicy" \
-            "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" \
-            "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME" \
-            "true" \
-            "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" \
-            "true"
-          }
-
+          env | sort
           pwd
           ls -l
           cat dct_signers.json
 
+          # Define custom user policies
+          echo "Create CISE custom policies"
           for signer_and_key in $(cat dct_signers.json | jq -r -c '.[] | {name:.Name, key: .Keys[0].ID}'); do
             DEVOPS_SIGNER=$(echo $signer_and_key | jq -r '.name')
+            DEVOPS_SIGNER_PRIVATE_KEY=$(echo $signer_and_key | jq -r '.key')
+
             echo "CURRENT SIGNER= $DEVOPS_SIGNER"
+
             createCISE_CRD | tee cise_crd_custom_policy.yaml
+
+            echo " "
             echo "Applying CISE custom policy to $CLUSTER_NAMESPACE"
             kubectl apply -f cise_crd_custom_policy.yaml -n$CLUSTER_NAMESPACE
+
+            echo "Creating Secret $REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER to provide public key"
+            # ensure the secret is not already existing
+            kubectl delete secret "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" -n$CLUSTER_NAMESPACE \
+              --ignore-not-found=true
+            kubectl create secret generic "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" -n$CLUSTER_NAMESPACE \
+              --from-literal=name=$DEVOPS_SIGNER \
+              --from-file=publicKey=$DEVOPS_SIGNER.pub
           done
       # yamllint enable rule:line-length
   workspaces:

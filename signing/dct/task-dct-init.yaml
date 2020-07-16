@@ -41,6 +41,9 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
+  results:
+    - name: shuttle-properties-file
+      description: The properties file that will contains Docker Content Trust initialization information
   steps:
     - name: create-dct-keys
       image: ibmcom/pipeline-base-image:2.6
@@ -72,6 +75,8 @@ spec:
           value: $(params.validation-signer)
         - name: DEVOPS_BUILD_SIGNER
           value: $(params.build-signer)
+        - name: ARCHIVE_DIR
+          value: /artifacts
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
         - name: HOME
@@ -172,6 +177,10 @@ spec:
           echo "Restoring keys from $VAULT_INSTANCE"
           source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_signer.sh")
         done
+
+        # Record task results
+        echo -n "dct.properties" > $(results.shuttle-properties-file.path)
+
     # yamllint enable rule:line-length
   workspaces:
     - name: artifacts
