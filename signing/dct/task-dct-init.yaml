@@ -87,7 +87,6 @@ spec:
       script: |
         #!/bin/bash
         #set -e -o pipefail
-        set -e
         
         if [[ $PIPELINE_DEBUG == 1 ]]; then
           pwd
