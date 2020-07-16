@@ -86,8 +86,9 @@ spec:
       # yamllint disable rule:line-length
       script: |
         #!/bin/bash
-        set -e -o pipefail
-
+        #set -e -o pipefail
+        set -e
+        
         if [[ $PIPELINE_DEBUG == 1 ]]; then
           pwd
           env
