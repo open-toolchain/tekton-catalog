@@ -5,11 +5,8 @@ metadata:
   name: signing-dct-enforcement-policy
 spec:
   params:
-    - name: image-name
-      description: The name of your image
     - name: shuttle-properties-file
       description: properties file in the workspace that contains DCT initialization information
-      default: ""
     - name: region
       description: target region
     - name: resource-group
@@ -50,8 +47,6 @@ spec:
           value: $(params.cluster-name)
         - name: CLUSTER_NAMESPACE
           value: $(params.cluster-namespace)
-        - name: IMAGE_NAME
-          value: $(params.image-name)
         - name: DEFAULT_HELM_VERSION
           value: $(params.helm-version)
         - name: SHUTTLE_PROPERTIES_FILE
@@ -97,16 +92,12 @@ spec:
           fi
 
           if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+            cat $SHUTTLE_PROPERTIES_FILE
             source $SHUTTLE_PROPERTIES_FILE
-            export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
+            export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)            
           fi
 
           source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
-
-          env | sort
-          pwd
-          ls -l
-          cat dct_signers.json
 
           # Define custom user policies
           echo "Create CISE custom policies"
