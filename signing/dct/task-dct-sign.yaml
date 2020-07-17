@@ -118,8 +118,8 @@ spec:
           JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
           signerkey=$(getJSONValue "$DEVOPS_SIGNER" "$JSON_DATA")
           # Store the information in the task's volume
-          mkdir -p ./signer
-          writeFile "$signerkey" ./signer
+          mkdir -p ./trust/private
+          writeFile "$signerkey" ./trust/private
 
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
@@ -181,7 +181,9 @@ spec:
 
           export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
-          export DOCKER_TRUST_DIRECTORY="/task/signer"
+          export DOCKER_TRUST_DIRECTORY=/task/trust/private
+          export DOCKER_TRUST_HOME=/task/trust
+
           IMAGE_TAG=$IMAGE_TAGS
 
           env | sort
