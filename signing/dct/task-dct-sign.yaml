@@ -62,6 +62,7 @@ spec:
           value: /root
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
+      workingDir: /task
       script: |
           #!/bin/bash
           if [ $PIPELINE_DEBUG == 1 ]; then
@@ -117,15 +118,15 @@ spec:
           JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
           signerkey=$(getJSONValue "$DEVOPS_SIGNER" "$JSON_DATA")
           # Store the information in the task's volume
-          mkdir -p /task/signer
-          writeFile "$signerkey" /task/signer
+          mkdir -p ./signer
+          writeFile "$signerkey" ./signer
 
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
-          echo "REGISTRY_URL=$REGISTRY_URL" > /task/env.properties
-          echo "REGISTRY_NAMESPACE=$REGISTRY_NAMESPACE" >> /task/env.properties
-          echo "IMAGE_NAME=$IMAGE_NAME" >> /task/env.properties
-          echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE" >> /task/env.properties
+          echo "REGISTRY_URL=$REGISTRY_URL" > env.properties
+          echo "REGISTRY_NAMESPACE=$REGISTRY_NAMESPACE" >> env.properties
+          echo "IMAGE_NAME=$IMAGE_NAME" >> env.properties
+          echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE" >> env.properties
 
           ls -l -R /task
       volumeMounts:
@@ -172,7 +173,7 @@ spec:
 
           pwd 
           ls -l 
-          
+
           source env.properties
           export $(cut -d= -f1 env.properties)
 
