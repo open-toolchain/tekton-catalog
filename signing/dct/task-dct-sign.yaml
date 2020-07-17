@@ -112,8 +112,6 @@ spec:
           export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
           export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
-          #TODO support multiple signatures. This requires knowing if there is already a signature present.
-          #Need to set DOCKER_CONTENT_TRUST=1 before the image pull if singture present
           IMAGE_TAG=$IMAGE_TAGS
 
           echo "CHECKING $IMAGE_REPOSITORY:$IMAGE_TAG"
@@ -134,7 +132,6 @@ spec:
           # $IMAGE_NAME
           # $IMAGE_TAG
           # $DEVOPS_SIGNER
-          export DOCKER_CONTENT_TRUST=1
           echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
           source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
           # Restore signer pem key
@@ -145,10 +142,12 @@ spec:
           # Retrieve the signer passphrase
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
-          export DCT_DISABLED=false
+          #TODO support multiple signatures. This requires knowing if there is already a signature present.
+          #Need to set DOCKER_CONTENT_TRUST=1 before the image pull if singture present
           # Pull the image
           docker pull "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
           # Sign the image
+          export DOCKER_CONTENT_TRUST=1
           docker trust sign "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
           docker trust inspect --pretty "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
     # yamllint enable rule:line-length
