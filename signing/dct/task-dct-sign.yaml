@@ -122,10 +122,10 @@ spec:
 
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
-          echo "REGISTRY_URL=$REGISTRY_URL" > env.properties
-          echo "REGISTRY_NAMESPACE=$REGISTRY_NAMESPACE" > env.properties
-          echo "IMAGE_NAME=$IMAGE_NAME" > env.properties
-          echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE" > env.properties
+          echo "REGISTRY_URL=$REGISTRY_URL" > /task/env.properties
+          echo "REGISTRY_NAMESPACE=$REGISTRY_NAMESPACE" >> /task/env.properties
+          echo "IMAGE_NAME=$IMAGE_NAME" >> /task/env.properties
+          echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE" >> /task/env.properties
 
           ls -l -R /task
       volumeMounts:
@@ -170,6 +170,9 @@ spec:
            set -x
           fi
 
+          pwd 
+          ls -l 
+          
           source env.properties
           export $(cut -d= -f1 env.properties)
 
