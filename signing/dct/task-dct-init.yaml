@@ -166,7 +166,7 @@ spec:
           saveData "$REGISTRY_NAMESPACE.$IMAGE_NAME.repokeys" "$VAULT_DATA" "$JSON_ROOT_DATA"
         else
           #
-          echo "No op"
+          echo "TRUST DATA ALREADY FOUND FOR $GUN"
         fi
 
         signerList=("$DEVOPS_BUILD_SIGNER" "$DEVOPS_VALIDATION_SIGNER")
