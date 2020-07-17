@@ -13,8 +13,6 @@ spec:
       description: the tags for the image to sign
     - name: signer
       description: current signer
-    - name: registry-region
-      description: the registry region
     - name: vault-region
       description: the region of the keyprotect instance
     - name: vault-resource-group
@@ -46,8 +44,6 @@ spec:
             secretKeyRef:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.apikey-secret-key)
-        - name: REGISTRY_REGION
-          value: $(params.registry-region)
         - name: IMAGE_REPOSITORY
           value: $(params.image-repository)
         - name: IMAGE_DIGEST
@@ -105,23 +101,50 @@ spec:
             ibmcloud target -g "$VAULT_RESOURCE_GROUP"
           fi
 
+          # Split image information in expected environment variables
+          REGISTRY_URL=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $2}')
+          # Image name is remaining part after the repository and namespace and can contains /
+          IMAGE_NAME=$(echo $IMAGE_REPOSITORY |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
+
+          # Find the ibmcloud container registry region
+          # https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_regions_local
+          if [[ $REGISTRY_URL =~ ^registry\.[a-z]*.bluemix.net$ ]]; then
+            # deprecated domain name
+            REGISTRY_REGION=$(echo $REGISTRY_URL | awk -F. '{print $2}')
+            if [ "$REGISTRY_REGION" == "ng" ]; then
+              REGISTRY_REGION="us-south"
+            fi
+          else
+            export REGISTRY_REGION=$(echo $REGISTRY_URL | awk -F. '{print $1}')
+            if [ "$REGISTRY_REGION" == "jp" ]; then
+              REGISTRY_REGION="ap-north"
+            elif [ "$REGISTRY_REGION" == "au" ]; then
+              REGISTRY_REGION="ap-south"
+            elif [ "$REGISTRY_REGION" == "de" ]; then
+              REGISTRY_REGION="eu-central"
+            elif [ "$REGISTRY_REGION" == "uk" ]; then
+              REGISTRY_REGION="uk-south"
+            elif [ "$REGISTRY_REGION" == "us" ]; then
+              REGISTRY_REGION="us-south"
+            elif [ "$REGISTRY_REGION" == "stg" ]; then
+              REGISTRY_REGION="us-south"
+            else
+              echo "No IBM Cloud Container Registry region found for the registry url $REGISTRY_URL"
+              exit 1
+            fi
+          fi
+
           # configure the container registry
-          REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
           ibmcloud cr region-set $REGISTRY_REGION
           ibmcloud cr login
-          export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+
           export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
           IMAGE_TAG=$IMAGE_TAGS
 
           echo "CHECKING $IMAGE_REPOSITORY:$IMAGE_TAG"
           docker trust inspect "$IMAGE_REPOSITORY:$IMAGE_TAG"
-
-          # Split image information in expected environment variables
-          REGISTRY_URL=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $1}')
-          REGISTRY_NAMESPACE=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $2}')
-          # Image name is remaining part after the repository and namespace and can contains /
-          IMAGE_NAME=$(echo $IMAGE_REPOSITORY |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
 
           # Requires
           # $VAULT_INSTANCE -name of vault
