@@ -161,7 +161,7 @@ spec:
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
       script: |
-          #!/bin/bash
+          #!/bin/sh
 
           if [ $PIPELINE_DEBUG == 1 ]; then
            pwd
