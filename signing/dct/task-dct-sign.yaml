@@ -28,7 +28,6 @@ spec:
     - name: apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud service
       default: apikey
-    # Docker Client configuration
     - name: docker-client-image
       description: The Docker image to use to run the Docker client
       default: docker
@@ -123,12 +122,11 @@ spec:
 
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
+          # Keep image repository and DCT context for next step
           echo "REGISTRY_URL=$REGISTRY_URL" > env.properties
           echo "REGISTRY_NAMESPACE=$REGISTRY_NAMESPACE" >> env.properties
           echo "IMAGE_NAME=$IMAGE_NAME" >> env.properties
           echo "DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE" >> env.properties
-
-          ls -l -R /task
       volumeMounts:
         - mountPath: /certs/client
           name: dind-certs
@@ -163,7 +161,6 @@ spec:
           value: $(params.pipeline-debug)
       script: |
           #!/bin/sh
-
           set -e
 
           if [ $PIPELINE_DEBUG == 1 ]; then
@@ -173,33 +170,30 @@ spec:
            set -x
           fi
 
-          pwd 
-          ls -l 
-
+          # Obtain image registry context from previous step
           source env.properties
           export $(cut -d= -f1 env.properties)
 
-          export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
-
+          # Configure docker content trust context from previous step
           export DOCKER_TRUST_DIRECTORY=/task/trust/private
           export DOCKER_TRUST_HOME=/task/trust
 
+          # Configure DCT server from private registry url
+          export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
+        
+          #TODO support multiple signatures
           IMAGE_TAG=$IMAGE_TAGS
-
-          env | sort
 
           echo "CHECKING $IMAGE_REPOSITORY:$IMAGE_TAG"
           docker trust inspect "$IMAGE_REPOSITORY:$IMAGE_TAG"
 
-          #TODO support multiple signatures. This requires knowing if there is already a signature present.
-          #Need to set DOCKER_CONTENT_TRUST=1 before the image pull if singture present
-          # Pull the image
+          # Pull the image w/o Docker Content Trust enabled to prevent failure in pulling non signed image
           docker pull "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+
           # Sign the image
           export DOCKER_CONTENT_TRUST=1
           docker trust sign "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
           docker trust inspect --pretty "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-    # yamllint enable rule:line-length
       volumeMounts:
         - mountPath: /certs/client
           name: dind-certs
