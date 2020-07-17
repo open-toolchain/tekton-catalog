@@ -31,10 +31,6 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
-  workspaces:
-    - name: artifacts
-      description: A workspace backing by a volume
-      mountPath: /artifacts
   steps:
     - name: sign-image
       image: ibmcom/pipeline-base-image:2.6
@@ -58,8 +54,6 @@ spec:
           value: $(params.vault-resource-group)
         - name: VAULT_INSTANCE
           value: $(params.vault-name)
-        - name: ARCHIVE_DIR
-          value: /artifacts
         - name: HOME
           value: /root
         # Docker client configuration
@@ -74,7 +68,6 @@ spec:
           value: /certs/client
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
-      workingDir: /artifacts
       script: |
           #!/bin/bash
 
