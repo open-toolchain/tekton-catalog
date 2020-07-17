@@ -164,6 +164,8 @@ spec:
       script: |
           #!/bin/sh
 
+          set -e
+
           if [ $PIPELINE_DEBUG == 1 ]; then
            pwd
            env
