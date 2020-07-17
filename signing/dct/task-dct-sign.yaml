@@ -112,38 +112,45 @@ spec:
           export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
           export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
 
-          # Split image information in expected environment variables
+          #TODO support multiple signatures. This requires knowing if there is already a signature present.
+          #Need to set DOCKER_CONTENT_TRUST=1 before the image pull if singture present
           IMAGE_TAG=$IMAGE_TAGS
 
           echo "CHECKING $IMAGE_REPOSITORY:$IMAGE_TAG"
           docker trust inspect "$IMAGE_REPOSITORY:$IMAGE_TAG"
 
-          #Required Parameters
-          # $VAULT_INSTANCE - name of vault
-          # $IBMCLOUD_TARGET_REGION - region hosting Key Protect Vault instance
-          # $IBMCLOUD_TARGET_RESOURCE_GROUP of the Key Protect Vault Instance
-          # $REGISTRY_NAMESPACE namespace of registry
+          # Split image information in expected environment variables
+          REGISTRY_URL=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $1}')
+          REGISTRY_NAMESPACE=$(echo $IMAGE_REPOSITORY |  awk -F/ '{print $2}')
+          # Image name is remaining part after the repository and namespace and can contains /
+          IMAGE_NAME=$(echo $IMAGE_REPOSITORY |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
+
+          # Requires
+          # $VAULT_INSTANCE -name of vault
+          # $VAULT_REGION or default to $IBMCLOUD_TARGET_REGION -region hosting Key Protect Vault instance
+          # $VAULT_RESOURCE_GROUP or default to $IBMCLOUD_TARGET_RESOURCE_GROUP - resourcegroup of the Key Protect Vault Instance
+          # $REGISTRY_URL - url/domain of the registry
+          # $REGISTRY_NAMESPACE -namespace of registry
           # $IMAGE_NAME
           # $IMAGE_TAG
-          # $DEVOPS_SIGNER - current signer
+          # $DEVOPS_SIGNER
+          export DOCKER_CONTENT_TRUST=1
           echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
           source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
           # Restore signer pem key
-          VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "$VAULT_REGION" "$VAULT_RESOURCE_GROUP")
+          VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "${VAULT_REGION:-$IBMCLOUD_TARGET_REGION}" "${VAULT_RESOURCE_GROUP:-$IBMCLOUD_TARGET_RESOURCE_GROUP}")
           JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
           signerkey=$(getJSONValue "$DEVOPS_SIGNER" "$JSON_DATA")
           writeFile "$signerkey"
           # Retrieve the signer passphrase
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=$(getJSONValue "passphrase" "$signerkey")
 
+          export DCT_DISABLED=false
           # Pull the image
-          #TODO support multiple signatures. This requires knowing if there is already a signature present.
-          #Need to set DOCKER_CONTENT_TRUST=1 before the image pull if singture present
-          docker pull "$IMAGE_REPOSITORY:$IMAGE_TAG"
+          docker pull "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
           # Sign the image
-          export DOCKER_CONTENT_TRUST=1
-          docker trust sign "$IMAGE_REPOSITORY:$IMAGE_TAG"
-          docker trust inspect --pretty "$IMAGE_REPOSITORY:$IMAGE_TAG"
+          docker trust sign "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME:$IMAGE_TAG"
+          docker trust inspect --pretty "$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
     # yamllint enable rule:line-length
       volumeMounts:
         - mountPath: /certs/client
