@@ -17,7 +17,7 @@ spec:
       description: The cluster namespace to deploy rules
     - name: helm-version
       description: specific helm version
-      default: 2.16.1
+      default: 2.16.8
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
