@@ -27,6 +27,11 @@ spec:
     - name: deployable-rg-id
       description: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
       default: ""
+    - name: git-inputs
+      description: |
+        list of git repository and commit pair (repository and commit id spearated by a comma).
+        each element of the list is contained in one line
+      default: ""
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
