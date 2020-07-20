@@ -171,7 +171,7 @@ spec:
                 > tmp_deployable_mapping.json
               mv -f tmp_deployable_mapping.json deployable_mapping.json
             fi
-          done < <(printf '%s\n' "$GIT_INPUTS")          
+          done <<(printf '%s\n' "$GIT_INPUTS")          
 
           cat deployable_mapping.json
         fi
