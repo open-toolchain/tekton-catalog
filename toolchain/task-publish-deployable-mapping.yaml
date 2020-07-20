@@ -143,33 +143,34 @@ spec:
 
           while IFS= read -r git_input
           do
-            input_repository=$(echo $git_input | awk -F, '{print $1}')
-            if [[ "$input_repository" != *.git ]]; then
-              input_repository="${input_repository}.git"
+            if [ "$git_input" ]; then
+              input_repository=$(echo $git_input | awk -F, '{print $1}')
+              if [[ "$input_repository" != *.git ]]; then
+                input_repository="${input_repository}.git"
+              fi
+              input_commit=$(echo $git_input | awk -F, '{print $2}')
+              input_branch=$(echo $git_input | awk -F, '{print $3}')
+
+              input_service_instance_id=$(jq -r --arg git_repo "$input_repository" \
+                '.services[] | select (.parameters.repo_url==$git_repo) | .instance_id' /cd-config/toolchain.json)
+
+              timestamp=""
+
+              input_revision_url=""
+
+              echo "input_repository=$input_repository"
+              echo "input_commit=$input_commit"
+              echo "input_branch=$input_branch"
+              echo "input_service_instance_id=$input_service_instance_id"
+              echo "timestamp=$timestamp"
+              echo "input_revision_url=$input_revision_url"
+
+              cat deployable_mapping.json | jq --arg SI_ID "$input_service_instance_id" --arg REPO "$input_repository" \
+                --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
+                '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL as $element | $root | .experimental.inputs += [$element]' \
+                > tmp_deployable_mapping.json
+              mv -f tmp_deployable_mapping.json deployable_mapping.json
             fi
-            input_commit=$(echo $git_input | awk -F, '{print $2}')
-            input_branch=$(echo $git_input | awk -F, '{print $3}')
-
-            input_service_instance_id=$(jq -r --arg git_repo "$input_repository" \
-              '.services[] | select (.parameters.repo_url==$git_repo) | .instance_id' /cd-config/toolchain.json)
-
-            timestamp=""
-
-            input_revision_url=""
-
-            echo "input_repository=$input_repository"
-            echo "input_commit=$input_commit"
-            echo "input_branch=$input_branch"
-            echo "input_service_instance_id=$input_service_instance_id"
-            echo "timestamp=$timestamp"
-            echo "input_revision_url=$input_revision_url"
-
-            cat deployable_mapping.json | jq --arg SI_ID "$input_service_instance_id" --arg REPO "$input_repository" \
-              --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
-              '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL as $element | $root | .experimental.inputs += [$element]' \
-              > tmp_deployable_mapping.json
-            mv -f tmp_deployable_mapping.json deployable_mapping.json
-
           done < <(printf '%s\n' "$GIT_INPUTS")          
 
           cat deployable_mapping.json
