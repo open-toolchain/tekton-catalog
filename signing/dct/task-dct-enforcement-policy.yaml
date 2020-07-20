@@ -17,7 +17,7 @@ spec:
       description: The cluster namespace to deploy rules
     - name: helm-version
       description: specific helm version
-      default: 2.16.8
+      default: 2.16.6
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
@@ -32,7 +32,7 @@ spec:
       default: "0"
   steps:
     - name: apply-image-enforcement-policy
-      image: ibmcom/pipeline-base-image:2.6
+      image: ibmcom/pipeline-base-image:2.7
       env:
         - name: IBM_CLOUD_API_KEY
           valueFrom:
