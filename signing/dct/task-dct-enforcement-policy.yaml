@@ -17,7 +17,7 @@ spec:
       description: The cluster namespace to deploy rules
     - name: helm-version
       description: specific helm version
-      default: 2.16.1
+      default: 2.16.6
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
@@ -32,7 +32,7 @@ spec:
       default: "0"
   steps:
     - name: apply-image-enforcement-policy
-      image: ibmcom/pipeline-base-image:2.6
+      image: ibmcom/pipeline-base-image:2.7
       env:
         - name: IBM_CLOUD_API_KEY
           valueFrom:
@@ -55,72 +55,71 @@ spec:
           value: $(params.pipeline-debug)
         - name: HOME
           value: /root
-      command: ["/bin/bash", "-c"]
       workingDir: /artifacts
       # yamllint disable rule:line-length
-      args:
-        - |
-          set -e -o pipefail
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
 
-          if [[ $PIPELINE_DEBUG == 1 ]]; then
-            pwd
-            env
-            trap env EXIT
-            set -x
-          fi
+        if [[ $PIPELINE_DEBUG == 1 ]]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
 
-          ibmcloud config --check-version false
-          ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
-          ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
+        ibmcloud config --check-version false
+        ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
+        ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
 
-          eval $(ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}" --export -s)
+        ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}"
 
-          if ! kubectl get namespace "$CLUSTER_NAMESPACE"; then
-            echo "creating namespace $CLUSTER_NAMESPACE"
-            kubectl create namespace "$CLUSTER_NAMESPACE"
-          fi
+        if ! kubectl get namespace "$CLUSTER_NAMESPACE"; then
+          echo "creating namespace $CLUSTER_NAMESPACE"
+          kubectl create namespace "$CLUSTER_NAMESPACE"
+        fi
 
-          # Verify helm is up & running
-          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
+        # Verify helm is up & running
+        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
 
-          # Install CISE
-          if helm list cise | grep '^cise'; then
-            echo "Container Image Security Enforcement is already installed"
-          else
-            helm repo add iks-charts https://icr.io/helm/iks-charts
-            helm install --name cise iks-charts/ibmcloud-image-enforcement
-          fi
+        # Install CISE
+        if helm list cise | grep '^cise'; then
+          echo "Container Image Security Enforcement is already installed"
+        else
+          helm repo add iks-charts https://icr.io/helm/iks-charts
+          helm install --name cise iks-charts/ibmcloud-image-enforcement --wait
+        fi
 
-          if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
-            cat $SHUTTLE_PROPERTIES_FILE
-            source $SHUTTLE_PROPERTIES_FILE
-            export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)            
-          fi
+        if [ "$SHUTTLE_PROPERTIES_FILE" ]; then
+          cat $SHUTTLE_PROPERTIES_FILE
+          source $SHUTTLE_PROPERTIES_FILE
+          export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)            
+        fi
 
-          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
+        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
 
-          # Define custom user policies
-          echo "Create CISE custom policies"
-          for signer_and_key in $(cat dct_signers.json | jq -r -c '.[] | {name:.Name, key: .Keys[0].ID}'); do
-            DEVOPS_SIGNER=$(echo $signer_and_key | jq -r '.name')
-            DEVOPS_SIGNER_PRIVATE_KEY=$(echo $signer_and_key | jq -r '.key')
+        # Define custom user policies
+        echo "Create CISE custom policies"
+        for signer_and_key in $(cat dct_signers.json | jq -r -c '.[] | {name:.Name, key: .Keys[0].ID}'); do
+          DEVOPS_SIGNER=$(echo $signer_and_key | jq -r '.name')
+          DEVOPS_SIGNER_PRIVATE_KEY=$(echo $signer_and_key | jq -r '.key')
 
-            echo "CURRENT SIGNER=$DEVOPS_SIGNER"
+          echo "CURRENT SIGNER=$DEVOPS_SIGNER"
 
-            createCISE_CRD | tee cise_crd_custom_policy.yaml
+          createCISE_CRD | tee cise_crd_custom_policy.yaml
 
-            echo " "
-            echo "Applying CISE custom policy to $CLUSTER_NAMESPACE"
-            kubectl apply -f cise_crd_custom_policy.yaml -n$CLUSTER_NAMESPACE
+          echo " "
+          echo "Applying CISE custom policy to $CLUSTER_NAMESPACE"
+          kubectl apply -f cise_crd_custom_policy.yaml -n$CLUSTER_NAMESPACE
 
-            echo "Creating Secret $REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER to provide public key"
-            # ensure the secret is not already existing
-            kubectl delete secret "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" -n$CLUSTER_NAMESPACE \
-              --ignore-not-found=true
-            kubectl create secret generic "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" -n$CLUSTER_NAMESPACE \
-              --from-literal=name=$DEVOPS_SIGNER \
-              --from-file=publicKey=$DEVOPS_SIGNER.pub
-          done
+          echo "Creating Secret $REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER to provide public key"
+          # ensure the secret is not already existing
+          kubectl delete secret "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" -n$CLUSTER_NAMESPACE \
+            --ignore-not-found=true
+          kubectl create secret generic "$REGISTRY_NAMESPACE.$IMAGE_NAME.$DEVOPS_SIGNER" -n$CLUSTER_NAMESPACE \
+            --from-literal=name=$DEVOPS_SIGNER \
+            --from-file=publicKey=$DEVOPS_SIGNER.pub
+        done
       # yamllint enable rule:line-length
   workspaces:
     - name: artifacts
