@@ -73,7 +73,7 @@ spec:
           ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
           ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
 
-          eval $(ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}" --export -s)
+          ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}"
 
           if ! kubectl get namespace "$CLUSTER_NAMESPACE"; then
             echo "creating namespace $CLUSTER_NAMESPACE"
