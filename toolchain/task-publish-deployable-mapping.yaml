@@ -160,9 +160,16 @@ spec:
 
           input_revision_url=""
 
+          echo "input_repository=$input_repository"
+          echo "input_commit=$input_commit"
+          echo "input_branch=$input_branch"
+          echo "input_service_instance_id=$input_service_instance_id"
+          echo "timestamp=$timestamp"
+          echo "input_revision_url=$input_revision_url"
+
           cat deployable_mapping.json | jq --arg SI_ID "$input_service_instance_id" --arg REPO "$input_repository" \
             --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
-            '. as $root | {service_instance_id:$SI_ID} as $element | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL | $root | .experimental.inputs += [$element]' \
+            '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL as $element | $root | .experimental.inputs += [$element]' \
             > tmp_deployable_mapping.json
           mv -f tmp_deployable_mapping.json deployable_mapping.json
 
