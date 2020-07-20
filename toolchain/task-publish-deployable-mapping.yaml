@@ -60,6 +60,8 @@ spec:
           value: $(params.deployable-cf-org-id)
         - name: CF_SPACE_ID
           value: $(params.deployable-cf-space-id)
+        - name: GIT_INPUTS
+          value: $(params.git-inputs)
         - name: PIPELINE_ID
           valueFrom:
             fieldRef:
@@ -133,6 +135,19 @@ spec:
         cat deployable_mapping.json | jq --arg PIPELINE_ID "$PIPELINE_ID" \
           '.source.type="service_instance" | .source.source_guid=$PIPELINE_ID ' > tmp_deployable_mapping.json
         mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+        # Manage the experimental section
+        if [ "$GIT_INPUTS" ]; then
+          cat deployable_mapping.json | jq '.experimental={} | .experimental.inputs=[]' > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+          while IFS= read -r git_input
+          do
+            echo "$git_input"
+          done < <(printf '%s\n' "$GIT_INPUTS")
+
+          cat deployable_mapping.json
+        fi
 
         OTC_API_DM_URL="https://otc-api.${TOOLCHAIN_REGION}.devops.cloud.ibm.com/api/v1/toolchain_deployable_mappings"
         # Check if an existing mapping exist with the given deployable guid in toolchain
