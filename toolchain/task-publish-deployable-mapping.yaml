@@ -154,10 +154,29 @@ spec:
               input_service_instance_id=$(jq -r --arg git_repo "$input_repository" \
                 '.services[] | select (.parameters.repo_url==$git_repo) | .instance_id' /cd-config/toolchain.json)
 
+              input_service_type=$(jq -r --arg git_repo "$input_repository" \
+                '.services[] | select (.parameters.repo_url==$git_repo) | .service_id' /cd-config/toolchain.json)
+
+              repo_wo_git_suffix=${input_repository%".git"}
+
+              if [ "$input_service_type" == "github" ]; then
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+              elif [ "$input_service_type" == "githubpublic" ]; then
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+              elif [ "$input_service_type" == "hostedgit" ]; then
+                input_revision_url=""
+              elif [ "$input_service_type" == "gitlab" ]; then
+                input_revision_url=""
+              elif [ "$input_service_type" == "bitbucketgit" ]; then
+                input_revision_url=""
+              else
+                input_revision_url=""
+              fi
+
+              # revision timestamp is not used in traceability event notification
               timestamp=""
 
-              input_revision_url=""
-
+              echo "input_service_type=$input_service_type"
               echo "input_repository=$input_repository"
               echo "input_commit=$input_commit"
               echo "input_branch=$input_branch"
