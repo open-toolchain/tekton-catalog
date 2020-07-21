@@ -32,6 +32,9 @@ spec:
         list of git repository,commit and branch triple (repository,commit id and branch spearated by a comma).
         each element of the list is contained in one line
       default: ""
+    - name: environment-label
+      description: the label of the environment where the deployment has occured
+      default: "env label"
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
@@ -62,6 +65,8 @@ spec:
           value: $(params.deployable-cf-space-id)
         - name: GIT_INPUTS
           value: $(params.git-inputs)
+        - name: ENVIRONMENT_LABEL
+          value: $(params.environment-label)
         - name: PIPELINE_ID
           valueFrom:
             fieldRef:
@@ -138,7 +143,18 @@ spec:
 
         # Manage the experimental section
         if [ "$GIT_INPUTS" ]; then
-          cat deployable_mapping.json | jq '.experimental={} | .experimental.inputs=[]' > tmp_deployable_mapping.json
+          cat deployable_mapping.json | jq '.experimental={} | .experimental.env={} | .experimental.inputs=[]' > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+          # Deploy environment's label
+          if [ "$DEPLOYABLE_TYPE" == "app" ]; then
+            # Add specific cloud foundry information describing the Cloud Foundry deployment environment
+            cat deployable_mapping.json | jq --arg ORG_ID "$CF_ORG_ID" \
+              --arg SPACE_ID "$CF_SPACE_ID" \
+              '.experimental.env.org_name=$ORG_ID | .experimental.env.space_name=$SPACE_ID' > tmp_deployable_mapping.json
+            mv -f tmp_deployable_mapping.json deployable_mapping.json
+          fi
+          cat deployable_mapping.json | jq --arg LABEL "$ENVIRONMENT_LABEL" '.experimental.env.label=$LABEL' > tmp_deployable_mapping.json
           mv -f tmp_deployable_mapping.json deployable_mapping.json
 
           while IFS= read -r git_input
