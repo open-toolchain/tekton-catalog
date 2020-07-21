@@ -40,7 +40,7 @@ spec:
     - name: git-inputs
       description: |
         list of git repository,commit and branch triple (repository,commit id and branch spearated by a comma).
-        each element of the list is contained in one line
+        each triple-element of the list is contained in one line
       default: ""
     - name: environment-label
       description: the label of the environment where the deployment has occured
