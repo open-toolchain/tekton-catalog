@@ -21,8 +21,18 @@ spec:
     - name: deployable-cf-org-id
       description: CF organization id (only required when deployable-type is `app`)
       default: ""
+    - name: deployable-cf-org-name
+      description: | 
+        CF organization name (only required when deployable-type is `app`).
+        It will only be used for traceability event purpose. Default to `deployable-cf-org-id`
+      default: ""
     - name: deployable-cf-space-id
       description: CF space id (only required when deployable-type is `app`)
+      default: ""
+    - name: deployable-cf-space-name
+      description: |
+        CF space name (only required when deployable-type is `app`).
+        It will only be used for traceability event purpose. Default to `deployable-cf-space-id`
       default: ""
     - name: deployable-rg-id
       description: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
@@ -61,8 +71,12 @@ spec:
           value: $(params.deployable-rg-id)
         - name: CF_ORG_ID
           value: $(params.deployable-cf-org-id)
+        - name: CF_ORG_NAME
+          value: $(params.deployable-cf-org-name)
         - name: CF_SPACE_ID
           value: $(params.deployable-cf-space-id)
+        - name: CF_SPACE_NAME
+          value: $(params.deployable-cf-space-name)
         - name: GIT_INPUTS
           value: $(params.git-inputs)
         - name: ENVIRONMENT_LABEL
@@ -149,9 +163,10 @@ spec:
           # Deploy environment's label
           if [ "$DEPLOYABLE_TYPE" == "app" ]; then
             # Add specific cloud foundry information describing the Cloud Foundry deployment environment
-            cat deployable_mapping.json | jq --arg ORG_ID "$CF_ORG_ID" \
-              --arg SPACE_ID "$CF_SPACE_ID" \
-              '.experimental.env.org_name=$ORG_ID | .experimental.env.space_name=$SPACE_ID' > tmp_deployable_mapping.json
+            REGION_NAME=$(echo $REGION_ID | awk -F: '{print $NF}')
+            cat deployable_mapping.json | jq --arg ORG_NAME "${CF_ORG_NAME:-$CF_ORG_ID}" --arg SPACE_NAME "${CF_SPACE_NAME:-$CF_SPACE_ID}" \
+              --arg REGION_NAME "$REGION_NAME" --arg REGION_ID "$REGION_ID" \
+              '.experimental.env.org_name=$ORG_NAME | .experimental.env.space_name=$SPACE_NAME | .experimental.env.region_name=$REGION_NAME | .experimental.env.region_id=$REGION_ID' > tmp_deployable_mapping.json
             mv -f tmp_deployable_mapping.json deployable_mapping.json
           fi
           cat deployable_mapping.json | jq --arg LABEL "$ENVIRONMENT_LABEL" '.experimental.env.label=$LABEL' > tmp_deployable_mapping.json
@@ -192,14 +207,6 @@ spec:
 
               # revision timestamp is not used in traceability event notification
               timestamp=""
-
-              echo "input_service_type=$input_service_type"
-              echo "input_repository=$input_repository"
-              echo "input_commit=$input_commit"
-              echo "input_branch=$input_branch"
-              echo "input_service_instance_id=$input_service_instance_id"
-              echo "timestamp=$timestamp"
-              echo "input_revision_url=$input_revision_url"
 
               cat deployable_mapping.json | jq --arg SI_ID "$input_service_instance_id" --arg REPO "$input_repository" \
                 --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
