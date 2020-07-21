@@ -215,8 +215,6 @@ spec:
               mv -f tmp_deployable_mapping.json deployable_mapping.json
             fi
           done < <(printf '%s\n' "$GIT_INPUTS")          
-
-          cat deployable_mapping.json
         fi
 
         OTC_API_DM_URL="https://otc-api.${TOOLCHAIN_REGION}.devops.cloud.ibm.com/api/v1/toolchain_deployable_mappings"
