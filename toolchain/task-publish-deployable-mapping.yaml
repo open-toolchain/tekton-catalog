@@ -21,12 +21,30 @@ spec:
     - name: deployable-cf-org-id
       description: CF organization id (only required when deployable-type is `app`)
       default: ""
+    - name: deployable-cf-org-name
+      description: | 
+        CF organization name (only required when deployable-type is `app`).
+        It will only be used for traceability event purpose. Default to `deployable-cf-org-id`
+      default: ""
     - name: deployable-cf-space-id
       description: CF space id (only required when deployable-type is `app`)
+      default: ""
+    - name: deployable-cf-space-name
+      description: |
+        CF space name (only required when deployable-type is `app`).
+        It will only be used for traceability event purpose. Default to `deployable-cf-space-id`
       default: ""
     - name: deployable-rg-id
       description: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
       default: ""
+    - name: git-inputs
+      description: |
+        list of git repository,commit and branch triple (repository,commit id and branch spearated by a comma).
+        each triple-element of the list is contained in one line
+      default: ""
+    - name: environment-label
+      description: the label of the environment where the deployment has occured
+      default: "label of the deployed environment"
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
@@ -53,8 +71,16 @@ spec:
           value: $(params.deployable-rg-id)
         - name: CF_ORG_ID
           value: $(params.deployable-cf-org-id)
+        - name: CF_ORG_NAME
+          value: $(params.deployable-cf-org-name)
         - name: CF_SPACE_ID
           value: $(params.deployable-cf-space-id)
+        - name: CF_SPACE_NAME
+          value: $(params.deployable-cf-space-name)
+        - name: GIT_INPUTS
+          value: $(params.git-inputs)
+        - name: ENVIRONMENT_LABEL
+          value: $(params.environment-label)
         - name: PIPELINE_ID
           valueFrom:
             fieldRef:
@@ -128,6 +154,70 @@ spec:
         cat deployable_mapping.json | jq --arg PIPELINE_ID "$PIPELINE_ID" \
           '.source.type="service_instance" | .source.source_guid=$PIPELINE_ID ' > tmp_deployable_mapping.json
         mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+        # Manage the experimental section
+        if [ "$GIT_INPUTS" ]; then
+          cat deployable_mapping.json | jq '.experimental={} | .experimental.env={} | .experimental.inputs=[]' > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+          # Deploy environment's label
+          if [ "$DEPLOYABLE_TYPE" == "app" ]; then
+            # Add specific cloud foundry information describing the Cloud Foundry deployment environment
+            REGION_NAME=$(echo $REGION_ID | awk -F: '{print $NF}')
+            cat deployable_mapping.json | jq --arg ORG_NAME "${CF_ORG_NAME:-$CF_ORG_ID}" --arg SPACE_NAME "${CF_SPACE_NAME:-$CF_SPACE_ID}" \
+              --arg REGION_NAME "$REGION_NAME" --arg REGION_ID "$REGION_ID" \
+              '.experimental.env.org_name=$ORG_NAME | .experimental.env.space_name=$SPACE_NAME | .experimental.env.region_name=$REGION_NAME | .experimental.env.region_id=$REGION_ID' > tmp_deployable_mapping.json
+            mv -f tmp_deployable_mapping.json deployable_mapping.json
+          fi
+          cat deployable_mapping.json | jq --arg LABEL "$ENVIRONMENT_LABEL" '.experimental.env.label=$LABEL' > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
+
+          while IFS= read -r git_input
+          do
+            if [ "$git_input" ]; then
+              input_repository=$(echo $git_input | awk -F, '{print $1}')
+              if [[ "$input_repository" != *.git ]]; then
+                input_repository="${input_repository}.git"
+              fi
+              input_commit=$(echo $git_input | awk -F, '{print $2}')
+              input_branch=$(echo $git_input | awk -F, '{print $3}')
+
+              input_service_instance_id=$(jq -r --arg git_repo "$input_repository" \
+                '.services[] | select (.parameters.repo_url==$git_repo) | .instance_id' /cd-config/toolchain.json)
+
+              input_service_type=$(jq -r --arg git_repo "$input_repository" \
+                '.services[] | select (.parameters.repo_url==$git_repo) | .service_id' /cd-config/toolchain.json)
+
+              repo_wo_git_suffix=${input_repository%".git"}
+
+              if [ "$input_service_type" == "github" ]; then
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+              elif [ "$input_service_type" == "githubpublic" ]; then
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+              elif [ "$input_service_type" == "hostedgit" ]; then
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+              elif [ "$input_service_type" == "gitlab" ]; then
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+              elif [ "$input_service_type" == "bitbucketgit" ]; then
+                input_revision_url="${repo_wo_git_suffix}/commits/${input_commit}"
+              else
+                # default for githubconsolidated
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+              fi
+
+              # revision timestamp is not used in traceability event notification
+              timestamp=""
+
+              cat deployable_mapping.json | jq --arg SI_ID "$input_service_instance_id" --arg REPO "$input_repository" \
+                --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
+                '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL | . as $element | $root | .experimental.inputs += [$element]' \
+                > tmp_deployable_mapping.json
+              mv -f tmp_deployable_mapping.json deployable_mapping.json
+            fi
+          done < <(printf '%s\n' "$GIT_INPUTS")          
+
+          cat deployable_mapping.json
+        fi
 
         OTC_API_DM_URL="https://otc-api.${TOOLCHAIN_REGION}.devops.cloud.ibm.com/api/v1/toolchain_deployable_mappings"
         # Check if an existing mapping exist with the given deployable guid in toolchain
