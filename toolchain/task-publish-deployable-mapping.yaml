@@ -180,7 +180,7 @@ spec:
               elif [ "$input_service_type" == "githubpublic" ]; then
                 input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
               elif [ "$input_service_type" == "hostedgit" ]; then
-                input_revision_url=""
+                input_revision_url="${repo_wo_git_suffix}/-/commit/${input_commit}"
               elif [ "$input_service_type" == "gitlab" ]; then
                 input_revision_url=""
               elif [ "$input_service_type" == "bitbucketgit" ]; then
