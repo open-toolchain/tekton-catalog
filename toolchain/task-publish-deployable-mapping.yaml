@@ -170,7 +170,8 @@ spec:
               elif [ "$input_service_type" == "bitbucketgit" ]; then
                 input_revision_url=""
               else
-                input_revision_url=""
+                # default for githubconsolidated
+                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
               fi
 
               # revision timestamp is not used in traceability event notification
