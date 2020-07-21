@@ -34,7 +34,7 @@ spec:
       default: ""
     - name: environment-label
       description: the label of the environment where the deployment has occured
-      default: "env label"
+      default: "label of the deployed environment"
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
