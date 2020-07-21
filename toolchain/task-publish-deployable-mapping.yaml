@@ -184,7 +184,7 @@ spec:
               elif [ "$input_service_type" == "gitlab" ]; then
                 input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
               elif [ "$input_service_type" == "bitbucketgit" ]; then
-                input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
+                input_revision_url="${repo_wo_git_suffix}/commits/${input_commit}"
               else
                 # default for githubconsolidated
                 input_revision_url="${repo_wo_git_suffix}/commit/${input_commit}"
