@@ -69,6 +69,10 @@ spec:
     env:
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
+      - name: TRIGGER_TYPE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-type']
   steps:
     - name: fetch-git-information
       image: ibmcom/pipeline-base-image:2.6
@@ -91,6 +95,11 @@ spec:
               env
               trap env EXIT
               set -x
+          fi
+
+          if [ ! "${TRIGGER_TYPE}" == "scm" ]; then
+            echo "Not an SCM trigger"
+            exit
           fi
 
           TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
@@ -208,6 +217,10 @@ spec:
         import sys
         import urllib.request
         import urllib.parse
+
+        if os.environ["TRIGGER_TYPE"] != "scm":
+          print("Info: Not an SCM trigger")
+          sys.exit(0)
 
         # extract the previouly properties found in previous step
         previous_step={}
