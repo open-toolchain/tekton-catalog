@@ -32,6 +32,9 @@ spec:
       description: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed
       default: "build"
     #
+    - name: registry-create-namespace
+      description: create container registry namespace if it doesn't already exists
+      default: true
     - name: image-url
       description: "url of the image to build - required if no image pipeline resource provided to this task"
       default: ""
@@ -106,6 +109,8 @@ spec:
           value: $(params.ibmcloud-api)
         - name: IBMCLOUD_RESOURCE_GROUP
           value: $(params.resource-group)
+        - name: REGISTRY_CREATE_NAMESPACE
+          value: $(params.registry-create-namespace)
       command: ["/bin/bash", "-c"]
       args:
         - |

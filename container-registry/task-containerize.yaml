@@ -29,6 +29,9 @@ spec:
     - name: registry-namespace
       description: container registry namespace. required if no image-url or no image pipeline resources provided
       default: ""
+    - name: registry-create-namespace
+      description: create container registry namespace if it doesn't already exists
+      default: true
     - name: image-name
       description: image name. required if no image-url or no image pipeline resources provided
       default: ""
@@ -94,6 +97,8 @@ spec:
           value: $(params.ibmcloud-api)
         - name: IBMCLOUD_RESOURCE_GROUP
           value: $(params.resource-group)
+        - name: REGISTRY_CREATE_NAMESPACE
+          value: $(params.registry-create-namespace)
       command: ["/bin/bash", "-c"]
       args:
         - |
