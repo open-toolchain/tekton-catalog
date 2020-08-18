@@ -80,7 +80,7 @@ data:
     NS=$( ibmcloud cr namespaces | grep ${REGISTRY_NAMESPACE} ||: )
     if [ -z "${NS}" ]; then
         echo "Registry namespace ${REGISTRY_NAMESPACE} not found"
-        if [ "$REGISTRY_CREATE_NAMESPACE" = true ] ; then
+        if [ "$REGISTRY_CREATE_NAMESPACE" == "true" ] ; then
           ibmcloud cr namespace-add ${REGISTRY_NAMESPACE}
           echo "Registry namespace ${REGISTRY_NAMESPACE} created."
         else

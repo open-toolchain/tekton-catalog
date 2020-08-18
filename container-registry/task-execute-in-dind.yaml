@@ -19,7 +19,7 @@ spec:
       default: ""
     - name: registry-create-namespace
       description: create container registry namespace if it doesn't already exists
-      default: true
+      default: "true"
     # Image related parameters
     - name: image-url
       description: "url of the image to build - required if no image pipeline resource provided to this task"
