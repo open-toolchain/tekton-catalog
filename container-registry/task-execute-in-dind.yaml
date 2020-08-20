@@ -17,6 +17,9 @@ spec:
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
       default: ""
+    - name: registry-create-namespace
+      description: create container registry namespace if it doesn't already exists
+      default: "true"
     # Image related parameters
     - name: image-url
       description: "url of the image to build - required if no image pipeline resource provided to this task"
@@ -87,6 +90,8 @@ spec:
           value: $(params.ibmcloud-api)
         - name: IBMCLOUD_RESOURCE_GROUP
           value: $(params.resource-group)
+        - name: REGISTRY_CREATE_NAMESPACE
+          value: $(params.registry-create-namespace)
       command: ["/bin/bash", "-c"]
       args:
         - |

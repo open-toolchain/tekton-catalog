@@ -58,6 +58,7 @@ data:
     # - IBMCLOUD_RESOURCE_GROUP (input)
     # - REGISTRY_REGION (input)
     # - REGISTRY_NAMESPACE (input)
+    # - REGISTRY_CREATE_NAMESPACE (input)
     ##########################################################################
 
     TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
@@ -78,11 +79,13 @@ data:
     echo "Checking registry namespace: ${REGISTRY_NAMESPACE}"
     NS=$( ibmcloud cr namespaces | grep ${REGISTRY_NAMESPACE} ||: )
     if [ -z "${NS}" ]; then
-        echo "Registry namespace ${REGISTRY_NAMESPACE} not found, creating it."
-        ibmcloud cr namespace-add ${REGISTRY_NAMESPACE}
-        echo "Registry namespace ${REGISTRY_NAMESPACE} created."
+        echo "Registry namespace ${REGISTRY_NAMESPACE} not found"
+        if [ "$REGISTRY_CREATE_NAMESPACE" == "true" ] ; then
+          ibmcloud cr namespace-add ${REGISTRY_NAMESPACE}
+          echo "Registry namespace ${REGISTRY_NAMESPACE} created."
+        else
+          echo "Skipping creation of registry namespace ${REGISTRY_NAMESPACE}."
+        fi
     else
         echo "Registry namespace ${REGISTRY_NAMESPACE} found."
     fi
-    echo -e "Existing images in registry"
-    ibmcloud cr images --restrict ${REGISTRY_NAMESPACE}
