@@ -14,6 +14,9 @@ spec:
       description: |
         the Slack channel to send the message to.
         When set, overrides the default channel as set in the Slack Webhook URL.
+        Only non-private channel can override the default channel.
+        If the target channel is a private channel, the Slack Webhook URL in the Slack toolchain 
+        integration card needs to be updated.
       default: ""
     - name: message-format
       description: the format of the message. text(default) or JSON payload.
