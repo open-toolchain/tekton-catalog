@@ -27,7 +27,7 @@ Add a [Slack integration](https://cloud.ibm.com/docs/services/ContinuousDelivery
 ### Parameters
 
 * **domain**: (optional) the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-* **channel**: (optional) the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL.
+* **channel**: (optional) the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL. Only non-private channel can override the default channel. If the target channel is a private channel, the Slack Webhook URL in the Slack toolchain integration card needs to be updated.
 * **message-format**: (optional) the format of the message. Value: text(default) or JSON.
 * **message-script**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
