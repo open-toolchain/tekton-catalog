@@ -118,6 +118,7 @@ spec:
 
         # configure the container registry
         echo "REGISTRY REGION $REGISTRY_REGION"
+        # if registry region is in the 'ibm:yp:<region>' just keep the region part
         export REGISTRY_REGION=$(echo "$REGISTRY_REGION" | awk -F ':' '{print $NF;}')
         ibmcloud cr region-set $REGISTRY_REGION
         echo "REGISTRY REGION $REGISTRY_REGION"

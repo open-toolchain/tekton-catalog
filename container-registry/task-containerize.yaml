@@ -129,7 +129,9 @@ spec:
             source /scripts/parse_image_url.sh
           else
             # export the expected environment variables based on the required registry parameters
-            export REGISTRY_REGION=$(params.registry-region)
+            # if registry region is in the 'ibm:yp:<region>' just keep the region part
+            export REGISTRY_REGION=$(echo "$(params.registry-region)" | awk -F ':' '{print $NF;}')
+
             if [ -z "$REGISTRY_REGION" ]; then
               echo "No registry region provided"
               exit 1
