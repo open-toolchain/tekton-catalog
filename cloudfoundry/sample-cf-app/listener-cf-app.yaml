@@ -9,6 +9,8 @@ spec:
       description: The git repo
     - name: branch
       description: the branch for the git repo
+    - name: region
+      default: ""
     - name: cf-org
     - name: cf-space
     - name: cf-app
@@ -39,6 +41,8 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
+          - name: region
+            value: $(params.region)
           - name: cf-org
             value: $(params.cf-org)
           - name: cf-space

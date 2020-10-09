@@ -12,6 +12,8 @@ spec:
     - name: resource-group
       description: Resource group for the ibmcloud operation
       default: "default"
+    - name: cluster-region
+      default: ""
     - name: pipeline-debug
       default: "0"
   resourcetemplates:
@@ -34,6 +36,8 @@ spec:
         pipelineRef:
           name: kubernetes-service-no-resources
         params:
+          - name: cluster-region
+            value: $(params.cluster-region)
           - name: resource-group
             value: $(params.resource-group)
           - name: cluster-name

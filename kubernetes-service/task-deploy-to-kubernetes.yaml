@@ -106,7 +106,8 @@ spec:
         # SETUP BEGIN
         ibmcloud config --check-version false
         if [ "$(params.cluster-region)" ]; then
-          export IBM_CLOUD_REGION=$(params.cluster-region)
+          # if cluster region is in the 'ibm:yp:<region>' just keep the region part
+          export IBM_CLOUD_REGION=$(echo "$(params.cluster-region)" | awk -F ':' '{print $NF;}')
         else
           export IBM_CLOUD_REGION=$(jq -r '.region_id' /artifacts/_toolchain.json | awk -F: '{print $3}')
         fi

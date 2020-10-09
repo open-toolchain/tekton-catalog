@@ -98,7 +98,8 @@ spec:
           ##########################################################################
           ibmcloud config --check-version false
           if [ "$(params.cluster-region)" ]; then
-            TARGET_REGION=$(params.cluster-region)
+            # if cluster region is in the 'ibm:yp:<region>' just keep the region part
+            TARGET_REGION=$(echo "$(params.cluster-region)" | awk -F ':' '{print $NF;}')
           else
             TARGET_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           fi

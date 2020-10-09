@@ -5,6 +5,8 @@ metadata:
   name: kubernetes-service-no-resources
 spec:
   params:
+    - name: cluster-region
+      default: ""
     - name: resource-group
     - name: cluster-name
     - name: pipeline-debug
@@ -16,6 +18,8 @@ spec:
       taskRef:
         name: iks-fetch-config
       params:
+        - name: cluster-region
+          value: $(params.cluster-region)
         - name: resource-group
           value: $(params.resource-group)
         - name: cluster-name
