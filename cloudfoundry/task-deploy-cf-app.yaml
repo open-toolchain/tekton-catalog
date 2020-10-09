@@ -118,6 +118,9 @@ spec:
 
         if [ -z "$CF_REGION" ]; then
           export CF_REGION="$TOOLCHAIN_REGION"
+        else
+          # if cf region is in the 'ibm:yp:<region>' just keep the region part
+          export CF_REGION=$(echo "$CF_REGION" | awk -F ':' '{print $NF;}')
         fi
 
         ibmcloud config --check-version false
