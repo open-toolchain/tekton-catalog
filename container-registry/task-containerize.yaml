@@ -233,10 +233,13 @@ spec:
 
           # Manage multiple tags for an image
           # Add dynamically computed tags
-          printf "#!/bin/sh\n" > /steps/additionnalTags.sh
-          printf "%s " '$(params.additional-tags-script)' >> /steps/additionnalTags.sh
-          chmod +x /steps/additionnalTags.sh
-          /steps/additionnalTags.sh 2 >& 1 > /steps/tags.lst
+          printf "#!/bin/sh\n" > /steps/additionalTags.sh
+          printf "%s " '$(params.additional-tags-script)' >> /steps/additionalTags.sh
+          chmod +x /steps/additionalTags.sh
+
+          # Send stdout to the tags list; don't touch stderr.
+          /steps/additionalTags.sh > /steps/tags.lst
+
           # Add image pipeline resource
           if [ "${IMAGE_TAG}" ]; then
             echo "${IMAGE_TAG}" >> /steps/tags.lst
