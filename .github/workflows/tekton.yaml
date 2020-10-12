@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install tekton-lint
-        run: npm install -g tekton-lint
+        run: sudo npm install -g tekton-lint
 
       - name: Lint Tekton
         run: tekton-lint '**/*.yaml'
