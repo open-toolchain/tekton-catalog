@@ -9,8 +9,6 @@ spec:
       description: The git repo
     - name: branch
       description: the branch for the git repo
-    - name: apikey
-      description: the ibmcloud api key
     - name: commit-message
       default: ""
     - name: pipeline-debug
@@ -39,8 +37,6 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: apikey
-            value: $(params.apikey)
           - name: commit-message
             value: $(params.commit-message)
           - name: pipeline-debug
