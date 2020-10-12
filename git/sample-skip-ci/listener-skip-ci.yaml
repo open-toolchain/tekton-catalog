@@ -39,6 +39,8 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
+          - name: apikey
+            value: $(params.apikey)
           - name: commit-message
             value: $(params.commit-message)
           - name: pipeline-debug
@@ -51,7 +53,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-commit
+  name: github-commit-trigger
 spec:
   params:
     - name: repository
@@ -66,10 +68,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-commit
+  name: github-commit-listener
 spec:
   triggers:
     - binding:
-        name: github-commit
+        name: github-commit-trigger
       template:
         name: skip-ci
