@@ -25,4 +25,4 @@ jobs:
         run: sudo npm install -g tekton-lint
 
       - name: Lint Tekton
-        run: tekton-lint '**/*.yaml'
+        run: tekton-lint --color --max-warnings 0 '**/*.yaml'
