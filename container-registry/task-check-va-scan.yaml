@@ -62,7 +62,7 @@ spec:
         optional: true
   steps:
     - name: run-vulnerability-advisor-scan
-      image: ibmcom/pipeline-base-image:2.6
+      image: ibmcom/pipeline-base-image:2.9
       workingDir: /artifacts
       env:
         - name: API_KEY
@@ -133,6 +133,8 @@ spec:
               REGISTRY_REGION="us-south"
             elif [ "$REGISTRY_REGION" == "stg" ]; then
               REGISTRY_REGION="us-south"
+            elif [ "$REGISTRY_REGION" == "fr2" ]; then
+              REGISTRY_REGION="eu-fr2"
             else
               echo "No IBM Cloud Container Registry region found for the registry url $INPUT_REGISTRY_URL"
               exit 1

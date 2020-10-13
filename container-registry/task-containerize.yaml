@@ -85,7 +85,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: check-registry
-      image: ibmcom/pipeline-base-image:2.6
+      image: ibmcom/pipeline-base-image:2.9
       workingDir: /steps
       env:
         - name: API_KEY
@@ -296,7 +296,7 @@ spec:
           name: steps-volume
     - name: process-build-log
       # An image including only jq should be sufficient
-      image: ibmcom/pipeline-base-image:2.6
+      image: ibmcom/pipeline-base-image:2.9
       workingDir: /steps
       env:
         - name: PROPERTIES_FILE
