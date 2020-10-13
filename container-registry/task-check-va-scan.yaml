@@ -62,7 +62,7 @@ spec:
         optional: true
   steps:
     - name: run-vulnerability-advisor-scan
-      image: ibmcom/pipeline-base-image:2.6
+      image: ibmcom/pipeline-base-image:2.9
       workingDir: /artifacts
       env:
         - name: API_KEY
