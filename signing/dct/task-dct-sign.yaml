@@ -19,9 +19,6 @@ spec:
       description: the resource group of the keyprotect instance
     - name: vault-name
       description: the key protect instance name
-    - name: ibmcloud-api
-      description: the ibmcloud api
-      default: https://cloud.ibm.com
     - name: continuous-delivery-context-secret
       description: name of the secret containing the continuous delivery pipeline context secrets
       default: secure-properties
