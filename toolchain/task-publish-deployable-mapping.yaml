@@ -217,7 +217,12 @@ spec:
           done < <(printf '%s\n' "$GIT_INPUTS")          
         fi
 
-        OTC_API_DM_URL="https://otc-api.${TOOLCHAIN_REGION}.devops.cloud.ibm.com/api/v1/toolchain_deployable_mappings"
+        if [ $IBM_CLOUD_API == "https://test.cloud.ibm.com" ]; then
+          OTC_API_DM_URL="https://otc-api.${TOOLCHAIN_REGION}.devops.dev.cloud.ibm.com/api/v1/toolchain_deployable_mappings"
+        else
+          OTC_API_DM_URL="https://otc-api.${TOOLCHAIN_REGION}.devops.cloud.ibm.com/api/v1/toolchain_deployable_mappings"
+        fi
+
         # Check if an existing mapping exist with the given deployable guid in toolchain
         EXISTING_DEPLOYABLE_MAPPING=$(curl -H "accept: application/json" -H "Authorization: ${TOKEN}" \
           "$OTC_API_DM_URL?toolchain_guid=${TOOLCHAIN_ID}&deployable_guid=${DEPLOYABLE_GUID}" | \
