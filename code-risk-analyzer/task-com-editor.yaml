@@ -20,7 +20,7 @@ spec:
   
   steps:
     - name: comm-editor
-      image: icr.io/devops_insights_dra_staging/cra-comm-editor:main.995
+      image: image: icr.io/continuous-delivery/cra-comm-editor:main.995
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]

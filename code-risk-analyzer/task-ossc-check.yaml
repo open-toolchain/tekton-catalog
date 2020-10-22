@@ -30,7 +30,7 @@ spec:
             fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
   steps:
     - name: ossc
-      image: icr.io/gitsecure/ossc-checker:1.0.2
+      image: us.icr.io/gitsecure/ossc-checker:1.0.2
       imagePullPolicy: Always
       workingDir: "/artifacts"
       script: |

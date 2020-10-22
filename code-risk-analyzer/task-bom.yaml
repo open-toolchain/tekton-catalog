@@ -54,7 +54,7 @@ spec:
       
   steps:
     - name: bom
-      image: icr.io/devops_insights_dra_staging/cra-bom:main.1001
+      image: image: icr.io/continuous-delivery/cra-bom:main.1001
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -150,7 +150,7 @@ spec:
           name: steps-volume
 
     - name: comment-editor
-      image: icr.io/devops_insights_dra_staging/cra-comm-editor:main.995
+      image: image: icr.io/continuous-delivery/cra-comm-editor:main.995
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
