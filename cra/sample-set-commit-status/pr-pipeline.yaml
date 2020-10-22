@@ -1,0 +1,326 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pr-pipeline
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: branch
+    - name: target-branch
+      description: target branch
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: repository-integration
+      description: the repo integration name
+    - name: commit-id
+      description: commit id
+    - name: commit-timestamp
+      description: commit timestamp
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+    - name: pr-url
+      description: pr url
+    - name: target-commit-id
+      description: target branch commit id
+    - name: project-id
+      description: project id
+      default: ""
+    - name: scm-type
+      description: source code type used (github, github-ent, gitlab)   
+
+  workspaces:
+    - name: artifacts
+
+  tasks:
+    - name: code-fetch-credentials
+      taskRef:
+        name: git-get-credentials
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: repository-integration
+          value: $(params.repository-integration)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-fetch-code
+      runAfter:
+        - code-fetch-credentials
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: git-user
+          value: $(tasks.code-fetch-credentials.results.git-auth-user)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: cra-discovery-scan
+      runAfter:
+        - code-fetch-code
+      taskRef:
+        name: cra-discovery
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: commit-id
+          value: $(params.commit-id)
+        - name: commit-timestamp
+          value: $(params.commit-timestamp)
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: directory-name
+          value: $(tasks.code-fetch-code.results.directory-name)
+
+    - name: code-vulnerability-scan-status-pending
+      runAfter:
+        - code-fetch-code
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: cra-vulnerability-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: cra-vulnerability-scan
+      runAfter:
+        - cra-discovery-scan
+      taskRef:
+        name: cra-vulnerability-remediation
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
+        - name: git-api-token-key
+          value: git-token
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)    
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)  
+
+    - name: code-vulnerability-scan-status-finished
+      runAfter:
+        - cra-vulnerability-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: "$(tasks.cra-vulnerability-scan.results.status)"
+        - name: context
+          value: cra-vulnerability-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-cis-check-status-pending
+      runAfter:
+        - code-fetch-code
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: cra-cis-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: cra-cis-check
+      taskRef:
+        name: cra-cis-check
+      runAfter:
+        - cra-discovery-scan
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
+        - name: directory-name
+          value: $(tasks.code-fetch-code.results.directory-name)
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)    
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-cis-check-status-finished
+      runAfter:
+        - cra-cis-check
+      workspaces:
+        - name: artifacts
+          workspace: artifacts  
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: "$(tasks.cra-cis-check.results.status)"
+        - name: context
+          value: cra-cis-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-bom-check-status-pending
+      runAfter:
+        - code-fetch-code
+      workspaces:
+        - name: artifacts
+          workspace: artifacts  
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: cra-bom-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+          
+    - name: cra-bom
+      taskRef:
+        name: cra-bom
+      runAfter:
+        - cra-discovery-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts          
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
+        - name: target-branch
+          value: $(params.target-branch)
+        - name: target-commit-id
+          value: $(params.target-commit-id)      
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)    
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-bom-check-status-finished
+      runAfter:
+        - cra-bom
+      workspaces:
+        - name: artifacts
+          workspace: artifacts  
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: "$(tasks.cra-bom.results.status)"
+        - name: context
+          value: cra-bom-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+          
