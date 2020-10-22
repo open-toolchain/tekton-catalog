@@ -1,0 +1,60 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gitsecure-ossc
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: revision
+      description: the revision
+      default: master
+    - name: commit-id
+      description: git commit id
+    - name: continuous-delivery-context-secret
+      description: Reference name for the secret resource
+      default: "secure-properties"
+  results:
+    - name: status
+      description: status of ossc task, possible value are-success|failure
+    - name: evidence-store
+      description: filepath to store ossc task evidence
+    - name: comment-fp
+      description: filepath to store ossc task comment.md    
+  stepTemplate:
+    env:
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+  steps:
+    - name: ossc
+      image: icr.io/gitsecure/ossc-checker:1.0.2
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      script: |
+        #!/bin/bash
+
+        python /ossc/ossc.py --giturl "$(params.repository)" \
+                              --gitbranch "$(params.revision)" \
+                              --rigserviceapi https://apiservice.gitsecureapi.com \
+                              --commitid "$(params.commit-id)" \
+                              --results_status "$(results.status.path)" \
+                              --results_evidence "./gitsecure-ossc-results.json" \
+                              --comment_md "./gitsecure-ossc-comment.md"
+
+        echo -n "gitsecure-ossc-results.json" > $(results.evidence-store.path)
+        echo -n "gitsecure-ossc-comment.md" > $(results.comment-fp.path)
+        
+      volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+  workspaces:
+    - name: artifacts
+      mountPath: /artifacts
+                
+  volumes:
+    - name: secrets
+      secret:
+        secretName: $(params.continuous-delivery-context-secret)
