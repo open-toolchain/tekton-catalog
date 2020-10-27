@@ -38,9 +38,6 @@ spec:
     - name: target-commit-id
       description: target branch commit id
       default: "" 
-    - name: ibmcloud-api-key
-      description: the IBM Cloud API key
-      default: ""
     - name: project-id
       description: for gitlab repository, specify project-id
       default: ""
@@ -71,7 +68,13 @@ spec:
       image: icr.io/continuous-delivery/cra-bom:main.1139
       env:
         - name: REPOSITORY
-          value: $(params.repository)      
+          value: $(params.repository)
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.ibmcloud-apikey-secret-key)
+              optional: true
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -85,8 +88,6 @@ spec:
             trap env EXIT
             set -x +e
           fi
-
-          API_KEY=$(params.ibmcloud-api-key)
 
           TOOLCHAIN_CONFIG=$(cat /config/toolchain.json)
           TOOLCHAIN_REGION=$(echo ${TOOLCHAIN_CONFIG} | jq -r '.region_id' | awk -F: '{print $3}')

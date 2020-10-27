@@ -14,9 +14,6 @@ spec:
       description: git commit id
     - name: commit-timestamp
       description: git commit timestamp
-    - name: ibmcloud-api-key
-      description: the IBM Cloud API key
-      default: ""
     - name: directory-name
       description: directory name where the repository is cloned
     - name: pipeline-debug
@@ -35,6 +32,13 @@ spec:
   steps:
     - name: discovery
       image: icr.io/continuous-delivery/cra-discovery:main.1141
+      env:
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.ibmcloud-apikey-secret-key)
+              optional: true
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -48,7 +52,6 @@ spec:
             set -x +e
           fi
 
-          API_KEY=$(params.ibmcloud-api-key)
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
 
           TOOLCHAIN_REGION=$(cat /config/toolchain.json | jq -r '.region_id' | awk -F: '{print $3}')

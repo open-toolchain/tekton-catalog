@@ -41,19 +41,6 @@ spec:
           - ReadWriteOnce
     - apiVersion: v1
       kind: Secret
-      data:
-        .dockerconfigjson: $(params.artifactory-dockerconfigjson)
-      metadata:
-        name: artifactory-pull-secret
-      type: kubernetes.io/dockerconfigjson
-    - apiVersion: v1
-      kind: ServiceAccount
-      imagePullSecrets:
-        - name: artifactory-pull-secret
-      metadata:
-        name: sa-pullsecret
-    - apiVersion: v1
-      kind: Secret
       metadata:
         name: cd-secret
       type: Opaque
@@ -70,14 +57,11 @@ spec:
           - name: artifacts
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
-        serviceAccountName: sa-pullsecret
         params:
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: apikey
-            value: $(params.apikey)
           - name: repository-integration
             value: $(params.repository-integration)
           - name: commit-id

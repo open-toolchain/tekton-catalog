@@ -32,9 +32,6 @@ spec:
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
       default: ""
-    - name: ibmcloud-api-key
-      description: the IBM Cloud API key
-      default: ""
     - name: project-id
       description: for gitlab repository specify project-id
       default: ""
@@ -69,7 +66,13 @@ spec:
       image: icr.io/continuous-delivery/cra-cis:main.1137
       env:
         - name: REPOSITORY
-          value: $(params.repository)         
+          value: $(params.repository)
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.ibmcloud-apikey-secret-key)
+              optional: true
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -83,7 +86,6 @@ spec:
             set -x +e
           fi
 
-          API_KEY=$(params.ibmcloud-api-key)
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
 
           TOOLCHAIN_CONFIG=$(cat /config/toolchain.json)
