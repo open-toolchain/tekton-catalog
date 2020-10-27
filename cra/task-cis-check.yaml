@@ -35,9 +35,6 @@ spec:
     - name: project-id
       description: for gitlab repository specify project-id
       default: ""
-    - name: git-api-token-key
-      description: The name of the secret in the workspace
-      default: "git-token"
     - name: directory-name
       description: directory name where the repository is cloned
     - name: scm-type

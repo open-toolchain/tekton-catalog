@@ -14,8 +14,6 @@ spec:
       default: ""      
     - name: target-branch
       description: target branch
-    - name: repository-integration
-      description: the repo integration name
     - name: commit-id
       description: commit id
     - name: commit-timestamp
