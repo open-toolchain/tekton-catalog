@@ -13,8 +13,6 @@ spec:
       description: target branch
     - name: target-commit-id
       description: target commit id      
-    - name: repository-integration
-      description: the repo integration name
     - name: apikey
       description: the ibmcloud api key
     - name: commit-id
