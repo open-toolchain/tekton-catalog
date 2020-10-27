@@ -1,0 +1,33 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: github-ci-listener
+spec:
+  triggers:
+    - bindings:
+        - name: github-ci-binding
+      template:
+        name: ci-template
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: gitlab-ci-listener
+spec:
+  triggers:
+    - bindings:
+        - name: gitlab-ci-binding
+      template:
+        name: ci-template
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: github-ent-ci-listener
+spec:
+  triggers:
+    - bindings:
+        - name: github-ent-ci-binding
+      template:
+        name: ci-template
