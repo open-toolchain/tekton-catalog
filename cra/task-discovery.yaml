@@ -24,7 +24,7 @@ spec:
       default: "secure-properties"
     - name: ibmcloud-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud
-      default: apikey      
+      default: apikey
 
   results:
     - name: status
@@ -90,7 +90,7 @@ spec:
             echo "Please verify the Devops Insights card has been added to your toolchain and the api-key has access."
             exit 1
           fi
-          
+
           if [ "$HTTP_STATUS" -ne 200 ]; then
             echo ""
             echo "Error! Please try again."
@@ -129,7 +129,7 @@ spec:
         # enable BUILDKIT Option
         - name: DOCKER_BUILDKIT
           value: 1
-        # Write generated certs to the path shared with the client.  
+        # Write generated certs to the path shared with the client.
         - name: DOCKER_TLS_CERTDIR
           value: /certs
       volumeMounts:
@@ -149,6 +149,5 @@ spec:
     - name: config-volume
       configMap:
         name: toolchain
-    - name: docker-socket  
+    - name: docker-socket
       emptyDir: {}
-    

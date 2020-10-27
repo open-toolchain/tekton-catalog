@@ -16,4 +16,4 @@ spec:
     - name: scm-type
       value: "gitlab"
     - name: repository
-      value: $(event.project.http_url) 
+      value: $(event.project.http_url)

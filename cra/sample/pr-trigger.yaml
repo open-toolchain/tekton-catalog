@@ -12,7 +12,7 @@ spec:
     - name: target-branch
       description: target branch
     - name: target-commit-id
-      description: target commit id      
+      description: target commit id
     - name: apikey
       description: the ibmcloud api key
     - name: commit-id
@@ -24,9 +24,9 @@ spec:
     - name: pr-url
       description: PR url
     - name: pr-number
-      description: PR number  
+      description: PR number
     - name: pr-name
-      description: PR name           
+      description: PR name
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
     - name: project-id
@@ -82,4 +82,4 @@ spec:
           - name: scm-type
             value: $(params.scm-type)
           - name: project-id
-            value: $(params.project-id)                                     
+            value: $(params.project-id)

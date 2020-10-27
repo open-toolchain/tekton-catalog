@@ -1,9 +1,9 @@
----        
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cra-comm-editor
-spec:  
+spec:
   params:
     - name: repository
       description: the git repo url
@@ -16,7 +16,7 @@ spec:
     - name: comment-fp
       description: comments filepath
     - name: scm-type
-      description: source code type used (github, github-ent, gitlab)    
+      description: source code type used (github, github-ent, gitlab)
   steps:
     - name: comm-editor
       image: icr.io/continuous-delivery/cra-comm-editor:main.1111
@@ -25,13 +25,13 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - |
-          #!/bin/sh      
+          #!/bin/sh
           GIT_PROPS_FILE=./build.properties
           if [ ! -f "$GIT_PROPS_FILE" ]; then
             echo "Build properties file not found: $GIT_PROPS_FILE"
             exit 1
           fi
-          
+
           GIT_USER=$(grep GIT_AUTH_USER  $GIT_PROPS_FILE | cut -d "=" -f2)
           if [ $(params.scm-type) = "github-ent" ]; then
               GIT_TOKEN=$(grep GHE_TOKEN  $GIT_PROPS_FILE | cut -d "=" -f2)
@@ -39,11 +39,11 @@ spec:
           else
               GIT_TOKEN=$(grep GIT_TOKEN  $GIT_PROPS_FILE | cut -d "=" -f2)
               echo "setting git-ent token"
-          fi    
+          fi
 
           export GIT_USER
           export GIT_TOKEN
-           
+
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \
             -pr-url "$(params.pr-url)" \

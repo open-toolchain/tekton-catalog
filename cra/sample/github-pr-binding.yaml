@@ -14,14 +14,14 @@ spec:
     - name: commit-timestamp
       value: $(event.pull_request.head.repo.pushed_at)
     - name: target-commit-id
-      value: $(event.pull_request.base.sha)      
+      value: $(event.pull_request.base.sha)
     - name: pr-url
       value: $(event.pull_request.url)
     - name: pr-number
-      value: $(event.pull_request.number)  
+      value: $(event.pull_request.number)
     - name: pr-name
-      value: $(event.pull_request.user.login)             
+      value: $(event.pull_request.user.login)
     - name: repository
       value: $(event.repository.html_url)
     - name: scm-type
-      value: "github"          
+      value: "github"
