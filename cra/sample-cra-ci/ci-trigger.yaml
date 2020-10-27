@@ -19,9 +19,6 @@ spec:
       description: commit timestamp
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-    - name: artifactory-dockerconfigjson
-      description: dockerconfigjson for pullsecrets
-      default: e30K       
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
     - name: project-id
