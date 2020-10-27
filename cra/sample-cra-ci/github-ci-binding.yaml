@@ -10,7 +10,7 @@ spec:
     - name: commit-id
       value: $(event.after)
     - name: commit-timestamp
-      value: $(event.repository.pushed_at)
+      value: $(event.repository.updated_at)
     - name: repository
       value: $(event.repository.html_url)
     - name: scm-type
