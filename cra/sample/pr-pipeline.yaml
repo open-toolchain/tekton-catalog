@@ -124,8 +124,6 @@ spec:
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
-        - name: git-api-token-key
-          value: git-token
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
