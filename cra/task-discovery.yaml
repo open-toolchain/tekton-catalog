@@ -19,7 +19,10 @@ spec:
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
       default: "0"
-      
+    - name: continuous-delivery-context-secret
+      description: Reference name for the secret resource
+      default: "secure-properties"
+            
   results:
     - name: status
       description: status of discovery task, possible value are-success|failure
