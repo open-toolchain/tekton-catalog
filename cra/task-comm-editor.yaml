@@ -26,23 +26,7 @@ spec:
       args:
         - |
           #!/bin/sh
-          GIT_PROPS_FILE=./build.properties
-          if [ ! -f "$GIT_PROPS_FILE" ]; then
-            echo "Build properties file not found: $GIT_PROPS_FILE"
-            exit 1
-          fi
-
-          GIT_USER=$(grep GIT_AUTH_USER  $GIT_PROPS_FILE | cut -d "=" -f2)
-          if [ $(params.scm-type) = "github-ent" ]; then
-              GIT_TOKEN=$(grep GHE_TOKEN  $GIT_PROPS_FILE | cut -d "=" -f2)
-              echo "setting git token"
-          else
-              GIT_TOKEN=$(grep GIT_TOKEN  $GIT_PROPS_FILE | cut -d "=" -f2)
-              echo "setting git-ent token"
-          fi
-
-          export GIT_USER
-          export GIT_TOKEN
+          source /steps/next-step-env.properties
 
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \

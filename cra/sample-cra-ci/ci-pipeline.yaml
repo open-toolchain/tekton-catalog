@@ -12,8 +12,6 @@ spec:
     - name: revision
       description: the git revision/commit for the git repo
       default: ""
-    - name: repository-integration
-      description: the repo integration name
     - name: commit-id
       description: commit id
     - name: commit-timestamp
@@ -96,8 +94,6 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(params.commit-id)
-        - name: git-api-token-key
-          value: git-token
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
