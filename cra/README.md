@@ -31,7 +31,6 @@ any add-on packages installed on top of base image(s).
   - **revision**: (Default: `master`) The branch to scan
   - **commit-id**: The commit id of the change
   - **commit-timestamp**: The commit timestamp
-  - **ibmcloud-api-key**: (Default: `""`) The IBM Cloud API key
   - **directory-name**: The directory name where the repository is cloned
 
 ### Workspaces
@@ -63,8 +62,6 @@ Example usage in a pipeline.
           value: $(params.commit-id)
         - name: commit-timestamp
           value: $(params.commit-timestamp)
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
@@ -85,9 +82,7 @@ Bill-of-Material (BoM) for a given repository captures pedigree of all the depen
   - **pr-url**: The pull request url
   - **target-branch**: The target branch for comparison
   - **target-commit-id**: The target commit id for comparison
-  - **ibmcloud-api-key**: (Default: `""`) The IBM Cloud API key
   - **project-id**: (Default: `""`) Required id for GitLab repositories
-  - **git-api-token-key**: (Default: `git-token`) The name of the secret in the workspace
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
 
 #### Implicit
@@ -128,9 +123,7 @@ The following inputs are coming from tekton annotation:
         - name: target-branch
           value: $(params.target-branch)
         - name: target-commit-id
-          value: $(params.target-commit-id)      
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
+          value: $(params.target-commit-id)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -183,9 +176,7 @@ We identified following controls from CIS Docker 1.13.0 that we can implement in
   - **pr-url**: The pull request url
   - **target-branch**: The target branch for comparison
   - **target-commit-id**: The target commit id for comparison
-  - **ibmcloud-api-key**: (Default: `""`) The IBM Cloud API key
   - **project-id**: (Default: `""`) Required id for GitLab repositories
-  - **git-api-token-key**: (Default: `git-token`) The name of the secret in the workspace
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
   - **directory-name**: The directory name where the repository is cloned
 
@@ -227,8 +218,6 @@ Example usage in a pipeline.
           value: $(params.commit-id)
         - name: directory-name
           value: $(tasks.code-fetch-code.results.directory-name)
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -251,9 +240,7 @@ This task finds out vulnerabilities for all application package dependencies, co
   - **pr-url**: The pull request url
   - **target-branch**: The target branch for comparison
   - **target-commit-id**: The target commit id for comparison
-  - **ibmcloud-api-key**: (Default: `""`) The IBM Cloud API key
   - **project-id**: (Default: `""`) Required id for GitLab repositories
-  - **git-api-token-key**: (Default: `git-token`) The name of the secret in the workspace
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
   - **directory-name**: The directory name where the repository is cloned
 
@@ -293,10 +280,6 @@ Example usage in a pipeline.
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
-        - name: git-api-token-key
-          value: git-token
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
