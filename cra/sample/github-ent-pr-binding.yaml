@@ -1,0 +1,27 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: github-ent-pr-binding
+spec:
+  params:
+    - name: branch
+      value: $(event.pull_request.head.ref)
+    - name: target-branch
+      value: $(event.pull_request.base.ref)
+    - name: commit-id
+      value: $(event.pull_request.head.sha)
+    - name: commit-timestamp
+      value: $(event.pull_request.head.repo.pushed_at)
+    - name: target-commit-id
+      value: $(event.pull_request.base.sha)
+    - name: pr-url
+      value: $(event.pull_request.url)
+    - name: pr-number
+      value: $(event.pull_request.number)
+    - name: pr-name
+      value: $(event.pull_request.user.login)
+    - name: repository
+      value: $(event.repository.html_url)
+    - name: scm-type
+      value: "github-ent"
