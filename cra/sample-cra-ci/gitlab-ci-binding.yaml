@@ -1,0 +1,19 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: gitlab-ci-binding
+spec:
+  params:
+    - name: branch
+      value: $(event.ref)
+    - name: commit-id
+      value: $(event.checkout_sha)
+    - name: commit-timestamp
+      value: $(event.commits[0].timestamp)
+    - name: project-id
+      value: $(event.project.id)
+    - name: scm-type
+      value: "gitlab"
+    - name: repository
+      value: $(event.project.http_url)

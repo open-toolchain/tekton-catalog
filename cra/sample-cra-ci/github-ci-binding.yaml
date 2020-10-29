@@ -1,0 +1,17 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: github-ci-binding
+spec:
+  params:
+    - name: branch
+      value: $(event.ref)
+    - name: commit-id
+      value: $(event.after)
+    - name: commit-timestamp
+      value: $(event.repository.updated_at)
+    - name: repository
+      value: $(event.repository.html_url)
+    - name: scm-type
+      value: "github"
