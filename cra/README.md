@@ -32,6 +32,9 @@ any add-on packages installed on top of base image(s).
   - **commit-id**: The commit id of the change
   - **commit-timestamp**: The commit timestamp
   - **directory-name**: The directory name where the repository is cloned
+  - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
+  - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
+  - **ibmcloud-apikey-secret-key**: (Default: `apikey`) field in the secret that contains the api key used to login to ibmcloud
 
 ### Workspaces
 
@@ -47,7 +50,7 @@ Example usage in a pipeline.
 ``` yaml
     - name: cra-discovery-scan
       runAfter:
-        - code-fetch-code
+        - cra-fetch-repo
       taskRef:
         name: cra-discovery
       workspaces:
@@ -60,12 +63,16 @@ Example usage in a pipeline.
           value: $(params.branch)
         - name: commit-id
           value: $(params.commit-id)
-        - name: commit-timestamp
-          value: $(params.commit-timestamp)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(params.directory-name)
+        - name: commit-timestamp
+          value: $(params.commit-timestamp)
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
 ```
 
 ## cra-bom
@@ -75,15 +82,20 @@ Bill-of-Material (BoM) for a given repository captures pedigree of all the depen
 
 #### Parameters
 
+  - **ibmcloud-api**: (Default: `https://cloud.ibm.com`) The ibmcloud api url
   - **repository**: The full URL path to the repo with the deployment files to be scanned
   - **revision**: (Default: `master`) The branch to scan
   - **commit-id**: The commit id of change
+  - **pr-url**: (Default: "") The pull request html url
   - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
-  - **pr-url**: The pull request url
-  - **target-branch**: The target branch for comparison
-  - **target-commit-id**: The target commit id for comparison
+  - **ibmcloud-apikey-secret-key**: (Default: apikey) field in the secret that contains the api key used to login to ibmcloud
+  - **resource-group**: (Default: `""`) target resource group (name or id) for the ibmcloud login operation
+  - **git-access-token**: (Default: `""`) (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
+  - **target-branch**: (Default: `""`) The target branch for comparison
+  - **target-commit-id**: (Default: `""`) The target commit id for comparison
   - **project-id**: (Default: `""`) Required id for GitLab repositories
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
+  - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
 
 #### Implicit
 The following inputs are coming from tekton annotation:
@@ -112,6 +124,8 @@ The following inputs are coming from tekton annotation:
         - name: secrets
           workspace: artifacts          
       params:
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
         - name: repository
           value: $(params.repository)
         - name: revision
@@ -120,10 +134,18 @@ The following inputs are coming from tekton annotation:
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: git-access-token
+          value: ""
         - name: target-branch
           value: $(params.target-branch)
         - name: target-commit-id
-          value: $(params.target-commit-id)
+          value: $(params.target-commit-id)      
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -169,16 +191,20 @@ We identified following controls from CIS Docker 1.13.0 that we can implement in
 
 #### Parameters
 
+  - **ibmcloud-api**: (Default: `https://cloud.ibm.com`) The ibmcloud api url
   - **repository**: The full URL path to the repo with the deployment files to be scanned
   - **revision**: (Default: `master`) The branch to scan
   - **commit-id**: The commit id of change
-  - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
   - **pr-url**: The pull request url
-  - **target-branch**: The target branch for comparison
-  - **target-commit-id**: The target commit id for comparison
+  - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
+  - **ibmcloud-apikey-secret-key**: (Default: apikey) field in the secret that contains the api key used to login to ibmcloud
+  - **resource-group**: (Default: `""`) target resource group (name or id) for the ibmcloud login operation
+  - **git-access-token**: (Default: `""`) (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
   - **project-id**: (Default: `""`) Required id for GitLab repositories
-  - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
   - **directory-name**: The directory name where the repository is cloned
+  - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
+  - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
+  
 
 #### Implicit
 The following inputs are coming from tekton annotation:
@@ -208,6 +234,8 @@ Example usage in a pipeline.
         - name: artifacts
           workspace: artifacts
       params:
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
         - name: repository
           value: $(params.repository)
         - name: revision
@@ -216,8 +244,16 @@ Example usage in a pipeline.
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: git-access-token
+          value: ""
         - name: directory-name
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(params.directory-name)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -233,16 +269,18 @@ This task finds out vulnerabilities for all application package dependencies, co
 
 #### Parameters
 
+  - **ibmcloud-api**: (Default: `https://cloud.ibm.com`) The ibmcloud api url
   - **repository**: The full URL path to the repo with the deployment files to be scanned
   - **revision**: (Default: `master`) The branch to scan
   - **commit-id**: The commit id of change
-  - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
   - **pr-url**: The pull request url
-  - **target-branch**: The target branch for comparison
-  - **target-commit-id**: The target commit id for comparison
+  - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
+  - **ibmcloud-apikey-secret-key**: (Default: apikey) field in the secret that contains the api key used to login to ibmcloud
+  - **resource-group**: (Default: `""`) target resource group (name or id) for the ibmcloud login operation
+  - **git-access-token**: (Default: `""`) (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
   - **project-id**: (Default: `""`) Required id for GitLab repositories
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
-  - **directory-name**: The directory name where the repository is cloned
+  - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
 
 #### Implicit
 The following inputs are coming from tekton annotation:
@@ -272,6 +310,8 @@ Example usage in a pipeline.
         - name: secrets
           workspace: artifacts
       params:
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
         - name: repository
           value: $(params.repository)
         - name: revision
@@ -280,6 +320,14 @@ Example usage in a pipeline.
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: git-access-token
+          value: ""
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
@@ -314,8 +362,6 @@ Example usage in a pipeline.
         name: cra-comm-editor
       workspaces:
         - name: artifacts
-          workspace: artifacts
-        - name: secrets
           workspace: artifacts
       params:
         - name: repository
