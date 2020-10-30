@@ -261,7 +261,7 @@ spec:
           name: steps-volume
 
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1111
+      image: icr.io/continuous-delivery/cra-comm-editor:main.1127
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]

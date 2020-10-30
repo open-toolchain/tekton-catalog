@@ -21,6 +21,7 @@ spec:
       description: commit timestamp
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+      default: "0"
     - name: pr-url
       description: PR url
     - name: pr-number
