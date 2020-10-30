@@ -30,8 +30,8 @@ any add-on packages installed on top of base image(s).
   - **repository**: The full URL path to the repo with the deployment files to be scanned
   - **revision**: (Default: `master`) The branch to scan
   - **commit-id**: The commit id of the change
-  - **commit-timestamp**: The commit timestamp
-  - **directory-name**: The directory name where the repository is cloned
+  - **commit-timestamp**: (optional) The commit timestamp
+  - **directory-name**:  The directory name where the repository is cloned
   - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
   - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
   - **ibmcloud-apikey-secret-key**: (Default: `apikey`) field in the secret that contains the api key used to login to ibmcloud
