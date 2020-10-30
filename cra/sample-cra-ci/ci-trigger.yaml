@@ -19,6 +19,7 @@ spec:
       description: commit timestamp
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+      default: "0"
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
     - name: project-id

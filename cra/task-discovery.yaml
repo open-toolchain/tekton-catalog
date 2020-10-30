@@ -37,7 +37,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:main.1151
+      image: icr.io/continuous-delivery/cra-discovery:main.1178
       env:
         - name: API_KEY
           valueFrom:
