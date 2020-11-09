@@ -25,8 +25,6 @@ spec:
     - name: project-id
       description: project id
       default: ""
-    - name: ibmcloud-api
-      description: the ibmcloud api
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -74,5 +72,3 @@ spec:
             value: $(params.scm-type)
           - name: project-id
             value: $(params.project-id)
-          - name: ibmcloud-api
-            value: $(params.ibmcloud-api)
