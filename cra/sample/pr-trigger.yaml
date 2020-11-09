@@ -35,6 +35,7 @@ spec:
       default: ""
     - name: ibmcloud-api
       description: the ibmcloud api
+      default: https://cloud.ibm.com
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
