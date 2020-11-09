@@ -23,6 +23,9 @@ spec:
       default: ""
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
   workspaces:
     - name: artifacts
 
@@ -52,6 +55,8 @@ spec:
           value: $(params.revision)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
       workspaces:
         - name: output
           workspace: artifacts
