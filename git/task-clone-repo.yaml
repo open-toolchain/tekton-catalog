@@ -98,12 +98,10 @@ spec:
         #!/bin/bash
         set -e -o pipefail
 
-#        if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
-            env
-            trap env EXIT
-            set -x
-#        fi
+        pwd
+        env
+        trap env EXIT
+        set -x
 
         TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
         TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
