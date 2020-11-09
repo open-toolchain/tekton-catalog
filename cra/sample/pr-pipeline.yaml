@@ -109,6 +109,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-vulnerability-scan
       runAfter:
@@ -157,6 +159,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-cis-set-status-pending
       runAfter:
@@ -179,6 +183,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-cis-check
       taskRef:
@@ -228,6 +234,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-bom-set-status-pending
       runAfter:
@@ -250,6 +258,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-bom
       taskRef:
@@ -302,3 +312,5 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
