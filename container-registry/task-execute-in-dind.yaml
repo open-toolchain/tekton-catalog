@@ -148,6 +148,8 @@ spec:
           value: $(params.path-to-dockerfile)
         - name: DOCKERFILE
           value: $(params.dockerfile)
+        - name: DOCKER_OPTS
+          value: "--mtu 1400"
         # Docker client configuration
         # Connect to the sidecar over TCP, with TLS.
         - name: DOCKER_HOST
@@ -272,6 +274,8 @@ spec:
         # Write generated certs to the path shared with the client.
         - name: DOCKER_TLS_CERTDIR
           value: /certs
+        - name: DOCKER_OPTS
+          value: "--mtu 1400"
       volumeMounts:
         - mountPath: /certs/client
           name: dind-certs
