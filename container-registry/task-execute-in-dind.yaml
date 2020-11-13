@@ -274,8 +274,8 @@ spec:
         # Write generated certs to the path shared with the client.
         - name: DOCKER_TLS_CERTDIR
           value: /certs
-        - name: DOCKER_OPTS
-          value: "--mtu 1400"
+      args:
+        - "--mtu=1400"
       volumeMounts:
         - mountPath: /certs/client
           name: dind-certs
