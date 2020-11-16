@@ -14,18 +14,15 @@ spec:
       description: git commit id
     - name: commit-timestamp
       description: git commit timestamp
+    - name: ibmcloud-api-key
+      description: the IBM Cloud API key
+      default: ""
     - name: directory-name
       description: directory name where the repository is cloned
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
       default: "0"
-    - name: continuous-delivery-context-secret
-      description: Reference name for the secret resource
-      default: "secure-properties"
-    - name: ibmcloud-apikey-secret-key
-      description: field in the secret that contains the api key used to login to ibmcloud
-      default: apikey
-
+      
   results:
     - name: status
       description: status of discovery task, possible value are-success|failure
@@ -38,13 +35,6 @@ spec:
   steps:
     - name: discovery
       image: icr.io/continuous-delivery/cra-discovery:main.1178
-      env:
-        - name: API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: $(params.continuous-delivery-context-secret)
-              key: $(params.ibmcloud-apikey-secret-key)
-              optional: true
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -58,6 +48,7 @@ spec:
             set -x +e
           fi
 
+          API_KEY=$(params.ibmcloud-api-key)
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
 
           TOOLCHAIN_REGION=$(cat /config/toolchain.json | jq -r '.region_id' | awk -F: '{print $3}')
@@ -90,7 +81,7 @@ spec:
             echo "Please verify the Devops Insights card has been added to your toolchain and the api-key has access."
             exit 1
           fi
-
+          
           if [ "$HTTP_STATUS" -ne 200 ]; then
             echo ""
             echo "Error! Please try again."
@@ -129,7 +120,7 @@ spec:
         # enable BUILDKIT Option
         - name: DOCKER_BUILDKIT
           value: 1
-        # Write generated certs to the path shared with the client.
+        # Write generated certs to the path shared with the client.  
         - name: DOCKER_TLS_CERTDIR
           value: /certs
       volumeMounts:
@@ -149,5 +140,6 @@ spec:
     - name: config-volume
       configMap:
         name: toolchain
-    - name: docker-socket
+    - name: docker-socket  
       emptyDir: {}
+    

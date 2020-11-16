@@ -14,16 +14,16 @@ spec:
     - name: commit-timestamp
       value: $(event.object_attributes.last_commit.timestamp)
     - name: target-commit-id
-      value: $(event.merge_request.base.sha)
+      value: $(event.merge_request.base.sha)      
     - name: pr-url
       value: $(event.object_attributes.url)
     - name: pr-number
-      value: $(event.object_attributes.iid)
+      value: $(event.object_attributes.iid) 
     - name: pr-name
-      value: $(event.user.username)
+      value: $(event.user.username)             
     - name: project-id
       value: $(event.project.id)
     - name: scm-type
       value: "gitlab"
     - name: repository
-      value: $(event.project.http_url)
+      value: $(event.project.http_url) 

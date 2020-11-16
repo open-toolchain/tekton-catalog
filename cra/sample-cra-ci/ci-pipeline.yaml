@@ -11,7 +11,14 @@ spec:
       description: branch
     - name: revision
       description: the git revision/commit for the git repo
-      default: ""
+      default: ""      
+    - name: apikey
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: repository-integration
+      description: the repo integration name
     - name: commit-id
       description: commit id
     - name: commit-timestamp
@@ -22,7 +29,7 @@ spec:
       description: project id
       default: ""
     - name: scm-type
-      description: source code type used (github, github-ent, gitlab)
+      description: source code type used (github, github-ent, gitlab)   
   workspaces:
     - name: artifacts
 
@@ -35,7 +42,7 @@ spec:
           # if a params.repository is given, it takes precedence
           value: '. as $toolchain | ["$(params.repository)"] | if .[0]=="" then $toolchain | .services[] | select(.toolchain_binding.name=="repo") | .dashboard_url else .[0] end'
         - name: pipeline-debug
-          value: $(params.pipeline-debug)
+          value: $(params.pipeline-debug)  
     - name: cra-fetch-repo
       taskRef:
         name: git-clone-repo
@@ -70,12 +77,14 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(params.commit-id)
+        - name: ibmcloud-api-key
+          value: $(params.apikey)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: directory-name
-          value: ""
+          value: ""         
         - name: commit-timestamp
-          value: $(params.commit-timestamp)
+          value: $(params.commit-timestamp)     
 
     - name: cra-vulnerability-scan
       runAfter:
@@ -94,12 +103,16 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(params.commit-id)
+        - name: git-api-token-key
+          value: git-token
+        - name: ibmcloud-api-key
+          value: $(params.apikey)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
-          value: $(params.project-id)
+          value: $(params.project-id)              
         - name: pipeline-debug
-          value: $(params.pipeline-debug)
+          value: $(params.pipeline-debug)  
 
     - name: cra-cis-check
       taskRef:
@@ -120,12 +133,14 @@ spec:
           value: $(params.commit-id)
         - name: directory-name
           value: ""
+        - name: ibmcloud-api-key
+          value: $(params.apikey)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id
-          value: $(params.project-id)
+          value: $(params.project-id)    
         - name: pipeline-debug
-          value: $(params.pipeline-debug)
+          value: $(params.pipeline-debug) 
 
     - name: cra-bom
       taskRef:
@@ -136,7 +151,7 @@ spec:
         - name: artifacts
           workspace: artifacts
         - name: secrets
-          workspace: artifacts
+          workspace: artifacts          
       params:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
@@ -144,9 +159,11 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(params.commit-id)
+        - name: ibmcloud-api-key
+          value: $(params.apikey)
         - name: scm-type
-          value: $(params.scm-type)
+          value: $(params.scm-type)        
         - name: project-id
-          value: $(params.project-id)
+          value: $(params.project-id)    
         - name: pipeline-debug
           value: $(params.pipeline-debug)

@@ -20,7 +20,7 @@ spec:
       default: ""
     - name: ibmcloud-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud
-      default: apikey
+      default: apikey      
     - name: continuous-delivery-context-secret
       description: Reference name for the secret resource
       default: "secure-properties"
@@ -32,14 +32,20 @@ spec:
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation
       default: ""
+    - name: ibmcloud-api-key
+      description: the IBM Cloud API key
+      default: ""
     - name: project-id
       description: for gitlab repository specify project-id
       default: ""
+    - name: git-api-token-key
+      description: The name of the secret in the workspace
+      default: "git-token"
     - name: directory-name
       description: directory name where the repository is cloned
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
-      default: "github-ent"
+      default: "github-ent" 
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
       default: "0"
@@ -57,25 +63,19 @@ spec:
           fieldRef:
             fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
       - name: PIPELINE_DEBUG
-        value: $(params.pipeline-debug)
+        value: $(params.pipeline-debug)            
   steps:
     - name: cis
       image: icr.io/continuous-delivery/cra-cis:main.1186
       env:
         - name: REPOSITORY
-          value: $(params.repository)
-        - name: API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: $(params.continuous-delivery-context-secret)
-              key: $(params.ibmcloud-apikey-secret-key)
-              optional: true
+          value: $(params.repository)         
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
       args:
         - |
-          #!/bin/sh
+          #!/bin/sh         
           if [ "$PIPELINE_DEBUG" == "1" ]; then
             pwd
             env
@@ -83,6 +83,7 @@ spec:
             set -x +e
           fi
 
+          API_KEY=$(params.ibmcloud-api-key)
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
 
           TOOLCHAIN_CONFIG=$(cat /config/toolchain.json)
@@ -116,7 +117,7 @@ spec:
             echo "Please verify the Devops Insights card has been added to your toolchain and the api-key has access."
             exit 1
           fi
-
+          
           if [ "$HTTP_STATUS" -ne 200 ]; then
             echo ""
             echo "Error! Please try again."
@@ -146,7 +147,7 @@ spec:
 
           echo -n "gitsecure-cis-results.json" > $(results.evidence-store.path)
           echo "COMMENT_FP=./gitsecure-cis-comment.md" >> /steps/next-step-env.properties
-
+            
       volumeMounts:
         - mountPath: /config
           name: cd-config-volume
@@ -261,7 +262,7 @@ spec:
           name: steps-volume
 
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1127
+      image: icr.io/continuous-delivery/cra-comm-editor:main.1192
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -276,7 +277,7 @@ spec:
             -token "$GIT_TOKEN" \
             -comment-fp "$COMMENT_FP" \
             -project-id "$(params.project-id)" \
-            -scm-type "$(params.scm-type)"
+            -scm-type "$(params.scm-type)" 
 
       volumeMounts:
         - mountPath: /steps
