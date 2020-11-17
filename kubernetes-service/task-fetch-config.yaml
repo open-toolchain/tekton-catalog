@@ -105,7 +105,7 @@ spec:
           fi
           ibmcloud login -a $(params.ibmcloud-api) -r $TARGET_REGION --apikey $API_KEY
           if [ "$(params.resource-group)" ]; then
-            ibmcloud target -g $(params.resource-group)
+            ibmcloud target -g "$(params.resource-group)"
           fi
           # Look for the cluster
           if [ "$(resources.inputs.cluster.name)" == "" ]; then

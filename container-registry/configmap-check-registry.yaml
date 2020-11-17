@@ -68,7 +68,7 @@ data:
     ibmcloud config --check-version false
     ibmcloud login -a $IBMCLOUD_API -r $TOOLCHAIN_REGION --apikey $API_KEY
     if [ "$IBMCLOUD_RESOURCE_GROUP" ]; then
-      ibmcloud target -g $IBMCLOUD_RESOURCE_GROUP
+      ibmcloud target -g "$IBMCLOUD_RESOURCE_GROUP"
     fi
 
     # Log container registry to the appropriate region

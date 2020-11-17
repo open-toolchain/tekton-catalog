@@ -145,7 +145,7 @@ spec:
           ibmcloud config --check-version false
           ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $API_KEY
           if [ "$(params.resource-group)" ]; then
-            ibmcloud target -g $(params.resource-group)
+            ibmcloud target -g "$(params.resource-group)"
           fi
 
           # Log container registry to the appropriate region
