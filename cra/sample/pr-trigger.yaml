@@ -58,7 +58,7 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: pullrequest-$(params.pr-number)-from-$(params.pr-name)-user
+        name: pipelinerun-$(uid)
       spec:
         pipelineRef:
           name: pr-pipeline
