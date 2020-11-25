@@ -275,6 +275,10 @@ spec:
         - name: DOCKER_TLS_CERTDIR
           value: /certs
       args:
+        # Set the MTU to a value that is containable in the ibmcloud calico mtu value
+        # References:
+        # - https://liejuntao001.medium.com/fix-docker-in-docker-network-issue-in-kubernetes-cc18c229d9e5
+        # - https://cloud.ibm.com/docs/containers?topic=containers-kernel#calico-mtu
         - "--mtu=1400"
       volumeMounts:
         - mountPath: /certs/client
