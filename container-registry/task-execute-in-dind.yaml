@@ -148,8 +148,6 @@ spec:
           value: $(params.path-to-dockerfile)
         - name: DOCKERFILE
           value: $(params.dockerfile)
-        - name: DOCKER_OPTS
-          value: "--mtu 1400"
         # Docker client configuration
         # Connect to the sidecar over TCP, with TLS.
         - name: DOCKER_HOST
