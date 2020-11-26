@@ -84,6 +84,15 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 - **[icr-cr-build - deprecated](./container-registry/README.md#icr-cr-build)**:  The [`ibmcloud cr build`](https://cloud.ibm.com/docs/container-registry-cli-plugin?topic=container-registry-cli-plugin-containerregcli#bx_cr_build) command is deprecated. If you use the [icr-cr-build](./container-registry/README.md#icr-cr-build) Tekton task, you can migrate to one of the three above Tekton tasks to build container images. For more information about this replacement, see the [IBM Cloud™ Container Registry is Deprecating Container Builds](https://www.ibm.com/cloud/blog/announcements/ibm-cloud-container-registry-deprecating-container-builds) blog post.
 
+## IBM Cloud Code Risk Analyzer scanners related tasks
+
+- **[cra-discovery](./cra/README.md#cra-discovery)**: This task accesses various source artifacts from the repository and performs deep discovery to identify all dependencies (including transitive dependencies).
+- **[cra-bom](./cra/README.md#cra-bom)**: This task creates a Bill-of-Material (BoM) for a given repository that captures pedigree of all the dependencies and is collected at different granularities.
+- **[cra-cis-check](./cra/README.md#cra-cis-check)**: This task runs configuration checks on kubernetes deployment manifests.
+- **[cra-vulnerability-remediation](./cra/README.md#cra-vulnerability-remediation)**: This task finds out vulnerabilities for all application package dependencies, container base images and os packages.
+- **[cra-comm-editor](./cra/README.md#cra-comm-editor)**: This task creates comments on Pull Requests and opens issues regarding bill of material and discovered vunerabilities.
+
+
 ## IBM Cloud Devops Insights related tasks
 
 - **[doi-publish-buildrecord](./devops-insights/README.md#doi-publish-buildrecord)**: This task publishes build record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
