@@ -271,6 +271,15 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
+          if [ $(df -PT /var/lib/buildkit | awk 'NR==2 {print $2}') == "virtiofs" ]; then 
+              apk add e2fsprogs && 
+              truncate -s 20G /tmp/disk.img && 
+              mkfs.ext4 /tmp/disk.img && 
+              mount /tmp/disk.img /var/lib/buildkit;
+          else
+              df -PT /var/lib/buildkit | awk 'NR==2 {print $2}'
+          fi
+
           buildctl-daemonless.sh build \
             --progress=plain \
             --frontend=dockerfile.v0 \
