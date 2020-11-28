@@ -31,10 +31,10 @@ spec:
       description: The exit-code of the tests script
     - name: test-result-file-paths
       description: semi-colon list of test result output file paths
-      default: ""
+      default: "./test/unit-test.json;./test/fvt-test.json"
     - name: test-types
       description: semi-colon separated list of of test types. Order should match file output paths in test-result-file-paths
-      default: ""
+      default: "unittest;fvt"
   workspaces:
     - name: artifacts
       description: A workspace backing by a volume
