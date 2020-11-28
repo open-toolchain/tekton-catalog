@@ -87,6 +87,7 @@ spec:
         fi
 
         if /steps/tests-script.sh; then
+          echo -n $?
           echo -n $? > $(results.tests-exit-code.path)
           echo "Tests executed successfully"
           echo "RESULTS $(results.tests-exit-code.path)"
