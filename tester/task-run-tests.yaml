@@ -29,6 +29,12 @@ spec:
   results:
     - name: tests-exit-code
       description: The exit-code of the tests script
+    - name: test-result-file-paths
+      description: semi-colon list of test result output file paths
+      default: ""
+    - name: test-types
+      description: semi-colon separated list of of test types. Order should match file output paths in test-result-file-paths
+      default: ""
   workspaces:
     - name: artifacts
       description: A workspace backing by a volume
@@ -87,10 +93,8 @@ spec:
         fi
 
         if /steps/tests-script.sh; then
-          echo -n $?
           echo -n $? > $(results.tests-exit-code.path)
           echo "Tests executed successfully"
-          echo "RESULTS $(results.tests-exit-code.path)"
         else
           echo -n $? > $(results.tests-exit-code.path)
           # Failures in the tests execution
