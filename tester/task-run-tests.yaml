@@ -89,6 +89,7 @@ spec:
         if /steps/tests-script.sh; then
           echo -n $? > $(results.tests-exit-code.path)
           echo "Tests executed successfully"
+          echo "RESULTS $(results.tests-exit-code.path)"
         else
           echo -n $? > $(results.tests-exit-code.path)
           # Failures in the tests execution
