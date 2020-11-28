@@ -79,7 +79,8 @@ spec:
           source $SHUTTLE_PROPERTIES_FILE
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
-
+        echo -n "" > $(results.test-result-file-paths.path)
+        echo -n "" > $(results.test-types.path)
         printf "#!/bin/bash\n" > /steps/tests-script.sh
         printf "%s " '$(params.tests-script)' >> /steps/tests-script.sh
         chmod +x /steps/tests-script.sh
