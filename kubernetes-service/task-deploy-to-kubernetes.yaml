@@ -72,12 +72,12 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
-        - name: PIPELINE_BLUEMIX_API_KEY
+        - name: PIPELINE_IBMCLOUD_API_KEY
           valueFrom:
             secretKeyRef:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.kubernetes-service-apikey-secret-key)
-        - name: PIPELINE_BLUEMIX_RESOURCE_GROUP
+        - name: PIPELINE_IBMCLOUD_RESOURCE_GROUP
           value: $(params.resource-group)
         - name: PIPELINE_KUBERNETES_CLUSTER_NAME
           value: $(params.cluster-name)
@@ -111,10 +111,10 @@ spec:
         else
           export IBM_CLOUD_REGION=$(jq -r '.region_id' /artifacts/_toolchain.json | awk -F: '{print $3}')
         fi
-        ibmcloud login -a $(params.ibmcloud-api) -r $IBM_CLOUD_REGION --apikey $PIPELINE_BLUEMIX_API_KEY
+        ibmcloud login -a $(params.ibmcloud-api) -r $IBM_CLOUD_REGION --apikey $PIPELINE_IBMCLOUD_API_KEY
 
-        if [ "$PIPELINE_BLUEMIX_RESOURCE_GROUP" ]; then
-          ibmcloud target -g "$PIPELINE_BLUEMIX_RESOURCE_GROUP"
+        if [ "$PIPELINE_IBMCLOUD_RESOURCE_GROUP" ]; then
+          ibmcloud target -g "$PIPELINE_IBMCLOUD_RESOURCE_GROUP"
         fi
 
         if ibmcloud ks cluster get --cluster $PIPELINE_KUBERNETES_CLUSTER_NAME; then
