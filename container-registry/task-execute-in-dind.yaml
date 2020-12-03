@@ -290,7 +290,7 @@ spec:
           name: dind-certs
       # Wait for the dind daemon to generate the certs it will share with the client.
       readinessProbe:
-        initialDelaySeconds: 2
+        initialDelaySeconds: 5
         periodSeconds: 1
         exec:
           command: ["ls", "/certs/client/ca.pem"]
