@@ -269,6 +269,7 @@ spec:
       name: server
       securityContext:
         privileged: true
+      command: ["sh", "-c"]
       env:
         # Write generated certs to the path shared with the client.
         - name: DOCKER_TLS_CERTDIR
