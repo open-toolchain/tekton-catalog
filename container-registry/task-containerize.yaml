@@ -47,7 +47,7 @@ spec:
       default: ""
     - name: buildkit-image
       description: The name of the BuildKit image
-      default: "moby/buildkit:v0.6.3-rootless"
+      default: "moby/buildkit:v0.7.2"
     - name: additional-tags
       description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array
@@ -382,8 +382,7 @@ spec:
           apk add e2fsprogs && 
           truncate -s 20G /tmp/disk.img && 
           mkfs.ext4 /tmp/disk.img && 
-          mount /tmp/disk.img /var/lib/buildkit; fi &&
-        buildkitd --addr tcp://0.0.0.0:1234;
+          mount /tmp/disk.img /var/lib/buildkit; fi && buildkitd --addr tcp://0.0.0.0:1234;
       # Wait for the buildkit daemon to have available workers.
       readinessProbe:
         initialDelaySeconds: 2
