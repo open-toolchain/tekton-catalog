@@ -388,7 +388,7 @@ spec:
         initialDelaySeconds: 2
         periodSeconds: 1
         exec:
-          command: ["buildctl", "debug workers"]
+          command: ["buildctl debug workers"]
   volumes:
     - name: steps-volume
       emptyDir: {}
