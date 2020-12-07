@@ -384,7 +384,7 @@ spec:
           mkfs.ext4 /tmp/disk.img && 
           mount /tmp/disk.img /var/lib/buildkit; fi &&
         buildkitd;
-      # Wait for the dind daemon to generate the certs it will share with the client.
+      # Wait for the buildkit daemon to have available workers.
       readinessProbe:
         initialDelaySeconds: 2
         periodSeconds: 1
