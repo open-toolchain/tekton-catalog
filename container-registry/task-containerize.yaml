@@ -272,6 +272,7 @@ spec:
           done
 
           buildctl build \
+            --addr= tcp://0.0.0.0:1234 \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
@@ -383,7 +384,7 @@ spec:
           truncate -s 20G /tmp/disk.img && 
           mkfs.ext4 /tmp/disk.img && 
           mount /tmp/disk.img /var/lib/buildkit; fi &&
-        buildkitd;
+        buildkitd --addr tcp://0.0.0.0:1234;
       # Wait for the buildkit daemon to have available workers.
       readinessProbe:
         initialDelaySeconds: 2
