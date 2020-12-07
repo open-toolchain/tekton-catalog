@@ -388,7 +388,7 @@ spec:
         initialDelaySeconds: 2
         periodSeconds: 1
         exec:
-          command: ["buildctl", "--addr tcp://0.0.0.0:1234", "debug", "workers"]
+          command: ["buildctl", "--addr", "tcp://0.0.0.0:1234", "debug", "workers"]
   volumes:
     - name: steps-volume
       emptyDir: {}
