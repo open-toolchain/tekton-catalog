@@ -186,4 +186,4 @@ spec:
     - name: secure-properties
       secret:
         secretName: $(params.continuous-delivery-context-secret)
-        
+
