@@ -149,7 +149,10 @@ spec:
           fi
 
           # Log container registry to the appropriate region
-          ibmcloud cr region-set $REGISTRY_REGION
+          # Use ibmcloud target -r command to rely on region affinity
+          # for container registry region - for instance us-east does not have
+          # a container-registry service, it is defered to us-south
+          ibmcloud target -r $REGISTRY_REGION
           ibmcloud cr info
 
           # Because of https://github.com/tektoncd/pipeline/issues/216 the image digest for input is probably empty
