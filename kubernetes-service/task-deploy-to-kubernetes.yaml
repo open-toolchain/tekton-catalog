@@ -114,7 +114,7 @@ spec:
         ibmcloud login -a $(params.ibmcloud-api) -r $IBM_CLOUD_REGION --apikey $PIPELINE_BLUEMIX_API_KEY
 
         if [ "$PIPELINE_BLUEMIX_RESOURCE_GROUP" ]; then
-          ibmcloud target -g $PIPELINE_BLUEMIX_RESOURCE_GROUP
+          ibmcloud target -g "$PIPELINE_BLUEMIX_RESOURCE_GROUP"
         fi
 
         if ibmcloud ks cluster get --cluster $PIPELINE_KUBERNETES_CLUSTER_NAME; then

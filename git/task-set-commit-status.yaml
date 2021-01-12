@@ -132,7 +132,7 @@ spec:
             ibmcloud config --check-version false
             ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $API_KEY
             if [ "$(params.resource-group)" ]; then
-              ibmcloud target -g $(params.resource-group)
+              ibmcloud target -g "$(params.resource-group)"
             fi
             TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
             GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" \

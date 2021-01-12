@@ -47,7 +47,7 @@ spec:
       default: ""
     - name: buildkit-image
       description: The name of the BuildKit image
-      default: "moby/buildkit:v0.6.3-rootless"
+      default: "moby/buildkit:v0.7.2"
     - name: additional-tags
       description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array
@@ -271,7 +271,7 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
-          buildctl-daemonless.sh build \
+          buildctl --addr tcp://0.0.0.0:1234 build \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
@@ -370,6 +370,25 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
+  sidecars:
+    - image: $(params.buildkit-image)
+      name: server
+      securityContext:
+        privileged: true
+        # Use a workaround to by pass virtio-fs for Continuous Delivery shared workers
+      command: ["sh", "-c"]
+      args:
+      - if [[ $(df -PT /var/lib/buildkit | awk 'NR==2 {print $2}') == virtiofs ]]; then 
+          apk add e2fsprogs && 
+          truncate -s 20G /tmp/disk.img && 
+          mkfs.ext4 /tmp/disk.img && 
+          mount /tmp/disk.img /var/lib/buildkit; fi && buildkitd --addr tcp://0.0.0.0:1234;
+      # Wait for the buildkit daemon to have available workers.
+      readinessProbe:
+        initialDelaySeconds: 2
+        periodSeconds: 1
+        exec:
+          command: ["buildctl", "--addr", "tcp://0.0.0.0:1234", "debug", "workers"]
   volumes:
     - name: steps-volume
       emptyDir: {}

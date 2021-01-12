@@ -19,7 +19,7 @@ spec:
       description: source code type used (github, github-ent, gitlab)
   steps:
     - name: comm-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1127
+      image: icr.io/continuous-delivery/cra-comm-editor:main.1192
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]

@@ -145,11 +145,19 @@ spec:
           ibmcloud config --check-version false
           ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $API_KEY
           if [ "$(params.resource-group)" ]; then
-            ibmcloud target -g $(params.resource-group)
+            ibmcloud target -g "$(params.resource-group)"
           fi
 
           # Log container registry to the appropriate region
-          ibmcloud cr region-set $REGISTRY_REGION
+          if ibmcloud cr region-set $REGISTRY_REGION > /dev/null 2>&1; then
+            echo "ibmcloud container registry region set to $REGISTRY_REGION"
+          else
+            # the registry region specified is not supported - fallback on
+            # using ibmcloud target -r command to rely on region affinity
+            # for container registry region - for instance us-east does not have
+            # a container-registry service, it is defered to us-south
+            ibmcloud target -r $REGISTRY_REGION
+          fi
           ibmcloud cr info
 
           # Because of https://github.com/tektoncd/pipeline/issues/216 the image digest for input is probably empty

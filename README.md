@@ -78,10 +78,20 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 ## IBM Cloud Container Registry related tasks
 
 - **[icr-containerize](./container-registry/README.md#icr-containerize)**: This task is building and pushing an image to [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task is relying on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
-- **[icr-cr-build](./container-registry/README.md#icr-cr-build)**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started) `build` command to perform the build of the image.
 - **[icr-execute-in-dind](./container-registry/README.md#icr-execute-in-dind)**: This task runs `docker` commands (build, inspect...) that communicate with a sidecar dind, and push the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
 - **[icr-execute-in-dind-cluster](./container-registry/README.md#icr-execute-in-dind-cluster)**: This task runs `docker` commands (build, inspect...) that communicate with a docker dind instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
 - **[icr-check-va-scan](./container-registry/README.md#icr-check-va-scan)**: This task is verifying that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and process the outcome of the scan.
+
+- **[icr-cr-build - deprecated](./container-registry/README.md#icr-cr-build)**:  The [`ibmcloud cr build`](https://cloud.ibm.com/docs/container-registry-cli-plugin?topic=container-registry-cli-plugin-containerregcli#bx_cr_build) command is deprecated. If you use the [icr-cr-build](./container-registry/README.md#icr-cr-build) Tekton task, you can migrate to one of the three above Tekton tasks to build container images. For more information about this replacement, see the [IBM Cloud™ Container Registry is Deprecating Container Builds](https://www.ibm.com/cloud/blog/announcements/ibm-cloud-container-registry-deprecating-container-builds) blog post.
+
+## IBM Cloud Code Risk Analyzer scanners related tasks
+
+- **[cra-discovery](./cra/README.md#cra-discovery)**: This task accesses various source artifacts from the repository and performs deep discovery to identify all dependencies (including transitive dependencies).
+- **[cra-bom](./cra/README.md#cra-bom)**: This task creates a Bill-of-Material (BoM) for a given repository that captures pedigree of all the dependencies and is collected at different granularities.
+- **[cra-cis-check](./cra/README.md#cra-cis-check)**: This task runs configuration checks on kubernetes deployment manifests.
+- **[cra-vulnerability-remediation](./cra/README.md#cra-vulnerability-remediation)**: This task finds out vulnerabilities for all application package dependencies, container base images and os packages.
+- **[cra-comm-editor](./cra/README.md#cra-comm-editor)**: This task creates comments on Pull Requests and opens issues regarding bill of material and discovered vunerabilities.
+
 
 ## IBM Cloud Devops Insights related tasks
 
