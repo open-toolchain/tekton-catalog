@@ -25,6 +25,9 @@ spec:
     - name: ibmcloud-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud
       default: apikey
+    - name: continuous-delivery-context-environment
+      description: Name of the configmap containing the continuous delivery pipeline context environment properties
+      default: environment-properties
 
   results:
     - name: status
@@ -37,7 +40,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:main.1178
+      image: icr.io/continuous-delivery/cra-discovery:main.1248
       env:
         - name: API_KEY
           valueFrom:
@@ -45,6 +48,10 @@ spec:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.ibmcloud-apikey-secret-key)
               optional: true
+        # The location of the client configuration files.
+        - name: DOCKER_CONFIG
+          value: /artifacts      
+
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -106,6 +113,24 @@ spec:
             exit 1
           fi
 
+          # create a dry-run k8s secret of type docker-registry to obtain 
+          # the pull secrets for the base image used in the dockerfile
+          # this is optional, but sometimes useful, for example when using
+          # UBI images from RedHat
+           
+          if [ -f "/properties/baseimage-auth-user" ] \
+            && [ -f "/secrets/baseimage-auth-password" ] \
+            && [ -f "/properties/baseimage-auth-host" ]; then
+            echo "Adding pull secrets to access base image registry $(cat /properties/baseimage-auth-host)"
+            kubectl create secret --dry-run=client --output=json \
+              docker-registry registry-dockerconfig-secret \
+              --docker-username="$(cat /properties/baseimage-auth-user)" \
+              --docker-password="$(cat /secrets/baseimage-auth-password)" \
+              --docker-server="$(cat /properties/baseimage-auth-host)" \
+              --docker-email="$(cat /properties/baseimage-auth-email)" | \
+              jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
+          fi
+
           /usr/local/bin/discovery \
             -giturl "$(params.repository)" \
             -gitbranch "$(params.revision)" \
@@ -119,6 +144,10 @@ spec:
           name: config-volume
         - mountPath: /var/run/
           name: docker-socket
+        - mountPath: /properties
+          name: environment-properties
+        - mountPath: /secrets
+          name: secure-properties    
 
   sidecars:
     - image: docker:19.03-dind
@@ -151,3 +180,10 @@ spec:
         name: toolchain
     - name: docker-socket
       emptyDir: {}
+    - name: environment-properties
+      configMap:
+        name: $(params.continuous-delivery-context-environment)
+    - name: secure-properties
+      secret:
+        secretName: $(params.continuous-delivery-context-secret)
+

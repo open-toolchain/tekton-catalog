@@ -68,11 +68,19 @@ data:
     ibmcloud config --check-version false
     ibmcloud login -a $IBMCLOUD_API -r $TOOLCHAIN_REGION --apikey $API_KEY
     if [ "$IBMCLOUD_RESOURCE_GROUP" ]; then
-      ibmcloud target -g $IBMCLOUD_RESOURCE_GROUP
+      ibmcloud target -g "$IBMCLOUD_RESOURCE_GROUP"
     fi
 
     # Log container registry to the appropriate region
-    ibmcloud cr region-set $REGISTRY_REGION
+    if ibmcloud cr region-set $REGISTRY_REGION > /dev/null 2>&1; then
+      echo "ibmcloud container registry region set to $REGISTRY_REGION"
+    else
+      # the registry region specified is not supported - fallback on
+      # using ibmcloud target -r command to rely on region affinity
+      # for container registry region - for instance us-east does not have
+      # a container-registry service, it is defered to us-south
+      ibmcloud target -r $REGISTRY_REGION
+    fi
     ibmcloud cr info
 
     # Check available quota on CR

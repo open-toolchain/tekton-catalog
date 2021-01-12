@@ -32,6 +32,9 @@ spec:
         the git revision/commit to update the git HEAD to.
         Default is to mean only use the branch
       default: ""
+    - name: git-client-image
+      description: The image to use to run git clone commands
+      default: alpine/git
     - name: git-max-retry
       description: max retry for the git clone operation
       default: "1"
@@ -146,7 +149,7 @@ spec:
           ibmcloud config --check-version false
           ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $API_KEY
           if [ "$(params.resource-group)" ]; then
-            ibmcloud target -g $(params.resource-group)
+            ibmcloud target -g "$(params.resource-group)"
           fi
           TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
           GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" \
@@ -183,7 +186,7 @@ spec:
         - mountPath: /steps
           name: steps-volume
     - name: clone-repo
-      image: alpine/git
+      image: $(params.git-client-image)
       env:
         - name: REPOSITORY
           value: $(params.repository)

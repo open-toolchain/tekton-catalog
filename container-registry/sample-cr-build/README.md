@@ -1,4 +1,13 @@
-# Container-Registry Build Task example usage
+# Container-Registry Build Task - deprecated
+The [`ibmcloud cr build`](https://cloud.ibm.com/docs/container-registry-cli-plugin?topic=container-registry-cli-plugin-containerregcli#bx_cr_build) command is deprecated. 
+
+If you use this `icr-cr-build` Tekton task, you can migrate to one of the [three other Tekton tasks](../README.md) available in the catalog to build container images.
+
+For more information about this replacement, see the [IBM Cloud™ Container Registry is Deprecating Container Builds](https://www.ibm.com/cloud/blog/announcements/ibm-cloud-container-registry-deprecating-container-builds) blog post.
+
+
+
+# Exemple usage
 The `sample-cr-build` sub-directory contains an `cr-build` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-cr-build` and `icr-check-va-scan`.
 
 It also contains a `cr-build-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information.

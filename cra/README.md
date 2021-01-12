@@ -40,6 +40,17 @@ any add-on packages installed on top of base image(s).
 
 - **artifacts**: The output volume to check out and store task scripts & data between tasks
 
+#### Implicit / data from the pipeline
+
+**Base image pulls secrets (optional)**
+
+To provide pull credentials for the base image you use in your Dockerfile, for example for a UBI image from Red Hat registry, add these variables to your pipeline on he pipeline UI. The Task will look for them and if they are present, it will add an entry to the proper `config.json` for docker.
+
+- **baseimage-auth-user** The username to the registry (Type: `text`)
+- **baseimage-auth-password** The password to the registry (Type: `SECRET`)
+- **baseimage-auth-host** The registry host name (Type: `text`)
+- **baseimage-auth-email** An email address to the registry account (Type: `text`)
+
 ### Results
 
 - **status**: Status of cra discovery task, possible value are - success|failure

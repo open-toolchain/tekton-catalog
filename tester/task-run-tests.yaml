@@ -29,6 +29,10 @@ spec:
   results:
     - name: tests-exit-code
       description: The exit-code of the tests script
+    - name: test-result-file-paths
+      description: semi-colon list of test result output file paths
+    - name: test-types
+      description: semi-colon separated list of of test types. Order should match file output paths in test-result-file-paths
   workspaces:
     - name: artifacts
       description: A workspace backing by a volume
@@ -75,7 +79,8 @@ spec:
           source $SHUTTLE_PROPERTIES_FILE
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
-
+        echo -n "" > $(results.test-result-file-paths.path)
+        echo -n "" > $(results.test-types.path)
         printf "#!/bin/bash\n" > /steps/tests-script.sh
         printf "%s " '$(params.tests-script)' >> /steps/tests-script.sh
         chmod +x /steps/tests-script.sh

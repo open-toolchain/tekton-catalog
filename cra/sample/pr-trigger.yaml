@@ -33,6 +33,9 @@ spec:
     - name: project-id
       description: project id
       default: ""
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -55,7 +58,7 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: pullrequest-$(params.pr-number)-from-$(params.pr-name)-user
+        name: pipelinerun-$(uid)
       spec:
         pipelineRef:
           name: pr-pipeline
@@ -84,3 +87,5 @@ spec:
             value: $(params.scm-type)
           - name: project-id
             value: $(params.project-id)
+          - name: ibmcloud-api
+            value: $(params.ibmcloud-api)
