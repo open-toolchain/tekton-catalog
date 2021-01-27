@@ -34,6 +34,7 @@ spec:
       default: https://cloud.ibm.com
     - name: tf-dir
       description: the directory where the terraform main entry file is found
+      default: ""
     - name: policy-config-json
       description: Configure policies to control thresholds
       default: ""
@@ -74,6 +75,7 @@ spec:
       workspaces:
         - name: output
           workspace: artifacts
+
     - name: cra-discovery-scan
       runAfter:
         - cra-fetch-repo
@@ -98,7 +100,7 @@ spec:
 
     - name: cra-vulnerability-scan-status-pending
       runAfter:
-        - cra-discovery-scan
+        - cra-fetch-repo
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -172,7 +174,7 @@ spec:
 
     - name: cra-cis-set-status-pending
       runAfter:
-        - cra-discovery-scan
+        - cra-fetch-repo
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -247,7 +249,7 @@ spec:
 
     - name: cra-bom-set-status-pending
       runAfter:
-        - cra-discovery-scan
+        - cra-fetch-repo
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -362,18 +364,8 @@ spec:
       params:
         - name: repository
           value:  $(tasks.extract-repository-url.results.extracted-value)
-        #        - name: revision
-        #          value: $(params.branch)
         - name: revision
           value: $(params.commit-id)
-        #        - name: pr-url
-        #          value: $(params.pr-url)
-        #        - name: commit-id
-        #          value: $(params.commit-id)
-        #        - name: git-api-token-key
-        #          value: git-token
-        #        - name: ibmcloud-api-key
-        #          value: $(params.apikey)
         - name: scm-type
           value: $(params.scm-type)
         - name: project-id

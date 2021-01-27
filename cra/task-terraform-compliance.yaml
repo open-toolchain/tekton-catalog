@@ -48,7 +48,7 @@ spec:
         to use the git token obtained from the authorization flow when adding the git integration in the toolchain
       default: ""
     - name: tf-var-file
-      description: (optional) terraform var-file 
+      description: (optional) terraform var-file
       default: ""
 
   results:
@@ -65,14 +65,16 @@ spec:
             fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
-      - name: TF_VAR_FILE
+      - name: VAR_FILE
         value: $(params.tf-var-file)
-      - name: TF_VAR_ibmcloud_api_key
-        value: $(params.ibmcloud-apikey-secret-key)        
   steps:
     - name: terraform-compliance
-      image: icr.io/continuous-delivery/cra-terraform:release.1427
-
+      image: icr.io/continuous-delivery/cra-terraform:release.1439
+      envFrom:
+        - configMapRef:
+            name: environment-properties
+        - secretRef:
+            name: secure-properties
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -83,9 +85,9 @@ spec:
               key: $(params.ibmcloud-apikey-secret-key)
               optional: true
       imagePullPolicy: Always
-      securityContext:     
-        runAsUser: root 
-      command: ["/bin/bash", "-c"]     
+      securityContext:
+        runAsUser: root
+      command: ["/bin/bash", "-c"]
       args:
         - |
           if [[ "$PIPELINE_DEBUG" == "1" ]]; then
@@ -95,7 +97,7 @@ spec:
             trap env EXIT
             set -x +e           
           fi
-                    
+
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
           TOOLCHAIN_CONFIG=$(cat /config/toolchain.json)
           TOOLCHAIN_REGION=$(echo ${TOOLCHAIN_CONFIG} | jq -r '.region_id' | awk -F: '{print $3}')
@@ -136,7 +138,7 @@ spec:
             echo "Error IBM Code Risk Analyzer is not supported in ${REGION_ID}"
             exit 1
           fi
-          
+
           echo "Running terraform compliance task"                    
           if [[ $PIPELINE_DEBUG == 1 ]];
             then
@@ -144,29 +146,29 @@ spec:
           fi
           result="failed"
           LOG_LEVEL="info"
-          
+
           if [[ "$(params.policy-config-json)" == "" ]]; 
           then
             node /usr/src/index.js --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
           else
             node /usr/src/index.js --policyConfig $(params.policy-config-json) --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
           fi
-          
+
           if [ $? == 0 ]; then export result="success"; fi          
-          
+
           if [[ $PIPELINE_DEBUG == 1 ]];
             then
               cat /usr/policies/ibm/terraform-config.rego
               echo $result
               cat result.json
           fi
-          
+
           echo -n $result > "$(results.status.path)"                    
           echo -n "deploymant-analyzer.json" > $(results.evidence-store.path)
-          
+
           mv ./da-terraform-check-comment.md /artifacts/da-terraform-check-comment.md
           echo "COMMENT_FP=./da-terraform-check-comment.md" >> /steps/next-step-env.properties
-          
+
 
       volumeMounts:
         - mountPath: /config
