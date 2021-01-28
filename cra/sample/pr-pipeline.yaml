@@ -32,6 +32,15 @@ spec:
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
+    - name: tf-dir
+      description: the directory where the terraform main entry file is found
+      default: ""
+    - name: policy-config-json
+      description: Configure policies to control thresholds
+      default: ""
+    - name: tf-var-file
+      description: (optional) terraform var-file
+      default: ""
   workspaces:
     - name: artifacts
 
@@ -66,6 +75,7 @@ spec:
       workspaces:
         - name: output
           workspace: artifacts
+
     - name: cra-discovery-scan
       runAfter:
         - cra-fetch-repo
@@ -314,3 +324,83 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
+
+    - name: cra-terraform-scan-status-pending
+      when:
+        - input: "$(params.tf-dir)"
+          operator: notin
+          values: [""]
+      runAfter:
+        - cra-fetch-repo
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: cra-terraform-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: cra-terraform-scan
+      runAfter:
+        - cra-terraform-scan-status-pending
+      taskRef:
+        name: cra-terraform-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value:  $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.commit-id)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)
+        - name: directory-name
+          value: ""
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: tf-dir
+          value: $(params.tf-dir)
+        - name: policy-config-json
+          value: $(params.policy-config-json)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: tf-var-file
+          value: $(params.tf-var-file)
+
+    - name: cra-terraform-status-finished
+      runAfter:
+        - cra-terraform-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: "$(tasks.cra-terraform-scan.results.status)"
+        - name: context
+          value: cra-terraform-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

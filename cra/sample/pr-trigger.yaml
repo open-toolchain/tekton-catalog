@@ -36,6 +36,12 @@ spec:
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
+    - name: tf-dir
+      description: the directory where the terraform main entry file is found
+    - name: policy-config-json
+      description: Configure policies to control thresholds
+    - name: tf-var-file
+      description: (optional) terraform var-file
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -89,3 +95,9 @@ spec:
             value: $(params.project-id)
           - name: ibmcloud-api
             value: $(params.ibmcloud-api)
+          - name: tf-dir
+            value: $(params.tf-dir)
+          - name: policy-config-json
+            value: $(params.policy-config-json)
+          - name: tf-var-file
+            value: $(params.tf-var-file)
