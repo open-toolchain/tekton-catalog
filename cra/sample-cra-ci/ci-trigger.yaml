@@ -25,6 +25,16 @@ spec:
     - name: project-id
       description: project id
       default: ""
+    - name: tf-dir
+      description: the directory where the terraform main entry file is found
+      default: ""
+    - name: policy-config-json
+      description: Configure policies to control thresholds
+      default: ""
+    - name: tf-var-file
+      description: (optional) terraform var-file
+      default: ""
+      
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -72,3 +82,9 @@ spec:
             value: $(params.scm-type)
           - name: project-id
             value: $(params.project-id)
+          - name: tf-dir
+            value: $(params.tf-dir)
+          - name: policy-config-json
+            value: $(params.policy-config-json)
+          - name: tf-var-file
+            value: $(params.tf-var-file)

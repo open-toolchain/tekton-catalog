@@ -91,6 +91,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 - **[cra-cis-check](./cra/README.md#cra-cis-check)**: This task runs configuration checks on kubernetes deployment manifests.
 - **[cra-vulnerability-remediation](./cra/README.md#cra-vulnerability-remediation)**: This task finds out vulnerabilities for all application package dependencies, container base images and os packages.
 - **[cra-comm-editor](./cra/README.md#cra-comm-editor)**: This task creates comments on Pull Requests and opens issues regarding bill of material and discovered vunerabilities.
+- **[cra-terraform-scan](./cra/README.md#cra-terraform-scan)**: ## This task scans ibm-terraform-provider files for compliance issues.
 
 
 ## IBM Cloud Devops Insights related tasks
