@@ -48,6 +48,12 @@ spec:
             -project-id "$(params.project-id)" \
             -scm-type "$(params.scm-type)"
 
+          COMM_RESULT=$?
+          if [ "$COMM_RESULT" != "0" ]; then
+            echo "Error posting comment to pull request"
+            exit 1
+          fi
+
   workspaces:
     - name: artifacts
       mountPath: /artifacts
