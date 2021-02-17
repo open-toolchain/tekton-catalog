@@ -284,6 +284,17 @@ spec:
           #!/bin/sh
           source /steps/next-step-env.properties
 
+          if [[ "$(params.repository)" == *"git.cloud.ibm.com"* ]] && [[ "$(params.scm-type)" != "gitlab" ]]; then
+            echo "Error: Trigger type '$(params.scm-type)' expected to be gitlab"
+            exit 1
+          elif [[ "$(params.repository)" == *"ibm.com"* ]] && [[ "$(params.scm-type)" != "github-ent" ]]; then
+            echo "Error: Trigger type '$(params.scm-type)' expected to be github-ent"
+            exit 1
+          elif [[ "$(params.scm-type)" != "github" ]]; then
+            echo "Error: Trigger type '$(params.scm-type)' expected to be github"
+            exit 1
+          fi
+
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \
             -pr-url "$(params.pr-url)" \
