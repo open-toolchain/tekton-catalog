@@ -40,7 +40,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:main.1278
+      image: icr.io/continuous-delivery/cra-discovery:release.1472
       env:
         - name: API_KEY
           valueFrom:
@@ -118,16 +118,16 @@ spec:
           # this is optional, but sometimes useful, for example when using
           # UBI images from RedHat
            
-          if [ -f "/properties/baseimage-auth-user" ] \
-            && [ -f "/secrets/baseimage-auth-password" ] \
-            && [ -f "/properties/baseimage-auth-host" ]; then
-            echo "Adding pull secrets to access base image registry $(cat /properties/baseimage-auth-host)"
+          if [ -f "/properties/build-baseimage-auth-user" ] \
+            && [ -f "/secrets/build-baseimage-auth-password" ] \
+            && [ -f "/properties/build-baseimage-auth-host" ]; then
+            echo "Adding pull secrets to access base image registry $(cat /properties/build-baseimage-auth-host)"
             kubectl create secret --dry-run=client --output=json \
               docker-registry registry-dockerconfig-secret \
-              --docker-username="$(cat /properties/baseimage-auth-user)" \
-              --docker-password="$(cat /secrets/baseimage-auth-password)" \
-              --docker-server="$(cat /properties/baseimage-auth-host)" \
-              --docker-email="$(cat /properties/baseimage-auth-email)" | \
+              --docker-username="$(cat /properties/build-baseimage-auth-user)" \
+              --docker-password="$(cat /secrets/build-baseimage-auth-password)" \
+              --docker-server="$(cat /properties/build-baseimage-auth-host)" \
+              --docker-email="$(cat /properties/build-baseimage-auth-email)" | \
               jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
           fi
 
