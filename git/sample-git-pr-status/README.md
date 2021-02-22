@@ -15,24 +15,24 @@ The status being sucess or failing according to the commit message (it the commi
    - the repository containing this Tekton task
    - a Tekton pipeline definition
 
-   ![Toolchain overview](./images/sample-git-trigger-toolchain-overview.png)
+   ![Toolchain overview](./images/sample-git-pr-status-toolchain-overview.png)
 
 2) Add the definitions of this task and the sample (`git` and `git/sample-git-pr-status` paths)
 
-   ![Tekton pipeline definitions](./images/sample-git-trigger-tekton-pipeline-definitions.png)
+   ![Tekton pipeline definitions](./images/sample-git-pr-status-tekton-pipeline-definitions.png)
 
 3) Add the environment properties:
 
    - `apikey`: the API key used for the ibmcloud login/access
 
-   ![Tekton pipeline environment properties](./images/sample-git-trigger-tekton-pipeline-environment-properties.png)
+   ![Tekton pipeline environment properties](./images/sample-git-pr-status-tekton-pipeline-environment-properties.png)
 
 4) Create Git Triggers for the different Git repositories that you have integrated to your Toolchain (corresponding to the repositories integrated to your Toolchain).
    
    Github:
     - `eventlistener-git-trigger-github-pr` for Github PullRequest opened/updated event
 
-      ![Tekton pipeline sample-git-trigger Github PullRequest](./images/sample-git-trigger-github-pullrequest-trigger-configuration.png)
+      ![Tekton pipeline sample-git-trigger Github PullRequest](./images/sample-git-pr-status-github-pullrequest-trigger-configuration.png)
 
    GRIT/Gitlab:
     - `eventlistener-git-trigger-grit-mr` for GRIT/Gitlab MergeRequest opened/updated event
@@ -58,4 +58,4 @@ The status being sucess or failing according to the commit message (it the commi
 
    Note: in case of a commit message containing `fail` the task will result in a failure and the `finally` clause in the pipeline definition will still execute the `set-git-commit-status` task with the appropriate state
 
-   ![github pull request status check](./images/sample-git-pr-status-github-pr-statuc-check.png)
+   ![github pull request status check](./images/sample-git-pr-status-github-pr-status-check.png)
