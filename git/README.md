@@ -135,3 +135,7 @@ Git commit status setter task
 
   See the documentation [here](./sample-set-commit-status/README.md)
 
+- The `sample-git-pr-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `git-set-commit-status` in the context of a CD Tekton pipeline triggered by a Git Pull Request event (PullRequest push/update).
+
+  See the documentation [here](./sample-git-pr-status/README.md)
+
