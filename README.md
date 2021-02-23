@@ -6,7 +6,7 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 - These tasks are usable with Continuous Delivery Tekton Pipeline Worker Agent (Tekton definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
 - If you want `v1alpha1` resources, you need to reference the [`tekton_pipeline0.10.1`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1) tag (or
 [`tekton_pipeline0.10.1_workspace`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1_workspace) tag to have `v1alpha1` resources using workspaces).
-- When moving from from tag `tekton_pipeline0.10.1`, `tekton_pipeline0.10.1` and/or branch `tkn_v1beta1` to use `master`branch of this catalog, take a look at [breaking changes section](./README.md#Breaking%20Changes)
+- When moving from from tag `tekton_pipeline0.10.1`, `tekton_pipeline0.10.1` and/or branch `tkn_v1beta1` to use `master`branch of this catalog, take a look at [breaking changes section](./README.md#breaking-changes)
 
 # Tasks 
 
