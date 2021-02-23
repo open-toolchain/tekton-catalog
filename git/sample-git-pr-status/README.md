@@ -56,6 +56,14 @@ The status being sucess or failing according to the commit message (it the commi
 
    ![Tekton pipeline github pull request run view](./images/sample-git-pr-status-github-pr-event-run-view.png)
 
-   Note: in case of a commit message containing `fail` the task will result in a failure and the `finally` clause in the pipeline definition will still execute the `set-git-commit-status` task with the appropriate state
+   The Pull Request status check is updated as the last commit has a commit status
 
    ![github pull request status check](./images/sample-git-pr-status-github-pr-status-check.png)
+
+   Note: in case of a commit message containing `fail` the task will result in a failure and the `finally` clause in the pipeline definition will still execute the `set-git-commit-status` task with the appropriate state
+
+   ![Tekton pipeline github pull request run view](./images/sample-git-pr-status-github-pr-event-run-view-failure.png)
+
+   The Pull Request status check is updated to failure corresponding to the last commit status
+
+   ![github pull request status check](./images/sample-git-pr-status-github-pr-status-check-failure.png)
