@@ -11,6 +11,9 @@
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
 - Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `devops-insights`
 
+## Usage
+The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the differents DOI related tasks.
+
 ## doi-publish-buildrecord
 This task publishes build record to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-di_working)
 
@@ -79,6 +82,3 @@ This task evaluates [DevOps Insights gate policy](https://cloud.ibm.com/docs/Con
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
-
-## Usage
-The `sample` sub-directory contains an EventListener and Pipeline definition that you can include in your Tekton pipeline configuration to run an example of the differents DOI related tasks.
