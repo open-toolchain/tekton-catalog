@@ -1,9 +1,9 @@
----
+---        
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cra-comm-editor
-spec:
+spec:  
   params:
     - name: repository
       description: the git repo url
@@ -16,10 +16,10 @@ spec:
     - name: comment-fp
       description: comments filepath
     - name: scm-type
-      description: source code type used (github, github-ent, gitlab)
+      description: source code type used (github, github-ent, gitlab)    
   steps:
     - name: comm-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1260
+      image: icr.io/continuous-delivery/cra-comm-editor:release.1519
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -27,7 +27,7 @@ spec:
         - |
           #!/bin/sh
           source /steps/next-step-env.properties
-
+           
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \
             -pr-url "$(params.pr-url)" \
@@ -36,7 +36,6 @@ spec:
             -comment-fp "$(params.comment-fp)" \
             -project-id "$(params.project-id)" \
             -scm-type "$(params.scm-type)"
-
   workspaces:
     - name: artifacts
       mountPath: /artifacts
