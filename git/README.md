@@ -7,6 +7,24 @@
 - Add a github integration in your toolchain to the repository containing the task (https://github.com/open-toolchain/tekton-catalog)
 - Add that github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `git`
 
+## Usages
+
+- The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `git-clone-repo`.
+
+  See the documentation [here](./sample/README.md)
+
+- The `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example showing usage of the git-clone-repo in the context of CD tekton pipeline triggered by git event(s) (Commit pushed or PullRequest opened/updated)
+
+  See the documentation [here](./sample-git-trigger/README.md)
+
+- The `sample-set-commit-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `git-set-commit-status` task in the context of a CD Tekton pipeline triggered by a Git event (Commit push).
+
+  See the documentation [here](./sample-set-commit-status/README.md)
+
+- The `sample-git-pr-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `git-set-commit-status` in the context of a CD Tekton pipeline triggered by a Git Pull Request event (PullRequest push/update).
+
+  See the documentation [here](./sample-git-pr-status/README.md)
+
 ## git-clone-repo
 
 Git integration clone task
@@ -120,18 +138,3 @@ Git commit status setter task
 * **state**: The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled` or a value meaningful for the target git repository (gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled` - github/integrated github: `pending`, `success`, `failure`, `error` - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED`)
 * **state-var**: Customized variable stored in `propertiesFile` (like `build-properties` for instance) to use as state if `state` input param is empty.
 * **propertiesFile**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
-
-## Usages
-
-- The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `git-clone-repo`.
-
-  See the documentation [here](./sample/README.md)
-
-- The `sample-git-trigger` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example showing usage of the git-clone-repo in the context of CD tekton pipeline triggered by git event(s) (Commit pushed or PullRequest opened/updated)
-
-  See the documentation [here](./sample-git-trigger/README.md)
-
-- The `sample-set-commit-status` sub-directory contains several EventListener definitions that you can include in your CD tekton pipeline configuration to run an example demonstrating the usage of the `git-set-commit-status` task in the context of a CD Tekton pipeline triggered by a Git event (Commit push).
-
-  See the documentation [here](./sample-set-commit-status/README.md)
-

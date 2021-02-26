@@ -60,7 +60,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: cis
-      image: icr.io/continuous-delivery/cra-cis:main.1262
+      image: icr.io/continuous-delivery/cra-cis:release.1498
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -261,7 +261,7 @@ spec:
           name: steps-volume
 
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1260
+      image: icr.io/continuous-delivery/cra-comm-editor:release.1519
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
