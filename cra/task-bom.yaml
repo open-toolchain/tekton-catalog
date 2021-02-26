@@ -65,7 +65,7 @@ spec:
 
   steps:
     - name: bom
-      image: icr.io/continuous-delivery/cra-bom:release.1484
+      image: icr.io/continuous-delivery/cra-bom:release.1497
       env:
         - name: REPOSITORY
           value: $(params.repository)

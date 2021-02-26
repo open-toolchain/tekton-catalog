@@ -429,28 +429,29 @@ Currently supported compliance checks:
 |32| Ensure IAM does not allow too many KMS managers per account
 |33| Ensure IAM does not allow too many COS managers per account
 |34| Ensure IAM users are attached to access groups
-|35| Ensure CIS loab balancer is provisioned
-|36| Ensure CIS loab balancer is  properly configured
+|35| Ensure CIS load balancer is provisioned
+|36| Ensure CIS load balancer is  properly configured
 |37| Ensure VPC has atleast one security group attached
-|38| Ensure Postgres is only accessible via HTTPS (no HTTP)
-|39| Ensure etcd is only accessible via HTTPS (no HTTP)
-|40| Ensure Mongo is only accessible via HTTPS (no HTTP)
-|41| Ensure Elastic Search is only accessible via HTTPS (no HTTP)
-|42| Ensure Redis is only accessible via HTTPS (no HTTP)
-|43| Ensure that network access is set for ElasticSearch to be exposed on Private end Points only
-|44| Ensure that network access is set for MongoDB to be exposed on Private end Points only
-|45| Ensure that network access is set for PortreSQL to be exposed on Private end Points only
-|46| Ensure that network access is set for RabbitMQ to be exposed on Private end Points only
-|47| Ensure that network access is set for ETCD to be exposed on Private end Points only
-|48| Ensure that network access is set for Redis to be exposed on Private end Points only
-|49| Ensure network access for Redis is restricted to specific IP range
-|50| Ensure network access for ETCD is restricted to specific IP range
-|51| Ensure network access for RabitMQ is restricted to specific IP range
-|52| Ensure network access for PortgreSQL is restricted to specific IP range
-|53| Ensure network access for MongoDB is restricted to specific IP range
-|54| Ensure network access for ElasticSearch is restricted to specific IP range
-|55| Ensure that COS Storage Encryption is set to On with BYOK
-|56| Ensure that Database for ETCD Encryption is set to On
+|38| Ensure that Databases for ElasticSearch encryption is enabled with BYOK
+|39| Ensure that Databases for MongoDB encryption is enabled with BYOK
+|40| Ensure that Databases for PostgreSQL encryption is enabled with BYOK
+|41| Ensure that Databases for RabbitMQ encryption is enabled with BYOK
+|42| Ensure that Databases for ETCD encryption is enabled with BYOK
+|43| Ensure that Databases for Redis encryption is enabled with BYOK
+|44| Ensure that network access is set for ElasticSearch to be exposed on Private end Points only
+|45| Ensure that network access is set for MongoDB to be exposed on Private end Points only
+|46| Ensure that network access is set for PostgreSQL to be exposed on Private end Points only
+|47| Ensure that network access is set for RabbitMQ to be exposed on Private end Points only
+|48| Ensure that network access is set for ETCD to be exposed on Private end Points only
+|49| Ensure that network access is set for Redis to be exposed on Private end Points only
+|50| Ensure network access for Redis is restricted to specific IP range
+|51| Ensure network access for ETCD is restricted to specific IP range
+|52| Ensure network access for RabitMQ is restricted to specific IP range
+|53| Ensure network access for PostgreSQL is restricted to specific IP range
+|54| Ensure network access for MongoDB is restricted to specific IP range
+|55| Ensure network access for ElasticSearch is restricted to specific IP range
+|56| Ensure that COS Storage Encryption is set to On with BYOK
+|57| Ensure that Database for ETCD Encryption is set to On
 
 
 ### Inputs
