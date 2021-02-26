@@ -47,7 +47,7 @@ spec:
       default: ""
     - name: buildkit-image
       description: The name of the BuildKit image
-      default: "moby/buildkit:v0.7.2"
+      default: "moby/buildkit:v0.8.1"
     - name: additional-tags
       description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array
