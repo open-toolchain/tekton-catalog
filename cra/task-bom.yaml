@@ -284,8 +284,6 @@ spec:
           #!/bin/sh
           source /steps/next-step-env.properties
 
-          echo "$(params.repository)"
-          echo "$(params.scm-type)"
           case "$(params.repository)" in
             *git.cloud.ibm.com*)
             if [ "$(params.scm-type)" != "gitlab" ]; then
@@ -306,7 +304,6 @@ spec:
             fi
             ;;
           esac
-
 
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \
