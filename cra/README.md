@@ -9,6 +9,8 @@ Tasks to scan your codebase using the Code Risk Analyzer scanners
 - [cra-cis-check](#cra-cis-check)
 - [cra-vulnerability-remediation](#cra-vulnerability-remediation)
 - [cra-comm-editor](#cra-comm-editor)
+- [cra-terraform-scan](#cra-terraform-scan)
+
 
 
 
@@ -46,10 +48,10 @@ any add-on packages installed on top of base image(s).
 
 To provide pull credentials for the base image you use in your Dockerfile, for example for a UBI image from Red Hat registry, add these variables to your pipeline on he pipeline UI. The Task will look for them and if they are present, it will add an entry to the proper `config.json` for docker.
 
-- **baseimage-auth-user** The username to the registry (Type: `text`)
-- **baseimage-auth-password** The password to the registry (Type: `SECRET`)
-- **baseimage-auth-host** The registry host name (Type: `text`)
-- **baseimage-auth-email** An email address to the registry account (Type: `text`)
+- **build-baseimage-auth-user** The username to the registry (Type: `text`)
+- **build-baseimage-auth-password** The password to the registry (Type: `SECRET`)
+- **build-baseimage-auth-host** The registry host name (Type: `text`)
+- **build-baseimage-auth-email** An email address to the registry account (Type: `text`)
 
 ### Results
 
@@ -387,6 +389,141 @@ Example usage in a pipeline.
           value: $(params.scm-type)
 ```
 
+## cra-terraform-scan
+This task scans ibm-terraform-provider files for compliance issues.
+
+Currently supported compliance checks:
+|ID | Rule | 
+|---------|---------|
+|1| Ensure IAM does not allow too  many admins per account
+|2| Ensure https for all inbound traffic via VPC LBaaS
+|3| Ensure no VPC security groups allow incoming traffic from 0.0.0.0/0 to port 22 (ssh)
+|4| Ensure no security groups have ports open to internet(0.0.0.0/0)
+|5| Ensure VPC flowlogs logging is enabled in all VPCs
+|6| Ensure no VPC security groups allow incoming traffic  from 0.0.0.0/0 to port RDP
+|7| Ensure that COS Storage Encryption is set to On
+|8| Ensure COS bucket is linked to LogDNA
+|9| Ensure network access for COS is restricted to specific IP range
+|10| Ensure certificates are automatically renewed before expiration. (This lifecycle applies to Certificate Manager generated certificates only)
+|11| Ensure that Database for ElasticSearch Encryption is set to On
+|12| Ensure that Database for ETCD Encryption is set to On
+|13| Ensure that Database for MongoDB Encryption is set to On
+|14| Ensure that Database for Radis Encryption is set to On
+|15| Ensure that Database for PostgreSQL Encryption is set to On
+|16| Ensure that Database for RabittMQ Encryption is set to On
+|17| Ensure that Web application firewall is set to On in CIS
+|18| Ensure ActivityTracker is provisioned
+|19| Ensure Activity Tracker is provisioned in multiple regions for that account
+|20| Ensure no all-resource IAM service policy
+|21| Ensure IAM service policy is restricted using resource groups
+|22| Ensure CIS is provisioned
+|23| Ensure DDOS protection is set to On in CIS
+|24| Ensure IAM does not authorize CIS to read from COS
+|25| Ensure SSL is configured properly (using full/strict/origin_pull only)
+|26| Ensure TLS 1.2 for all inbound traffic via CIS
+|27| Ensure DNS record is protected
+|28| Ensure IAM does not allow too many account managers per account
+|29| Ensure IAM does not allow too many IAM admins per account
+|30| Ensure IAM does not allow too many all resource managers per account
+|31| Ensure IAM does not allow too many all resource readers per account
+|32| Ensure IAM does not allow too many KMS managers per account
+|33| Ensure IAM does not allow too many COS managers per account
+|34| Ensure IAM users are attached to access groups
+|35| Ensure CIS load balancer is provisioned
+|36| Ensure CIS load balancer is  properly configured
+|37| Ensure VPC has atleast one security group attached
+|38| Ensure that Databases for ElasticSearch encryption is enabled with BYOK
+|39| Ensure that Databases for MongoDB encryption is enabled with BYOK
+|40| Ensure that Databases for PostgreSQL encryption is enabled with BYOK
+|41| Ensure that Databases for RabbitMQ encryption is enabled with BYOK
+|42| Ensure that Databases for ETCD encryption is enabled with BYOK
+|43| Ensure that Databases for Redis encryption is enabled with BYOK
+|44| Ensure that network access is set for ElasticSearch to be exposed on Private end Points only
+|45| Ensure that network access is set for MongoDB to be exposed on Private end Points only
+|46| Ensure that network access is set for PostgreSQL to be exposed on Private end Points only
+|47| Ensure that network access is set for RabbitMQ to be exposed on Private end Points only
+|48| Ensure that network access is set for ETCD to be exposed on Private end Points only
+|49| Ensure that network access is set for Redis to be exposed on Private end Points only
+|50| Ensure network access for Redis is restricted to specific IP range
+|51| Ensure network access for ETCD is restricted to specific IP range
+|52| Ensure network access for RabitMQ is restricted to specific IP range
+|53| Ensure network access for PostgreSQL is restricted to specific IP range
+|54| Ensure network access for MongoDB is restricted to specific IP range
+|55| Ensure network access for ElasticSearch is restricted to specific IP range
+|56| Ensure that COS Storage Encryption is set to On with BYOK
+|57| Ensure that Database for ETCD Encryption is set to On
+
+
+### Inputs
+
+#### Parameters
+
+  - **ibmcloud-api**: (Default: `https://cloud.ibm.com`) The ibmcloud api url
+  - **repository**: The full URL path to the repo with the deployment files to be scanned
+  - **revision**: (Default: `master`) The branch to scan
+  - **tf-dir**: (Default `""`) The directory where the terraform main entry files are found.
+  - **ibmcloud-apikey-secret-key**: (Default: apikey) field in the secret that contains the api key used to login to ibmcloud
+  - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource  
+  - **directory-name**: The directory name where the repository is cloned
+  - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
+  - **policy-config-json**: (Default `""`) Configure policies thresholds
+  - **pr-url**: The pull request url
+  - **project-id**: (Default: `""`) Required id for GitLab repositories
+  - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
+  - **resource-group**: (Default: `""`) target resource group (name or id) for the ibmcloud login operation
+  - **git-access-token**: (Default: `""`) (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
+  - **tf-var-file**: (Default: `""`) Comma seperated list of tf-var files to be passed to terraform
+
+
+
+
+#### Implicit
+The following inputs are coming from tekton annotation:
+ - **PIPELINE_RUN_ID**: ID of the current pipeline run
+
+### Workspaces
+
+- **artifacts**: The output volume to check out and store task scripts & data between tasks
+
+### Results
+
+- **status**: status of cra terraform scan task, possible value are-success|failure
+- **evidence-store**: filepath to store terraform scan task evidence 
+
+### Usage
+
+Example usage in a pipeline.
+``` yaml
+    - name: cra-terraform-scan   
+      taskRef:
+        name: cra-terraform-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value:  $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.commit-id)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: project-id
+          value: $(params.project-id)
+        - name: directory-name
+          value: ""
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: tf-dir
+          value: $(params.tf-dir)
+        - name: policy-config-json
+          value: $(params.policy-config-json)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: tf-var-file
+          value: $(params.tf-var-file)
+```
 
 
 
