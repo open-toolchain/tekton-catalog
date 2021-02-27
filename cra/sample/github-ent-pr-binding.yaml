@@ -6,7 +6,7 @@ metadata:
 spec:
   params:
     - name: branch
-      value: $(event.pull_request.head.ref)
+      value: $(event.pull_request.base.ref)
     - name: target-branch
       value: $(event.pull_request.base.ref)
     - name: commit-id
