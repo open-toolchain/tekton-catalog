@@ -290,6 +290,27 @@ spec:
           #!/bin/sh
           source /steps/next-step-env.properties
 
+          case "$(params.repository)" in
+            *git.cloud.ibm.com*)
+            if [ "$(params.scm-type)" != "gitlab" ]; then
+              echo "Error: Trigger type '$(params.scm-type)' expected to be gitlab"
+              exit 1
+            fi
+            ;;
+          *ibm.com*)
+            if [ "$(params.scm-type)" != "github-ent" ]; then
+              echo "Error: Trigger type '$(params.scm-type)' expected to be github-ent"
+              exit 1
+            fi
+            ;;
+          *)
+            if [ "$(params.scm-type)" != "github" ]; then
+              echo "Error: Trigger type '$(params.scm-type)' expected to be github"
+              exit 1
+            fi
+            ;;
+          esac
+
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \
             -pr-url "$(params.pr-url)" \
@@ -297,6 +318,12 @@ spec:
             -comment-fp "$COMMENT_FP" \
             -project-id "$(params.project-id)" \
             -scm-type "$(params.scm-type)"
+
+          COMM_RESULT=$?
+          if [ "$COMM_RESULT" != "0" ]; then
+            echo "Error posting comment to pull request"
+            exit 1
+          fi
 
       volumeMounts:
         - mountPath: /steps
