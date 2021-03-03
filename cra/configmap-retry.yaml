@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: retry-script
+data:
+  retry.sh: |
+    #!/usr/bin/env bash
+    ##########################################################################
+    # Parse the image url to find information (region, namespace, image name and eventually tag)
+    # as url of Image PipelineResource is the complete path to the image, including the registry
+    # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
+    # Environment variables:
+    # - IMAGE_RESOURCE_URL (input) : can include a tag
+    # - IMAGE_URL (output)
+    # - REGISTRY_REGION (output)
+    # - REGISTRY_NAMESPACE (output)
+    # - IMAGE_NAME (output)
+    # - IMAGE_TAG (output)
+    ##########################################################################
+    retry_n=1
+    retry_max=3
+    retry_delay=2
+    while true; do
+      out=$("$@")
+      resp=$?
+      echo -n "$out"
+      if [ "$resp" = "0" ]; then
+        break
+      else
+        if [ $retry_n -lt $retry_max ]; then
+          retry_n=`expr "$retry_n" + "1"`
+          echo "Command failed. Attempt $retry_n/$retry_max:"
+          sleep $retry_delay;
+        else
+          echo "The command has failed after $retry_n attempts."
+          exit 1
+        fi
+      fi
+    done
