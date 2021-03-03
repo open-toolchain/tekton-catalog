@@ -264,7 +264,7 @@ spec:
         - mountPath: /certs/client
           name: dind-certs
   sidecars:
-    - image: docker:dind
+    - image: docker:19-dind
       name: server
       securityContext:
         privileged: true
