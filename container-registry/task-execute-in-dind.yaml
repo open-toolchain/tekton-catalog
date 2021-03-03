@@ -279,13 +279,17 @@ spec:
         # - https://liejuntao001.medium.com/fix-docker-in-docker-network-issue-in-kubernetes-cc18c229d9e5
         # - https://cloud.ibm.com/docs/containers?topic=containers-kernel#calico-mtu
         #
+        # oom-score-adj is to fix a change done in docker 20 (temporary -- should be removed when new docker is released)
+        # References:
+        # - https://github.com/moby/moby/issues/42041
+        #
         # Use a workaround to by pass virtio-fs for Continuous Delivery shared workers
         - if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then 
             apk add e2fsprogs && 
             truncate -s 20G /tmp/disk.img && 
             mkfs.ext4 /tmp/disk.img && 
             mount /tmp/disk.img /var/lib/docker; fi &&
-          dockerd-entrypoint.sh --mtu=1400;
+          dockerd-entrypoint.sh --mtu=1400 --oom-score-adj=-500;
       volumeMounts:
         - mountPath: /certs/client
           name: dind-certs
