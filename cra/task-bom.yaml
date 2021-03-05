@@ -105,7 +105,7 @@ spec:
 
           echo "Fetching users's token"
           ibmcloud config --check-version false
-          ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
           export IBM_CLOUD_BEARER=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token' | awk '{ print $2 }')
 
           echo "Fetching service urls for user's data"
@@ -166,7 +166,8 @@ spec:
           name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
-
+        - mountPath: /scripts
+          name: retry-script
     - name: fetch-git-information
       image: ibmcom/pipeline-base-image:2.6
       env:
@@ -230,7 +231,7 @@ spec:
             fi
             echo "Fetching token for $REPOSITORY"
             ibmcloud config --check-version false
-            ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+            sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
             if [ "$(params.resource-group)" ]; then
               ibmcloud target -g $(params.resource-group)
             fi
@@ -273,7 +274,8 @@ spec:
           name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
-
+        - mountPath: /scripts
+          name: retry-script
     - name: comment-editor
       image: icr.io/continuous-delivery/cra-comm-editor:main.1260
       imagePullPolicy: Always
@@ -341,3 +343,9 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
+    - name: retry-script
+      configMap:
+        name: retry-script
+        items:
+          - key: retry.sh
+            path: retry.sh
