@@ -41,6 +41,10 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
+    - name: pr-repository
+      value: $(params.pr-repository)
+    - name: pr-branch
+      value: $(params.pr-branch)
   workspaces:
     - name: artifacts
 
@@ -72,6 +76,10 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
       workspaces:
         - name: output
           workspace: artifacts

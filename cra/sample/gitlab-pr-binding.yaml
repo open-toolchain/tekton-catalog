@@ -6,7 +6,7 @@ metadata:
 spec:
   params:
     - name: branch
-      value: $(event.object_attributes.source_branch)
+      value: $(event.object_attributes.target_branch)
     - name: target-branch
       value: $(event.object_attributes.target_branch)
     - name: commit-id
@@ -27,3 +27,7 @@ spec:
       value: "gitlab"
     - name: repository
       value: $(event.project.http_url)
+    - name: pr-repository
+      value: $(event.object_attributes.head.source.http_url)
+    - name: pr-branch
+      value: $(event.object_attributes.source_branch)

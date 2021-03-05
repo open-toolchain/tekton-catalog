@@ -24,10 +24,6 @@ spec:
       default: "0"
     - name: pr-url
       description: PR url
-    - name: pr-number
-      description: PR number
-    - name: pr-name
-      description: PR name
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
     - name: project-id
@@ -42,6 +38,10 @@ spec:
       description: Configure policies to control thresholds
     - name: tf-var-file
       description: (optional) terraform var-file
+    - name: pr-repository
+      description: The forked git repo from where the PR is made
+    - name: pr-branch
+      description: The branch in the forked git repo from where the PR is made
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -101,3 +101,7 @@ spec:
             value: $(params.policy-config-json)
           - name: tf-var-file
             value: $(params.tf-var-file)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: pr-branch
+            value: $(params.pr-branch)
