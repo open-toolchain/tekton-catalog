@@ -60,7 +60,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: cis
-      image: icr.io/continuous-delivery/cra-cis:main.1573
+      image: icr.io/continuous-delivery/cra-cis:release.1584 
       env:
         - name: REPOSITORY
           value: $(params.repository)
