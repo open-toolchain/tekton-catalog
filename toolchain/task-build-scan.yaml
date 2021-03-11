@@ -44,24 +44,24 @@ spec:
             echo "false" > $(results.build_needed.path)
           fi
     - name: build-check
-        image: ibmcom/pipeline-base-image:2.6
-        command: [ "/bin/bash", "-c" ]
-        args:
-          - |
-            #!/bin/bash
-            set -e -o pipefail;
+      image: ibmcom/pipeline-base-image:2.6
+      command: [ "/bin/bash", "-c" ]
+      args:
+        - |
+          #!/bin/bash
+          set -e -o pipefail;
 
-            if [ $PIPELINE_DEBUG == 1 ]; then
-              pwd
-              env
-              trap env EXIT
-              set -x
-            fi
+          if [ $PIPELINE_DEBUG == 1 ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+          fi
 
-            #Scan the repo for a 'pom.xml' file
-            if [ "$(results.build_needed.path)" == "true" ]; then
-              echo "Found 'pom.xml' file"
-              mvn -B package
-            else
-              echo "No 'pom.xml' file found"
-            fi
+          #Scan the repo for a 'pom.xml' file
+          if [ "$(results.build_needed.path)" == "true" ]; then
+            echo "Found 'pom.xml' file"
+            mvn -B package
+          else
+            echo "No 'pom.xml' file found"
+          fi
