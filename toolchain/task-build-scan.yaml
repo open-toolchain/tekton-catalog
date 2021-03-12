@@ -9,7 +9,7 @@ spec:
       description: the git repo
     - name: pipeline-debug
       description: Pipeline debug mode
-      default: "0"
+      default: "1"
   results:
     - name: build_needed
       description: Determines if additional build is required
@@ -34,7 +34,9 @@ spec:
 
         #Scan the repo for a 'pom.xml' file
         echo "The Git repo is: $GIT_REPO"
-        if [[ -n $(find $GIT_REPO -name pom.xml) ]]; then
+        echo "The current workind directory is:"
+        pwd
+        if [[ -n $(find / -name pom.xml) ]]; then
           echo "Found 'pom.xml' file"
           echo "Setting 'build_needed' to 'true'"
           echo -n "true" > $(results.build_needed.path)
