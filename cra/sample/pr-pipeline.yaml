@@ -142,7 +142,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.pr-branch)
         - name: pr-repository
@@ -218,7 +218,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.pr-branch)
         - name: pr-repository
@@ -295,7 +295,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.pr-branch)
         - name: pr-repository
