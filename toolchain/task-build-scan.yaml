@@ -9,10 +9,11 @@ spec:
       description: the git repo
     - name: pipeline-debug
       description: Pipeline debug mode
-      default: "1"
-  results:
-    - name: build_needed
-      description: Determines if additional build is required
+      default: "0"
+  workspaces:
+    - name: output
+      description: The git repo will be cloned onto the volume backing this workspace
+      mountPath: /artifacts
   steps:
     - name: scan-repo
       image: ibmcom/pipeline-base-image:2.6
@@ -21,6 +22,7 @@ spec:
           value: $(params.pipeline-debug)
         - name: GIT_REPO
           value: $(params.repository)
+      workingDir: "/artifacts"
       script: |
         #!/bin/bash
         set -e -o pipefail;
@@ -34,22 +36,22 @@ spec:
 
         #Scan the repo for a 'pom.xml' file
         echo "The Git repo is: $GIT_REPO"
-        echo "The current workind directory is:"
-        pwd
-        if [[ -n $(find / -name pom.xml) ]]; then
+        if [[ -n $(find /artifacts -name pom.xml) ]]; then
           echo "Found 'pom.xml' file"
-          echo "Setting 'build_needed' to 'true'"
-          echo -n "true" > $(results.build_needed.path)
+          echo "BUILD_REQUIRED='true'" >> /steps/next-step-env.properties
         else
           echo "No 'pom.xml' file found"
-          echo "Setting 'build_needed' to 'false'"
-          echo -n "false" > $(results.build_needed.path)
+          echo "BUILD_REQUIRED='false'" >> /steps/next-step-env.properties
         fi
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
     - name: build-check
       image: ibmcom/pipeline-base-image:2.6
       env:
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
+      workingDir: "/artifacts"
       script: |
         #!/bin/bash
         set -e -o pipefail;
@@ -61,11 +63,18 @@ spec:
           set -x
         fi
 
-        #Scan the repo for a 'pom.xml' file
-        echo "build_needed set to: $(results.build_needed.path)"
-        if [ "$(results.build_needed.path)" == "true" ]; then
-          echo "Found 'pom.xml' file"
+        #Check to see if addtional build is required and run it if needed
+        source /steps/next-step-env.properties
+        if [ "$BUILD_REQUIRED" == "true" ]; then
+          echo "Additional build required. Running Maven build."
           mvn -B package
         else
           echo "No additional build required"
         fi
+
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
