@@ -70,7 +70,7 @@ spec:
       image: icr.io/continuous-delivery/cra-bom:release.1497
       env:
         - name: REPOSITORY
-          value: $(params.repository)
+          value: $(params.pr-repository)
         - name: API_KEY
           valueFrom:
             secretKeyRef:

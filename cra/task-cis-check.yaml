@@ -65,7 +65,7 @@ spec:
       image: icr.io/continuous-delivery/cra-cis:release.1603
       env:
         - name: REPOSITORY
-          value: $(params.repository)
+          value: $(params.pr-repository)
         - name: API_KEY
           valueFrom:
             secretKeyRef:
