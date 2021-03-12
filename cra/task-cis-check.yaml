@@ -12,6 +12,8 @@ spec:
       description: the git repo
     - name: revision
       description: the revision
+    - name: pr-repository
+      description: the source git repo which could be different in case of forked repo
       default: master
     - name: commit-id
       description: git commit id
@@ -133,7 +135,7 @@ spec:
           fi
 
           /usr/local/bin/deploy-analytic \
-            -giturl "$(params.repository)" \
+            -giturl "$(params.pr-repository)" \
             -gitbranch "$(params.revision)" \
             -repodir $REPO_DIR_PATH \
             -apiservice "${gitsecureUrl}" \

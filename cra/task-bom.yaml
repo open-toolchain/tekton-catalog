@@ -12,6 +12,8 @@ spec:
       description: the git repo url
     - name: revision
       description: the revision
+    - name: pr-repository
+      description: the source git repo which could be different in case of forked repo
       default: master
     - name: commit-id
       description: git commit id
@@ -144,7 +146,7 @@ spec:
           fi
 
           sudo --preserve-env /gitsecure/bom-task \
-            -giturl "$(params.repository)" \
+            -giturl "$(params.pr-repository)" \
             -gitbranch "$(params.revision)" \
             -rigserviceapi ${gitsecureUrl} \
             -ui_url ${uiUrl} \
