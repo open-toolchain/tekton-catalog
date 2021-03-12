@@ -13,55 +13,57 @@ spec:
   results:
     - name: build_needed
       description: Determines if additional build is required
-  stepTemplate:
-    env:
-      - name: PIPELINE_DEBUG
-        value: $(params.pipeline-debug)
-      - name: GIT_REPO
-        value: $(params.repository)
   steps:
     - name: scan-repo
       image: ibmcom/pipeline-base-image:2.6
-      command: [ "/bin/bash", "-c" ]
-      args:
-        - |
-          #!/bin/bash
-          set -e -o pipefail;
+      env:
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: GIT_REPO
+          value: $(params.repository)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail;
 
-          if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
-            env
-            trap env EXIT
-            set -x
-          fi
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
 
-          #Scan the repo for a 'pom.xml' file
-          if [[ -n $(find $GIT_REPO -name pom.xml) ]]; then
-            #There is a 'pom.xml' file
-            echo "true" > $(results.build_needed.path)
-          else
-            #Could not find a 'pom.xml' file in the repo
-            echo "false" > $(results.build_needed.path)
-          fi
+        #Scan the repo for a 'pom.xml' file
+        echo "The Git repo is: $GIT_REPO"
+        if [[ -n $(find $GIT_REPO -name pom.xml) ]]; then
+          echo "Found 'pom.xml' file"
+          echo "Setting 'build_needed' to 'true'"
+          echo -n "true" > $(results.build_needed.path)
+        else
+          echo "No 'pom.xml' file found"
+          echo "Setting 'build_needed' to 'false'"
+          echo -n "false" > $(results.build_needed.path)
+        fi
     - name: build-check
       image: ibmcom/pipeline-base-image:2.6
-      command: [ "/bin/bash", "-c" ]
-      args:
-        - |
-          #!/bin/bash
-          set -e -o pipefail;
+      env:
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail;
 
-          if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
-            env
-            trap env EXIT
-            set -x
-          fi
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
 
-          #Scan the repo for a 'pom.xml' file
-          if [ "$(results.build_needed.path)" == "true" ]; then
-            echo "Found 'pom.xml' file"
-            mvn -B package
-          else
-            echo "No 'pom.xml' file found"
-          fi
+        #Scan the repo for a 'pom.xml' file
+        echo "build_needed set to: $(results.build_needed.path)"
+        if [ "$(results.build_needed.path)" == "true" ]; then
+          echo "Found 'pom.xml' file"
+          mvn -B package
+        else
+          echo "No additional build required"
+        fi
