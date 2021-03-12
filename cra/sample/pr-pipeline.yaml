@@ -94,7 +94,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.pr-branch)
         - name: commit-id
@@ -116,7 +116,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
@@ -142,7 +142,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.pr-branch)
         - name: pr-url
@@ -166,7 +166,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
@@ -190,7 +190,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
@@ -216,7 +216,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.pr-branch)
         - name: pr-url
@@ -241,7 +241,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
@@ -265,7 +265,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
@@ -291,7 +291,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.pr-branch)
         - name: pr-url
@@ -319,7 +319,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
@@ -347,7 +347,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
@@ -371,7 +371,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value:  $(tasks.extract-repository-url.results.extracted-value)
+          value:  $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: scm-type
@@ -401,7 +401,7 @@ spec:
         name: git-set-commit-status
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.commit-id)
         - name: state
