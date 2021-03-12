@@ -12,10 +12,9 @@ spec:
       description: the git repo
     - name: revision
       description: the revision
+      default: master
     - name: pr-repository
       description: the source git repo which could be different in case of forked repo
-      default: ""
-      default: master
     - name: commit-id
       description: git commit id
     - name: pr-url
