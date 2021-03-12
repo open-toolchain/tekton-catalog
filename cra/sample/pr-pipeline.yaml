@@ -96,7 +96,7 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: commit-id
           value: $(params.commit-id)
         - name: pipeline-debug
@@ -144,7 +144,7 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -218,7 +218,7 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -293,7 +293,7 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
