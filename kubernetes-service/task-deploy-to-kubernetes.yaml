@@ -126,6 +126,11 @@ spec:
         fi
 
         ibmcloud ks cluster get --cluster $PIPELINE_KUBERNETES_CLUSTER_NAME --json > /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json
+        # If the target cluster is openshift then make the appropriate additional login with oc tool
+        if which oc > /dev/null && jq -e '.type=="openshift"' /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json > /dev/null; then
+          echo "$PIPELINE_KUBERNETES_CLUSTER_NAME is an openshift cluster. Doing the appropriate oc login to target it"
+          oc login -u apikey -p "${PIPELINE_BLUEMIX_API_KEY}"
+        fi
 
         export PIPELINE_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /artifacts/_toolchain.json)
 
