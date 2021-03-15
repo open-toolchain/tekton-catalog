@@ -145,7 +145,7 @@ spec:
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.pr-branch)
-        - name: pr-repository
+        - name: source-repository
           value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
@@ -221,7 +221,7 @@ spec:
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.pr-branch)
-        - name: pr-repository
+        - name: source-repository
           value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
@@ -298,7 +298,7 @@ spec:
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.pr-branch)
-        - name: pr-repository
+        - name: source-repository
           value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)

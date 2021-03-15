@@ -13,8 +13,9 @@ spec:
     - name: revision
       description: the revision
       default: master
-    - name: pr-repository
+    - name: source-repository
       description: the source git repo which could be different in case of forked repo
+      default: ""
     - name: commit-id
       description: git commit id
     - name: pr-url
@@ -65,7 +66,9 @@ spec:
       image: icr.io/continuous-delivery/cra-cis:release.1603
       env:
         - name: REPOSITORY
-          value: $(params.pr-repository)
+          value: $(params.repository)
+        - name: SOURCE_REPOSITORY
+          value: $(params.source-repository)
         - name: API_KEY
           valueFrom:
             secretKeyRef:
@@ -134,8 +137,14 @@ spec:
             exit 1
           fi
 
+          # In case of CR pipeline, the source repository is not passed and defaults to ""
+          GITURL=$SOURCE_REPOSITORY
+          if [ "$GITURL" -eq "" ]; then
+            GITURL=$REPOSITORY
+          fi
+
           /usr/local/bin/deploy-analytic \
-            -giturl "$(params.pr-repository)" \
+            -giturl "$GITURL" \
             -gitbranch "$(params.revision)" \
             -repodir $REPO_DIR_PATH \
             -apiservice "${gitsecureUrl}" \
