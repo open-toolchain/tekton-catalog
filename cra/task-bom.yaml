@@ -148,7 +148,7 @@ spec:
             exit 1
           fi
 
-          # In case of CR pipeline, the source repository is not passed and defaults to ""
+          # In case of CI pipeline, the source repository is not passed and defaults to ""
           GITURL=$SOURCE_REPOSITORY
           if [ "$GITURL" -eq "" ]; then
             GITURL=$REPOSITORY
