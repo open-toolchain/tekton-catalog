@@ -57,6 +57,11 @@ spec:
       description: |
         file containing properties out of clone task (can be a filepath name relative to the workspace/volume)
       default: build.properties
+    - name: target-url 
+      description: |
+        (optional) URL to be set as the status details link. 
+        If left empty, the status details link will point to the pipeline run. 
+      default: ""
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -281,6 +286,9 @@ spec:
         # compute the target url of this pipeline run
         target_url = ("https://cloud.ibm.com/devops/pipelines/tekton/" + os.environ["PIPELINE_ID"] +
           "/runs/" + os.environ["PIPELINE_RUN_ID"] + "?env_id=ibm:yp:" + previous_step["TOOLCHAIN_REGION"])
+
+        if "$(params.target-url)" != "":
+          target_url = "$(params.target-url)"
 
         # Create the request object according to the Git Flavor API
         if previous_step["GIT_ID"] == "gitlab" or previous_step["GIT_ID"] == "hostedgit" :
