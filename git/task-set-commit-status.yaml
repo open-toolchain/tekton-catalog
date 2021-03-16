@@ -59,8 +59,8 @@ spec:
       default: build.properties
     - name: target-url 
       description: |
-        (optional) URL to be set as the status details link. 
-        If left empty, the status details link will point to the pipeline run. 
+        (optional) a url to set as the status detail link for the PR.
+        If left empty, the status detail link will point to the pipeline run.  
       default: ""
     - name: pipeline-debug
       description: Pipeline debug mode
