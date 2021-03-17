@@ -78,7 +78,7 @@ spec:
           ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$VAULT_REGION"
 
           if [ -z "$VAULT_RESOURCE_GROUP" ]; then
-            echo "Using default resource group" 
+            echo "Using default resource group"
           else
             ibmcloud target -g "$VAULT_RESOURCE_GROUP"
           fi
@@ -131,7 +131,7 @@ spec:
         - mountPath: /certs/client
           name: dind-certs
         - mountPath: /task
-          name: task-volume      
+          name: task-volume
     - name: sign-image
       image: $(params.docker-client-image)
       workingDir: /task
@@ -180,7 +180,7 @@ spec:
 
           # Configure DCT server from private registry url
           export DOCKER_CONTENT_TRUST_SERVER="https://$REGISTRY_URL:4443"
-        
+
           #TODO support multiple signatures
           IMAGE_TAG=$IMAGE_TAGS
 

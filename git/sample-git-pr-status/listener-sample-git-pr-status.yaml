@@ -67,7 +67,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: triggerbinding-git-trigger-github-pr
+  name: triggerbinding-git-pr-status-github-pr
 spec:
   params:
     - name: repository
@@ -86,18 +86,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: eventlistener-git-trigger-github-pr
+  name: eventlistener-git-pr-status-github-pr
 spec:
   triggers:
     - binding:
-        name: triggerbinding-git-trigger-github-pr
+        name: triggerbinding-git-pr-status-github-pr
       template:
         name: triggertemplate-git-pr-status
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: triggerbinding-git-trigger-grit-mr
+  name: triggerbinding-git-pr-status-grit-mr
 spec:
   params:
     - name: repository
@@ -116,18 +116,18 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: eventlistener-git-trigger-grit-mr
+  name: eventlistener-git-pr-status-grit-mr
 spec:
   triggers:
     - binding:
-        name: triggerbinding-git-trigger-grit-mr
+        name: triggerbinding-git-pr-status-grit-mr
       template:
         name: triggertemplate-git-pr-status
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: triggerbinding-git-trigger-bitbucket-pr
+  name: triggerbinding-git-pr-status-bitbucket-pr
 spec:
   params:
     - name: repository
@@ -146,10 +146,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: eventlistener-git-trigger-bitbucket-pr
+  name: eventlistener-git-pr-status-bitbucket-pr
 spec:
   triggers:
     - binding:
-        name: triggerbinding-git-trigger-bitbucket-pr
+        name: triggerbinding-git-pr-status-bitbucket-pr
       template:
         name: triggertemplate-git-pr-status

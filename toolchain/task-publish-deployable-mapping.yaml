@@ -22,7 +22,7 @@ spec:
       description: CF organization id (only required when deployable-type is `app`)
       default: ""
     - name: deployable-cf-org-name
-      description: | 
+      description: |
         CF organization name (only required when deployable-type is `app`).
         It will only be used for traceability event purpose. Default to `deployable-cf-org-id`
       default: ""
@@ -209,12 +209,12 @@ spec:
               timestamp=""
 
               cat deployable_mapping.json | jq --arg SI_ID "$input_service_instance_id" --arg REPO "$input_repository" \
-                --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
-                '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL | . as $element | $root | .experimental.inputs += [$element]' \
-                > tmp_deployable_mapping.json
+               --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
+               '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL | . as $element | $root | .experimental.inputs += [$element]' \
+               > tmp_deployable_mapping.json
               mv -f tmp_deployable_mapping.json deployable_mapping.json
             fi
-          done < <(printf '%s\n' "$GIT_INPUTS")          
+          done < <(printf '%s\n' "$GIT_INPUTS")
         fi
 
         if [ $IBM_CLOUD_API == "https://test.cloud.ibm.com" ]; then
