@@ -283,11 +283,12 @@ spec:
 
         context="$(params.context)"
 
-        # compute the target url of this pipeline run
-        target_url = ("https://cloud.ibm.com/devops/pipelines/tekton/" + os.environ["PIPELINE_ID"] +
-          "/runs/" + os.environ["PIPELINE_RUN_ID"] + "?env_id=ibm:yp:" + previous_step["TOOLCHAIN_REGION"])
 
-        if "$(params.target-url)" != "":
+        if "$(params.target-url)" == "":
+          # compute the target url of this pipeline run
+          target_url = ("https://cloud.ibm.com/devops/pipelines/tekton/" + os.environ["PIPELINE_ID"] +
+            "/runs/" + os.environ["PIPELINE_RUN_ID"] + "?env_id=ibm:yp:" + previous_step["TOOLCHAIN_REGION"])
+        else:
           target_url = "$(params.target-url)"
 
         # Create the request object according to the Git Flavor API
