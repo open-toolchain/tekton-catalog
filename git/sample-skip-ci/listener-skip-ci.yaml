@@ -51,7 +51,7 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: github-commit
+  name: github-commit-binding
 spec:
   params:
     - name: repository
@@ -66,10 +66,10 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: github-commit
+  name: github-commit-listener
 spec:
   triggers:
     - binding:
-        name: github-commit
+        name: github-commit-binding
       template:
         name: skip-ci
