@@ -264,7 +264,7 @@ spec:
         - mountPath: /certs/client
           name: dind-certs
   sidecars:
-    - image: docker:19-dind
+    - image: icr.io/continuous-delivery/pipeline/docker:19.03.15-dind
       name: server
       securityContext:
         privileged: true
@@ -280,10 +280,10 @@ spec:
         # - https://cloud.ibm.com/docs/containers?topic=containers-kernel#calico-mtu
         #
         # Use a workaround to by pass virtio-fs for Continuous Delivery shared workers
-        - if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then 
-            apk add e2fsprogs && 
-            truncate -s 20G /tmp/disk.img && 
-            mkfs.ext4 /tmp/disk.img && 
+        - if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then
+            apk add e2fsprogs &&
+            truncate -s 20G /tmp/disk.img &&
+            mkfs.ext4 /tmp/disk.img &&
             mount /tmp/disk.img /var/lib/docker; fi &&
           dockerd-entrypoint.sh --mtu=1400;
       volumeMounts:

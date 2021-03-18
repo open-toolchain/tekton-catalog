@@ -102,6 +102,7 @@ Git commit status setter task
 * **state**: The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled` or a value meaningful for the target git repository (gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled` - github/integrated github: `pending`, `success`, `failure`, `error` - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED`)
 * **state-var**: Customized variable stored in `properties-file` (like `build-properties` for instance) to use as state if `state` input param is empty.
 * **properties-file**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
+* **target-url**: (optional) a url to set as the status detail link for the PR.  If left empty, the status detail link will point to the pipeline run.
 
 ### Workspaces
 

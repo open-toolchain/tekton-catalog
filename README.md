@@ -133,3 +133,10 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   - iks-fetch-config
 
   Note: As a reminder, in previous version (before `secure-properties` injection by CD tekton support), the default was set to `cd-secret`
+
+## Criteria for Code Submission
+To ensure code quality, protected branches will be enabled soon, and every PR that is to be merged to master will run CI tasks. These could (and should) be set up for local development environments as well.
+
+Code quality checks currently enabled:
+- yaml lint - using yamllint-rules.yaml as configuration file
+- tekton task lint

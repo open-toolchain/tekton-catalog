@@ -378,11 +378,11 @@ spec:
         # Use a workaround to by pass virtio-fs for Continuous Delivery shared workers
       command: ["sh", "-c"]
       args:
-      - if [[ $(df -PT /var/lib/buildkit | awk 'NR==2 {print $2}') == virtiofs ]]; then 
-          apk add e2fsprogs && 
-          truncate -s 20G /tmp/disk.img && 
-          mkfs.ext4 /tmp/disk.img && 
-          mount /tmp/disk.img /var/lib/buildkit; fi && buildkitd --addr tcp://0.0.0.0:1234;
+        - if [[ $(df -PT /var/lib/buildkit | awk 'NR==2 {print $2}') == virtiofs ]]; then
+           apk add e2fsprogs &&
+           truncate -s 20G /tmp/disk.img &&
+           mkfs.ext4 /tmp/disk.img &&
+           mount /tmp/disk.img /var/lib/buildkit; fi && buildkitd --addr tcp://0.0.0.0:1234;
       # Wait for the buildkit daemon to have available workers.
       readinessProbe:
         initialDelaySeconds: 2
