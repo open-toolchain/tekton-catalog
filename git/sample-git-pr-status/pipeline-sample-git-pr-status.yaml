@@ -134,7 +134,7 @@ spec:
                 exit 0
               fi
 
-  finally:        
+  finally:
     - name: set-git-commit-status
       taskRef:
         name: git-set-commit-status

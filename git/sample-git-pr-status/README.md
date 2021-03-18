@@ -30,15 +30,15 @@ The status being sucess or failing according to the commit message (it the commi
 4) Create Git Triggers for the different Git repositories that you have integrated to your Toolchain (corresponding to the repositories integrated to your Toolchain).
    
    Github:
-    - `eventlistener-git-trigger-github-pr` for Github PullRequest opened/updated event
+    - `eventlistener-git-pr-status-github-pr` for Github PullRequest opened/updated event
 
       ![Tekton pipeline sample-git-trigger Github PullRequest](./images/sample-git-pr-status-github-pullrequest-trigger-configuration.png)
 
    GRIT/Gitlab:
-    - `eventlistener-git-trigger-grit-mr` for GRIT/Gitlab MergeRequest opened/updated event
+    - `eventlistener-git-pr-status-grit-mr` for GRIT/Gitlab MergeRequest opened/updated event
 
    BitBucket:
-    - `eventlistener-git-trigger-bitbucket-pr` for BitBucket PullRequest opened/updated event
+    - `eventlistener-git-pr-status-bitbucket-pr` for BitBucket PullRequest opened/updated event
 
 5) **Trigger on PullRequest**: in one of your repository that has the above triggers defined, define a new Git branch, push some code changes and create a new PullRequest to the default `master` branch.
 

@@ -86,7 +86,7 @@ spec:
       # yamllint disable rule:line-length
       script: |
         #!/bin/bash
-        
+
         if [[ $PIPELINE_DEBUG == 1 ]]; then
           pwd
           env
@@ -109,7 +109,7 @@ spec:
         ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$VAULT_REGION"
 
         if [ -z "$VAULT_RESOURCE_GROUP" ]; then
-          echo "Using default resource group" 
+          echo "Using default resource group"
         else
           ibmcloud target -g "$VAULT_RESOURCE_GROUP"
         fi
@@ -134,7 +134,7 @@ spec:
         if [ -z "${NS}" ]; then
           echo "Creating REGISTRY_NAMESPACE in $REGISTRY_URL"
           ibmcloud cr namespace-add $REGISTRY_NAMESPACE
-        else 
+        else
           echo "$REGISTRY_NAMESPACE exists in $REGISTRY_URL"
         fi
 
@@ -174,7 +174,7 @@ spec:
         for i in "${signerList[@]}"; do
           DEVOPS_SIGNER=$i
           # Restore root & repository keys
-          echo "Restoring keys from $VAULT_INSTANCE"          
+          echo "Restoring keys from $VAULT_INSTANCE"
           echo "Create signer $DEVOPS_SIGNER for $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
           source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_signer.sh")
         done
