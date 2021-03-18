@@ -7,9 +7,6 @@ spec:
   params:
     - name: git-access-token
       description: the token to access the git repository for the clone operations
-    - name: apikey
-      description: the ibmcloud api key
-      default: " "
     - name: repository
       description: The git repo
       default: " "
