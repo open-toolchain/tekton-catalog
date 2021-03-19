@@ -298,6 +298,8 @@ spec:
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.pr-branch)
+        - name: source-repository
+          value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
