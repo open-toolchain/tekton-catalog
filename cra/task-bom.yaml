@@ -150,7 +150,7 @@ spec:
 
           # In case of CI pipeline, the source repository is not passed and defaults to ""
           GITURL=$SOURCE_REPOSITORY
-          if [ "$GITURL" == "" ]; then
+          if [ "$GITURL" -eq "" ]; then
             GITURL=$REPOSITORY
           fi
 
