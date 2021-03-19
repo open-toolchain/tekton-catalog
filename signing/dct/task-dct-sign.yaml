@@ -75,7 +75,7 @@ spec:
           export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
 
           ibmcloud config --check-version false
-          ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$VAULT_REGION"
+          ibmcloud login -a $(params.ibmcloud-api) --apikey "$IBM_CLOUD_API_KEY" -r "$VAULT_REGION"
 
           if [ -z "$VAULT_RESOURCE_GROUP" ]; then
             echo "Using default resource group"
