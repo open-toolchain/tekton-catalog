@@ -1,0 +1,156 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-git-pr-status
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: pr-repository
+      description: The source git repo for the PullRequest
+      default: ""
+    - name: pr-branch
+      description: The source branch for the PullRequest
+      default: ""
+    - name: pr-revision
+      description: the commit id/sha for the PullRequest
+      default: ""
+    - name: git-access-token
+      description: the token to access the git repository for the clone operations
+      default: ""
+    - name: properties-file
+      default: "output/thebuild.properties"
+    - name: git-credentials-json-file
+      default: "output/secrets/thecredentials.json"
+    - name: context
+      default: "commit message check"
+    - name: description
+      default: "verify the commit message"
+    - name: pipeline-debug
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: set-git-commit-pending
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "pending"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: git-clone
+      taskRef:
+        name: git-clone-repo
+      runAfter: [set-git-commit-pending]
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
+        - name: pr-revision
+          value: $(params.pr-revision)
+        - name: git-access-token
+          value: $(params.git-access-token)
+        - name: directory-name
+          value: ""
+        - name: properties-file
+          value: $(params.properties-file)
+        - name: git-credentials-json-file
+          value: $(params.git-credentials-json-file)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: set-git-commit-running
+      runAfter: [git-clone]
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "running"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: inspect-git-commit-message
+      runAfter: [git-clone, set-git-commit-running]
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: branch
+          value: $(params.pr-branch)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+      taskSpec:
+        workspaces:
+          - name: workspace
+            description: The git repo will be cloned onto the volume backing this workspace
+            mountPath: /artifacts
+        params:
+          - name: repository
+          - name: branch
+        steps:
+          - name: inspect-commit-message
+            image: alpine/git
+            script: |
+              set -e
+              cd /artifacts/$(echo "$(params.repository)" | awk -F/ '{print $NF}' | awk -F. '{print $1}')
+              git checkout $(params.branch)
+              git log -1
+              # Exit success or failure according to fail token in log
+              if git log -1 | grep "fail"; then
+                exit 1
+              else
+                exit 0
+              fi
+
+  finally:
+    - name: set-git-commit-status
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.context)
+        - name: description
+          value: $(params.description)
+        - name: state
+          value: "$(tasks.inspect-git-commit-message.status)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

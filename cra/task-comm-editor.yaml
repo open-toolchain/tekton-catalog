@@ -19,7 +19,7 @@ spec:
       description: source code type used (github, github-ent, gitlab)
   steps:
     - name: comm-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1260
+      image: icr.io/continuous-delivery/cra-comm-editor:release.1519
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -27,6 +27,29 @@ spec:
         - |
           #!/bin/sh
           source /steps/next-step-env.properties
+
+          if [ -n "$(params.scm-type)" ]; then
+            case "$(params.repository)" in
+              *git.cloud.ibm.com*)
+                if [ "$(params.scm-type)" != "gitlab" ]; then
+                  echo "Error: Trigger type '$(params.scm-type)' expected to be gitlab"
+                  exit 1
+                fi
+                ;;
+              *ibm.com*)
+                if [ "$(params.scm-type)" != "github-ent" ]; then
+                  echo "Error: Trigger type '$(params.scm-type)' expected to be github-ent"
+                  exit 1
+                fi
+                ;;
+              *)
+                if [ "$(params.scm-type)" != "github" ]; then
+                  echo "Error: Trigger type '$(params.scm-type)' expected to be github"
+                  exit 1
+                fi
+                ;;
+            esac
+          fi
 
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \
@@ -36,6 +59,12 @@ spec:
             -comment-fp "$(params.comment-fp)" \
             -project-id "$(params.project-id)" \
             -scm-type "$(params.scm-type)"
+
+          COMM_RESULT=$?
+          if [ "$COMM_RESULT" != "0" ]; then
+            echo "Error posting comment to pull request"
+            exit 1
+          fi
 
   workspaces:
     - name: artifacts

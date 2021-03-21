@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: retry-script
+data:
+  retry.sh: |
+    ##########################################################################
+    # Retry the command with args that are passed to this script 
+    # Environment variables:
+    # - (input) command with args 
+    # - (output) stdout of command with/without failures
+    ##########################################################################
+    retry_n=1
+    retry_max=3
+    retry_delay=2
+    while true; do
+      out=$("$@")
+      resp=$?
+      echo -n "$out"
+      if [ "$resp" = "0" ]; then
+        break
+      else
+        if [ $retry_n -lt $retry_max ]; then
+          retry_n=`expr "$retry_n" + "1"`
+          echo "Command failed. Attempt $retry_n/$retry_max:"
+          sleep $retry_delay;
+        else
+          echo "The command has failed after $retry_n attempts."
+          exit 1
+        fi
+      fi
+    done

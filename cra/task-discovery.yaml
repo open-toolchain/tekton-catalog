@@ -40,7 +40,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:release.1472
+      image: icr.io/continuous-delivery/cra-discovery:release.1571
       env:
         - name: API_KEY
           valueFrom:
@@ -82,7 +82,7 @@ spec:
 
           echo "Fetching users's token"
           ibmcloud config --check-version false
-          ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
           export IBM_CLOUD_BEARER=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token' | awk '{ print $2 }')
 
           echo "Fetching service urls for user's data"
@@ -148,7 +148,9 @@ spec:
           name: environment-properties
         - mountPath: /secrets
           name: secure-properties    
-
+        - mountPath: /scripts
+          name: retry-script
+  
   sidecars:
     - image: docker:19.03-dind
       name: server
@@ -186,4 +188,9 @@ spec:
     - name: secure-properties
       secret:
         secretName: $(params.continuous-delivery-context-secret)
-
+    - name: retry-script
+      configMap:
+        name: retry-script
+        items:
+          - key: retry.sh
+            path: retry.sh

@@ -69,7 +69,7 @@ spec:
         value: $(params.tf-var-file)
   steps:
     - name: terraform-compliance
-      image: icr.io/continuous-delivery/cra-terraform:release.1480
+      image: icr.io/continuous-delivery/cra-terraform:release.1607
       envFrom:
         - configMapRef:
             name: environment-properties
@@ -111,7 +111,7 @@ spec:
           fi
           echo "Fetching users's token"
           ibmcloud config --check-version false
-          ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
           export IBM_CLOUD_BEARER=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token' | awk '{ print $2 }')
           echo "Fetching service urls for user's data"
           HTTP_RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" \
@@ -172,7 +172,8 @@ spec:
           name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
-
+        - mountPath: /scripts
+          name: retry-script
     - name: fetch-git-information
       image: ibmcom/pipeline-base-image:2.6
       env:
@@ -236,7 +237,7 @@ spec:
             fi
             echo "Fetching token for $REPOSITORY"
             ibmcloud config --check-version false
-            ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+            sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
             if [ "$(params.resource-group)" ]; then
               ibmcloud target -g $(params.resource-group)
             fi
@@ -279,9 +280,10 @@ spec:
           name: cd-config-volume
         - mountPath: /steps
           name: steps-volume
-
+        - mountPath: /scripts
+          name: retry-script
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1260
+      image: icr.io/continuous-delivery/cra-comm-editor:release.1519
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -290,6 +292,29 @@ spec:
           #!/bin/sh
           source /steps/next-step-env.properties
 
+          if [ -n "$(params.scm-type)" ]; then
+            case "$(params.repository)" in
+              *git.cloud.ibm.com*)
+                if [ "$(params.scm-type)" != "gitlab" ]; then
+                  echo "Error: Trigger type '$(params.scm-type)' expected to be gitlab"
+                  exit 1
+                fi
+                ;;
+              *ibm.com*)
+                if [ "$(params.scm-type)" != "github-ent" ]; then
+                  echo "Error: Trigger type '$(params.scm-type)' expected to be github-ent"
+                  exit 1
+                fi
+                ;;
+              *)
+                if [ "$(params.scm-type)" != "github" ]; then
+                  echo "Error: Trigger type '$(params.scm-type)' expected to be github"
+                  exit 1
+                fi
+                ;;
+            esac
+          fi
+
           /usr/local/bin/comm-editor \
             -repo-url "$(params.repository)" \
             -pr-url "$(params.pr-url)" \
@@ -297,6 +322,12 @@ spec:
             -comment-fp "$COMMENT_FP" \
             -project-id "$(params.project-id)" \
             -scm-type "$(params.scm-type)"
+
+          COMM_RESULT=$?
+          if [ "$COMM_RESULT" != "0" ]; then
+            echo "Error posting comment to pull request"
+            exit 1
+          fi
 
       volumeMounts:
         - mountPath: /steps
@@ -321,3 +352,9 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
+    - name: retry-script
+      configMap:
+        name: retry-script
+        items:
+          - key: retry.sh
+            path: retry.sh

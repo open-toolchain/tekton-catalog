@@ -41,6 +41,10 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
+    - name: pr-repository
+      value: $(params.pr-repository)
+    - name: pr-branch
+      value: $(params.pr-branch)
   workspaces:
     - name: artifacts
 
@@ -72,6 +76,10 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
       workspaces:
         - name: output
           workspace: artifacts
@@ -86,9 +94,9 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: commit-id
           value: $(params.commit-id)
         - name: pipeline-debug
@@ -136,7 +144,9 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
+        - name: source-repository
+          value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -210,7 +220,9 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
+        - name: source-repository
+          value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -285,7 +297,9 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
+        - name: source-repository
+          value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -363,7 +377,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value:  $(tasks.extract-repository-url.results.extracted-value)
+          value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.commit-id)
         - name: scm-type

@@ -2,72 +2,11 @@
 
 Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 
-**If you want `v1alpha1` resources, you need to reference the [`tekton_pipeline0.10.1`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1) tag (or
-[`tekton_pipeline0.10.1_workspace`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1_workspace) tag to have `v1alpha1` resources using workspaces).**
-
-**Note**: 
+**Notes**: 
 - These tasks are usable with Continuous Delivery Tekton Pipeline Worker Agent (Tekton definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
-
-## Breaking Changes 
-
-### when moving from tag "tekton_pipeline0.10.1"
-
-- These tasks are using **kebab-case style for EVERY parameters names**. So parameter `pathToContext` (in previous versions of the tasks) has been renamed as `path-to-context`, parameter `clusterName` has been renamed to `cluster-name` and so on...
-- `communication` folder has been renamed to `slack` folder
-- Some tasks has been renamed to match the following name format `<category alias>-<task>` where category alias is depending on the folder containing the tasks:
-
-  | Folder/Category | Category alias |
-  |--------|----------------|
-  | cloudfoundry | cf |
-  | container-registry | icr |
-  | devops-insights | doi |
-  | git | git |
-  | kubernetes-service | iks |
-  | slack | slack |
-  | toolchain | toolchain |
-
-  The task new names are listed in the following table:
-
-  | Folder | Old task name | New task name |
-  |--------|---------------|---------------|
-  | container-registry | containerize-task | icr-containerize |
-  | container-registry | cr-build-task | icr-cr-build |
-  | container-registry | execute-in-dind-task | icr-execute-in-dind |
-  | container-registry | execute-in-dind-cluster-task | icr-execute-in-dind-cluster |
-  | container-registry | vulnerability-advisor-task | icr-check-va-scan |
-  | git | clone-repo-task | git-clone-repo |
-  | git | set-commit-status | git-set-commit-status |
-  | kubernetes-service | fetch-iks-cluster-config | iks-fetch-config |
-  | kubernetes-service | kubernetes-contextual-execution | iks-contextual-execution |
-  | slack | post-slack | slack-post-message |
-
-- Tasks that use workspace(s) may have changed the expected workspace name. Here is the list of the breaking changes for the expected workspace name
-
-  | Folder | Task | Old workspace name | New workspace name | Description |
-  | -- | -- | -- | -- | -- | 
-  | container-registry | icr-containerize | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
-  | container-registry | icr-cr-build | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
-  | container-registry | icr-execute-in-dind | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
-  | container-registry | icr-execute-in-dind-cluster | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
-  | container-registry | icr-check-va-scan | workspace | artifacts | Workspace that may contain image information and will have the va report from the VA scan after this task exection |
-  | git | git-clone-repo | workspace | output | Workspace where the git repository will be cloned into |
-  | git | git-set-commit-status | workspace | artifacts | Workspace that may contain git repository information (ie build.properties). Should be marked as optional when Tekton will permit it |
-  | kubernetes-service | iks-fetch-config | workspace | cluster-configuration | A workspace where the kubernetes cluster config is exported |
-  | kubernetes-service | iks-contextual-execution | workspace | cluster-configuration | A workspace that contain the kubectl cluster config to be used |
-  
-### when moving from tag "tekton_pipeline0.10.1" and/or branch "tkn_v1beta1"
-
-- Tasks that are expecting a secret to retrieve apikey and/or secret values have been updated to use the default secret `secure-properties` injected by Continuous Delivery Tekton Pipeline support. The updated tasks are:
-  - icr-check-va-scan
-  - icr-containerize
-  - icr-cr-build
-  - icr-execute-in-dind
-  - icr-execute-in-dind-cluster
-  - git-clone-repo
-  - git-set-commit-status
-  - iks-fetch-config
-
-  Note: As a reminder, in previous version (before `secure-properties` injection by CD tekton support), the default was set to `cd-secret`
+- If you want `v1alpha1` resources, you need to reference the [`tekton_pipeline0.10.1`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1) tag (or
+[`tekton_pipeline0.10.1_workspace`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1_workspace) tag to have `v1alpha1` resources using workspaces).
+- When moving from from tag `tekton_pipeline0.10.1`, `tekton_pipeline0.10.1` and/or branch `tkn_v1beta1` to use `master`branch of this catalog, take a look at [breaking changes section](./README.md#breaking-changes)
 
 # Tasks 
 
@@ -133,3 +72,71 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 - **[toolchain-publish-deployable-mapping](./toolchain/README.md#toolchain-publish-deployable-mapping)**: This task creates or updates a toolchain deployable mapping for a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
 - **[toolchain-extract-value](./toolchain/README.md#toolchain-extract-value)**: This task extracts values from the desired config map with a given jq expression.
+
+## Breaking Changes 
+
+### when moving from tag "tekton_pipeline0.10.1"
+
+- These tasks are using **kebab-case style for EVERY parameters names**. So parameter `pathToContext` (in previous versions of the tasks) has been renamed as `path-to-context`, parameter `clusterName` has been renamed to `cluster-name` and so on...
+- `communication` folder has been renamed to `slack` folder
+- Some tasks has been renamed to match the following name format `<category alias>-<task>` where category alias is depending on the folder containing the tasks:
+
+  | Folder/Category | Category alias |
+  |--------|----------------|
+  | cloudfoundry | cf |
+  | container-registry | icr |
+  | devops-insights | doi |
+  | git | git |
+  | kubernetes-service | iks |
+  | slack | slack |
+  | toolchain | toolchain |
+
+  The task new names are listed in the following table:
+
+  | Folder | Old task name | New task name |
+  |--------|---------------|---------------|
+  | container-registry | containerize-task | icr-containerize |
+  | container-registry | cr-build-task | icr-cr-build |
+  | container-registry | execute-in-dind-task | icr-execute-in-dind |
+  | container-registry | execute-in-dind-cluster-task | icr-execute-in-dind-cluster |
+  | container-registry | vulnerability-advisor-task | icr-check-va-scan |
+  | git | clone-repo-task | git-clone-repo |
+  | git | set-commit-status | git-set-commit-status |
+  | kubernetes-service | fetch-iks-cluster-config | iks-fetch-config |
+  | kubernetes-service | kubernetes-contextual-execution | iks-contextual-execution |
+  | slack | post-slack | slack-post-message |
+
+- Tasks that use workspace(s) may have changed the expected workspace name. Here is the list of the breaking changes for the expected workspace name
+
+  | Folder | Task | Old workspace name | New workspace name | Description |
+  | -- | -- | -- | -- | -- | 
+  | container-registry | icr-containerize | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-cr-build | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-execute-in-dind | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-execute-in-dind-cluster | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
+  | container-registry | icr-check-va-scan | workspace | artifacts | Workspace that may contain image information and will have the va report from the VA scan after this task exection |
+  | git | git-clone-repo | workspace | output | Workspace where the git repository will be cloned into |
+  | git | git-set-commit-status | workspace | artifacts | Workspace that may contain git repository information (ie build.properties). Should be marked as optional when Tekton will permit it |
+  | kubernetes-service | iks-fetch-config | workspace | cluster-configuration | A workspace where the kubernetes cluster config is exported |
+  | kubernetes-service | iks-contextual-execution | workspace | cluster-configuration | A workspace that contain the kubectl cluster config to be used |
+  
+### when moving from tag "tekton_pipeline0.10.1" and/or branch "tkn_v1beta1"
+
+- Tasks that are expecting a secret to retrieve apikey and/or secret values have been updated to use the default secret `secure-properties` injected by Continuous Delivery Tekton Pipeline support. The updated tasks are:
+  - icr-check-va-scan
+  - icr-containerize
+  - icr-cr-build
+  - icr-execute-in-dind
+  - icr-execute-in-dind-cluster
+  - git-clone-repo
+  - git-set-commit-status
+  - iks-fetch-config
+
+  Note: As a reminder, in previous version (before `secure-properties` injection by CD tekton support), the default was set to `cd-secret`
+
+## Criteria for Code Submission
+To ensure code quality, protected branches will be enabled soon, and every PR that is to be merged to master will run CI tasks. These could (and should) be set up for local development environments as well.
+
+Code quality checks currently enabled:
+- yaml lint - using yamllint-rules.yaml as configuration file
+- tekton task lint
