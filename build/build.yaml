@@ -38,14 +38,14 @@ spec:
           set -x
         fi
 
-        #if [ -z "$CUSTOM_SCRIPT"]; then
-        #  if [[ -n $(find /artifacts -name pom.xml) ]]; then
-        #    echo "Additional build required. Running Maven build."
-        #    mvn -B package
-        #  fi
-        #else
-        #  $($CUSTOM_SCRIPT)
-        #fi
+        if [ -z "$CUSTOM_SCRIPT"]; then
+          if [[ -n $(find /artifacts -name pom.xml) ]]; then
+            echo "Additional build required. Running Maven build."
+            mvn -B package
+          fi
+        else
+          $($CUSTOM_SCRIPT)
+        fi
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
