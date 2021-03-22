@@ -38,7 +38,7 @@ spec:
           set -x
         fi
 
-        if [ -z "$CUSTOM_SCRIPT"]; then
+        if [ -z "$CUSTOM_SCRIPT" ]; then
           if [[ -n $(find /artifacts -name pom.xml) ]]; then
             echo "Additional build required. Running Maven build."
             mvn -B package
@@ -46,6 +46,7 @@ spec:
             echo "no pom file found"
           fi
         else
+          echo "running custom script"
           $(params.custom-script)
         fi
       volumeMounts:
