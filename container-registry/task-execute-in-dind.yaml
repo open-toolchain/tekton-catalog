@@ -284,10 +284,11 @@ spec:
 
           echo ""
           # Persist registry and image information in an output properties file
-          REGISTRY_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $1}')
-          REGISTRY_NAMESPACE=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $2}')
+          # REGISTRY_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $1}')
+          # REGISTRY_NAMESPACE=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $2}')
           # Image name is remaining part after the repository and namespace and can contains /
-          IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
+          # IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
+          
           MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG" \
             --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
 
