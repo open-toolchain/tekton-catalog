@@ -117,12 +117,38 @@ spec:
           else
             export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
-
-          # Parse the image url to find registry information
-          source /scripts/parse_image_url.sh
+         
+          if [ "$IMAGE_RESOURCE_URL" ]; then
+            # Parse the image url to find registry information
+            source /scripts/parse_image_url.sh
+          else
+            # export the expected environment variables based on the required registry parameters
+            # if registry region is in the 'ibm:yp:<region>' just keep the region part
+            export REGISTRY_REGION=$(echo "$(params.registry-region)" | awk -F ':' '{print $NF;}')
+            if [ -z "$REGISTRY_REGION" ]; then
+              echo "No registry region provided"
+              exit 1
+            fi
+            export REGISTRY_NAMESPACE=$(params.registry-namespace)
+            if [ -z "$REGISTRY_NAMESPACE" ]; then
+              echo "No registry namespace provided"
+              exit 1
+            fi
+          fi
 
           # Ensure login to the container registry and namespace available
           source /scripts/check_registry.sh
+
+          if [ -z "$IMAGE_RESOURCE_URL" ]; then
+            export IMAGE_NAME=$(params.image-name)
+            if [ -z "$IMAGE_NAME" ]; then
+              echo "No image name provided"
+              exit 1
+            fi
+            # export the expected environment variables now that the container registry is logged in
+            export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+            export IMAGE_URL="${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
+          fi
 
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
