@@ -1,0 +1,47 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-task
+spec:
+  params:
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+    - name: custom-script
+      default: ""
+  workspaces:
+    - name: output
+      description: The git repo will be cloned onto the volume backing this workspace
+      mountPath: /artifacts
+  steps:
+    - name: run-build
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: CUSTOM_SCRIPT
+          value: $(params.custom-script)
+      workingDir: "/artifacts"
+      script: |
+        #!/bin/bash
+        set -e -o pipefail;
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
+
+        if [ -z "$CUSTOM_SCRIPT" ]; then
+          if [[ -n $(find /artifacts -name pom.xml) ]]; then
+            echo "Additional build required. Running Maven build."
+            mvn -B package
+          else
+            echo "No 'pom.xml' file found."
+          fi
+        else
+          echo "Running custom script."
+          $(params.custom-script)
+        fi
