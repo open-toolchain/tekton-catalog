@@ -46,7 +46,7 @@ spec:
             echo "no pom file found"
           fi
         else
-          $(CUSTOM_SCRIPT)
+          $(params.custom-script)
         fi
       volumeMounts:
         - mountPath: /steps
