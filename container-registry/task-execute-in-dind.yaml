@@ -55,6 +55,15 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
+    - name: registry-region
+      description: container registry region id. required if no image-url or no image pipeline resources provided
+      default: ""
+    - name: registry-namespace
+      description: container registry namespace. required if no image-url or no image pipeline resources provided
+      default: ""
+    - name: image-name
+      description: image name. required if no image-url or no image pipeline resources provided
+      default: ""
   results:
     - name: image-repository
       description: the repository for the built image
