@@ -150,6 +150,11 @@ spec:
             export IMAGE_URL="${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
           fi
 
+          if [ -z "$IMAGE_TAG" ]; then
+            # Use the image-tag provided as parameter
+            export IMAGE_TAG=$(params.image-tag)
+          fi
+
           # create a dry-run k8s secret of type docker-registry to obtain
           # the content of a docker config.json file to access the target
           # ibmcloud container registry
