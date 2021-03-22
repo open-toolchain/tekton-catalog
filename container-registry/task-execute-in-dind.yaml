@@ -163,6 +163,14 @@ spec:
 
           echo ""
           echo "Secret created."
+          
+          echo "REGISTRY_URL=${REGISTRY_URL}" > next-step-env.properties
+          echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> next-step-env.properties
+          echo "REGISTRY_REGION=${REGISTRY_REGION}" >> next-step-env.properties
+          echo "IMAGE_URL=${IMAGE_URL}" >> next-step-env.properties
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> next-step-env.properties
+          echo "IMAGE_NAME=${IMAGE_NAME}" >> next-step-env.properties
+          
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
@@ -241,20 +249,24 @@ spec:
               set -x
           fi
 
-          if [ "$(resources.outputs.built-image.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(params.image-url)"
-          else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
-          fi
+#          if [ "$(resources.outputs.built-image.url)" == "" ]; then
+#            export IMAGE_RESOURCE_URL="$(params.image-url)"
+#          else
+#            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
+#          fi
 
-          # Parse the image url to find information (region, namespace, image name and eventually tag)
-          # as url of Image PipelineResource is the complete path to the image, including the registry
-          # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
-          IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
-          IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
-          if [ -z "$IMAGE_TAG" ]; then
-            IMAGE_TAG="$(params.image-tag)"
-          fi
+#            # Parse the image url to find information (region, namespace, image name and eventually tag)
+#            # as url of Image PipelineResource is the complete path to the image, including the registry
+#            # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
+#            IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
+#            IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
+#            if [ -z "$IMAGE_TAG" ]; then
+#              IMAGE_TAG="$(params.image-tag)"
+#            fi
+
+          source /steps/next-step-env.properties
+          export $(cut -d= -f1 /steps/next-step-env.properties)          
+          
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
           echo ""
