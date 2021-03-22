@@ -24,8 +24,6 @@ spec:
           value: $(params.pipeline-debug)
         - name: GIT_REPO
           value: $(params.repository)
-        - name: CUSTOM_SCRIPT
-          value: $(params.custom-script)
       workingDir: "/artifacts"
       script: |
         #!/bin/bash
@@ -38,17 +36,14 @@ spec:
           set -x
         fi
 
-        if [ -z "$CUSTOM_SCRIPT" ]; then
-          if [[ -n $(find /artifacts -name pom.xml) ]]; then
-            echo "Additional build required. Running Maven build."
-            mvn -B package
-          else
-            echo "no pom file found"
-          fi
+        if [[ -n $(find /artifacts -name pom.xml) ]]; then
+          echo "Additional build required. Running Maven build."
+          mvn -B package
         else
-          echo "running custom script"
-          $(params.custom-script)
+          echo "no pom file found"
         fi
+        #run custom script
+        $(params.custom-script)
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
