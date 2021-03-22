@@ -35,12 +35,20 @@ spec:
 
   stepTemplate:
     env:
+      - name: PIPELINE_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:release.1571
+      image: icr.io/continuous-delivery/cra-discovery:release.1651
       env:
         - name: API_KEY
           valueFrom:
@@ -73,12 +81,16 @@ spec:
 
           API_ENDPOINT="https://cloud.ibm.com"
           OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.cloud.ibm.com"
+          PIPELINE_URL="https://cloud.ibm.com"
           if echo "${REGION_ID}" | grep -q "ys1"; then
             OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.dev.cloud.ibm.com"
             API_ENDPOINT="https://test.cloud.ibm.com"
+            PIPELINE_URL="https://dev.console.test.cloud.ibm.com"
             echo "targeting otc broker @ ${OTC_BROKER_BASE_URL}"
             echo "targeting ibm cloud @ ${API_ENDPOINT}"
           fi
+
+          PIPELINE_URL="${PIPELINE_URL}/devops/pipelines/tekton/${PIPELINE_ID}/runs/${PIPELINE_RUN_ID}?env_id=${REGION_ID}"
 
           echo "Fetching users's token"
           ibmcloud config --check-version false
@@ -136,6 +148,9 @@ spec:
             -gitbranch "$(params.revision)" \
             -repodir $REPO_DIR_PATH  \
             -rigapi "${gitsecureUrl}" \
+            -region "${TOOLCHAIN_REGION}" \
+            -pipelineurl "${PIPELINE_URL}" \
+            -runid "${PIPELINE_RUN_ID}" \
             -commitid "$(params.commit-id)" \
             -commitTimestamp "$(params.commit-timestamp)" \
             -toolchainid "${TOOLCHAIN_ID}"
