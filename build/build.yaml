@@ -42,6 +42,8 @@ spec:
           if [[ -n $(find /artifacts -name pom.xml) ]]; then
             echo "Additional build required. Running Maven build."
             mvn -B package
+          else
+            echo "no pom file found"
           fi
         else
           $($CUSTOM_SCRIPT)
