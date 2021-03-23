@@ -10,13 +10,16 @@ spec:
       default: "0"
     - name: custom-script
       default: ""
+    - name: run-build-image
+      description: The name of the image used for the run-build step
+      default: "ibmcom/pipeline-base-image:2.6"
   workspaces:
     - name: output
       description: The git repo will be cloned onto the volume backing this workspace
       mountPath: /artifacts
   steps:
     - name: run-build
-      image: ibmcom/pipeline-base-image:2.6
+      image: $(params.run-build-image)
       env:
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
@@ -39,7 +42,7 @@ spec:
             echo "Additional build required. Running Maven build."
             mvn -B package
           else
-            echo "No 'pom.xml' file found."
+            echo "No additional build script to be run."
           fi
         else
           echo "Running custom script."
