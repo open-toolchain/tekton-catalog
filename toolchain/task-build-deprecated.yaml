@@ -2,7 +2,9 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: toolchain-build
+  name: build-task
+  labels:
+    tekton.dev/deprecated: true
 spec:
   params:
     - name: pipeline-debug
