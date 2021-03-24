@@ -158,7 +158,7 @@ spec:
             then
               cat /usr/policies/ibm/terraform-config.rego
               echo $result
-              cat result.json
+              cat deploymant-analyzer.json
           fi
 
           echo -n $result > "$(results.status.path)"                    
