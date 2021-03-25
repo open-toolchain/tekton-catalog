@@ -35,63 +35,6 @@ spec:
   workspaces:
     - name: pipeline-ws
   tasks:
-    - name: set-tekton-lint-pending
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.tekton-lint-check-context)
-        - name: description
-          value: $(params.tekton-lint-check-description)
-        - name: state
-          value: "pending"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: set-yamllint-pending
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.yamllint-check-context)
-        - name: description
-          value: $(params.yamllint-check-description)
-        - name: state
-          value: "pending"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: set-task-wellformness-pending
-      taskRef:
-        name: git-set-commit-status
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.pr-revision)
-        - name: context
-          value: $(params.task-wellformness-check-context)
-        - name: description
-          value: $(params.task-wellformness-check-description)
-        - name: state
-          value: "pending"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: git-clone
       taskRef:
         name: git-clone-repo
@@ -114,7 +57,6 @@ spec:
         - name: output
           workspace: pipeline-ws
     - name: set-tekton-lint-running
-      runAfter: [set-tekton-lint-pending, git-clone]
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -134,7 +76,6 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-yamllint-running
-      runAfter: [set-yamllint-pending, git-clone]
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -154,7 +95,6 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: set-task-wellformness-running
-      runAfter: [set-task-wellformness-pending, git-clone]
       taskRef:
         name: git-set-commit-status
       workspaces:
@@ -175,7 +115,7 @@ spec:
           value: $(params.pipeline-debug)
 
     - name: tekton-lint
-      runAfter: [set-tekton-lint-running]
+      runAfter: [set-tekton-lint-running, git-clone]
       params:
         - name: repository
           value: $(tasks.git-clone.results.git-repository)
@@ -206,7 +146,7 @@ spec:
               tekton-lint '**/*.yaml'
 
     - name: yamllint
-      runAfter: [set-yamllint-running]
+      runAfter: [set-yamllint-running, git-clone]
       params:
         - name: repository
           value: $(tasks.git-clone.results.git-repository)
@@ -230,19 +170,14 @@ spec:
             script: |
               #!/bin/sh
 
-              if [ $PIPELINE_DEBUG == 1 ]; then
-                pwd
-                env
-                trap env EXIT
-                set -x
-              fi
+              set -e
 
               pip install yamllint
 
               yamllint --config-file yamllint-rules.yaml .
 
     - name: task-wellformness
-      runAfter: [set-task-wellformness-running]
+      runAfter: [set-task-wellformness-running, git-clone]
       params:
         - name: repository
           value: $(tasks.git-clone.results.git-repository)
@@ -266,7 +201,8 @@ spec:
             script: |
               #!/bin/bash
 
-              ./.ci/task-wellformness.sh
+              chmod +x ./.ci/check_tasks.sh
+              ./.ci/check_tasks.sh
 
   finally:
     - name: set-tekton-lint-finished
