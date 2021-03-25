@@ -203,6 +203,10 @@ spec:
 
               npm install -g tekton-lint@latest
 
+              pwd
+              
+              ls -l
+
               tekton-lint '**/*.yaml'
 
     - name: yamllint
@@ -237,6 +241,10 @@ spec:
                 set -x
               fi
 
+              pwd
+              
+              ls -l
+
               pip install yamllint
 
               yamllint --config-file yamllint-rules.yaml .
@@ -265,6 +273,10 @@ spec:
             workingDir: /artifacts
             script: |
               #!/bin/bash
+
+              pwd
+
+              ls -l
 
               ./.ci/task-wellformness.sh
 
