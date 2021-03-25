@@ -10,6 +10,7 @@ do
   if [[ "$(yq r $file 'kind')" == "Task" ]]; then
     file=$(echo $file | sed 's|^./||')
     folder=$(dirname $file)
+    # Check task only for non samples
     if [[ "$folder" != *"sample"* ]]; then
       if [ "$folder" == "cloudfoundry" ]; then
         prefix="cf"
@@ -24,7 +25,7 @@ do
       fi    
       fully_qualified_task_name="$(yq r $file 'metadata.name')"
       task_name=${fully_qualified_task_name#"$prefix-"}
-      # Check task name only for non sample
+      # Check task name
       if [[ "$prefix-$task_name" != "$fully_qualified_task_name" ]]; then
         echo "Task name in $file is not appropriate. it should be $prefix-$task_name and not $fully_qualified_task_name"
         exit_status=1
