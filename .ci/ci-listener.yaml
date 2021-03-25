@@ -1,0 +1,46 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: ci-commit-pushed-trigger-binding
+spec:
+  params:
+    - name: repository
+      value: "$(event.repository.url)"
+    - name: revision
+      value: "$(event.head_commit.id)"
+    - name: branch
+      value: "$(event.ref)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: ci-manual-run-trigger-binding
+spec:
+  params:
+    - name: repository
+      value: "$(params.repository)"
+    - name: branch
+      value: "$(params.branch)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: ci-commit-pushed-listener
+spec:
+  triggers:
+    - binding:
+        name: ci-commit-pushed-trigger-binding
+      template:
+        name: ci-trigger-template
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: ci-manual-run-listener
+spec:
+  triggers:
+    - binding:
+        name: ci-manual-run-trigger-binding
+      template:
+        name: ci-trigger-template
