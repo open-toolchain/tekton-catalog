@@ -1,0 +1,59 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: pr-trigger-template
+spec:
+  params:
+    - name: repository
+      description: The git repo
+      default: " "
+    - name: branch
+      description: the branch for the git repo
+    - name: pr-repository
+      description: The source git repo for the PullRequest
+      default: " "
+    - name: pr-branch
+      description: The source branch for the PullRequest
+      default: " "
+    - name: pr-revision
+      description: the commit id/sha for the PullRequest
+      default: " "
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pr-status-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: pr-status-$(uid)
+      spec:
+        pipelineRef:
+          name: pr-pipeline
+        params:
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: pr-branch
+            value: $(params.pr-branch)
+          - name: pr-revision
+            value: $(params.pr-revision)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: pr-status-$(uid)-pvc
