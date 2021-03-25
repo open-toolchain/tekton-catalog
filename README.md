@@ -139,5 +139,6 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 To ensure code quality, protected branches will be enabled soon, and every PR that is to be merged to master will run CI tasks. These could (and should) be set up for local development environments as well.
 
 Code quality checks currently enabled:
-- yaml lint - using yamllint-rules.yaml as configuration file
-- tekton task lint
+- yaml lint - using yamllint-rules.yaml as configuration file: `yamllint --config-file yamllint-rules.yaml .`
+- tekton task lint: `tekton-lint '**/*.yaml'`
+- Tasks definition validation: [check_tasks.sh](./.ci/check_tasks.sh))
