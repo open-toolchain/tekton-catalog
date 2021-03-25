@@ -1,0 +1,49 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: ci-trigger-template
+spec:
+  params:
+    - name: repository
+      description: The git repo
+      default: " "
+    - name: branch
+      description: the branch for the git repo
+    - name: revision
+      description: the commit id/sha
+      default: " "
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: ci-status-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: ci-status-$(uid)
+      spec:
+        pipelineRef:
+          name: ci-pipeline
+        params:
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: revision
+            value: $(params.revision)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: ci-status-$(uid)-pvc
