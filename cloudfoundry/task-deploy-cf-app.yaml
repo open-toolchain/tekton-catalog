@@ -17,6 +17,7 @@ spec:
     - name: cf-app
       description: Name of the CF application to be managed
     - name: setup-script
+      description: script that typically set up environment before the _cf-commands_ script execution.
       default: ""
     - name: cf-commands
       description: The ibmcloud cf command(s) to run.
@@ -24,8 +25,10 @@ spec:
         # Push app
         ibmcloud cf push "${CF_APP}"
     - name: post-execution-script
+      description: script that get executed after the _cf-commands_ script has been executed.
       default: ""
     - name: shuttle-properties-file
+      description: name of the properties file that contain properties to include in the environment for the _cf-commands_ script execution.
       default: ""
     - name: ibmcloud-api
       description: the ibmcloud api

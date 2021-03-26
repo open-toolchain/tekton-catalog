@@ -18,23 +18,28 @@ spec:
       description: target resource group (name or id) for the ibmcloud login operation
       default: ""
     - name: cluster-region
-      description: |
-        (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+      description: the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
       default: ""
     - name: cluster-name
       description: name of the cluster - required if no cluster pipeline resource provided to this task
       default: ""
     - name: image-url
+      description: URL of an image that is relevant to the deployment action
       default: ""
     - name: shuttle-properties-file
+      description: name of the properties file that contain properties to include in the environment for the `cf-commands` snippet/script execution
       default: ""
     - name: setup-script
+      description: script that typically set up environment before the _deployment_ script execution.
       default: ""
     - name: script
+      description: _deployment_ script to be executed
       default: ""
     - name: post-execution-script
+      description: script that get executed after the _deployment_ script has been executed.
       default: ""
     - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   results:
     - name: app-url

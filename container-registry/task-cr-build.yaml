@@ -36,8 +36,10 @@ spec:
       description: image name. required if no image-url or no image pipeline resources provided
       default: ""
     - name: path-to-context
+      description: the path to the context that is used for the build (default to `.` meaning current directory)
       default: .
     - name: path-to-dockerfile
+      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -57,7 +59,7 @@ spec:
       description: file containing properties out of containerize task
       default: build.properties
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   results:
     - name: image-repository
