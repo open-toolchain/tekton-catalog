@@ -66,7 +66,7 @@ spec:
         Default to '' meaning no output of this information
       default: ""
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   results:
     - name: git-repository

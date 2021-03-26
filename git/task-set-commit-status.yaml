@@ -63,7 +63,7 @@ spec:
         If left empty, the status detail link will point to the pipeline run.
       default: ""
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   workspaces:
     - name: artifacts

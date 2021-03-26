@@ -15,7 +15,7 @@ This task performs a lint on the given Dockerfile using [Hadolint](https://githu
 * **dockerfile**: (optional) The name of the Dockerfile. Default to `Dockerfile`.
 * **path-to-hadolint-config**: (optional) The path to the hadolint configuration file.
 * **hadolint-ignored-rules**: (optional) Comma separated list of ignored rules for the lint.
-* **trusted-registries**: (optional) Comma separated list of trusted registries for the lint.
+* **trusted-registries**: (optional) Comma separated list of trusted repositories that can be used in Dockerfiles.
 * **fail-on-lint-errors**: (optional) flag (`"true"` | `"false"`) to indicate if the task should fail or continue if issues are found in the Dockerfile lint. Default to "true"
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
