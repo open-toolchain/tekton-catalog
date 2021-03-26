@@ -6,9 +6,9 @@ metadata:
 data:
   retry.sh: |
     ##########################################################################
-    # Retry the command with args that are passed to this script 
+    # Retry the command with args that are passed to this script
     # Environment variables:
-    # - (input) command with args 
+    # - (input) command with args
     # - (output) stdout of command with/without failures
     ##########################################################################
     retry_n=1

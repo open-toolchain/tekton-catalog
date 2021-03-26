@@ -93,7 +93,7 @@ spec:
             ls /artifacts/
             env
             trap env EXIT
-            set -x +e           
+            set -x +e
           fi
 
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
@@ -137,7 +137,7 @@ spec:
             exit 1
           fi
 
-          echo "Running terraform compliance task"                    
+          echo "Running terraform compliance task"
           if [[ $PIPELINE_DEBUG == 1 ]];
             then
               ls $REPO_DIR_PATH
@@ -145,14 +145,16 @@ spec:
           result="failed"
           LOG_LEVEL="info"
 
-          if [[ "$(params.policy-config-json)" == "" ]]; 
+          if [[ "$(params.policy-config-json)" == "" ]];
           then
-            node /usr/src/index.js --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
+            node /usr/src/index.js --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH \
+              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
           else
-            node /usr/src/index.js --policyConfig $(params.policy-config-json) --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
+            node /usr/src/index.js --policyConfig $(params.policy-config-json) --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH \
+              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
           fi
 
-          if [ $? == 0 ]; then export result="success"; fi          
+          if [ $? == 0 ]; then export result="success"; fi
 
           if [[ $PIPELINE_DEBUG == 1 ]];
             then
@@ -161,7 +163,7 @@ spec:
               cat deploymant-analyzer.json
           fi
 
-          echo -n $result > "$(results.status.path)"                    
+          echo -n $result > "$(results.status.path)"
           echo -n "deploymant-analyzer.json" > $(results.evidence-store.path)
 
           cp ./da-terraform-check-comment.md /steps/da-terraform-check-comment.md
@@ -332,7 +334,6 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
-
 
   workspaces:
     - name: artifacts
