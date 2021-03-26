@@ -105,6 +105,7 @@ This task helps to create or update mappings between Toolchains & Deployables.
 * **deployable-cf-org-id**: CF organization id (only required when deployable-type is `app`)
 * **deployable-cf-space-id**: CF space id (only required when deployable-type is `app`)
 * **deployable-rg-id**: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
+* **deployable-url**: (optional) an URL that represent the deployable, e.g. the application's URL.
 * **ibmcloud-api**: (optional) the ibmcloud api. Default to https://cloud.ibm.com
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
