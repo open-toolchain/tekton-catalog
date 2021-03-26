@@ -146,3 +146,4 @@ This task allows to perform scripts typically doing deployment of a Kubernetes a
 * **resource-group-name**: The resource-group name that this cluster is part of
 * **resource-group-id**: The resource-group identifier that this cluster is part of
 * **region**: The region (ie us-south) where the cluster is located
+* **app-url**: The running application's URL (obtained from APP_URL variable set by the executed script)
