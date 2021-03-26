@@ -159,12 +159,12 @@ spec:
           value: $(params.project-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-     
+
     - name: cra-terraform-scan
       when:
-      - input: "$(params.tf-dir)"
-        operator: notin
-        values: [""]
+        - input: "$(params.tf-dir)"
+          operator: notin
+          values: [""]
       runAfter:
         - cra-fetch-repo
       taskRef:
@@ -176,7 +176,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value:  $(tasks.extract-repository-url.results.extracted-value)
+          value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.commit-id)
         - name: scm-type
@@ -192,4 +192,4 @@ spec:
         - name: policy-config-json
           value: $(params.policy-config-json)
         - name: tf-var-file
-          value: $(params.tf-var-file) 
+          value: $(params.tf-var-file)

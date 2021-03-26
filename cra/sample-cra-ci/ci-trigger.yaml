@@ -34,7 +34,7 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
-      
+
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim

@@ -58,7 +58,7 @@ spec:
               optional: true
         # The location of the client configuration files.
         - name: DOCKER_CONFIG
-          value: /artifacts      
+          value: /artifacts
 
       imagePullPolicy: Always
       workingDir: "/artifacts"
@@ -125,11 +125,11 @@ spec:
             exit 1
           fi
 
-          # create a dry-run k8s secret of type docker-registry to obtain 
+          # create a dry-run k8s secret of type docker-registry to obtain
           # the pull secrets for the base image used in the dockerfile
           # this is optional, but sometimes useful, for example when using
           # UBI images from RedHat
-           
+
           if [ -f "/properties/build-baseimage-auth-user" ] \
             && [ -f "/secrets/build-baseimage-auth-password" ] \
             && [ -f "/properties/build-baseimage-auth-host" ]; then
@@ -162,10 +162,10 @@ spec:
         - mountPath: /properties
           name: environment-properties
         - mountPath: /secrets
-          name: secure-properties    
+          name: secure-properties
         - mountPath: /scripts
           name: retry-script
-  
+
   sidecars:
     - image: docker:19.03-dind
       name: server

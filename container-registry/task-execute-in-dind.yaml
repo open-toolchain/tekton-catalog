@@ -117,7 +117,7 @@ spec:
           else
             export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
           fi
-         
+
           if [ "$IMAGE_RESOURCE_URL" ]; then
             # Parse the image url to find registry information
             source /scripts/parse_image_url.sh
@@ -168,14 +168,14 @@ spec:
 
           echo ""
           echo "Secret created."
-          
+
           echo "REGISTRY_URL=${REGISTRY_URL}" > next-step-env.properties
           echo "REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE}" >> next-step-env.properties
           echo "REGISTRY_REGION=${REGISTRY_REGION}" >> next-step-env.properties
           echo "IMAGE_URL=${IMAGE_URL}" >> next-step-env.properties
           echo "IMAGE_TAG=${IMAGE_TAG}" >> next-step-env.properties
           echo "IMAGE_NAME=${IMAGE_NAME}" >> next-step-env.properties
-          
+
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
@@ -270,8 +270,8 @@ spec:
           #            fi
 
           source /steps/next-step-env.properties
-          export $(cut -d= -f1 /steps/next-step-env.properties)          
-          
+          export $(cut -d= -f1 /steps/next-step-env.properties)
+
           echo "Image URL: $IMAGE_URL"
           echo "Image tag: $IMAGE_TAG"
           echo ""
@@ -288,7 +288,7 @@ spec:
           # REGISTRY_NAMESPACE=$(echo $IMAGE_RESOURCE_URL |  awk -F/ '{print $2}')
           # Image name is remaining part after the repository and namespace and can contains /
           # IMAGE_NAME=$(echo $IMAGE_URL |  awk -F/ '{a=match($0, $3); print substr($0,a)}')
-          
+
           MANIFEST_SHA=$(docker inspect "$IMAGE_URL:$IMAGE_TAG" \
             --format='{{index .RepoDigests 0 }}' | awk -F@ '{print $2}')
 
