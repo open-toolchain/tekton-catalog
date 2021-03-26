@@ -37,6 +37,8 @@ spec:
     - name: pipeline-debug
       default: "0"
   results:
+    - name: app-url
+      description: The running application's URL (obtained from APP_URL variable set by the executed script)
     - name: cluster-name
       description: The cluster name
     - name: cluster-id
@@ -147,6 +149,7 @@ spec:
         $(params.post-execution-script)
 
         # Record task results
+        echo -n "$APP_URL" > $(results.app-url.path)
         echo -n "$(cat /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json | jq -r '.name')" > $(results.cluster-name.path)
         echo -n "$(cat /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json | jq -r '.id')" > $(results.cluster-id.path)
         echo -n "$(cat /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json | jq -r '.resourceGroupName')" > $(results.resource-group-name.path)
