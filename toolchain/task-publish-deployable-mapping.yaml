@@ -38,7 +38,7 @@ spec:
       description: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
       default: ""
     - name: deployable-url
-      description: application URL
+      description: (optional) an URL that represent the deployable, e.g. the application's URL.
       default: ""
     - name: git-inputs
       description: |
