@@ -38,7 +38,7 @@ spec:
       default: "0"
   results:
     - name: app-url
-      description: The running application's URL
+      description: The running application's URL (obtained from APP_URL variable set by the executed script)
     - name: cluster-name
       description: The cluster name
     - name: cluster-id
