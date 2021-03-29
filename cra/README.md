@@ -2,16 +2,28 @@
 
 Tasks to scan your codebase using the Code Risk Analyzer scanners
 
-#### Tasks
+## Tasks
 
-- [cra-discovery](#cra-discovery)
-- [cra-bom](#cra-bom)
-- [cra-cis-check](#cra-cis-check)
-- [cra-vulnerability-remediation](#cra-vulnerability-remediation)
-- [cra-comm-editor](#cra-comm-editor)
-- [cra-terraform-scan](#cra-terraform-scan)
+- **[cra-discovery](#cra-discovery)**: This task accesses various source artifacts from the repository and performs deep discovery to identify all dependencies (including transitive dependencies).
+- **[cra-bom](#cra-bom)**: This task creates a Bill-of-Material (BoM) for a given repository that captures pedigree of all the dependencies and it is collected at different granularities.
+- **[cra-cis-check](#cra-cis-check)**: This tasks runs configuration checks on kubernetes deployment manifests.
+- **[cra-vulnerability-remediation](#cra-vulnerability-remediation)**: This task creates comments on Pull Requests and opens issues regarding bill of material and discovered vunerabilities.
+- **[cra-comm-editor](#cra-comm-editor)**: This task creates comments on Pull Requests and opens issues regarding bill of material and discovered vunerabilities.
+- **[cra-terraform-scan](#cra-terraform-scan)**: This task scans ibm-terraform-provider files for compliance issues.
 
+## Install the Tasks
+- Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
+- Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `cra`
 
+## Usages
+
+- The `sample` sub-directory contains a listener to configure on Pull Request (or Merge Request for Gitlab/GRIT) EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the CRA tasks.
+
+  See the documentation [here](./sample/README.md)
+
+- The `sample-cra-ci` sub-directory contains a listener to configure on commit pushed EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the CRA tasks.
+
+  See the documentation [here](./sample-cra-ci/README.md)
 
 
 ## cra-discovery
