@@ -17,6 +17,7 @@ spec:
       description: the bash snippet to execute within the context of the kubernetes configuration
       default: "kubectl version"
     - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   resources:
     inputs:

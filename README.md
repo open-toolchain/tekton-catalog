@@ -1,6 +1,6 @@
 # Open-Toolchain Tekton Catalog
 
-Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
+Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 
 **Notes**: 
 - These tasks are usable with Continuous Delivery Tekton Pipeline Worker Agent (Tekton definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
@@ -70,8 +70,9 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
 
 ## Open-Toolchain related tasks
 
-- **[toolchain-publish-deployable-mapping](./toolchain/README.md#toolchain-publish-deployable-mapping)**: This task creates or updates a toolchain deployable mapping for a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
+- **[toolchain-build](./toolchain/README.md#toolchain-build)**: This task performs build operation(s) on the given workspace. Default build operations managed are maven build for instance.
 - **[toolchain-extract-value](./toolchain/README.md#toolchain-extract-value)**: This task extracts values from the desired config map with a given jq expression.
+- **[toolchain-publish-deployable-mapping](./toolchain/README.md#toolchain-publish-deployable-mapping)**: This task creates or updates a toolchain deployable mapping for a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
 
 ## Breaking Changes 
 
@@ -135,8 +136,9 @@ Catalog of Tasks usable in [Continuous Delivery Tekton Pipelines](https://cloud.
   Note: As a reminder, in previous version (before `secure-properties` injection by CD tekton support), the default was set to `cd-secret`
 
 ## Criteria for Code Submission
-To ensure code quality, protected branches will be enabled soon, and every PR that is to be merged to master will run CI tasks. These could (and should) be set up for local development environments as well.
+To ensure code quality, protected branches will be enabled soon, and every PR that is to be merged to master will run CI tasks for code quality. These could (and should) be set up for local development environments as well.
 
 Code quality checks currently enabled:
-- yaml lint - using yamllint-rules.yaml as configuration file
-- tekton task lint
+- yaml lint - using yamllint-rules.yaml as configuration file: `yamllint --config-file yamllint-rules.yaml .`
+- tekton task lint: `tekton-lint '**/*.yaml'`
+- Tasks definition validation: [check_tasks.sh](./.ci/check_tasks.sh))

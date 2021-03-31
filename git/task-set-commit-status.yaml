@@ -57,13 +57,13 @@ spec:
       description: |
         file containing properties out of clone task (can be a filepath name relative to the workspace/volume)
       default: build.properties
-    - name: target-url 
+    - name: target-url
       description: |
         (optional) a url to set as the status detail link for the PR.
-        If left empty, the status detail link will point to the pipeline run.  
+        If left empty, the status detail link will point to the pipeline run.
       default: ""
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   workspaces:
     - name: artifacts
@@ -282,7 +282,6 @@ spec:
         description="$(params.description)"
 
         context="$(params.context)"
-
 
         if "$(params.target-url)" == "":
           # compute the target url of this pipeline run

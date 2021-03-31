@@ -17,7 +17,7 @@ spec:
     - name: directory-name
       description: directory name where the repository is cloned
     - name: pipeline-debug
-      description: toggles debug mode for the pipeline
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
     - name: continuous-delivery-context-secret
       description: Reference name for the secret resource
@@ -35,12 +35,20 @@ spec:
 
   stepTemplate:
     env:
+      - name: PIPELINE_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:release.1571
+      image: icr.io/continuous-delivery/cra-discovery:release.1651
       env:
         - name: API_KEY
           valueFrom:
@@ -50,7 +58,7 @@ spec:
               optional: true
         # The location of the client configuration files.
         - name: DOCKER_CONFIG
-          value: /artifacts      
+          value: /artifacts
 
       imagePullPolicy: Always
       workingDir: "/artifacts"
@@ -73,12 +81,16 @@ spec:
 
           API_ENDPOINT="https://cloud.ibm.com"
           OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.cloud.ibm.com"
+          PIPELINE_URL="https://cloud.ibm.com"
           if echo "${REGION_ID}" | grep -q "ys1"; then
             OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.dev.cloud.ibm.com"
             API_ENDPOINT="https://test.cloud.ibm.com"
+            PIPELINE_URL="https://dev.console.test.cloud.ibm.com"
             echo "targeting otc broker @ ${OTC_BROKER_BASE_URL}"
             echo "targeting ibm cloud @ ${API_ENDPOINT}"
           fi
+
+          PIPELINE_URL="${PIPELINE_URL}/devops/pipelines/tekton/${PIPELINE_ID}/runs/${PIPELINE_RUN_ID}?env_id=${REGION_ID}"
 
           echo "Fetching users's token"
           ibmcloud config --check-version false
@@ -113,11 +125,11 @@ spec:
             exit 1
           fi
 
-          # create a dry-run k8s secret of type docker-registry to obtain 
+          # create a dry-run k8s secret of type docker-registry to obtain
           # the pull secrets for the base image used in the dockerfile
           # this is optional, but sometimes useful, for example when using
           # UBI images from RedHat
-           
+
           if [ -f "/properties/build-baseimage-auth-user" ] \
             && [ -f "/secrets/build-baseimage-auth-password" ] \
             && [ -f "/properties/build-baseimage-auth-host" ]; then
@@ -136,6 +148,9 @@ spec:
             -gitbranch "$(params.revision)" \
             -repodir $REPO_DIR_PATH  \
             -rigapi "${gitsecureUrl}" \
+            -region "${TOOLCHAIN_REGION}" \
+            -pipelineurl "${PIPELINE_URL}" \
+            -runid "${PIPELINE_RUN_ID}" \
             -commitid "$(params.commit-id)" \
             -commitTimestamp "$(params.commit-timestamp)" \
             -toolchainid "${TOOLCHAIN_ID}"
@@ -147,10 +162,10 @@ spec:
         - mountPath: /properties
           name: environment-properties
         - mountPath: /secrets
-          name: secure-properties    
+          name: secure-properties
         - mountPath: /scripts
           name: retry-script
-  
+
   sidecars:
     - image: docker:19.03-dind
       name: server

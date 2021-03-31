@@ -37,6 +37,9 @@ spec:
     - name: deployable-rg-id
       description: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
       default: ""
+    - name: deployable-url
+      description: (optional) an URL that represent the deployable, e.g. the application's URL.
+      default: ""
     - name: git-inputs
       description: |
         list of git repository,commit and branch triple (repository,commit id and branch spearated by a comma).
@@ -65,6 +68,8 @@ spec:
           value: $(params.deployable-type)
         - name: DEPLOYABLE_GUID
           value: $(params.deployable-guid)
+        - name: DEPLOYABLE_URL
+          value: $(params.deployable-url)
         - name: REGION_ID
           value: $(params.deployable-region-id)
         - name: RESOURCE_GROUP_ID
@@ -145,6 +150,12 @@ spec:
         else
           echo "Deployable type $DEPLOYABLE_TYPE not expected"
           exit 1
+        fi
+
+        if [ ! -z "$DEPLOYABLE_URL" ]; then
+          cat deployable_mapping.json | jq --arg DEPLOYABLE_URL "${DEPLOYABLE_URL}" \
+            '.deployable.url=[$DEPLOYABLE_URL]' > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
         fi
 
         cat deployable_mapping.json | jq --arg TC_ID "$TOOLCHAIN_ID" --arg REGION_ID "$TOOLCHAIN_REGION_ID" \

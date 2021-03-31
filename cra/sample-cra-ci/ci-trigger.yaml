@@ -9,8 +9,6 @@ spec:
       description: The git repo
     - name: branch
       description: branch
-    - name: repository-integration
-      description: the repo integration name
     - name: apikey
       description: the ibmcloud api key
     - name: commit-id
@@ -34,7 +32,7 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
-      
+
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -70,8 +68,6 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: repository-integration
-            value: $(params.repository-integration)
           - name: commit-id
             value: $(params.commit-id)
           - name: commit-timestamp

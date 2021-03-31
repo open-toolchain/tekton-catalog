@@ -1,0 +1,30 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: pr-trigger-binding
+spec:
+  params:
+    - name: repository
+      value: "$(event.pull_request.base.repo.clone_url)"
+    - name: branch
+      value: "$(event.pull_request.base.ref)"
+    - name: pr-repository
+      value: "$(event.pull_request.head.repo.clone_url)"
+    - name: pr-branch
+      value: "$(event.pull_request.head.ref)"
+    - name: pr-revision
+      value: "$(event.pull_request.head.sha)"
+    - name: triggerName
+      value: "github-pullrequest"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: pr-event-listener
+spec:
+  triggers:
+    - binding:
+        name: pr-trigger-binding
+      template:
+        name: pr-trigger-template

@@ -1,0 +1,264 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pr-pipeline
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: the branch for the git repo
+    - name: pr-repository
+      description: The source git repo for the PullRequest
+      default: ""
+    - name: pr-branch
+      description: The source branch for the PullRequest
+      default: ""
+    - name: pr-revision
+      description: the commit id/sha for the PullRequest
+      default: ""
+    - name: tekton-lint-check-context
+      default: "tekton-lint"
+    - name: tekton-lint-check-description
+      default: "tekton-lint successfull"
+    - name: yamllint-check-context
+      default: "yamllint"
+    - name: yamllint-check-description
+      default: "yamllint successfull"
+    - name: task-wellformness-check-context
+      default: "check tasks structure"
+    - name: task-wellformness-check-description
+      default: "tasks wellformed"
+    - name: pipeline-debug
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: git-clone
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
+        - name: pr-revision
+          value: $(params.pr-revision)
+        - name: directory-name
+          value: "."
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: set-tekton-lint-running
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.tekton-lint-check-context)
+        - name: description
+          value: $(params.tekton-lint-check-description)
+        - name: state
+          value: "running"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-yamllint-running
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.yamllint-check-context)
+        - name: description
+          value: $(params.yamllint-check-description)
+        - name: state
+          value: "running"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-task-wellformness-running
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.task-wellformness-check-context)
+        - name: description
+          value: $(params.task-wellformness-check-description)
+        - name: state
+          value: "running"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: tekton-lint
+      runAfter: [set-tekton-lint-running, git-clone]
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: branch
+          value: $(params.pr-branch)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+      taskSpec:
+        workspaces:
+          - name: workspace
+            description: The git repo will be cloned onto the volume backing this workspace
+            mountPath: /artifacts
+        params:
+          - name: repository
+          - name: branch
+        steps:
+          - name: tekton-lint
+            image: ibmcom/pipeline-base-image:2.11
+            workingDir: /artifacts
+            script: |
+              #!/bin/bash
+              set +ex
+              . /root/.nvm/nvm.sh
+
+              npm install -g tekton-lint@latest
+
+              tekton-lint '**/*.yaml'
+
+    - name: yamllint
+      runAfter: [set-yamllint-running, git-clone]
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: branch
+          value: $(params.pr-branch)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+      taskSpec:
+        workspaces:
+          - name: workspace
+            description: The git repo will be cloned onto the volume backing this workspace
+            mountPath: /artifacts
+        params:
+          - name: repository
+          - name: branch
+        steps:
+          - name: yamllint
+            image: python:3.8.6-alpine3.11
+            workingDir: /artifacts
+            script: |
+              #!/bin/sh
+
+              set -e
+
+              pip install yamllint
+
+              yamllint --config-file yamllint-rules.yaml .
+
+    - name: task-wellformness
+      runAfter: [set-task-wellformness-running, git-clone]
+      params:
+        - name: repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: branch
+          value: $(params.pr-branch)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+      taskSpec:
+        workspaces:
+          - name: workspace
+            description: The git repo will be cloned onto the volume backing this workspace
+            mountPath: /artifacts
+        params:
+          - name: repository
+          - name: branch
+        steps:
+          - name: check-tasks
+            image: ibmcom/pipeline-base-image:2.11
+            workingDir: /artifacts
+            script: |
+              #!/bin/bash
+
+              chmod +x ./.ci/check_tasks.sh
+              ./.ci/check_tasks.sh
+
+  finally:
+    - name: set-tekton-lint-finished
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.tekton-lint-check-context)
+        - name: description
+          value: $(params.tekton-lint-check-description)
+        - name: state
+          value: "$(tasks.tekton-lint.status)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-yamllint-finished
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.yamllint-check-context)
+        - name: description
+          value: $(params.yamllint-check-description)
+        - name: state
+          value: "$(tasks.yamllint.status)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: set-task-wellformness-finished
+      taskRef:
+        name: git-set-commit-status
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.pr-revision)
+        - name: context
+          value: $(params.task-wellformness-check-context)
+        - name: description
+          value: $(params.task-wellformness-check-description)
+        - name: state
+          value: "$(tasks.task-wellformness.status)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
