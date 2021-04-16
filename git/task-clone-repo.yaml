@@ -92,6 +92,13 @@ spec:
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
   steps:
+    - name: run-e2e-test-1
+      image: ibmcom/pipeline-base-image
+      command:
+        - /bin/bash
+        - '-c'
+      args:
+        - set -e -o pipefail; echo "running test 1"; echo "done!"
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image:2.6
       env:
@@ -375,6 +382,18 @@ spec:
         echo -n "${BRANCH}" > $(results.git-branch.path)
         echo -n "${GIT_COMMIT}" > $(results.git-commit.path)
         echo -n "${GIT_AUTH_USER}" > $(results.git-user.path)
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+    - name: clone-repo-2
+      image: $(params.git-client-image)
+      env:
+        - name: REPOSITORY
+          value: $(params.repository)
+      script: |
+        #!/bin/sh
+        set -e
+        echo "Testing Nav"
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
