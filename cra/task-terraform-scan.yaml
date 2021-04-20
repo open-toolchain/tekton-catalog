@@ -69,7 +69,7 @@ spec:
         value: $(params.tf-var-file)
   steps:
     - name: terraform-compliance
-      image: icr.io/continuous-delivery/cra-terraform:release.1607
+      image: icr.io/continuous-delivery/cra-terraform:release.1756
       envFrom:
         - configMapRef:
             name: environment-properties
