@@ -109,7 +109,6 @@ spec:
         fi
 
         TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
-        TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
         ##########################################################################
         # Setting HOME explicitly to have ibmcloud plugins available
         # doing the export rather than env definition is a workaround
@@ -147,7 +146,7 @@ spec:
         if [ -z "$GIT_TOKEN" ]; then
           echo "Fetching token for $REPOSITORY"
           ibmcloud config --check-version false
-          ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $API_KEY
+          ibmcloud login -a $(params.ibmcloud-api) --no-region --apikey $API_KEY
           if [ "$(params.resource-group)" ]; then
             ibmcloud target -g "$(params.resource-group)"
           fi
