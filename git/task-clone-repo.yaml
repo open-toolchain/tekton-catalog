@@ -228,7 +228,9 @@ spec:
         source /steps/next-step-env.properties
 
         # If $BRANCH is a full git ref then only keep the name part
+        # this is using sh so do this in two steps
         BRANCH=$(echo ${BRANCH#"refs/heads/"})
+        BRANCH=$(echo ${BRANCH#"refs/tags/"})
 
         echo "Cloning $REPOSITORY"
         # Add the proper creds to the git repository
