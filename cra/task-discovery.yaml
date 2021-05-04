@@ -48,7 +48,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:release.1819
+      image: icr.io/continuous-delivery/cra-discovery:706-Refresh-token.1852 
       env:
         - name: API_KEY
           valueFrom:
@@ -142,7 +142,7 @@ spec:
               --docker-email="$(cat /properties/build-baseimage-auth-email)" | \
               jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
           fi
-
+          env
           /usr/local/bin/discovery \
             -giturl "$(params.repository)" \
             -gitbranch "$(params.revision)" \
