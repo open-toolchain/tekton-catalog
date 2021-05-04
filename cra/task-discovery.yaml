@@ -145,6 +145,7 @@ spec:
               jq -r '.data[".dockerconfigjson"]' | base64 -d > config.json
           fi
           env
+          sleep 1200
           /usr/local/bin/discovery \
             -giturl "$(params.repository)" \
             -gitbranch "$(params.revision)" \
