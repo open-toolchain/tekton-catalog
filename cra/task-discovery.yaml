@@ -48,7 +48,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:706-Refresh-token.1854 
+      image: icr.io/continuous-delivery/cra-discovery:release.1862 
       env:
         - name: API_KEY
           valueFrom:
