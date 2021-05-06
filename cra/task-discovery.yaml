@@ -48,7 +48,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:release.1819
+      image: icr.io/continuous-delivery/cra-discovery:release.1862
       env:
         - name: API_KEY
           valueFrom:
@@ -82,10 +82,12 @@ spec:
           API_ENDPOINT="https://cloud.ibm.com"
           OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.cloud.ibm.com"
           PIPELINE_URL="https://cloud.ibm.com"
+          IAM_URL="https://iam.cloud.ibm.com"
           if echo "${REGION_ID}" | grep -q "ys1"; then
             OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.dev.cloud.ibm.com"
             API_ENDPOINT="https://test.cloud.ibm.com"
             PIPELINE_URL="https://dev.console.test.cloud.ibm.com"
+            IAM_URL="https://iam.test.cloud.ibm.com"
             echo "targeting otc broker @ ${OTC_BROKER_BASE_URL}"
             echo "targeting ibm cloud @ ${API_ENDPOINT}"
           fi
@@ -150,6 +152,7 @@ spec:
             -rigapi "${gitsecureUrl}" \
             -region "${TOOLCHAIN_REGION}" \
             -pipelineurl "${PIPELINE_URL}" \
+            -iamurl "${IAM_URL}" \
             -runid "${PIPELINE_RUN_ID}" \
             -commitid "$(params.commit-id)" \
             -commitTimestamp "$(params.commit-timestamp)" \
