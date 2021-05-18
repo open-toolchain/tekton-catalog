@@ -45,6 +45,10 @@ spec:
       value: $(params.pr-repository)
     - name: pr-branch
       value: $(params.pr-branch)
+    - name: repo-dir
+      value: $(params.repo-dir)
+      description: Specifies the path for the repository or .cracveomit file
+      default: "/artifacts"
   workspaces:
     - name: artifacts
 
@@ -157,6 +161,8 @@ spec:
           value: $(params.project-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: repo-dir
+          value: $(params.repo-dir)
 
     - name: cra-vulnerability-scan-status-finished
       runAfter:

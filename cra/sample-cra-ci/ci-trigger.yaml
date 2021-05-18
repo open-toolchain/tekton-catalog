@@ -32,6 +32,9 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
+    - name: repo-dir
+      description: Specifies the path for the repository or .cracveomit file
+      default: "/artifacts"
 
   resourcetemplates:
     - apiVersion: v1
@@ -84,3 +87,5 @@ spec:
             value: $(params.policy-config-json)
           - name: tf-var-file
             value: $(params.tf-var-file)
+          - name: repo-dir
+            value: $(params.repo-dir)
