@@ -32,6 +32,10 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
+    - name: repo-dir
+      value: $(params.repo-dir)
+      description: Specifies the path for the repository or .cracveomit file
+      default: "/artifacts"
   workspaces:
     - name: artifacts
 
@@ -109,6 +113,8 @@ spec:
           value: $(params.project-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: repo-dir
+          value: $(params.repo-dir)
 
     - name: cra-cis-check
       taskRef:

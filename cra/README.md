@@ -306,6 +306,7 @@ This task finds out vulnerabilities for all application package dependencies, co
   - **project-id**: (Default: `""`) Required id for GitLab repositories
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
   - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
+  - **repo-dir**: (Default: `/artifacts`) Specifies the path to the repository or .cracveomit file
 
 #### Implicit
 The following inputs are coming from tekton annotation:
@@ -359,6 +360,8 @@ Example usage in a pipeline.
           value: $(params.project-id)    
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: repo-dir
+          value: $(params.repo-dir)
 ```
 
 ## cra-comm-editor
@@ -536,9 +539,3 @@ Example usage in a pipeline.
         - name: tf-var-file
           value: $(params.tf-var-file)
 ```
-
-
-
-
-
-
