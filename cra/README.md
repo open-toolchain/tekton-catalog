@@ -51,7 +51,7 @@ any add-on packages installed on top of base image(s).
   - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
   - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
   - **ibmcloud-apikey-secret-key**: (Default: `apikey`) field in the secret that contains the api key used to login to ibmcloud
-  -  **exclude-scopes**: (Default: `""`) Specifies which scopes to exclude dependencies in scanning. Example: `test,compile`
+  - **exclude-scopes**: (Default: `""`) Specifies which scopes to exclude dependencies in scanning. Example: `test,compile`
 
 ### Workspaces
 
