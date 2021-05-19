@@ -547,9 +547,3 @@ Example usage in a pipeline.
         - name: tf-var-file
           value: $(params.tf-var-file)
 ```
-
-
-
-
-
-
