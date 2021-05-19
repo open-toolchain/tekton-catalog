@@ -45,6 +45,10 @@ spec:
     - name: repo-dir
       description: Specifies the path for the repository or .cracveomit file
       default: "/artifacts"
+    - name: exclude-scopes
+      value: $(params.exclude-scopes)
+      description: (optional) Exclude the specified scope dependencies for the vulnerability scan
+      default: ""
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -110,3 +114,5 @@ spec:
             value: $(params.pr-branch)
           - name: repo-dir
             value: $(params.repo-dir)
+          - name: exclude-scopes
+            value: $(params.exclude-scopes)
