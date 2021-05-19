@@ -51,6 +51,7 @@ any add-on packages installed on top of base image(s).
   - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
   - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
   - **ibmcloud-apikey-secret-key**: (Default: `apikey`) field in the secret that contains the api key used to login to ibmcloud
+  -  **exclude-scopes**: (Default: `""`) Specifies which scopes to exclude dependencies in scanning. Example: `test,compile`
 
 ### Workspaces
 
@@ -100,6 +101,8 @@ Example usage in a pipeline.
           value: "secure-properties"
         - name: ibmcloud-apikey-secret-key
           value: "apikey"
+        - name: exclude-scopes
+          value: $(params.exclude-scopes)
 ```
 
 ## cra-bom
@@ -310,7 +313,6 @@ This task finds out vulnerabilities for all application package dependencies, co
   - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
   - **exclude-dev**: (Default: `false`) Specifies whether to exclude dev dependencies in scanning
   - **repo-dir**: (Default: `/artifacts`) Specifies the path to the repository or .cracveomit file
-  - **exclude-scopes**: (Default: `""`) Specifies which scopes to exclude dependencies in scanning
 
 #### Implicit
 The following inputs are coming from tekton annotation:
@@ -368,8 +370,6 @@ Example usage in a pipeline.
           value: $(params.exclude-dev)
         - name: repo-dir
           value: $(params.repo-dir)
-        - name: exclude-scopes
-          value: $(params.exclude-scopes)
 ```
 
 ## cra-comm-editor
