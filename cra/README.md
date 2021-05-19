@@ -1,3 +1,5 @@
+README
+
 # Code Risk Analyzer
 
 Tasks to scan your codebase using the Code Risk Analyzer scanners
@@ -306,6 +308,7 @@ This task finds out vulnerabilities for all application package dependencies, co
   - **project-id**: (Default: `""`) Required id for GitLab repositories
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
   - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
+  - **exclude-dev**: (Default: `false`) Specifies whether to exclude dev dependencies in scanning
   - **repo-dir**: (Default: `/artifacts`) Specifies the path to the repository or .cracveomit file
 
 #### Implicit
@@ -360,6 +363,8 @@ Example usage in a pipeline.
           value: $(params.project-id)    
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: exclude-dev
+          value: $(params.exclude-dev)
         - name: repo-dir
           value: $(params.repo-dir)
 ```

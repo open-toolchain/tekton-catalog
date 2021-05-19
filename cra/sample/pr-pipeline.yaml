@@ -45,6 +45,10 @@ spec:
       value: $(params.pr-repository)
     - name: pr-branch
       value: $(params.pr-branch)
+    - name: exclude-dev
+      value: $(params.exclude-dev)
+      description: (optional) Exclude dev dependencies during vulnerability scan
+      default: "false"
     - name: repo-dir
       value: $(params.repo-dir)
       description: Specifies the path for the repository or .cracveomit file
@@ -161,6 +165,8 @@ spec:
           value: $(params.project-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: exclude-dev
+          value: $(params.exclude-dev)
         - name: repo-dir
           value: $(params.repo-dir)
 

@@ -42,6 +42,9 @@ spec:
       description: The forked git repo from where the PR is made
     - name: pr-branch
       description: The branch in the forked git repo from where the PR is made
+    - name: exclude-dev
+      description: (optional) Exclude dev dependencies during vulnerability scan
+      default: "false"
     - name: repo-dir
       description: Specifies the path for the repository or .cracveomit file
       default: "/artifacts"
@@ -108,5 +111,7 @@ spec:
             value: $(params.pr-repository)
           - name: pr-branch
             value: $(params.pr-branch)
+          - name: exclude-dev
+            value: $(params.exclude-dev)
           - name: repo-dir
             value: $(params.repo-dir)
