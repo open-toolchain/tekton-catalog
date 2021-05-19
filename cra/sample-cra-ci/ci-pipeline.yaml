@@ -40,6 +40,10 @@ spec:
       value: $(params.repo-dir)
       description: Specifies the path for the repository or .cracveomit file
       default: "/artifacts"
+    - name: exclude-scopes
+      value: $(params.exclude-scopes)
+      description: (optional) Exclude the specified scope dependencies for the vulnerability scan
+      default: ""
   workspaces:
     - name: artifacts
 
@@ -93,6 +97,8 @@ spec:
           value: ""
         - name: commit-timestamp
           value: $(params.commit-timestamp)
+        - name: exclude-scopes
+          value: $(params.exclude-scopes)
 
     - name: cra-vulnerability-scan
       runAfter:
