@@ -32,9 +32,16 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
+    - name: exclude-dev
+      description: (optional) Exclude dev dependencies during vulnerability scan
+      default: "false"
     - name: repo-dir
       description: Specifies the path for the repository or .cracveomit file
       default: "/artifacts"
+    - name: exclude-scopes
+      value: $(params.exclude-scopes)
+      description: (optional) Exclude the specified scope dependencies for the vulnerability scan
+      default: ""
 
   resourcetemplates:
     - apiVersion: v1
@@ -87,5 +94,9 @@ spec:
             value: $(params.policy-config-json)
           - name: tf-var-file
             value: $(params.tf-var-file)
+          - name: exclude-dev
+            value: $(params.exclude-dev)
           - name: repo-dir
             value: $(params.repo-dir)
+          - name: exclude-scopes
+            value: $(params.exclude-scopes)
