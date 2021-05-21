@@ -32,18 +32,10 @@ spec:
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
-    - name: exclude-dev
-      value: $(params.exclude-dev)
-      description: (optional) Exclude dev dependencies during vulnerability scan
-      default: "false"
     - name: repo-dir
       value: $(params.repo-dir)
       description: Specifies the path for the repository or .cracveomit file
       default: "/artifacts"
-    - name: exclude-scopes
-      value: $(params.exclude-scopes)
-      description: (optional) Exclude the specified scope dependencies for the vulnerability scan
-      default: ""
   workspaces:
     - name: artifacts
 
@@ -97,8 +89,6 @@ spec:
           value: ""
         - name: commit-timestamp
           value: $(params.commit-timestamp)
-        - name: exclude-scopes
-          value: $(params.exclude-scopes)
 
     - name: cra-vulnerability-scan
       runAfter:
@@ -123,8 +113,6 @@ spec:
           value: $(params.project-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: exclude-dev
-          value: $(params.exclude-dev)
         - name: repo-dir
           value: $(params.repo-dir)
 
