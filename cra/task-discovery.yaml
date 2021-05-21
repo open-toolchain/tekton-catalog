@@ -30,6 +30,7 @@ spec:
       default: environment-properties
     - name: exclude-scopes
       description: Tag dependencies in scope as dev for the vulnerability scan
+      default: ""
 
   results:
     - name: status
