@@ -1,5 +1,3 @@
-README
-
 # Code Risk Analyzer
 
 Tasks to scan your codebase using the Code Risk Analyzer scanners
