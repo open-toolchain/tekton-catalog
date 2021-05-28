@@ -28,6 +28,9 @@ spec:
     - name: continuous-delivery-context-environment
       description: Name of the configmap containing the continuous delivery pipeline context environment properties
       default: environment-properties
+    - name: exclude-scopes
+      description: Tag dependencies in scope as dev for the vulnerability scan
+      default: ""
 
   results:
     - name: status
@@ -156,7 +159,8 @@ spec:
             -runid "${PIPELINE_RUN_ID}" \
             -commitid "$(params.commit-id)" \
             -commitTimestamp "$(params.commit-timestamp)" \
-            -toolchainid "${TOOLCHAIN_ID}"
+            -toolchainid "${TOOLCHAIN_ID}" \
+            -excludescopes "$(params.exclude-scopes)"
       volumeMounts:
         - mountPath: /config
           name: config-volume
