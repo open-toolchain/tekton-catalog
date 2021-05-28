@@ -46,7 +46,7 @@ spec:
       description: (optional) Enable CRA discovery to build the package-lock.json file for node.js repos
       default: "false"
     - name: python-create-requirements-txt
-      description: (optional) Enable CRA discovery to build the requirements.txt file for python repos 
+      description: (optional) Enable CRA discovery to build the requirements.txt file for python repos
       default: "false"
 
   resourcetemplates:
