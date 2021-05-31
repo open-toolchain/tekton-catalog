@@ -52,6 +52,12 @@ spec:
       value: $(params.exclude-scopes)
       description: (optional) Exclude the specified scope dependencies for the vulnerability scan
       default: ""
+    - name: nodejs-create-package-lock
+      description: (optional) Enable CRA discovery to build the package-lock.json file for node.js repos
+      default: "false"
+    - name: python-create-requirements-txt
+      description: (optional) Enable CRA discovery to build the requirements.txt file for python repos
+      default: "false"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -121,3 +127,7 @@ spec:
             value: $(params.repo-dir)
           - name: exclude-scopes
             value: $(params.exclude-scopes)
+          - name: nodejs-create-package-lock
+            value: $(params.nodejs-create-package-lock)
+          - name: python-create-requirements-txt
+            value: $(params.python-create-requirements-txt)

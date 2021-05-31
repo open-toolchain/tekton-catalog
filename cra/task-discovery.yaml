@@ -31,6 +31,12 @@ spec:
     - name: exclude-scopes
       description: Tag dependencies in scope as dev for the vulnerability scan
       default: ""
+    - name: nodejs-create-package-lock
+      description: Enable CRA discovery to build the package-lock.json file for node.js repos
+      default: "false"
+    - name: python-create-requirements-txt
+      description: Enable CRA discovery to build the requirements.txt file for python repos
+      default: "false"
 
   results:
     - name: status
@@ -51,7 +57,7 @@ spec:
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:release.1911
+      image: icr.io/continuous-delivery/cra-discovery:release.1944
       env:
         - name: API_KEY
           valueFrom:
@@ -160,6 +166,8 @@ spec:
             -commitid "$(params.commit-id)" \
             -commitTimestamp "$(params.commit-timestamp)" \
             -toolchainid "${TOOLCHAIN_ID}" \
+            -nodejs.createpackagelock="$(params.nodejs-create-package-lock)" \
+            -python.createrequirementstxt="$(params.python-create-requirements-txt)" \
             -excludescopes "$(params.exclude-scopes)"
       volumeMounts:
         - mountPath: /config
