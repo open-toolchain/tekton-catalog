@@ -165,7 +165,7 @@ spec:
             -target_commitid "$(params.target-commit-id)" \
             -target_branch "$(params.target-branch)" \
             -results_status "$(results.status.path)" \
-            -results_evidence "./gitsecure-cis-results.json" \
+            -results_evidence "./gitsecure-bom-results.json" \
             -toolchainid "${TOOLCHAIN_ID}" \
             -comment_md "./gitsecure-bom-comment.md"
 
