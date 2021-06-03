@@ -393,7 +393,7 @@ spec:
         - name: description
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
-          value: $(params.pipeline-debug) 
+          value: $(params.pipeline-debug)
 
     - name: cra-terraform-scan
       runAfter:
