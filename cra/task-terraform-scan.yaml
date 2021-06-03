@@ -28,7 +28,7 @@ spec:
       description: directory name where the repository is cloned
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-      default: "1"
+      default: "0"
     - name: policy-config-json
       description: Configure policies to control thresholds
       default: ""
@@ -90,13 +90,13 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |
-        
-          pwd
-          ls /artifacts/
-          env
-          trap env EXIT
-          set -x +e
-         
+          if [[ "$PIPELINE_DEBUG" == "1" ]]; then
+            pwd
+            ls /artifacts/
+            env
+            trap env EXIT
+            set -x +e
+          fi
 
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
           TOOLCHAIN_CONFIG=$(cat /config/toolchain.json)

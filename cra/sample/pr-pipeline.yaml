@@ -368,8 +368,36 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-          
+
+    - name: cra-terraform-scan-status-pending
+      when:
+        - input: "$(params.tf-dir)"
+          operator: notin
+          values: [""]
+      runAfter:
+        - cra-fetch-repo
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: cra-terraform-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug) 
+
     - name: cra-terraform-scan
+      runAfter:
+        - cra-terraform-scan-status-pending
       taskRef:
         name: cra-terraform-scan
       workspaces:
