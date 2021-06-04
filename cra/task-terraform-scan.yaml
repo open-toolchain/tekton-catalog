@@ -15,6 +15,7 @@ spec:
       default: master
     - name: commit-id
       description: git commit id
+      default: ""
     - name: tf-dir
       description: the directory where the terraform main entry file is found
       default: ""
