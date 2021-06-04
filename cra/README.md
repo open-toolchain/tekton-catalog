@@ -495,6 +495,7 @@ Currently supported compliance checks:
   - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
   - **policy-config-json**: (Default `""`) Configure policies thresholds
   - **pr-url**: The pull request url
+  - **commit-id**: The commit id of change
   - **project-id**: (Default: `""`) Required id for GitLab repositories
   - **scm-type**: (Default: `github-ent`) Source code type used (github, github-ent, gitlab)
   - **resource-group**: (Default: `""`) target resource group (name or id) for the ibmcloud login operation
@@ -536,6 +537,8 @@ Example usage in a pipeline.
           value: $(params.commit-id)
         - name: scm-type
           value: $(params.scm-type)
+        - name: commit-id
+          value: $(params.commit-id)
         - name: project-id
           value: $(params.project-id)
         - name: directory-name

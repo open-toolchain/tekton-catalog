@@ -412,6 +412,8 @@ spec:
           value: $(params.branch)
         - name: scm-type
           value: $(params.scm-type)
+        - name: commit-id
+          value: $(params.commit-id)
         - name: project-id
           value: $(params.project-id)
         - name: directory-name
