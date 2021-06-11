@@ -68,7 +68,7 @@ spec:
 
   steps:
     - name: bom
-      image: icr.io/continuous-delivery/cra-bom:release.1497
+      image: icr.io/continuous-delivery/cra-bom:release.2046
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -288,7 +288,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1260
+      image: icr.io/continuous-delivery/cra-comm-editor:main.2041
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
