@@ -63,7 +63,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: cis
-      image: icr.io/continuous-delivery/cra-cis:release.1639
+      image: icr.io/continuous-delivery/cra-cis:release.2044
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -274,7 +274,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:release.1519
+      image: icr.io/continuous-delivery/cra-comm-editor:release.2041
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]

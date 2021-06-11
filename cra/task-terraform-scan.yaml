@@ -72,7 +72,7 @@ spec:
         value: $(params.tf-var-file)
   steps:
     - name: terraform-compliance
-      image: icr.io/continuous-delivery/cra-terraform:release.1976
+      image: icr.io/continuous-delivery/cra-terraform:release.2010
       envFrom:
         - configMapRef:
             name: environment-properties
@@ -288,7 +288,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:release.1519
+      image: icr.io/continuous-delivery/cra-comm-editor:release.2041
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
