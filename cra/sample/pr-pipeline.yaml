@@ -57,6 +57,10 @@ spec:
       value: $(params.exclude-scopes)
       description: (optional) Exclude the specified scope dependencies for the vulnerability scan
       default: ""
+    - name: gradle-exclude-configs
+      value: $(params.gradle-exclude-configs)
+      description: (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan
+      default: ""
     - name: nodejs-create-package-lock
       value: $(params.nodejs-create-package-lock)
       description: (optional) Enable CRA discovery to build the package-lock.json file for node.js repos
@@ -127,6 +131,8 @@ spec:
           value: $(params.commit-timestamp)
         - name: exclude-scopes
           value: $(params.exclude-scopes)
+        - name: gradle-exclude-configs
+          value: $(params.gradle-exclude-configs)
         - name: nodejs-create-package-lock
           value: $(params.nodejs-create-package-lock)
         - name: python-create-requirements-txt
