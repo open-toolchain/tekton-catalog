@@ -171,7 +171,7 @@ spec:
             -toolchainid "${TOOLCHAIN_ID}" \
             -nodejs.createpackagelock="$(params.nodejs-create-package-lock)" \
             -python.createrequirementstxt="$(params.python-create-requirements-txt)" \
-            -excludescopes "$(params.exclude-scopes)"
+            -excludescopes "$(params.exclude-scopes)" \
             -excludeconfigurations "$(params.gradle-exclude-configs)"
       volumeMounts:
         - mountPath: /config
