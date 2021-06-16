@@ -60,7 +60,7 @@ spec:
 
   steps:
     - name: discovery
-      image: davidlopez0912/discovery-gradle:v1
+      image: icr.io/continuous-delivery/cra-discovery:release.2058
       env:
         - name: API_KEY
           valueFrom:
