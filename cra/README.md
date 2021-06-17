@@ -50,6 +50,7 @@ any add-on packages installed on top of base image(s).
   - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
   - **ibmcloud-apikey-secret-key**: (Default: `apikey`) field in the secret that contains the api key used to login to ibmcloud
   - **exclude-scopes**: (Default: `""`) Specifies which scopes to exclude dependencies in scanning. Example: `test,compile`
+  - **gradle-exclude-configs**: (Default: `""`) Specifies which gradle configurations to exclude dependencies in scanning. Example: `runtimeClasspath,testCompileClasspath`
   - **nodejs-create-package-lock**: (Default: `false`) Enable CRA discovery to build the package-lock.json file for node.js repos
   - **python-create-requirements-txt**: (Default: `false`) Enable CRA discovery to build the requirements.txt file for python repos 
 
@@ -103,6 +104,8 @@ Example usage in a pipeline.
           value: "apikey"
         - name: exclude-scopes
           value: $(params.exclude-scopes)
+        - name: gradle-exclude-configs
+          value: $(params.gradle-exclude-configs)
         - name: nodejs-create-package-lock
           value: $(params.nodejs-create-package-lock)
         - name: python-create-requirements-txt
