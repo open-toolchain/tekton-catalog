@@ -35,6 +35,8 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
   results:
     - name: shuttle-properties-file
       description: The properties file that will contains Docker Content Trust initialization information
@@ -95,7 +97,7 @@ spec:
         fi
 
         echo "ADD DOCKER"
-        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
+        source <(curl -sSL "$(params.commons-hosted-region)/image_signing/add_docker.sh")
 
         # Get the notary binary
         curl -L https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -o /usr/local/bin/notary
@@ -139,8 +141,9 @@ spec:
         fi
 
         export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/check_signers.sh")
-        source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
+        source <(curl -s -S -L "$(params.commons-hosted-region)/image_signing/check_signers.sh")
+        source <(curl -sSL "$(params.commons-hosted-region)/scripts/secrets_management.sh")
+        source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/signing_utilsv2.sh")
         if [ $(findTrustData "$GUN") == "false" ]; then
           echo "NO TRUST DATA FOUND"
           # Initialize the repository for Docker Content Trust
@@ -154,7 +157,7 @@ spec:
           fi
           echo "Doing Docker Content Trust initialization for GUN $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
 
-          source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/notary_init_gun.sh")
+          source <(curl -s -S -L "$(params.commons-hosted-region)/scripts/image_signing/notary_init_gun.sh")
 
           echo "Backing-up keys in $VAULT_INSTANCE"
           # jsonify the Vault access values
@@ -176,7 +179,7 @@ spec:
           # Restore root & repository keys
           echo "Restoring keys from $VAULT_INSTANCE"
           echo "Create signer $DEVOPS_SIGNER for $REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-          source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_signer.sh")
+          source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/add_signer.sh")
         done
 
         # Record task results
