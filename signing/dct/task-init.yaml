@@ -141,7 +141,7 @@ spec:
         fi
 
         export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
-        source <(curl -s -S -L "$(params.commons-hosted-region)/image_signing/check_signers.sh")
+        source <(curl -s -S -L "$(params.commons-hosted-region)/scripts/image_signing/check_signers.sh")
         source <(curl -sSL "$(params.commons-hosted-region)/scripts/secrets_management.sh")
         source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/signing_utilsv2.sh")
         if [ $(findTrustData "$GUN") == "false" ]; then
