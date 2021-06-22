@@ -97,7 +97,7 @@ spec:
         fi
 
         echo "ADD DOCKER"
-        source <(curl -sSL "$(params.commons-hosted-region)/image_signing/add_docker.sh")
+        source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/add_docker.sh")
 
         # Get the notary binary
         curl -L https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64 -o /usr/local/bin/notary
