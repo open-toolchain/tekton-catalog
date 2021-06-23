@@ -113,8 +113,8 @@ spec:
           # $IMAGE_TAG
           # $DEVOPS_SIGNER
           echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
-          source <(curl -sSL "$(params.commons-hosted-region)/scripts/secrets_management.sh")
-          source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/signing_utilsv2.sh")
+          export COMMONS_HOSTED_REGION=$(params.commons-hosted-region)
+          source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/signing_utils.sh")
           # Restore signer pem key
           VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "${VAULT_REGION:-$IBMCLOUD_TARGET_REGION}" "${VAULT_RESOURCE_GROUP:-$IBMCLOUD_TARGET_RESOURCE_GROUP}")
           JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"
