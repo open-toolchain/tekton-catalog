@@ -142,7 +142,7 @@ spec:
 
         export GUN="$REGISTRY_URL/$REGISTRY_NAMESPACE/$IMAGE_NAME"
         export COMMONS_HOSTED_REGION=$(params.commons-hosted-region)
-        source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/check_signer.sh")
+        source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/check_signers.sh")
         source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/signing_utils.sh")
         if [ $(findTrustData "$GUN") == "false" ]; then
           echo "NO TRUST DATA FOUND"
