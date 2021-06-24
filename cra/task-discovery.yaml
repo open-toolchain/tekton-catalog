@@ -28,7 +28,7 @@ spec:
     - name: continuous-delivery-context-environment
       description: Name of the configmap containing the continuous delivery pipeline context environment properties
       default: environment-properties
-    - name: exclude-scopes
+    - name: maven-exclude-scopes
       description: Tag dependencies in scope as dev for the vulnerability scan
       default: ""
     - name: gradle-exclude-configs
@@ -171,7 +171,7 @@ spec:
             -toolchainid "${TOOLCHAIN_ID}" \
             -nodejs.createpackagelock="$(params.nodejs-create-package-lock)" \
             -python.createrequirementstxt="$(params.python-create-requirements-txt)" \
-            -excludescopes "$(params.exclude-scopes)" \
+            -excludescopes "$(params.maven-exclude-scopes)" \
             -excludeconfigurations "$(params.gradle-exclude-configs)"
       volumeMounts:
         - mountPath: /config

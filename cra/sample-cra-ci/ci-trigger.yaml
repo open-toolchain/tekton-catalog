@@ -38,8 +38,8 @@ spec:
     - name: repo-dir
       description: Specifies the path for the repository or .cracveomit file
       default: "/artifacts"
-    - name: exclude-scopes
-      value: $(params.exclude-scopes)
+    - name: maven-exclude-scopes
+      value: $(params.maven-exclude-scopes)
       description: (optional) Exclude the specified scope dependencies for the vulnerability scan
       default: ""
     - name: gradle-exclude-configs
@@ -108,8 +108,8 @@ spec:
             value: $(params.exclude-dev)
           - name: repo-dir
             value: $(params.repo-dir)
-          - name: exclude-scopes
-            value: $(params.exclude-scopes)
+          - name: maven-exclude-scopes
+            value: $(params.maven-exclude-scopes)
           - name: gradle-exclude-configs
             value: $(params.gradle-exclude-configs)
           - name: nodejs-create-package-lock
