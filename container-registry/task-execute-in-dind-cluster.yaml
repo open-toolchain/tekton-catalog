@@ -59,12 +59,6 @@ spec:
     - name: docker-commands
       description: The docker command(s) to run.
       default: |
-
-        echo "** Here is some Continuous Delivery Tekon Pipeline support configuration properties:" >&2
-        ls -l /cd-config >&2
-        ls -l /cd-config/environment-properties >&2
-        ls -l /cd-config/secure-properties >&2
-
         # Default docker build / inspect / push command
         docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
         docker inspect ${IMAGE_URL}:${IMAGE_TAG}
