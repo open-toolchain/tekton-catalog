@@ -59,6 +59,12 @@ spec:
     - name: docker-commands
       description: The docker command(s) to run.
       default: |
+
+        echo "** Here is some Continuous Delivery Tekon Pipeline support configuration properties:" >&2
+        ls -l /cd-config >&2
+        ls -l /cd-config/environment-properties >&2
+        ls -l /cd-config/secure-properties >&2
+
         # Default docker build / inspect / push command
         docker build --tag "$IMAGE_URL:$IMAGE_TAG" --file $PATH_TO_DOCKERFILE/$DOCKERFILE $PATH_TO_CONTEXT
         docker inspect ${IMAGE_URL}:${IMAGE_TAG}
@@ -275,6 +281,12 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
+        - name: cd-config-volume
+          mountPath: /cd-config          
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   sidecars:
     - name: setup-docker-build-cluster
       image: ibmcom/pipeline-base-image:2.6
@@ -426,3 +438,9 @@ spec:
             path: check_registry.sh
           - key: parse_image_url.sh
             path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties
