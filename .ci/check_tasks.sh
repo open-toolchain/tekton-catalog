@@ -53,4 +53,4 @@ do
     fi
   fi
 done
-exit $exit_status
+#exit $exit_status
