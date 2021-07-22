@@ -271,6 +271,7 @@ spec:
                   set -e # reset on the last attempt so we fail if all attemps fail
               fi
               eval "$_clone_command"
+              _clone_code=$?
               let "_retry_counter++"
             else
               break
