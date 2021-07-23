@@ -49,3 +49,23 @@ spec:
           echo "Running custom script."
           $(params.custom-script)
         fi
+      volumeMounts:
+        - name: cd-config-volume
+          mountPath: /cd-config
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

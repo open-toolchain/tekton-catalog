@@ -18,6 +18,8 @@ spec:
       description: Name of space to deploy the CF app to
     - name: cf-app
       description: Name of the CF application to be deployed
+    - name: setup-script
+      description: script that typically set up environment before the _cf-commands_ script execution.
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -57,6 +59,8 @@ spec:
           value: $(params.cf-space)
         - name: cf-app
           value: $(params.cf-app)
+        - name: setup-script
+          value: $(params.setup-script)
         - name: cf-commands
           value: |
             #!/bin/bash

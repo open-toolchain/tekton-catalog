@@ -275,6 +275,12 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
+        - name: cd-config-volume
+          mountPath: /cd-config          
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   sidecars:
     - name: setup-docker-build-cluster
       image: ibmcom/pipeline-base-image:2.6
@@ -426,3 +432,9 @@ spec:
             path: check_registry.sh
           - key: parse_image_url.sh
             path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

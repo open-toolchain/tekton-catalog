@@ -285,6 +285,10 @@ spec:
           name: steps-volume
         - mountPath: /scripts
           name: check-registry-scripts
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   volumes:
     - name: steps-volume
       emptyDir: {}
@@ -302,3 +306,9 @@ spec:
             path: check_registry.sh
           - key: parse_image_url.sh
             path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

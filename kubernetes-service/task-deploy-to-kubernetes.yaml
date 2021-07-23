@@ -168,6 +168,10 @@ spec:
         - mountPath: /artifacts/_toolchain.json
           subPath: toolchain.json
           name: cd-config-volume
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   volumes:
     - name: steps-volume
       emptyDir: {}
@@ -177,3 +181,9 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

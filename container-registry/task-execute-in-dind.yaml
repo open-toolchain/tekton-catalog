@@ -317,6 +317,12 @@ spec:
           name: steps-volume
         - mountPath: /certs/client
           name: dind-certs
+        - name: cd-config-volume
+          mountPath: /cd-config          
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   sidecars:
     - image: icr.io/continuous-delivery/pipeline/docker:19.03.15-dind
       name: server
@@ -368,3 +374,9 @@ spec:
             path: check_registry.sh
           - key: parse_image_url.sh
             path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties
