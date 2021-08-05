@@ -98,7 +98,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: check-registry
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: /steps
       env:
         - name: API_KEY
@@ -283,7 +283,7 @@ spec:
           mountPath: /cd-config/secure-properties
   sidecars:
     - name: setup-docker-build-cluster
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: THE_POD_IP
           valueFrom:

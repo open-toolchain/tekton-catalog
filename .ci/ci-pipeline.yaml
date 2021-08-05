@@ -124,7 +124,7 @@ spec:
           - name: branch
         steps:
           - name: tekton-lint
-            image: ibmcom/pipeline-base-image:2.11
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.11
             workingDir: /artifacts
             script: |
               #!/bin/bash
@@ -186,7 +186,7 @@ spec:
           - name: branch
         steps:
           - name: check-tasks
-            image: ibmcom/pipeline-base-image:2.11
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.11
             workingDir: /artifacts
             script: |
               #!/bin/bash

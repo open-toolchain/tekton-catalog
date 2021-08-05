@@ -19,7 +19,7 @@ This task perform build operation on the given workspace. Default build operatio
 ### Parameters
 
 * **custom-script**: (optional) The script (commands) to run the build in run-build step. It will override the default commands. Default to ``.
-* **run-build-image**: (optional) The name of the image used for the run-build step. Default to `ibmcom/pipeline-base-image:2.6`
+* **run-build-image**: (optional) The name of the image used for the run-build step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
 ### Workspaces

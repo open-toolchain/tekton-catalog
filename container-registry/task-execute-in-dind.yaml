@@ -88,7 +88,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: check-registry
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: /steps
       env:
         - name: API_KEY

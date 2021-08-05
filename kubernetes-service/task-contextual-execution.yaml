@@ -30,7 +30,7 @@ spec:
       mountPath: /clusterconfig
   steps:
     - name: execute
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: $(workspaces.cluster-configuration.path)
       env:
         - name: PIPELINE_DEBUG
