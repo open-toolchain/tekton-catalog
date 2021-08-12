@@ -288,7 +288,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:release.2144
+      image: icr.io/continuous-delivery/cra-comm-editor:release.2264
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
