@@ -68,7 +68,7 @@ spec:
 
   steps:
     - name: bom
-      image: icr.io/continuous-delivery/cra-bom:release.1497
+      image: icr.io/continuous-delivery/cra-bom:release.2260
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -110,7 +110,7 @@ spec:
 
           echo "Fetching users's token"
           ibmcloud config --check-version false
-          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT --no-region --apikey $API_KEY
           export IBM_CLOUD_BEARER=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token' | awk '{ print $2 }')
 
           echo "Fetching service urls for user's data"
@@ -165,7 +165,7 @@ spec:
             -target_commitid "$(params.target-commit-id)" \
             -target_branch "$(params.target-branch)" \
             -results_status "$(results.status.path)" \
-            -results_evidence "./gitsecure-cis-results.json" \
+            -results_evidence "./gitsecure-bom-results.json" \
             -toolchainid "${TOOLCHAIN_ID}" \
             -comment_md "./gitsecure-bom-comment.md"
 
@@ -180,7 +180,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: fetch-git-information
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -242,7 +242,7 @@ spec:
             fi
             echo "Fetching token for $REPOSITORY"
             ibmcloud config --check-version false
-            sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+            sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT --no-region --apikey $API_KEY
             if [ "$(params.resource-group)" ]; then
               ibmcloud target -g $(params.resource-group)
             fi
@@ -288,7 +288,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:main.1260
+      image: icr.io/continuous-delivery/cra-comm-editor:release.2264
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]

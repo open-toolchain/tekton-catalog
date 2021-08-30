@@ -50,7 +50,7 @@ spec:
   steps:
     - name: post-to-slack
       # tbd: use an image with curl and jq?
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
@@ -197,6 +197,10 @@ spec:
           name: steps-volume
         - mountPath: /cd-config
           name: cd-config-volume
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   volumes:
     - name: steps-volume
       emptyDir: {}
@@ -206,3 +210,9 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

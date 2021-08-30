@@ -66,7 +66,7 @@ spec:
         Default to '' meaning no output of this information
       default: ""
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   results:
     - name: git-repository
@@ -93,7 +93,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: fetch-git-token
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -109,7 +109,6 @@ spec:
         fi
 
         TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
-        TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
         ##########################################################################
         # Setting HOME explicitly to have ibmcloud plugins available
         # doing the export rather than env definition is a workaround
@@ -147,7 +146,7 @@ spec:
         if [ -z "$GIT_TOKEN" ]; then
           echo "Fetching token for $REPOSITORY"
           ibmcloud config --check-version false
-          ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $API_KEY
+          ibmcloud login -a $(params.ibmcloud-api) --no-region --apikey $API_KEY
           if [ "$(params.resource-group)" ]; then
             ibmcloud target -g "$(params.resource-group)"
           fi
@@ -229,7 +228,9 @@ spec:
         source /steps/next-step-env.properties
 
         # If $BRANCH is a full git ref then only keep the name part
+        # this is using sh so do this in two steps
         BRANCH=$(echo ${BRANCH#"refs/heads/"})
+        BRANCH=$(echo ${BRANCH#"refs/tags/"})
 
         echo "Cloning $REPOSITORY"
         # Add the proper creds to the git repository
@@ -270,6 +271,7 @@ spec:
                   set -e # reset on the last attempt so we fail if all attemps fail
               fi
               eval "$_clone_command"
+              _clone_code=$?
               let "_retry_counter++"
             else
               break

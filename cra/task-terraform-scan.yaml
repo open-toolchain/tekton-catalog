@@ -10,9 +10,12 @@ spec:
       default: https://cloud.ibm.com
     - name: repository
       description: the git repo
-    - name: revision
-      description: the revision
+    - name: branch
+      description: the branch
       default: master
+    - name: commit-id
+      description: git commit id
+      default: ""
     - name: tf-dir
       description: the directory where the terraform main entry file is found
       default: ""
@@ -69,7 +72,7 @@ spec:
         value: $(params.tf-var-file)
   steps:
     - name: terraform-compliance
-      image: icr.io/continuous-delivery/cra-terraform:release.1607
+      image: icr.io/continuous-delivery/cra-terraform:release.2104
       envFrom:
         - configMapRef:
             name: environment-properties
@@ -93,7 +96,7 @@ spec:
             ls /artifacts/
             env
             trap env EXIT
-            set -x +e           
+            set -x +e
           fi
 
           REPO_DIR_PATH="/artifacts/$(params.directory-name)"
@@ -111,7 +114,7 @@ spec:
           fi
           echo "Fetching users's token"
           ibmcloud config --check-version false
-          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT --no-region --apikey $API_KEY
           export IBM_CLOUD_BEARER=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token' | awk '{ print $2 }')
           echo "Fetching service urls for user's data"
           HTTP_RESPONSE=$(curl --silent --write-out "HTTPSTATUS:%{http_code}" \
@@ -137,7 +140,7 @@ spec:
             exit 1
           fi
 
-          echo "Running terraform compliance task"                    
+          echo "Running terraform compliance task"
           if [[ $PIPELINE_DEBUG == 1 ]];
             then
               ls $REPO_DIR_PATH
@@ -145,23 +148,25 @@ spec:
           result="failed"
           LOG_LEVEL="info"
 
-          if [[ "$(params.policy-config-json)" == "" ]]; 
+          if [[ "$(params.policy-config-json)" == "" ]];
           then
-            node /usr/src/index.js --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
+            node /usr/src/index.js --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH \
+              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.branch) --commitid $(params.commit-id) --gitSecureApi $gitsecureUrl --pipelinerunid $PIPELINE_RUN_ID --toolchainid $TOOLCHAIN_ID --prnumber "NA" --authToken ${IBM_CLOUD_BEARER} --LOG_LEVEL $LOG_LEVEL --silent 1
           else
-            node /usr/src/index.js --policyConfig $(params.policy-config-json) --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH --INPUT_TF_DIR $(params.tf-dir) --revision $(params.revision) --commitid "NA" --pipelinerunid $PIPELINE_RUN_ID --prnumber "NA" --LOG_LEVEL $LOG_LEVEL --silent 1
+            node /usr/src/index.js --policyConfig $(params.policy-config-json) --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH \
+              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.branch) --commitid $(params.commit-id) --gitSecureApi $gitsecureUrl --pipelinerunid $PIPELINE_RUN_ID -toolchainid $TOOLCHAIN_ID --prnumber "NA" --authToken ${IBM_CLOUD_BEARER} --LOG_LEVEL $LOG_LEVEL --silent 1
           fi
 
-          if [ $? == 0 ]; then export result="success"; fi          
+          if [ $? == 0 ]; then export result="success"; fi
 
           if [[ $PIPELINE_DEBUG == 1 ]];
             then
               cat /usr/policies/ibm/terraform-config.rego
               echo $result
-              cat result.json
+              cat deploymant-analyzer.json
           fi
 
-          echo -n $result > "$(results.status.path)"                    
+          echo -n $result > "$(results.status.path)"
           echo -n "deploymant-analyzer.json" > $(results.evidence-store.path)
 
           cp ./da-terraform-check-comment.md /steps/da-terraform-check-comment.md
@@ -175,7 +180,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: fetch-git-information
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -237,7 +242,7 @@ spec:
             fi
             echo "Fetching token for $REPOSITORY"
             ibmcloud config --check-version false
-            sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+            sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT --no-region --apikey $API_KEY
             if [ "$(params.resource-group)" ]; then
               ibmcloud target -g $(params.resource-group)
             fi
@@ -283,7 +288,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: comment-editor
-      image: icr.io/continuous-delivery/cra-comm-editor:release.1519
+      image: icr.io/continuous-delivery/cra-comm-editor:release.2264
       imagePullPolicy: Always
       workingDir: "/artifacts"
       command: ["/bin/sh", "-c"]
@@ -332,7 +337,6 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
-
 
   workspaces:
     - name: artifacts

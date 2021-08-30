@@ -30,9 +30,11 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
   steps:
     - name: apply-image-enforcement-policy
-      image: ibmcom/pipeline-base-image:2.7
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.7
       env:
         - name: IBM_CLOUD_API_KEY
           valueFrom:
@@ -72,7 +74,7 @@ spec:
         export IBMCLOUD_TARGET_REGION=$(echo "$IBMCLOUD_TARGET_REGION" | awk -F ':' '{print $NF;}')
 
         ibmcloud config --check-version false
-        ibmcloud login -a $(params.ibmcloud-api) --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
+        ibmcloud login -a $(params.ibmcloud-api) --apikey "$IBM_CLOUD_API_KEY" --no-region
         ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
 
         ibmcloud ks cluster config --cluster "${TARGET_CLUSTER}"
@@ -83,7 +85,7 @@ spec:
         fi
 
         # Verify helm is up & running
-        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
+        source <(curl -s -S -L "$(params.commons-hosted-region)/scripts/check_helm_up_and_running.sh")
 
         # Install CISE
         if helm list cise | grep '^cise'; then
@@ -99,7 +101,7 @@ spec:
           export $(cut -d= -f1 $SHUTTLE_PROPERTIES_FILE)
         fi
 
-        source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/create_cise_crd.sh")
+        source <(curl -s -S -L "$(params.commons-hosted-region)/scripts/image_signing/create_cise_crd.sh")
 
         # Define custom user policies
         echo "Create CISE custom policies"

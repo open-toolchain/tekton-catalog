@@ -30,7 +30,7 @@ spec:
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   stepTemplate:
     env:
@@ -38,7 +38,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: evaluate-gate
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: IBM_CLOUD_API
           value: $(params.ibmcloud-api)

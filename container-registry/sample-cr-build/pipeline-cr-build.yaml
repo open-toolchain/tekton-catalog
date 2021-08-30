@@ -49,6 +49,10 @@ spec:
             source /artifacts/build.properties
             # The script is providing tag(s) as output
             # But logs can be written as error stderr
+            echo "** Here is some Continuous Delivery Tekon Pipeline support configuration properties:" >&2
+            ls -l /cd-config >&2
+            ls -l /cd-config/environment-properties >&2
+            ls -l /cd-config/secure-properties >&2
             echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with branch and commit
             echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"

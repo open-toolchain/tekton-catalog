@@ -43,9 +43,10 @@ spec:
       default: latest
     # Dockerfile location
     - name: path-to-context
+      description: the path to the context that is used for the build (default to `.` meaning current directory)
       default: .
     - name: path-to-dockerfile
-      description: the path to the Docker file
+      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -97,7 +98,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: check-registry
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: /steps
       env:
         - name: API_KEY
@@ -274,9 +275,15 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
+        - name: cd-config-volume
+          mountPath: /cd-config          
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   sidecars:
     - name: setup-docker-build-cluster
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: THE_POD_IP
           valueFrom:
@@ -425,3 +432,9 @@ spec:
             path: check_registry.sh
           - key: parse_image_url.sh
             path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

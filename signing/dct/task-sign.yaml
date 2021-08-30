@@ -34,9 +34,11 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
+    - name: commons-hosted-region
+      default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
   steps:
     - name: set-sign-context
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: IBM_CLOUD_API_KEY
           valueFrom:
@@ -75,7 +77,7 @@ spec:
           export VAULT_REGION=$(echo "$VAULT_REGION" | awk -F ':' '{print $NF;}')
 
           ibmcloud config --check-version false
-          ibmcloud login -a $(params.ibmcloud-api) --apikey "$IBM_CLOUD_API_KEY" -r "$VAULT_REGION"
+          ibmcloud login -a $(params.ibmcloud-api) --apikey "$IBM_CLOUD_API_KEY" --no-region
 
           if [ -z "$VAULT_RESOURCE_GROUP" ]; then
             echo "Using default resource group"
@@ -111,7 +113,8 @@ spec:
           # $IMAGE_TAG
           # $DEVOPS_SIGNER
           echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
-          source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
+          export COMMONS_HOSTED_REGION=$(params.commons-hosted-region)
+          source <(curl -sSL "$(params.commons-hosted-region)/scripts/image_signing/signing_utils.sh")
           # Restore signer pem key
           VAULT_DATA=$(buildVaultAccessDetailsJSON "$VAULT_INSTANCE" "${VAULT_REGION:-$IBMCLOUD_TARGET_REGION}" "${VAULT_RESOURCE_GROUP:-$IBMCLOUD_TARGET_RESOURCE_GROUP}")
           JSON_DATA="$(readData "$REGISTRY_NAMESPACE.keys" "$VAULT_DATA")"

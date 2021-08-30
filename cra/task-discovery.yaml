@@ -17,7 +17,7 @@ spec:
     - name: directory-name
       description: directory name where the repository is cloned
     - name: pipeline-debug
-      description: toggles debug mode for the pipeline
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
     - name: continuous-delivery-context-secret
       description: Reference name for the secret resource
@@ -28,6 +28,18 @@ spec:
     - name: continuous-delivery-context-environment
       description: Name of the configmap containing the continuous delivery pipeline context environment properties
       default: environment-properties
+    - name: maven-exclude-scopes
+      description: Tag dependencies in scope as dev for the vulnerability scan
+      default: ""
+    - name: gradle-exclude-configs
+      description: Tag dependencies in gradle configurations as dev for the vulnerability scan
+      default: ""
+    - name: nodejs-create-package-lock
+      description: Enable CRA discovery to build the package-lock.json file for node.js repos
+      default: "false"
+    - name: python-create-requirements-txt
+      description: Enable CRA discovery to build the requirements.txt file for python repos
+      default: "false"
 
   results:
     - name: status
@@ -35,12 +47,20 @@ spec:
 
   stepTemplate:
     env:
+      - name: PIPELINE_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
 
   steps:
     - name: discovery
-      image: icr.io/continuous-delivery/cra-discovery:release.1571
+      image: icr.io/continuous-delivery/cra-discovery:release.2258
       env:
         - name: API_KEY
           valueFrom:
@@ -50,7 +70,7 @@ spec:
               optional: true
         # The location of the client configuration files.
         - name: DOCKER_CONFIG
-          value: /artifacts      
+          value: /artifacts
 
       imagePullPolicy: Always
       workingDir: "/artifacts"
@@ -73,16 +93,22 @@ spec:
 
           API_ENDPOINT="https://cloud.ibm.com"
           OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.cloud.ibm.com"
+          PIPELINE_URL="https://cloud.ibm.com"
+          IAM_URL="https://iam.cloud.ibm.com"
           if echo "${REGION_ID}" | grep -q "ys1"; then
             OTC_BROKER_BASE_URL="https://otcbroker.devopsinsights.dev.cloud.ibm.com"
             API_ENDPOINT="https://test.cloud.ibm.com"
+            PIPELINE_URL="https://dev.console.test.cloud.ibm.com"
+            IAM_URL="https://iam.test.cloud.ibm.com"
             echo "targeting otc broker @ ${OTC_BROKER_BASE_URL}"
             echo "targeting ibm cloud @ ${API_ENDPOINT}"
           fi
 
+          PIPELINE_URL="${PIPELINE_URL}/devops/pipelines/tekton/${PIPELINE_ID}/runs/${PIPELINE_RUN_ID}?env_id=${REGION_ID}"
+
           echo "Fetching users's token"
           ibmcloud config --check-version false
-          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT -r $TOOLCHAIN_REGION --apikey $API_KEY
+          sh /scripts/retry.sh ibmcloud login -a $API_ENDPOINT --no-region --apikey $API_KEY
           export IBM_CLOUD_BEARER=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token' | awk '{ print $2 }')
 
           echo "Fetching service urls for user's data"
@@ -113,11 +139,11 @@ spec:
             exit 1
           fi
 
-          # create a dry-run k8s secret of type docker-registry to obtain 
+          # create a dry-run k8s secret of type docker-registry to obtain
           # the pull secrets for the base image used in the dockerfile
           # this is optional, but sometimes useful, for example when using
           # UBI images from RedHat
-           
+
           if [ -f "/properties/build-baseimage-auth-user" ] \
             && [ -f "/secrets/build-baseimage-auth-password" ] \
             && [ -f "/properties/build-baseimage-auth-host" ]; then
@@ -136,9 +162,17 @@ spec:
             -gitbranch "$(params.revision)" \
             -repodir $REPO_DIR_PATH  \
             -rigapi "${gitsecureUrl}" \
+            -region "${TOOLCHAIN_REGION}" \
+            -pipelineurl "${PIPELINE_URL}" \
+            -iamurl "${IAM_URL}" \
+            -runid "${PIPELINE_RUN_ID}" \
             -commitid "$(params.commit-id)" \
             -commitTimestamp "$(params.commit-timestamp)" \
-            -toolchainid "${TOOLCHAIN_ID}"
+            -toolchainid "${TOOLCHAIN_ID}" \
+            -nodejs.createpackagelock="$(params.nodejs-create-package-lock)" \
+            -python.createrequirementstxt="$(params.python-create-requirements-txt)" \
+            -excludescopes "$(params.maven-exclude-scopes)" \
+            -excludeconfigurations "$(params.gradle-exclude-configs)"
       volumeMounts:
         - mountPath: /config
           name: config-volume
@@ -147,10 +181,10 @@ spec:
         - mountPath: /properties
           name: environment-properties
         - mountPath: /secrets
-          name: secure-properties    
+          name: secure-properties
         - mountPath: /scripts
           name: retry-script
-  
+
   sidecars:
     - image: docker:19.03-dind
       name: server

@@ -1,0 +1,71 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: toolchain-build
+spec:
+  params:
+    - name: custom-script
+      description: The command(s) to run the build in run-build step. It will override the default commands
+      default: ""
+    - name: run-build-image
+      description: The name of the image used for the run-build step
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  workspaces:
+    - name: output
+      description: The git repo will be cloned onto the volume backing this workspace
+      mountPath: /artifacts
+  steps:
+    - name: run-build
+      image: $(params.run-build-image)
+      env:
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+        - name: CUSTOM_SCRIPT
+          value: $(params.custom-script)
+      workingDir: "/artifacts"
+      script: |
+        #!/bin/bash
+        set -e -o pipefail;
+
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
+
+        if [ -z "$CUSTOM_SCRIPT" ]; then
+          if [[ -n $(find /artifacts -name pom.xml) ]]; then
+            echo "Additional build required. Running Maven build."
+            mvn -B package
+          else
+            echo "No additional build script to be run."
+          fi
+        else
+          echo "Running custom script."
+          $(params.custom-script)
+        fi
+      volumeMounts:
+        - name: cd-config-volume
+          mountPath: /cd-config
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

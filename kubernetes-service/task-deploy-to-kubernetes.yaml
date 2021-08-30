@@ -18,25 +18,32 @@ spec:
       description: target resource group (name or id) for the ibmcloud login operation
       default: ""
     - name: cluster-region
-      description: |
-        (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+      description: the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
       default: ""
     - name: cluster-name
       description: name of the cluster - required if no cluster pipeline resource provided to this task
       default: ""
     - name: image-url
+      description: URL of an image that is relevant to the deployment action
       default: ""
     - name: shuttle-properties-file
+      description: name of the properties file that contain properties to include in the environment for the `cf-commands` snippet/script execution
       default: ""
     - name: setup-script
+      description: script that typically set up environment before the _deployment_ script execution.
       default: ""
     - name: script
+      description: _deployment_ script to be executed
       default: ""
     - name: post-execution-script
+      description: script that get executed after the _deployment_ script has been executed.
       default: ""
     - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   results:
+    - name: app-url
+      description: The running application's URL (obtained from APP_URL variable set by the executed script)
     - name: cluster-name
       description: The cluster name
     - name: cluster-id
@@ -53,7 +60,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: execute
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: /artifacts
       env:
         - name: BUILD_NUMBER
@@ -147,6 +154,7 @@ spec:
         $(params.post-execution-script)
 
         # Record task results
+        echo -n "$APP_URL" > $(results.app-url.path)
         echo -n "$(cat /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json | jq -r '.name')" > $(results.cluster-name.path)
         echo -n "$(cat /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json | jq -r '.id')" > $(results.cluster-id.path)
         echo -n "$(cat /steps/$PIPELINE_KUBERNETES_CLUSTER_NAME.json | jq -r '.resourceGroupName')" > $(results.resource-group-name.path)
@@ -160,6 +168,10 @@ spec:
         - mountPath: /artifacts/_toolchain.json
           subPath: toolchain.json
           name: cd-config-volume
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   volumes:
     - name: steps-volume
       emptyDir: {}
@@ -169,3 +181,9 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

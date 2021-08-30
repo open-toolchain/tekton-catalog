@@ -37,6 +37,7 @@ spec:
       description: directory in the workspace that will be used to store the cluster and worker nodes export json files
       default: ""
     - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   resources:
     inputs:
@@ -64,7 +65,7 @@ spec:
       mountPath: /clusterconfig
   steps:
     - name: setup
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: /clusterconfig
       env:
         - name: API_KEY

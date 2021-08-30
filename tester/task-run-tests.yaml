@@ -12,11 +12,13 @@ spec:
       description: name of the configmap containing values for the task
       default: environment-properties
     - name: tests-image
-      default: "ibmcom/pipeline-base-image:latest"
+      description: Container image to be used for _tests_ script execution. Default to "icr.io/continuous-delivery/pipeline/pipeline-base-image:latest"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:latest"
     - name: shuttle-properties-file
       description: file containing properties
       default: ""
     - name: tests-script
+      description: _tests_ script to be executed
       default: ""
     - name: fail-on-test-errors
       description: |
