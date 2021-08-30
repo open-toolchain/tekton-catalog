@@ -60,7 +60,7 @@ spec:
 
   steps:
     - name: discovery
-      image: us.icr.io/devops_insights_dra_dev/cra-discovery:main.2318
+      image: icr.io/continuous-delivery/cra-discovery:release.2320
       env:
         - name: API_KEY
           valueFrom:
