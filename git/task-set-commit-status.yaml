@@ -42,6 +42,7 @@ spec:
     - name: state
       description: |
         The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled`
+        or the execution status of pipelineTask: `Succeeded`, `Failed`, and `None` - see https://github.com/tektoncd/pipeline/blob/master/docs/pipelines.md#using-execution-status-of-pipelinetask
         or a value meaningful for the target git repository
         - gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled`
         - github/integrated github: `pending`, `success`, `failure`, `error`
@@ -56,8 +57,13 @@ spec:
       description: |
         file containing properties out of clone task (can be a filepath name relative to the workspace/volume)
       default: build.properties
+    - name: target-url
+      description: |
+        (optional) a url to set as the status detail link for the PR.
+        If left empty, the status detail link will point to the pipeline run.
+      default: ""
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   workspaces:
     - name: artifacts
@@ -71,7 +77,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: fetch-git-information
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -130,9 +136,9 @@ spec:
           if [ -z "$GIT_TOKEN" ]; then
             echo "Fetching token for $REPOSITORY"
             ibmcloud config --check-version false
-            ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $API_KEY
+            ibmcloud login -a $(params.ibmcloud-api) --no-region --apikey $API_KEY
             if [ "$(params.resource-group)" ]; then
-              ibmcloud target -g $(params.resource-group)
+              ibmcloud target -g "$(params.resource-group)"
             fi
             TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
             GIT_TOKEN_URL=$(jq -r --arg git_repo "$REPOSITORY" \
@@ -240,6 +246,14 @@ spec:
           print("Looking for state in $(params.build-properties)")
           state = build["$(params.state-var)"]
 
+        # If state is one of PipelineRun Taks execution status convert it to a generic state one
+        if state == "Succeeded":
+          state = "success"
+        elif state == "Failed":
+          state = "failed"
+        elif state == "None":
+          state = "pending"
+
         # Make the state value consistent to the git flavor
         # Generic state values are: pending, running, success, failed, canceled
         # Define mapping from generic to git flavor to put the appropriate value for git target
@@ -269,11 +283,14 @@ spec:
 
         context="$(params.context)"
 
-        # compute the target url of this pipeline run
-        target_url = ("https://cloud.ibm.com/devops/pipelines/tekton/" + os.environ["PIPELINE_ID"] +
-          "/runs/" + os.environ["PIPELINE_RUN_ID"] + "?env_id=ibm:yp:" + previous_step["TOOLCHAIN_REGION"])
+        if "$(params.target-url)" == "":
+          # compute the target url of this pipeline run
+          target_url = ("https://cloud.ibm.com/devops/pipelines/tekton/" + os.environ["PIPELINE_ID"] +
+            "/runs/" + os.environ["PIPELINE_RUN_ID"] + "?env_id=ibm:yp:" + previous_step["TOOLCHAIN_REGION"])
+        else:
+          target_url = "$(params.target-url)"
 
-        # Create the request object according to the Git Falvor API
+        # Create the request object according to the Git Flavor API
         if previous_step["GIT_ID"] == "gitlab" or previous_step["GIT_ID"] == "hostedgit" :
           status_url = (previous_step["GIT_API_ROOT_URL"]
             + "/v4/projects/" + previous_step["GIT_OWNER_ID"] + "%2F" + previous_step["GIT_REPO_NAME"]

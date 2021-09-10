@@ -22,7 +22,7 @@ spec:
       description: CF organization id (only required when deployable-type is `app`)
       default: ""
     - name: deployable-cf-org-name
-      description: | 
+      description: |
         CF organization name (only required when deployable-type is `app`).
         It will only be used for traceability event purpose. Default to `deployable-cf-org-id`
       default: ""
@@ -36,6 +36,9 @@ spec:
       default: ""
     - name: deployable-rg-id
       description: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
+      default: ""
+    - name: deployable-url
+      description: (optional) an URL that represent the deployable, e.g. the application's URL.
       default: ""
     - name: git-inputs
       description: |
@@ -59,12 +62,14 @@ spec:
       default: "0"
   steps:
     - name: publish-deployable-mapping
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: DEPLOYABLE_TYPE
           value: $(params.deployable-type)
         - name: DEPLOYABLE_GUID
           value: $(params.deployable-guid)
+        - name: DEPLOYABLE_URL
+          value: $(params.deployable-url)
         - name: REGION_ID
           value: $(params.deployable-region-id)
         - name: RESOURCE_GROUP_ID
@@ -115,7 +120,7 @@ spec:
         TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
 
         ibmcloud config --check-version false
-        ibmcloud login -a $(params.ibmcloud-api) -r $TOOLCHAIN_REGION --apikey $IBM_CLOUD_API_KEY
+        ibmcloud login -a $(params.ibmcloud-api) --no-region --apikey $IBM_CLOUD_API_KEY
         TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
 
         if [ $(echo "$REGION_ID" | grep -c ':' -) -ne 1 ]; then
@@ -145,6 +150,12 @@ spec:
         else
           echo "Deployable type $DEPLOYABLE_TYPE not expected"
           exit 1
+        fi
+
+        if [ ! -z "$DEPLOYABLE_URL" ]; then
+          cat deployable_mapping.json | jq --arg DEPLOYABLE_URL "${DEPLOYABLE_URL}" \
+            '.deployable.url=[$DEPLOYABLE_URL]' > tmp_deployable_mapping.json
+          mv -f tmp_deployable_mapping.json deployable_mapping.json
         fi
 
         cat deployable_mapping.json | jq --arg TC_ID "$TOOLCHAIN_ID" --arg REGION_ID "$TOOLCHAIN_REGION_ID" \
@@ -209,12 +220,12 @@ spec:
               timestamp=""
 
               cat deployable_mapping.json | jq --arg SI_ID "$input_service_instance_id" --arg REPO "$input_repository" \
-                --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
-                '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL | . as $element | $root | .experimental.inputs += [$element]' \
-                > tmp_deployable_mapping.json
+               --arg TS "$timestamp" --arg BRANCH "$input_branch" --arg REVISION_URL "$input_revision_url" \
+               '. as $root | {service_instance_id:$SI_ID} | .data={} | .data.repo_url=$REPO | .data.repo_branch=$BRANCH | .data.timestamp=$TS | .data.revision_url=$REVISION_URL | . as $element | $root | .experimental.inputs += [$element]' \
+               > tmp_deployable_mapping.json
               mv -f tmp_deployable_mapping.json deployable_mapping.json
             fi
-          done < <(printf '%s\n' "$GIT_INPUTS")          
+          done < <(printf '%s\n' "$GIT_INPUTS")
         fi
 
         if [ $IBM_CLOUD_API == "https://test.cloud.ibm.com" ]; then

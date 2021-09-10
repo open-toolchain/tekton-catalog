@@ -36,8 +36,10 @@ spec:
       description: image name. required if no image-url or no image pipeline resources provided
       default: ""
     - name: path-to-context
+      description: the path to the context that is used for the build (default to `.` meaning current directory)
       default: .
     - name: path-to-dockerfile
+      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -47,7 +49,7 @@ spec:
       default: ""
     - name: buildkit-image
       description: The name of the BuildKit image
-      default: "moby/buildkit:v0.6.3-rootless"
+      default: "moby/buildkit:v0.8.1"
     - name: additional-tags
       description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array
@@ -60,7 +62,7 @@ spec:
       description: file containing properties out of containerize task
       default: build.properties
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   results:
     - name: image-repository
@@ -85,7 +87,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: check-registry
-      image: ibmcom/pipeline-base-image:2.9
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.9
       workingDir: /steps
       env:
         - name: API_KEY
@@ -271,7 +273,7 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
-          buildctl-daemonless.sh build \
+          buildctl --addr tcp://0.0.0.0:1234 build \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
@@ -294,9 +296,15 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
+        - name: cd-config-volume
+          mountPath: /cd-config          
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
     - name: process-build-log
       # An image including only jq should be sufficient
-      image: ibmcom/pipeline-base-image:2.9
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.9
       workingDir: /steps
       env:
         - name: PROPERTIES_FILE
@@ -370,6 +378,25 @@ spec:
       volumeMounts:
         - mountPath: /steps
           name: steps-volume
+  sidecars:
+    - image: $(params.buildkit-image)
+      name: server
+      securityContext:
+        privileged: true
+        # Use a workaround to by pass virtio-fs for Continuous Delivery shared workers
+      command: ["sh", "-c"]
+      args:
+        - if [[ $(df -PT /var/lib/buildkit | awk 'NR==2 {print $2}') == virtiofs ]]; then
+           apk add e2fsprogs &&
+           truncate -s 20G /tmp/disk.img &&
+           mkfs.ext4 /tmp/disk.img &&
+           mount /tmp/disk.img /var/lib/buildkit; fi && buildkitd --addr tcp://0.0.0.0:1234;
+      # Wait for the buildkit daemon to have available workers.
+      readinessProbe:
+        initialDelaySeconds: 2
+        periodSeconds: 1
+        exec:
+          command: ["buildctl", "--addr", "tcp://0.0.0.0:1234", "debug", "workers"]
   volumes:
     - name: steps-volume
       emptyDir: {}
@@ -387,3 +414,9 @@ spec:
             path: check_registry.sh
           - key: parse_image_url.sh
             path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

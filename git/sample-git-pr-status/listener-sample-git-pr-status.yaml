@@ -1,0 +1,155 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: triggertemplate-git-pr-status
+spec:
+  params:
+    - name: git-access-token
+      description: the token to access the git repository for the clone operations
+    - name: repository
+      description: The git repo
+      default: " "
+    - name: branch
+      description: the branch for the git repo
+    - name: pr-repository
+      description: The source git repo for the PullRequest
+      default: " "
+    - name: pr-branch
+      description: The source branch for the PullRequest
+      default: " "
+    - name: pr-revision
+      description: the commit id/sha for the PullRequest
+      default: " "
+    - name: triggerName
+      default: "git-pr-process"
+    - name: pipeline-debug
+      default: "0"
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: $(params.triggerName)-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: $(params.triggerName)-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline-git-pr-status
+        params:
+          - name: git-access-token
+            value: $(params.git-access-token)
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: pr-branch
+            value: $(params.pr-branch)
+          - name: pr-revision
+            value: $(params.pr-revision)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: $(params.triggerName)-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: triggerbinding-git-pr-status-github-pr
+spec:
+  params:
+    - name: repository
+      value: "$(event.pull_request.base.repo.clone_url)"
+    - name: branch
+      value: "$(event.pull_request.base.ref)"
+    - name: pr-repository
+      value: "$(event.pull_request.head.repo.clone_url)"
+    - name: pr-branch
+      value: "$(event.pull_request.head.ref)"
+    - name: pr-revision
+      value: "$(event.pull_request.head.sha)"
+    - name: triggerName
+      value: "github-pullrequest"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: eventlistener-git-pr-status-github-pr
+spec:
+  triggers:
+    - binding:
+        name: triggerbinding-git-pr-status-github-pr
+      template:
+        name: triggertemplate-git-pr-status
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: triggerbinding-git-pr-status-grit-mr
+spec:
+  params:
+    - name: repository
+      value: "$(event.object_attributes.target.git_http_url)"
+    - name: branch
+      value: "$(event.object_attributes.target_branch)"
+    - name: pr-repository
+      value: "$(event.object_attributes.source.git_http_url)"
+    - name: pr-branch
+      value: "$(event.object_attributes.source_branch)"
+    - name: pr-revision
+      value: "$(event.object_attributes.last_commit.id)"
+    - name: triggerName
+      value: "grit-mergerequest"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: eventlistener-git-pr-status-grit-mr
+spec:
+  triggers:
+    - binding:
+        name: triggerbinding-git-pr-status-grit-mr
+      template:
+        name: triggertemplate-git-pr-status
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: triggerbinding-git-pr-status-bitbucket-pr
+spec:
+  params:
+    - name: repository
+      value: "$(event.pullrequest.destination.repository.links.html.href)"
+    - name: branch
+      value: "$(event.pullrequest.destination.branch.name)"
+    - name: pr-repository
+      value: "$(event.pullrequest.source.repository.links.html.href)"
+    - name: pr-branch
+      value: "$(event.pullrequest.source.branch.name)"
+    - name: pr-revision
+      value: "$(event.pullrequest.source.commit.hash)"
+    - name: triggerName
+      value: "bitbucket-pullrequest"
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: eventlistener-git-pr-status-bitbucket-pr
+spec:
+  triggers:
+    - binding:
+        name: triggerbinding-git-pr-status-bitbucket-pr
+      template:
+        name: triggertemplate-git-pr-status

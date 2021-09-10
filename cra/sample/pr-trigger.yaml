@@ -24,15 +24,44 @@ spec:
       default: "0"
     - name: pr-url
       description: PR url
-    - name: pr-number
-      description: PR number
-    - name: pr-name
-      description: PR name
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
     - name: project-id
       description: project id
       default: ""
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: tf-dir
+      description: the directory where the terraform main entry file is found
+    - name: policy-config-json
+      description: Configure policies to control thresholds
+    - name: tf-var-file
+      description: (optional) terraform var-file
+    - name: pr-repository
+      description: The forked git repo from where the PR is made
+    - name: pr-branch
+      description: The branch in the forked git repo from where the PR is made
+    - name: exclude-dev
+      description: (optional) Exclude dev dependencies during vulnerability scan
+      default: "false"
+    - name: repo-dir
+      description: Specifies the path for the repository or .cracveomit file
+      default: "/artifacts"
+    - name: maven-exclude-scopes
+      value: $(params.maven-exclude-scopes)
+      description: (optional) Exclude the specified scope dependencies for the vulnerability scan
+      default: ""
+    - name: gradle-exclude-configs
+      value: $(params.gradle-exclude-configs)
+      description: (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan
+      default: ""
+    - name: nodejs-create-package-lock
+      description: (optional) Enable CRA discovery to build the package-lock.json file for node.js repos
+      default: "false"
+    - name: python-create-requirements-txt
+      description: (optional) Enable CRA discovery to build the requirements.txt file for python repos
+      default: "false"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -55,7 +84,7 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: pullrequest-$(params.pr-number)-from-$(params.pr-name)-user
+        name: pipelinerun-$(uid)
       spec:
         pipelineRef:
           name: pr-pipeline
@@ -84,3 +113,27 @@ spec:
             value: $(params.scm-type)
           - name: project-id
             value: $(params.project-id)
+          - name: ibmcloud-api
+            value: $(params.ibmcloud-api)
+          - name: tf-dir
+            value: $(params.tf-dir)
+          - name: policy-config-json
+            value: $(params.policy-config-json)
+          - name: tf-var-file
+            value: $(params.tf-var-file)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: pr-branch
+            value: $(params.pr-branch)
+          - name: exclude-dev
+            value: $(params.exclude-dev)
+          - name: repo-dir
+            value: $(params.repo-dir)
+          - name: maven-exclude-scopes
+            value: $(params.maven-exclude-scopes)
+          - name: gradle-exclude-configs
+            value: $(params.gradle-exclude-configs)
+          - name: nodejs-create-package-lock
+            value: $(params.nodejs-create-package-lock)
+          - name: python-create-requirements-txt
+            value: $(params.python-create-requirements-txt)

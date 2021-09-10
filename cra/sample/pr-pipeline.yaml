@@ -29,6 +29,46 @@ spec:
       default: ""
     - name: scm-type
       description: source code type used (github, github-ent, gitlab)
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: tf-dir
+      description: the directory where the terraform main entry file is found
+      default: ""
+    - name: policy-config-json
+      description: Configure policies to control thresholds
+      default: ""
+    - name: tf-var-file
+      description: (optional) terraform var-file
+      default: ""
+    - name: pr-repository
+      value: $(params.pr-repository)
+    - name: pr-branch
+      value: $(params.pr-branch)
+    - name: exclude-dev
+      value: $(params.exclude-dev)
+      description: (optional) Exclude dev dependencies during vulnerability scan
+      default: "false"
+    - name: repo-dir
+      value: $(params.repo-dir)
+      description: Specifies the path for the repository or .cracveomit file
+      default: "/artifacts"
+    - name: maven-exclude-scopes
+      value: $(params.maven-exclude-scopes)
+      description: (optional) Exclude the specified scope dependencies for the vulnerability scan
+      default: ""
+    - name: gradle-exclude-configs
+      value: $(params.gradle-exclude-configs)
+      description: (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan
+      default: ""
+    - name: nodejs-create-package-lock
+      value: $(params.nodejs-create-package-lock)
+      description: (optional) Enable CRA discovery to build the package-lock.json file for node.js repos
+      default: "false"
+    - name: python-create-requirements-txt
+      value: $(params.python-create-requirements-txt)
+      description: (optional) Enable CRA discovery to build the requirements.txt file for python repos
+      default: "false"
   workspaces:
     - name: artifacts
 
@@ -58,9 +98,16 @@ spec:
           value: $(params.revision)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
       workspaces:
         - name: output
           workspace: artifacts
+
     - name: cra-discovery-scan
       runAfter:
         - cra-fetch-repo
@@ -71,9 +118,9 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
         - name: commit-id
           value: $(params.commit-id)
         - name: pipeline-debug
@@ -82,6 +129,14 @@ spec:
           value: ""
         - name: commit-timestamp
           value: $(params.commit-timestamp)
+        - name: maven-exclude-scopes
+          value: $(params.maven-exclude-scopes)
+        - name: gradle-exclude-configs
+          value: $(params.gradle-exclude-configs)
+        - name: nodejs-create-package-lock
+          value: $(params.nodejs-create-package-lock)
+        - name: python-create-requirements-txt
+          value: $(params.python-create-requirements-txt)
 
     - name: cra-vulnerability-scan-status-pending
       runAfter:
@@ -104,6 +159,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-vulnerability-scan
       runAfter:
@@ -119,7 +176,9 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
+        - name: source-repository
+          value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -130,6 +189,10 @@ spec:
           value: $(params.project-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: exclude-dev
+          value: $(params.exclude-dev)
+        - name: repo-dir
+          value: $(params.repo-dir)
 
     - name: cra-vulnerability-scan-status-finished
       runAfter:
@@ -152,6 +215,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-cis-set-status-pending
       runAfter:
@@ -174,6 +239,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-cis-check
       taskRef:
@@ -189,7 +256,9 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
+        - name: source-repository
+          value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -223,6 +292,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-bom-set-status-pending
       runAfter:
@@ -245,6 +316,8 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
 
     - name: cra-bom
       taskRef:
@@ -260,7 +333,9 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.branch)
+          value: $(params.pr-branch)
+        - name: source-repository
+          value: $(params.pr-repository)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -293,6 +368,90 @@ spec:
           value: "$(tasks.cra-bom.results.status)"
         - name: context
           value: cra-bom-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+
+    - name: cra-terraform-scan-status-pending
+      when:
+        - input: "$(params.tf-dir)"
+          operator: notin
+          values: [""]
+      runAfter:
+        - cra-fetch-repo
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: cra-terraform-scan
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: cra-terraform-scan
+      runAfter:
+        - cra-terraform-scan-status-pending
+      taskRef:
+        name: cra-terraform-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: branch
+          value: $(params.branch)
+        - name: scm-type
+          value: $(params.scm-type)
+        - name: commit-id
+          value: $(params.commit-id)
+        - name: project-id
+          value: $(params.project-id)
+        - name: directory-name
+          value: ""
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: tf-dir
+          value: $(params.tf-dir)
+        - name: policy-config-json
+          value: $(params.policy-config-json)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: tf-var-file
+          value: $(params.tf-var-file)
+
+    - name: cra-terraform-status-finished
+      runAfter:
+        - cra-terraform-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskRef:
+        name: git-set-commit-status
+      params:
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.commit-id)
+        - name: state
+          value: "$(tasks.cra-terraform-scan.results.status)"
+        - name: context
+          value: cra-terraform-scan
         - name: description
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug

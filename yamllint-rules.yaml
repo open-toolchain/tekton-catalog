@@ -1,0 +1,19 @@
+---
+extends: default
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+rules:
+  empty-lines:
+    max: 1
+  line-length:
+    max: 240
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+    level: warning
+  document-start:
+    present: true
+  trailing-spaces: enable
+  key-duplicates: enable
+  truthy:
+    level: error

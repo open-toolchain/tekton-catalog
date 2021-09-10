@@ -17,6 +17,7 @@ spec:
       description: the bash snippet to execute within the context of the kubernetes configuration
       default: "kubectl version"
     - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   resources:
     inputs:
@@ -29,7 +30,7 @@ spec:
       mountPath: /clusterconfig
   steps:
     - name: execute
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: $(workspaces.cluster-configuration.path)
       env:
         - name: PIPELINE_DEBUG
@@ -97,6 +98,10 @@ spec:
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   volumes:
     - name: cd-config-volume
       configMap:
@@ -104,3 +109,9 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

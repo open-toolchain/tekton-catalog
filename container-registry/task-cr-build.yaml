@@ -36,8 +36,10 @@ spec:
       description: image name. required if no image-url or no image pipeline resources provided
       default: ""
     - name: path-to-context
+      description: the path to the context that is used for the build (default to `.` meaning current directory)
       default: .
     - name: path-to-dockerfile
+      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -57,7 +59,7 @@ spec:
       description: file containing properties out of containerize task
       default: build.properties
     - name: pipeline-debug
-      description: Pipeline debug mode
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   results:
     - name: image-repository
@@ -78,7 +80,7 @@ spec:
         optional: true
   steps:
     - name: check-registry-and-build-image
-      image: ibmcom/pipeline-base-image:2.7
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.7
       workingDir: /artifacts
       env:
         - name: API_KEY
@@ -283,6 +285,10 @@ spec:
           name: steps-volume
         - mountPath: /scripts
           name: check-registry-scripts
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
   volumes:
     - name: steps-volume
       emptyDir: {}
@@ -300,3 +306,9 @@ spec:
             path: check_registry.sh
           - key: parse_image_url.sh
             path: parse_image_url.sh
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

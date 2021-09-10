@@ -48,6 +48,10 @@ spec:
             kubectl cluster-info
             echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
+            echo "** Here is some Continuous Delivery Tekon Pipeline support configuration properties:"
+            ls -l /cd-config
+            ls -l /cd-config/environment-properties
+            ls -l /cd-config/secure-properties
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:

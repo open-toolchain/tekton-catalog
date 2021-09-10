@@ -14,6 +14,9 @@ spec:
     - name: cf-org
     - name: cf-space
     - name: cf-app
+    - name: setup-script
+      description: script that typically set up environment before the _cf-commands_ script execution.
+      default: ""
     - name: pipeline-debug
       default: "0"
   resourcetemplates:
@@ -49,6 +52,8 @@ spec:
             value: $(params.cf-space)
           - name: cf-app
             value: $(params.cf-app)
+          - name: setup-script
+            value: $(params.setup-script)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:

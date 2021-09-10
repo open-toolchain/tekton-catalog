@@ -28,7 +28,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: extract-value-jq
-      image: ibmcom/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       env:
         - name: RAW
           value: $(params.raw)
