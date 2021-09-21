@@ -1,0 +1,33 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: github-pr-cra-listener
+spec:
+  triggers:
+    - bindings:
+        - name: github-pr-binding
+      template:
+        name: pr-template-cra
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: gitlab-pr-cra-listener
+spec:
+  triggers:
+    - bindings:
+        - name: gitlab-pr-binding
+      template:
+        name: pr-template-cra
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: github-ent-pr-cra-listener
+spec:
+  triggers:
+    - bindings:
+        - name: github-ent-pr-binding
+      template:
+        name: pr-template-cra

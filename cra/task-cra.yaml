@@ -1,0 +1,357 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: cra-v2-cra
+spec:
+  params:
+    # Common command params
+    - name: cra-latest-version
+      description: The latest version of the ibmcloud cra plugin
+      default: "0.0.7"
+    - name: custom-script
+      description: (Optional) A custom script to be ran prior to CRA scanning
+      default: ""
+    - name: env-props
+      description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
+      default: ""
+    - name: fileignore
+      description: (Optional) Filepath to .fileignore
+      default: ""
+    - name: output
+      description: (Optional) Prints command result to console
+      default: "false"
+    - name: path
+      description: Directory where the repository is cloned
+      default: "/artifacts"
+    - name: strict
+      description: (Optional) Enables strict mode for scanning
+      default: "false"
+    - name: toolchainid
+      description: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
+      default: ""
+    - name: verbose
+      description: (Optional) Enable verbose log messages
+      default: "false"
+
+    # BOM related parameters
+    - name: asset-type
+      description: Security checks to run (apps, image, os, all)
+      default: "all"
+    - name: bom-report
+      description: Filepath to store generated Bill of Materials
+      default: "bom.json"
+    - name: docker-build-flags
+      description: (Optional) Customize docker build command for build stage scanning
+      default: ""
+    - name: gradle-exclude-configs
+      description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
+      default: ""
+    - name: maven-exclude-scopes
+      description: (Optional) Exclude maven scopes, ex. 'test,compile'
+      default: ""
+    - name: nodejs-create-package-lock
+      description: (Optional) Enable the task to build the package-lock.json for node.js projects
+      default: "false"
+    - name: prev-report
+      description: (Optional) Filepath to previous BoM report to skip Dockerfile or application manifest scans
+      default: ""
+
+    # Deploy Analytic related params
+    - name: deploy-report
+      description: Filepath to store generated Deploy Analytic report
+      default: "deploy.json"
+
+    # Vulnerability related parameters
+    - name: cveignore
+      description: (Optional) File path to cveignore
+      default: ""
+    - name: exclude-dev
+      description: (Optional) Exclude dev dependencies during vulnerability scan
+      default: "false"
+    - name: vulnerability-report
+      description: Filename to store Vulnerability report, not stored if empty
+      default: "vulnerability.json"
+
+    # User control params
+    - name: cra-scan-image
+      description: Image to use for `scan` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+
+    # Pipeline related parameters
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1
+      default: "0"
+    - name: continuous-delivery-context-secret
+      description: Reference name for the secret resource
+      default: "secure-properties"
+    - name: ibmcloud-apikey-secret-key
+      description: Field in the secret that contains the api key used to login to ibmcloud
+      default: apikey
+    - name: continuous-delivery-context-environment
+      description: Name of the configmap containing the continuous delivery pipeline context environment properties
+      default: environment-properties
+    - name: ibmcloud-api
+      description: The ibmcloud api
+      default: "https://cloud.ibm.com"
+    - name: ibmcloud-region
+      description: (Optional) ibmcloud region to use
+      default: ""
+    - name: registry-region
+      description: (Optional) The ibmcloud container registry region
+      default: ""
+    - name: resource-group
+      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+      default: ""
+
+  stepTemplate:
+    env:
+      - name: PIPELINE_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+
+  steps:
+    - name: scan
+      image: $(params.cra-scan-image)
+      env:
+        - name: API
+          value: $(params.ibmcloud-api)
+        - name: ENV_PROPS
+          value: $(params.env-props)
+        - name: REGION
+          value: $(params.ibmcloud-region)
+        - name: SCRIPT_CONTENTS
+          value: $(params.custom-script)
+
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.ibmcloud-apikey-secret-key)
+              optional: true
+
+        # Docker client configuration
+        # Connect to the sidecar over TCP, with TLS.
+        - name: DOCKER_HOST
+          value: "tcp://localhost:2376"
+        # Verify TLS.
+        - name: DOCKER_TLS_VERIFY
+          value: "1"
+        # Use the certs generated by the sidecar daemon.
+        - name: DOCKER_CERT_PATH
+          value: /certs/client
+        # The location of the client configuration files.
+        - name: DOCKER_CONFIG
+          value: /steps
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+          if [ "$PIPELINE_DEBUG" = "1" ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x +e
+          fi
+
+          if [ -n "$ENV_PROPS" ]; then
+            echo "${ENV_PROPS}" > ./env-props
+            source ./env-props
+          fi
+
+          if [ -n "$SCRIPT_CONTENTS" ]; then
+            echo "${SCRIPT_CONTENTS}" > ./input-script.sh
+            source ./input-script.sh
+          fi
+
+          if [ -n "$REGION" ]; then
+            TOOLCHAIN_REGION=$REGION
+          else
+            TOOLCHAIN_REGION=$(cat /config/toolchain.json | jq -r '.region_id' | awk -F: '{print $3}')
+          fi
+
+          if [ -n "$(params.toolchainid)" ]; then
+            export TOOLCHAIN_ID=$(params.toolchainid)
+          else
+            export TOOLCHAIN_ID=$(cat /config/toolchain.json | jq -r '.toolchain_guid')
+          fi
+
+          echo -e "\nFetching users's token"
+          ibmcloud config --check-version false
+          ibmcloud login -a $API --no-region --apikey $API_KEY
+          SC=$?
+          if [ $SC -gt 0 ]; then
+            echo -e "Failed to login to ibmcloud"
+            exit 1
+          fi
+          echo -e "Successfully logged into ibmcloud\n"
+
+          # Install the CRA plugin if it is not installed
+          CRA_VER=`ibmcloud plugin list |grep cra | awk '{print $2}'`
+          if [ -z "$CRA_VER" ]; then
+            ibmcloud plugin install cra -f
+            STATUS=$?
+            if [ $STATUS -gt 0 ]; then
+              echo "Error installing CRA plugin. Exiting"
+              exit 1
+            fi
+          else
+            # If the version installed is not >= the recommended version, update it
+            if [ $CRA_VER != `echo "$CRA_VER\n$(params.cra-latest-version)" | sort -V | sed -n 2p` ]; then
+              ibmcloud plugin update cra -f
+              if [ $STATUS -gt 0 ]; then
+                echo "Error updating CRA plugin. Using version $CRA_VER"
+              fi
+            fi
+          fi
+          ibmcloud cr login
+
+          TARGET_CMD=(ibmcloud target -r $TOOLCHAIN_REGION)
+          if [ -n "$(params.resource-group)" ]; then
+            TARGET_CMD+=(-g $(params.resource-group))
+          fi
+          echo "${TARGET_CMD[@]}"
+          "${TARGET_CMD[@]}"
+
+          if [ -n "$(params.registry-region)" ]; then
+            echo -e "\nUpdating IBM Cloud Container Registry region"
+            ibmcloud cr region-set $(params.registry-region)
+          fi
+
+          echo -e "\n\nBeginning CRA discovery"
+          BOM_CMD=(ibmcloud cra bom-generate --path $(params.path) --report $(params.bom-report) --asset-type $(params.asset-type))
+          if [ -n "$(params.gradle-exclude-configs)" ]; then
+            BOM_CMD+=(--gradle.excludeconfigurations "$(params.gradle-exclude-configs)")
+          fi
+          if [ -n "$(params.maven-exclude-scopes)" ]; then
+            BOM_CMD+=(--maven.excludescopes "$(params.maven-exclude-scopes)")
+          fi
+          if [ "$(params.nodejs-create-package-lock)" == "true" ]; then
+            BOM_CMD+=(--nodejs.createpackagelock)
+          fi
+          if [ -n "$(params.prev-report)" ]; then
+            BOM_CMD+=(--prev-report $(params.prev-report))
+          fi
+          if [ "$(params.verbose)" == "true" ]; then
+            BOM_CMD+=(--verbose)
+          fi
+          if [ -n "$(params.docker-build-flags)" ]; then
+            BOM_CMD+=(--dockerbuildflags "$(params.docker-build-flags)")
+          fi
+          echo "${BOM_CMD[@]}"
+          "${BOM_CMD[@]}"
+          BOM_STATUS=$?
+
+          if [ "$(params.output)" == "true" ]; then
+            cat $(params.bom-report)
+          fi
+
+          echo -e "\n\nBeginning CRA vulnerability scan"
+          VULNERABILITY_CMD=(ibmcloud cra vulnerability-scan --bom $(params.bom-report) --report $(params.vulnerability-report))
+          if [ -n "$(params.cveignore)" ]; then
+            VULNERABILITY_CMD+=(--cveignore $(params.cveignore))
+          fi
+          if [ "$(params.exclude-dev)" == "true" ]; then
+            VULNERABILITY_CMD+=(--excludedev)
+          fi
+          if [ "$(params.strict)" == "true" ]; then
+            VULNERABILITY_CMD+=(--strict)
+          fi
+          echo "${VULNERABILITY_CMD[@]}"
+          "${VULNERABILITY_CMD[@]}"
+          VULNERABILITY_STATUS=$?
+
+          if [ "$(params.output)" == "true" ]; then
+            cat $(params.vulnerability-report)
+          fi
+
+          echo -e "\n\nBeginning CRA Deploy Analytic"
+          DEPLOY_CMD=(ibmcloud cra deployment-analyze --path $(params.path) --report $(params.deploy-report))
+          if [ -n "$(params.fileignore)" ]; then
+            DEPLOY_CMD+=(--fileignore $(params.fileignore))
+          fi
+          if [ "$(params.strict)" == "true" ]; then
+            DEPLOY_CMD+=(--strict)
+          fi
+          echo "${DEPLOY_CMD[@]}"
+          "${DEPLOY_CMD[@]}"
+          DEPLOY_STATUS=$?
+
+          if [ "$(params.output)" == "true" ]; then
+            cat $(params.deploy-report)
+          fi
+
+          if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS) -gt 0 ]; then
+            exit 1
+          fi
+      volumeMounts:
+        - mountPath: /config
+          name: config-volume
+        - mountPath: /properties
+          name: environment-properties
+        - mountPath: /secrets
+          name: secure-properties
+        - mountPath: /certs/client
+          name: dind-certs
+
+  sidecars:
+    - image: icr.io/continuous-delivery/pipeline/docker:19.03.15-dind
+      name: server
+      securityContext:
+        privileged: true
+      command: ["sh", "-c"]
+      env:
+        # Write generated certs to the path shared with the client.
+        - name: DOCKER_TLS_CERTDIR
+          value: /certs
+      args:
+        # Set the MTU to a value that is containable in the ibmcloud calico mtu value
+        # References:
+        # - https://liejuntao001.medium.com/fix-docker-in-docker-network-issue-in-kubernetes-cc18c229d9e5
+        # - https://cloud.ibm.com/docs/containers?topic=containers-kernel#calico-mtu
+        #
+        # Use a workaround to by pass virtio-fs for Continuous Delivery shared workers
+        - if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then
+            apk add e2fsprogs &&
+            truncate -s 20G /tmp/disk.img &&
+            mkfs.ext4 /tmp/disk.img &&
+            mount /tmp/disk.img /var/lib/docker; fi &&
+          dockerd-entrypoint.sh --mtu=1400;
+      volumeMounts:
+        - mountPath: /certs/client
+          name: dind-certs
+      # Wait for the dind daemon to generate the certs it will share with the client.
+      readinessProbe:
+        initialDelaySeconds: 2
+        periodSeconds: 1
+        exec:
+          command: ["ls", "/certs/client/ca.pem"]
+
+  workspaces:
+    - name: artifacts
+      mountPath: /artifacts
+
+  volumes:
+    - name: config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: dind-certs
+      emptyDir: {}
+    - name: environment-properties
+      configMap:
+        name: $(params.continuous-delivery-context-environment)
+    - name: secure-properties
+      secret:
+        secretName: $(params.continuous-delivery-context-secret)
