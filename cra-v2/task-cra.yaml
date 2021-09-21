@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: cra
+  name: cra-v2-cra
 spec:
   params:
     # Common command params

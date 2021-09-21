@@ -31,13 +31,14 @@ Click on Add tool button and then click on GitHub card.  Add the existing reposi
 - Click on the pipeline card so that you can configure the pipeline.
 - In this step, you will import Tekton task defintions into your toolchain. On the Definitions tab, click on Add button.  Select tekton-catalog repository.  Select branch `master`. Select path `toolchain` and click on Add button.  Similarly, add the following paths:  `git`,`utils`, `cra-v2` and `cra-v2/sample`.  Now click Validate button and then Save button.
 
-| Repository                | Branch | Path          |
-| ------------------------- | ------ | ------------- |
-| tekton-catalog	| master   | toolchain     |
-| tekton-catalog	| master   | git           |
-| tekton-catalog	| master   | utils         |
-| tekton-catalog	| master | cra-v2           |
-| tekton-catalog	| master | cra-v2/sample    |
+| Repository        | Branch | Path           |
+| ----------------- | ------ | -------------- |
+| tekton-catalog	| master | toolchain      |
+| tekton-catalog	| master | git            |
+| tekton-catalog	| master | utils          |
+| tekton-catalog	| master | cra/sample     |
+| tekton-catalog	| master | cra-v2         |
+| tekton-catalog	| master | cra-v2/sample  |
 
 
 - In this step, you will specify the Tekton worker pool for this pipeline. There is a managed worker pool that IBM provides for Dallas location - you can select that.  You can also choose to host a private worker pool.  See {HERE}.

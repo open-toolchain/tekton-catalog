@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: pr-template
+  name: pr-template-cra
 spec:
   params:
     - name: repository
@@ -125,7 +125,7 @@ spec:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-          name: pr-pipeline
+          name: pr-pipeline-cra
         workspaces:
           - name: artifacts
             persistentVolumeClaim:

@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: pr-pipeline
+  name: pr-pipeline-cra
 spec:
   params:
     - name: repository
@@ -119,7 +119,7 @@ spec:
       runAfter:
         - checkout
       taskRef:
-        name: cra
+        name: cra-v2-cra
       params:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
