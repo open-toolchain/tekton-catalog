@@ -6,9 +6,6 @@ metadata:
 spec:
   params:
     # Common command params
-    - name: cra-latest-version
-      description: The latest version of the ibmcloud cra plugin
-      default: "0.0.7"
     - name: custom-script
       description: (Optional) A custom script to be ran prior to CRA scanning
       default: ""
@@ -205,14 +202,12 @@ spec:
               exit 1
             fi
           else
-            # If the version installed is not >= the recommended version, update it
-            if [ $CRA_VER != `echo "$CRA_VER\n$(params.cra-latest-version)" | sort -V | sed -n 2p` ]; then
-              ibmcloud plugin update cra -f
-              if [ $STATUS -gt 0 ]; then
-                echo "Error updating CRA plugin. Using version $CRA_VER"
-              fi
+            ibmcloud plugin update cra -f
+            if [ $STATUS -gt 0 ]; then
+              echo "Error updating CRA plugin. Using version $CRA_VER"
             fi
           fi
+
           ibmcloud cr login
 
           TARGET_CMD=(ibmcloud target -r $TOOLCHAIN_REGION)
