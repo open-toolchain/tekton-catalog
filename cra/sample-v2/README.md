@@ -29,7 +29,7 @@ Click on Add tool button and then click on GitHub card.  Add the existing reposi
 ## Add and Configure a Tekton pipeline to your toolchain
 - In this step, you will add a Tekton pipeline to the toolchain. Click on Add tool button and then click on Delivery Pipeline card.  Specify a Pipeline Name. For Pipeline Type, select Tekton.  Click Create Integration.
 - Click on the pipeline card so that you can configure the pipeline.
-- In this step, you will import Tekton task defintions into your toolchain. On the Definitions tab, click on Add button.  Select tekton-catalog repository.  Select branch `master`. Select path `toolchain` and click on Add button.  Similarly, add the following paths:  `git`,`utils`, `cra-v2` and `cra-v2/sample`.  Now click Validate button and then Save button.
+- In this step, you will import Tekton task defintions into your toolchain. On the Definitions tab, click on Add button.  Select tekton-catalog repository.  Select branch `master`. Select path `toolchain` and click on Add button.  Similarly, add the following paths:  `git`,`utils`, `cra` and `cra-v2/sample`.  Now click Validate button and then Save button.
 
 | Repository        | Branch | Path           |
 | ----------------- | ------ | -------------- |
@@ -37,7 +37,6 @@ Click on Add tool button and then click on GitHub card.  Add the existing reposi
 | tekton-catalog	| master | git            |
 | tekton-catalog	| master | utils          |
 | tekton-catalog	| master | cra            |
-| tekton-catalog	| master | cra/sample     |
 | tekton-catalog	| master | cra/sample-v2  |
 
 
