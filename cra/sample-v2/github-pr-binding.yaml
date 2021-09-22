@@ -23,8 +23,6 @@ spec:
       value: $(event.pull_request.user.login)
     - name: repository
       value: $(event.repository.html_url)
-    - name: scm-type
-      value: "github"
     - name: pr-repository
       value: $(event.pull_request.head.repo.html_url)
     - name: pr-branch

@@ -23,8 +23,6 @@ spec:
       value: $(event.user.username)
     - name: project-id
       value: $(event.project.id)
-    - name: scm-type
-      value: "gitlab"
     - name: repository
       value: $(event.project.http_url)
     - name: pr-repository
