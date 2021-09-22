@@ -67,7 +67,7 @@ spec:
       description: (Optional) Exclude dev dependencies during vulnerability scan
       default: "false"
     - name: vulnerability-report
-      description: Filename to store Vulnerability report, not stored if empty
+      description: Filepath to store generated Vulnerability report, not stored if empty
       default: "vulnerability.json"
 
     # User control params

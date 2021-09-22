@@ -98,16 +98,16 @@ The following controls have been identified from CIS Docker 1.13.0 that we can i
   - **toolchainid**: The ibmcloud target toolchain to be used
   - **verbose**: (Optional) Enable verbose log messages
   - **asset-type**: (Default: `all`) Security checks to run (apps, image, os, all)
-  - **bom-report**: (Default: `bom.json`) Filepath to store generated Bill of Materials
+  - **bom-report**: (Default: `./bom.json`) Filepath to store generated Bill of Materials
   - **docker-build-flags**: (Optional) Customize docker build command for build stage scanning
   - **gradle-exclude-configs**: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
   - **maven-exclude-scopes**: (Optional) Exclude maven scopes, ex. 'test,compile'
   - **nodejs-create-package-lock**: (Default: `false`) Enable the task to build the package-lock.json for node.js projects
   - **prev-report**: (Optional) Filepath to previous BoM report to skip Dockerfile or application manifest scans
-  - **deploy-report**: (Default: `deploy.json`) Filepath to store generated Deploy Analytic report
+  - **deploy-report**: (Default: `./deploy.json`) Filepath to store generated Deploy Analytic report
   - **cveignore**: (Optional) File path to cveignore
   - **exclude-dev**: (Default: `false`) Exclude dev dependencies during vulnerability scan
-  - **vulnerability-report**: (Default: `vulnerability.json`) Filename to store generated Vulnerability report
+  - **vulnerability-report**: (Default: `./vulnerability.json`) Filepath to store generated Vulnerability report
   - *cra-scan-image***: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`) Image to use for `scan` task
 
 #### Implicit

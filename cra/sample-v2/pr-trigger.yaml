@@ -82,7 +82,7 @@ spec:
 
     # Deploy Analytic related params
     - name: deploy-report
-      description: Filepath to generated Deploy Analytic report
+      description: Filepath to store generated Deploy Analytic report
       default: "deploy.json"
 
     # Vulnerability related params
@@ -93,7 +93,7 @@ spec:
       description: (Optional) Exclude dev dependencies during vulnerability scan
       default: "false"
     - name: vulnerability-report
-      description: Filename to store Vulnerability report, not stored if empty
+      description: Filepath to store Vulnerability report, not stored if empty
       default: "vulnerability.json"
 
     # User control params

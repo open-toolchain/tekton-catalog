@@ -49,7 +49,7 @@ spec:
     - name: asset-type
       description: Security checks to run (apps, image, os, all)
     - name: bom-report
-      description: Filepath to store generated Bill of Materials. Default to `bom.json`
+      description: Filepath to store generated Bill of Materials. Default to `./bom.json`
     - name: docker-build-flags
       description: (Optional) Customize docker build command for build stage scanning
     - name: gradle-exclude-configs
@@ -63,7 +63,7 @@ spec:
 
     # Deploy Analytic related params
     - name: deploy-report
-      description: Filepath to generated Deploy Analytic report. Default to `deploy.json`
+      description: Filepath to store generated Deploy Analytic report. Default to `./deploy.json`
 
     # Vulnerability related params
     - name: cveignore
@@ -71,7 +71,7 @@ spec:
     - name: exclude-dev
       description: (Optional) Exclude dev dependencies during vulnerability scan
     - name: vulnerability-report
-      description: Filename to store Vulnerability report, not stored if empty. Default to `vulnerability.json`
+      description: Filepath to store Vulnerability report, not stored if empty. Default to `./vulnerability.json`
 
     # User control params
     - name: cra-scan-image
