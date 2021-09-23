@@ -1,4 +1,4 @@
-# Configuring Code Risk Analyzer v2 for Your Code Repositories - triggered on Pull Requests or commits push
+# Configuring Code Risk Analyzer v2 for Your Code Repositories - triggered on Pull Requests or commit push
 To configure Code Risk Analyzer for your repositories, you will need to take the following steps:
 - Create an empty Toolchain
 - Add DevOps Insights card to your Toolchain
