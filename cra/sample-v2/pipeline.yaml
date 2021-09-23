@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: pr-pipeline-cra
+  name: pipeline-cra
 spec:
   params:
     - name: ibmcloud-api

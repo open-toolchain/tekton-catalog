@@ -2,10 +2,10 @@
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: git-pr-listener
+  name: git-listener
 spec:
   triggers:
     - bindings:
-        - name: git-pr-binding
+        - name: git-binding
       template:
-        name: pr-template-cra
+        name: template-cra
