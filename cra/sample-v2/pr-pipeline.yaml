@@ -5,27 +5,30 @@ metadata:
   name: pr-pipeline-cra
 spec:
   params:
-    - name: repository
-      description: The git repo
-    - name: branch
-      description: The git branch
-    - name: revision
-      description: The git revision/commit for the git repo
-      default: ""
-    - name: pipeline-debug
-      description: Toggles debug mode for the pipeline
     - name: ibmcloud-api
       description: The ibmcloud api
     - name: ibmcloud-region
       description: (Optional) ibmcloud region to use
-    - name: pr-repository
-      value: $(params.pr-repository)
-    - name: pr-branch
-      value: $(params.pr-branch)
+    - name: pipeline-debug
+      description: Toggles debug mode for the pipeline
     - name: registry-region
       description: (Optional) The ibmcloud container registry region
     - name: resource-group
       description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+
+    # Event params
+    - name: branch
+      description: The git branch
+    - name: pr-branch
+      value: $(params.pr-branch)
+    - name: pr-repository
+      value: $(params.pr-repository)
+    - name: repository
+      description: The git repo
+
+    # Git clone params
+    - name: revision
+      description: The git revision/commit for the git repo
 
     # Common command related params
     - name: custom-script
@@ -34,6 +37,8 @@ spec:
       description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
     - name: fileignore
       description: (Optional) Filepath to .fileignore
+    - name: ibmcloud-trace
+      description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
     - name: output
       description: (Optional) Prints command result to console
     - name: path
@@ -52,6 +57,10 @@ spec:
       description: Filepath to store generated Bill of Materials. Default to `./bom.json`
     - name: docker-build-flags
       description: (Optional) Customize docker build command for build stage scanning
+    - name: docker-registry-url
+      description: Registry url to use for docker login
+    - name: docker-registry-username
+      description: Username to authenticate for docker-registry-url
     - name: gradle-exclude-configs
       description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
     - name: maven-exclude-scopes
@@ -93,24 +102,24 @@ spec:
       taskRef:
         name: git-clone-repo
       params:
-        - name: continuous-delivery-context-secret
-          value: "secure-properties"
-        - name: ibmcloud-apikey-secret-key
-          value: "apikey"
-        - name: repository
-          value: $(tasks.extract-repository-url.results.extracted-value)
         - name: branch
           value: $(params.branch)
-        - name: revision
-          value: $(params.revision)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
-        - name: pr-repository
-          value: $(params.pr-repository)
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
         - name: pr-branch
           value: $(params.pr-branch)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.revision)
       workspaces:
         - name: output
           workspace: artifacts
@@ -121,12 +130,12 @@ spec:
       taskRef:
         name: cra-v2-cra
       params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
         - name: ibmcloud-region
           value: $(params.ibmcloud-region)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
         - name: registry-region
           value: $(params.registry-region)
         - name: resource-group
@@ -137,6 +146,8 @@ spec:
           value: $(params.env-props)
         - name: fileignore
           value: $(params.fileignore)
+        - name: ibmcloud-trace
+          value: $(params.ibmcloud-trace)
         - name: output
           value: $(params.output)
         - name: path
@@ -151,16 +162,20 @@ spec:
           value: $(params.asset-type)
         - name: bom-report
           value: $(params.bom-report)
-        - name: prev-report
-          value: $(params.prev-report)
         - name: docker-build-flags
           value: $(params.docker-build-flags)
+        - name: docker-registry-url
+          value: $(params.docker-registry-url)
+        - name: docker-registry-username
+          value: $(params.docker-registry-username)
         - name: gradle-exclude-configs
           value: $(params.gradle-exclude-configs)
         - name: maven-exclude-scopes
           value: $(params.maven-exclude-scopes)
         - name: nodejs-create-package-lock
           value: $(params.nodejs-create-package-lock)
+        - name: prev-report
+          value: $(params.prev-report)
         - name: deploy-report
           value: $(params.deploy-report)
         - name: cveignore

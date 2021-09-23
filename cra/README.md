@@ -77,21 +77,19 @@ The following controls have been identified from CIS Docker 1.13.0 that we can i
 
 #### Parameters
 
+  - **continuous-delivery-context-environment**: (Default: `environment-properties`) Name of the configmap containing the continuous delivery pipeline context environment properties
   - **continuous-delivery-context-secret**: (Default: `secure-properties`) Reference name for the secret resource
-  - **ibmcloud-apikey-secret-key**: (Default: `apikey`) field in the secret that contains the api key used to login to ibmcloud
-  - **repository**: The full URL path to the repo with the deployment files to be scanned
-  - **branch**: (Default: `master`) The branch to scan
-  - **revision**: The git revision/commit for the git repo
-  - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
+  - **docker-registry-secret**: (Default: `docker-registry-secret`) Field in the secret that contains the secret used to login to docker-registry-url
   - **ibmcloud-api**: (Default: `https://cloud.ibm.com`) The ibmcloud api url
+  - **ibmcloud-apikey-secret-key**: (Default: `apikey`) field in the secret that contains the api key used to login to ibmcloud
   - **ibmcloud-region**: (Optional) The ibmcloud target region
-  - **pr-repository**: The forked git repo from where the PR is made
-  - **pr-branch**: The branch in the forked git repo from where the PR is made
+  - **pipeline-debug**: (Default: `0`) 1 = enable debug, 0 no debug
   - **registry-region**: (Optional) The ibmcloud container registry region
   - **resource-group**: (Optional) Target resource group (name or id) for the ibmcloud login operation
   - **custom-script**: (Optional) A custom script to be ran prior to CRA scanning
   - **env-props**: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
   - **fileignore**: (Optional) Filepath to .fileignore
+  - **ibmcloud-trace**: (Default: `false`) Enables IBMCLOUD_TRACE for ibmcloud cli logging
   - **output**: (Default: `false`) Prints command result to console
   - **path**: (Default: `/artifacts`) Directory where the repository is cloned
   - **strict**: (Optional) Enables strict mode for scanning
@@ -100,6 +98,8 @@ The following controls have been identified from CIS Docker 1.13.0 that we can i
   - **asset-type**: (Default: `all`) Security checks to run (apps, image, os, all)
   - **bom-report**: (Default: `./bom.json`) Filepath to store generated Bill of Materials
   - **docker-build-flags**: (Optional) Customize docker build command for build stage scanning
+  - **docker-registry-url**: (Optional) Registry url to use for docker login. Valid only if combined with `docker-registry-username` and `docker-registry-secret`
+  - **docker-registry-username**: (Optional) Username to authenticate for docker-registry-url. Valid only if combined with `docker-registry-url` and `docker-registry-secret`
   - **gradle-exclude-configs**: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
   - **maven-exclude-scopes**: (Optional) Exclude maven scopes, ex. 'test,compile'
   - **nodejs-create-package-lock**: (Default: `false`) Enable the task to build the package-lock.json for node.js projects
@@ -132,12 +132,12 @@ Example usage in a pipeline.
       taskRef:
         name: cra
       params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
         - name: ibmcloud-region
           value: $(params.ibmcloud-region)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
         - name: registry-region
           value: $(params.registry-region)
         - name: resource-group
@@ -148,6 +148,10 @@ Example usage in a pipeline.
           value: $(params.env-props)
         - name: fileignore
           value: $(params.fileignore)
+        - name: ibmcloud-trace
+          value: $(params.ibmcloud-trace)
+        - name: output
+          value: $(params.output)
         - name: path
           value: $(params.path)
         - name: strict
@@ -160,16 +164,20 @@ Example usage in a pipeline.
           value: $(params.asset-type)
         - name: bom-report
           value: $(params.bom-report)
-        - name: prev-report
-          value: $(params.prev-report)
         - name: docker-build-flags
           value: $(params.docker-build-flags)
+        - name: docker-registry-url
+          value: $(params.docker-registry-url)
+        - name: docker-registry-username
+          value: $(params.docker-registry-username)
         - name: gradle-exclude-configs
           value: $(params.gradle-exclude-configs)
         - name: maven-exclude-scopes
           value: $(params.maven-exclude-scopes)
         - name: nodejs-create-package-lock
           value: $(params.nodejs-create-package-lock)
+        - name: prev-report
+          value: $(params.prev-report)
         - name: deploy-report
           value: $(params.deploy-report)
         - name: cveignore

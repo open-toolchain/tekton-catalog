@@ -42,7 +42,7 @@ Click on Add tool button and then click on GitHub card.  Add the existing reposi
 
 - In this step, you will specify the Tekton worker pool for this pipeline. There is a managed worker pool that IBM provides for Dallas location - you can select that.  You can also choose to host a private worker pool.  See {HERE}.
 
-- In this step, you will set up a Trigger for you code repository.  Click on Triggers menu. Click Add trigger button and select Git Repository.  For Repository, select your code repository.  Select the branch for which you want to enable the trigger.  Click on the checkbox for When a pull request is opened or updated.  Select an EventListener.  For GitHub repos, select github-pr-listener.  For Git Repository and Issue Tracking repos, select gitlab-pr-listener.  Click Save button.  You can add a trigger for each repo for which you want to run Code Risk Advisor pipeline.
+- In this step, you will set up a Trigger for you code repository.  Click on Triggers menu. Click Add trigger button and select Git Repository.  For Repository, select your code repository.  Select the branch for which you want to enable the trigger.  Click on the checkbox for When a pull request is opened or updated.  Select an EventListener.  For GitHub repos, select github-pr-listener.  For Git Repository and Issue Tracking repos, select gitlab-pr-listener.  Click Save button.  You can add a trigger for each repo for which you want to run Code Risk Analyzer pipeline.
 
 - In this step, you will specify Environment Properties for your pipeline. Click on Environment properties tab. Click on Add button and then click on Secure. Specify Property Name apikey. Now specify the API Key that you generated earlier in the Value field.  Click on Save button.
 
