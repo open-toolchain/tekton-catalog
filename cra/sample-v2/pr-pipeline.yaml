@@ -1,0 +1,176 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pr-pipeline-cra
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: The git branch
+    - name: revision
+      description: The git revision/commit for the git repo
+      default: ""
+    - name: pipeline-debug
+      description: Toggles debug mode for the pipeline
+    - name: ibmcloud-api
+      description: The ibmcloud api
+    - name: ibmcloud-region
+      description: (Optional) ibmcloud region to use
+    - name: pr-repository
+      value: $(params.pr-repository)
+    - name: pr-branch
+      value: $(params.pr-branch)
+    - name: registry-region
+      description: (Optional) The ibmcloud container registry region
+    - name: resource-group
+      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+
+    # Common command related params
+    - name: custom-script
+      description: (Optional) A custom script to be ran prior to CRA scanning
+    - name: env-props
+      description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
+    - name: fileignore
+      description: (Optional) Filepath to .fileignore
+    - name: output
+      description: (Optional) Prints command result to console
+    - name: path
+      description: Repository path to scan
+    - name: strict
+      description: (Optional) Enables strict mode for scanning
+    - name: toolchainid
+      description: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
+    - name: verbose
+      description: (Optional) Enable verbose log messages
+
+    # BOM related params
+    - name: asset-type
+      description: Security checks to run (apps, image, os, all)
+    - name: bom-report
+      description: Filepath to store generated Bill of Materials. Default to `./bom.json`
+    - name: docker-build-flags
+      description: (Optional) Customize docker build command for build stage scanning
+    - name: gradle-exclude-configs
+      description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
+    - name: maven-exclude-scopes
+      description: (Optional) Exclude maven scopes, ex. 'test,compile'
+    - name: nodejs-create-package-lock
+      description: (Optional) Enable the task to build the package-lock.json for node.js projects
+    - name: prev-report
+      description: Filepath to previous BoM report to skip Dockerfile or application manifest scans
+
+    # Deploy Analytic related params
+    - name: deploy-report
+      description: Filepath to store generated Deploy Analytic report. Default to `./deploy.json`
+
+    # Vulnerability related params
+    - name: cveignore
+      description: (Optional) Filepath to cveignore
+    - name: exclude-dev
+      description: (Optional) Exclude dev dependencies during vulnerability scan
+    - name: vulnerability-report
+      description: Filepath to store Vulnerability report, not stored if empty. Default to `./vulnerability.json`
+
+    # User control params
+    - name: cra-scan-image
+      description: Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
+  workspaces:
+    - name: artifacts
+
+  tasks:
+    - name: extract-repository-url
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        - name: expression
+          # if a params.repository is given, it takes precedence
+          value: '. as $toolchain | ["$(params.repository)"] | if .[0]=="" then $toolchain | .services[] | select(.toolchain_binding.name=="repo") | .dashboard_url else .[0] end'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+    - name: checkout
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "apikey"
+        - name: repository
+          value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: pr-repository
+          value: $(params.pr-repository)
+        - name: pr-branch
+          value: $(params.pr-branch)
+      workspaces:
+        - name: output
+          workspace: artifacts
+
+    - name: code-risk-analyzer
+      runAfter:
+        - checkout
+      taskRef:
+        name: cra-v2-cra
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: ibmcloud-region
+          value: $(params.ibmcloud-region)
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: custom-script
+          value: $(params.custom-script)
+        - name: env-props
+          value: $(params.env-props)
+        - name: fileignore
+          value: $(params.fileignore)
+        - name: output
+          value: $(params.output)
+        - name: path
+          value: $(params.path)
+        - name: strict
+          value: $(params.strict)
+        - name: toolchainid
+          value: $(params.toolchainid)
+        - name: verbose
+          value: $(params.verbose)
+        - name: asset-type
+          value: $(params.asset-type)
+        - name: bom-report
+          value: $(params.bom-report)
+        - name: prev-report
+          value: $(params.prev-report)
+        - name: docker-build-flags
+          value: $(params.docker-build-flags)
+        - name: gradle-exclude-configs
+          value: $(params.gradle-exclude-configs)
+        - name: maven-exclude-scopes
+          value: $(params.maven-exclude-scopes)
+        - name: nodejs-create-package-lock
+          value: $(params.nodejs-create-package-lock)
+        - name: deploy-report
+          value: $(params.deploy-report)
+        - name: cveignore
+          value: $(params.cveignore)
+        - name: exclude-dev
+          value: $(params.exclude-dev)
+        - name: vulnerability-report
+          value: $(params.vulnerability-report)
+        - name: cra-scan-image
+          value: $(params.cra-scan-image)
+      workspaces:
+        - name: artifacts
+          workspace: artifacts

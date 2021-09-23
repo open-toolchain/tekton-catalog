@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cra-bom
+  labels:
+    tekton.dev/deprecated: true
 spec:
   params:
     - name: ibmcloud-api
