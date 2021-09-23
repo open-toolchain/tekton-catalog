@@ -19,16 +19,14 @@ spec:
     # Event params
     - name: branch
       description: The git branch
+    - name: commit-id
+      description: commit id
     - name: pr-branch
-      value: $(params.pr-branch)
+      description: The branch in the forked git repo from where the PR is made
     - name: pr-repository
-      value: $(params.pr-repository)
+      description: The forked git repo from where the PR is made
     - name: repository
       description: The git repo
-
-    # Git clone params
-    - name: revision
-      description: The git revision/commit for the git repo
 
     # Common command related params
     - name: custom-script
@@ -119,7 +117,7 @@ spec:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
         - name: revision
-          value: $(params.revision)
+          value: $(params.commit-id)
       workspaces:
         - name: output
           workspace: artifacts

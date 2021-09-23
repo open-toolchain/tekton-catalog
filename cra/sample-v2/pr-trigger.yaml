@@ -27,17 +27,17 @@ spec:
     - name: branch
       description: The git branch
       default: ""
+    - name: commit-id
+      description: commit id
+      default: ""
     - name: pr-branch
       description: The branch in the forked git repo from where the PR is made
+      default: ""
     - name: pr-repository
       description: The forked git repo from where the PR is made
+      default: ""
     - name: repository
       description: The git repo
-
-    # Git clone params
-    - name: revision
-      description: The git revision/commit for the git repo
-      default: ""
 
     # Common command related params
     - name: custom-script
@@ -163,14 +163,14 @@ spec:
             value: $(params.resource-group)
           - name: branch
             value: $(params.branch)
+          - name: commit-id
+            value: $(params.commit-id)
           - name: pr-branch
             value: $(params.pr-branch)
           - name: pr-repository
             value: $(params.pr-repository)
           - name: repository
             value: $(params.repository)
-          - name: revision
-            value: $(params.revision)
           - name: custom-script
             value: $(params.custom-script)
           - name: env-props

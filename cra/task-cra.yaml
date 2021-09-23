@@ -241,7 +241,9 @@ spec:
           fi
 
           if [ -n "$(params.docker-registry-url)" ] && [ -n "$(params.docker-registry-username)" ] && [ -n "$DOCKER_SECRET" ]; then
-            docker login -u $(params.docker-registry-username) -p $DOCKER_SECRET $(params.docker-registry-url)
+            echo $DOCKER_SECRET | docker login $(params.docker-registry-url) -username $(params.docker-registry-username) ---password-stdin
+          elif [ -n "$(params.docker-registry-url)" ] || [ -n "$(params.docker-registry-username)" ] || [ -n "$DOCKER_SECRET" ]; then
+            echo "Registry url, username, and secret are required. Continuing without authentication."
           fi
 
           if [ "$(params.ibmcloud-trace)" == "true" ]; then
