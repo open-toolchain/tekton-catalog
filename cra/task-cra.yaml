@@ -97,14 +97,6 @@ spec:
       description: Filepath to store generated Deploy Analytic report
       default: "deploy.json"
 
-    # Terraform related params
-    - name: tf-report
-      description: The tf-report
-      default: "tf-report.json"
-    - name: tf-plan
-      description: The tf-plan
-      default: ""
-
     # Vulnerability related parameters
     - name: cveignore
       description: (Optional) File path to cveignore
@@ -320,12 +312,6 @@ spec:
           if [ "$(params.output)" == "true" ]; then
             cat $(params.deploy-report)
           fi
-
-          echo -e "\n\nBeginning Terraform Analysis"
-          DEPLOY_CMD=(ibmcloud cra terraform-validate --report $(params.tf-report) --tf-plan $(params.tf-plan))
-          echo "${DEPLOY_CMD[@]}"
-          "${DEPLOY_CMD[@]}"
-          DEPLOY_STATUS=$?
 
           if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS) -gt 0 ]; then
             exit 1
