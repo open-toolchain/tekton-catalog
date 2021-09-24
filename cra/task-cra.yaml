@@ -5,6 +5,35 @@ metadata:
   name: cra-v2-cra
 spec:
   params:
+    # Pipeline related parameters
+    - name: continuous-delivery-context-environment
+      description: Name of the configmap containing the continuous delivery pipeline context environment properties
+      default: environment-properties
+    - name: continuous-delivery-context-secret
+      description: Reference name for the secret resource
+      default: "secure-properties"
+    - name: docker-registry-secret
+      description: Field in the secret that contains the secret used to login to docker-registry-url
+      default: docker-registry-secret
+    - name: ibmcloud-api
+      description: The ibmcloud api
+      default: "https://cloud.ibm.com"
+    - name: ibmcloud-apikey-secret-key
+      description: Field in the secret that contains the api key used to login to ibmcloud
+      default: apikey
+    - name: ibmcloud-region
+      description: (Optional) ibmcloud region to use
+      default: ""
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1
+      default: "0"
+    - name: registry-region
+      description: (Optional) The ibmcloud container registry region
+      default: ""
+    - name: resource-group
+      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+      default: ""
+
     # Common command params
     - name: custom-script
       description: (Optional) A custom script to be ran prior to CRA scanning
@@ -15,6 +44,9 @@ spec:
     - name: fileignore
       description: (Optional) Filepath to .fileignore
       default: ""
+    - name: ibmcloud-trace
+      description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
+      default: "false"
     - name: output
       description: (Optional) Prints command result to console
       default: "false"
@@ -41,6 +73,12 @@ spec:
     - name: docker-build-flags
       description: (Optional) Customize docker build command for build stage scanning
       default: ""
+    - name: docker-registry-url
+      description: Registry url to use for docker login
+      default: ""
+    - name: docker-registry-username
+      description: Username to authenticate for docker-registry-url
+      default: ""
     - name: gradle-exclude-configs
       description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
       default: ""
@@ -59,6 +97,14 @@ spec:
       description: Filepath to store generated Deploy Analytic report
       default: "deploy.json"
 
+    # Terraform related params
+    - name: tf-report
+      description: The tf-report
+      default: "tf-report.json"
+    - name: tf-plan
+      description: The tf-plan
+      default: ""
+
     # Vulnerability related parameters
     - name: cveignore
       description: (Optional) File path to cveignore
@@ -74,32 +120,6 @@ spec:
     - name: cra-scan-image
       description: Image to use for `scan` task
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
-
-    # Pipeline related parameters
-    - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1
-      default: "0"
-    - name: continuous-delivery-context-secret
-      description: Reference name for the secret resource
-      default: "secure-properties"
-    - name: ibmcloud-apikey-secret-key
-      description: Field in the secret that contains the api key used to login to ibmcloud
-      default: apikey
-    - name: continuous-delivery-context-environment
-      description: Name of the configmap containing the continuous delivery pipeline context environment properties
-      default: environment-properties
-    - name: ibmcloud-api
-      description: The ibmcloud api
-      default: "https://cloud.ibm.com"
-    - name: ibmcloud-region
-      description: (Optional) ibmcloud region to use
-      default: ""
-    - name: registry-region
-      description: (Optional) The ibmcloud container registry region
-      default: ""
-    - name: resource-group
-      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
-      default: ""
 
   stepTemplate:
     env:
@@ -132,6 +152,12 @@ spec:
             secretKeyRef:
               name: $(params.continuous-delivery-context-secret)
               key: $(params.ibmcloud-apikey-secret-key)
+              optional: true
+        - name: DOCKER_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.docker-registry-secret)
               optional: true
 
         # Docker client configuration
@@ -222,6 +248,16 @@ spec:
             ibmcloud cr region-set $(params.registry-region)
           fi
 
+          if [ -n "$(params.docker-registry-url)" ] && [ -n "$(params.docker-registry-username)" ] && [ -n "$DOCKER_SECRET" ]; then
+            echo $DOCKER_SECRET | docker login $(params.docker-registry-url) -username $(params.docker-registry-username) ---password-stdin
+          elif [ -n "$(params.docker-registry-url)" ] || [ -n "$(params.docker-registry-username)" ] || [ -n "$DOCKER_SECRET" ]; then
+            echo "Registry url, username, and secret are required. Continuing without authentication."
+          fi
+
+          if [ "$(params.ibmcloud-trace)" == "true" ]; then
+            export IBMCLOUD_TRACE=true
+          fi
+
           echo -e "\n\nBeginning CRA discovery"
           BOM_CMD=(ibmcloud cra bom-generate --path $(params.path) --report $(params.bom-report) --asset-type $(params.asset-type))
           if [ -n "$(params.gradle-exclude-configs)" ]; then
@@ -284,6 +320,12 @@ spec:
           if [ "$(params.output)" == "true" ]; then
             cat $(params.deploy-report)
           fi
+
+          echo -e "\n\nBeginning Terraform Analysis"
+          DEPLOY_CMD=(ibmcloud cra terraform-validate --report $(params.tf-report) --tf-plan $(params.tf-plan))
+          echo "${DEPLOY_CMD[@]}"
+          "${DEPLOY_CMD[@]}"
+          DEPLOY_STATUS=$?
 
           if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS) -gt 0 ]; then
             exit 1

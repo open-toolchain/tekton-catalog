@@ -2,34 +2,42 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: pr-template-cra
+  name: template-cra
 spec:
   params:
-    - name: repository
-      description: The git repo
-    - name: branch
-      description: The git branch
     - name: apikey
       description: The ibmcloud api key
-    - name: pipeline-debug
-      description: Toggles debug mode for the pipeline
-      default: "0"
     - name: ibmcloud-api
       description: The ibmcloud api
       default: "https://cloud.ibm.com"
     - name: ibmcloud-region
       description: (Optional) ibmcloud region to use
       default: ""
-    - name: pr-repository
-      description: The forked git repo from where the PR is made
-    - name: pr-branch
-      description: The branch in the forked git repo from where the PR is made
+    - name: pipeline-debug
+      description: Toggles debug mode for the pipeline
+      default: "0"
     - name: registry-region
       description: (Optional) The ibmcloud container registry region
       default: ""
     - name: resource-group
       description: (Optional) Target resource group (name or id) for the ibmcloud login operation
       default: ""
+
+    # Event params
+    - name: branch
+      description: The git branch
+      default: ""
+    - name: commit-id
+      description: commit id
+      default: ""
+    - name: pr-branch
+      description: The branch in the forked git repo from where the PR is made
+      default: ""
+    - name: pr-repository
+      description: The forked git repo from where the PR is made
+      default: ""
+    - name: repository
+      description: The git repo
 
     # Common command related params
     - name: custom-script
@@ -41,6 +49,9 @@ spec:
     - name: fileignore
       description: (Optional) Filepath to .fileignore
       default: ""
+    - name: ibmcloud-trace
+      description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
+      default: "false"
     - name: output
       description: (Optional) Prints command result to console
       default: "false"
@@ -67,6 +78,14 @@ spec:
     - name: docker-build-flags
       description: (Optional) Customize docker build command for build stage scanning
       default: ""
+    - name: docker-registry-secret
+      description: Secret to authenticate for docker-registry-url
+    - name: docker-registry-url
+      description: Registry url to use for docker login
+      default: ""
+    - name: docker-registry-username
+      description: Username to authenticate for docker-registry-url
+      default: ""
     - name: gradle-exclude-configs
       description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
       default: ""
@@ -84,6 +103,14 @@ spec:
     - name: deploy-report
       description: Filepath to store generated Deploy Analytic report
       default: "deploy.json"
+
+    # Terraform related params
+    - name: tf-report
+      description: The tf-report
+      default: "tf-report.json"
+    - name: tf-plan
+      description: The tf-plan
+      default: ""
 
     # Vulnerability related params
     - name: cveignore
@@ -119,42 +146,47 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.apikey)
+        DOCKER_SECRET: $(params.docker-registry-secret)
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-          name: pr-pipeline-cra
+          name: pipeline-cra
         workspaces:
           - name: artifacts
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
         params:
-          - name: repository
-            value: $(params.repository)
-          - name: branch
-            value: $(params.branch)
-          - name: pipeline-debug
-            value: $(params.pipeline-debug)
           - name: ibmcloud-api
             value: $(params.ibmcloud-api)
           - name: ibmcloud-region
             value: $(params.ibmcloud-region)
-          - name: pr-repository
-            value: $(params.pr-repository)
-          - name: pr-branch
-            value: $(params.pr-branch)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
           - name: registry-region
             value: $(params.registry-region)
           - name: resource-group
             value: $(params.resource-group)
+          - name: branch
+            value: $(params.branch)
+          - name: commit-id
+            value: $(params.commit-id)
+          - name: pr-branch
+            value: $(params.pr-branch)
+          - name: pr-repository
+            value: $(params.pr-repository)
+          - name: repository
+            value: $(params.repository)
           - name: custom-script
             value: $(params.custom-script)
           - name: env-props
             value: $(params.env-props)
           - name: fileignore
             value: $(params.fileignore)
+          - name: ibmcloud-trace
+            value: $(params.ibmcloud-trace)
           - name: output
             value: $(params.output)
           - name: path
@@ -169,16 +201,20 @@ spec:
             value: $(params.asset-type)
           - name: bom-report
             value: $(params.bom-report)
-          - name: prev-report
-            value: $(params.prev-report)
           - name: docker-build-flags
             value: $(params.docker-build-flags)
+          - name: docker-registry-url
+            value: $(params.docker-registry-url)
+          - name: docker-registry-username
+            value: $(params.docker-registry-username)
           - name: gradle-exclude-configs
             value: $(params.gradle-exclude-configs)
           - name: maven-exclude-scopes
             value: $(params.maven-exclude-scopes)
           - name: nodejs-create-package-lock
             value: $(params.nodejs-create-package-lock)
+          - name: prev-report
+            value: $(params.prev-report)
           - name: deploy-report
             value: $(params.deploy-report)
           - name: cveignore
@@ -187,5 +223,9 @@ spec:
             value: $(params.exclude-dev)
           - name: vulnerability-report
             value: $(params.vulnerability-report)
+          - name: tf-report
+            value: $(params.tf-report)
+          - name: tf-plan
+            value: $(params.tf-plan)
           - name: cra-scan-image
             value: $(params.cra-scan-image)
