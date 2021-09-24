@@ -104,6 +104,14 @@ spec:
       description: Filepath to store generated Deploy Analytic report
       default: "deploy.json"
 
+    # Terraform related params
+    - name: tf-report
+      description: The tf-report
+      default: "tf-report.json"
+    - name: tf-plan
+      description: The tf-plan
+      default: ""
+
     # Vulnerability related params
     - name: cveignore
       description: (Optional) Filepath to cveignore
@@ -215,5 +223,9 @@ spec:
             value: $(params.exclude-dev)
           - name: vulnerability-report
             value: $(params.vulnerability-report)
+          - name: tf-report
+            value: $(params.tf-report)
+          - name: tf-plan
+            value: $(params.tf-plan)
           - name: cra-scan-image
             value: $(params.cra-scan-image)
