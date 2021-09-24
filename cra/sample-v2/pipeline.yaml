@@ -191,9 +191,9 @@ spec:
         - name: vulnerability-report
           value: $(params.vulnerability-report)
         - name: tf-report
-            value: $(params.tf-report)
-          - name: tf-plan
-            value: $(params.tf-plan)
+          value: $(params.tf-report)
+        - name: tf-plan
+          value: $(params.tf-plan)
         - name: cra-scan-image
           value: $(params.cra-scan-image)
       workspaces:
