@@ -13,20 +13,19 @@ Tasks to scan your codebase using the Code Risk Analyzer scanners
 - **[cra-terraform-scan](#cra-terraform-scan)**: This task scans ibm-terraform-provider files for compliance issues.
 
 ## Install the Tasks
-- Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
 - Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `cra`
 
 ## Usages
 
-- The `sample` sub-directory contains a listener to configure on Pull Request (or Merge Request for Gitlab/GRIT) EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the CRA tasks.
+- The `sample` sub-directory contains an EventListener definition to configure on Pull Request (or Merge Request for Gitlab/GRIT) that you can include in your tekton pipeline configuration to run the CRA tasks.
 
   See the documentation [here](./sample/README.md)
 
-- The `sample-v2` sub-directory contains a listener to configure on Pull Request (or Merge Request for Gitlab/GRIT) EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the CRA tasks.
+- The `sample-v2` sub-directory contains an EventListener definition to configure on Pull Request (or Merge Request for Gitlab/GRIT), on commit push, or manually that you can include in your tekton pipeline configuration to run the CRA tasks.
 
   See the documentation [here](./sample-v2/README.md)
 
-- The `sample-cra-ci` sub-directory contains a listener to configure on commit pushed EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the CRA tasks.
+- The `sample-cra-ci` sub-directory contains an EventListener definition to configure on commit push that you can include in your tekton pipeline configuration to run the CRA tasks.
 
   See the documentation [here](./sample-cra-ci/README.md)
 

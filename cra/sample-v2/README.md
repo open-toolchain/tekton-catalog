@@ -42,14 +42,23 @@ Click on Add tool button and then click on GitHub card.  Add the existing reposi
 
 - In this step, you will specify the Tekton worker pool for this pipeline. There is a managed worker pool that IBM provides for Dallas location - you can select that.  You can also choose to host a private worker pool.
 
-- In this step, you will set up a Trigger for you code repository.  Click on Triggers menu. Click Add trigger button and select Git Repository.  For Repository, select your code repository.  Select the branch for which you want to enable the trigger.  Click on the checkbox for When a pull request is opened or updated.  Select an EventListener.  For GitHub repos, select github-pr-listener.  For Git Repository and Issue Tracking repos, select gitlab-pr-listener.  Click Save button.  You can add a trigger for each repo for which you want to run Code Risk Analyzer pipeline.
+- In this step, you will set up a Trigger for you code repository.  Click on Triggers menu. Click Add trigger button and select Git Repository.  For Repository, select your code repository.  Select the branch for which you want to enable the trigger.  Select the checkboxes for the events the trigger should listen for.  Select `git-listener` as the EventListener. Click Save button.  You can add a trigger for each repo for which you want to run Code Risk Analyzer pipeline. Configure your trigger by adding any trigger properties defined [here](../README.md).
 
 - In this step, you will specify Environment Properties for your pipeline. Click on Environment properties tab. Click on Add button and then click on Secure. Specify Property Name apikey. Now specify the API Key that you generated earlier in the Value field.  Click on Save button.
 
 # Scanning your Pull Requests
 After the above set up is complete, follow these steps:
-- Open a Pull Request for your repository
+- Open a Pull Request or push a commit to your repository
 - The Code Risk Analyzer pipeline that you configured above will start running automatically. 
 - The pipeline first discovers the dependencies that your repository has.  These dependencies could be application packages, container images or OS pacakges. 
 - The pipeline then identifies vulnerabilities associated with these dependencies.
 - The pipeline then scans Dockerfiles and Kubernetes yaml files for best practices.
+
+# Manual scanning
+You can set up a trigger to be ran manually. The following additional parameters are supported for manual triggers.
+
+#### Parameters
+
+  - **repository**: (Required) The git repository url to be cloned. Will use default branch if defined alone. ex. `https://github.example.com/example-org/example-repo`
+  - **branch**: (Optional) The branch to clone.
+  - **commit-id**: (Optional) The commit to use for cloning.
