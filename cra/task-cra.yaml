@@ -349,14 +349,14 @@ spec:
             fi 
 
             TERRAFORM_CMD=(ibmcloud cra tf --tf-plan TF_PLAN --report $(params.terraform-report))
-            if [ -n "$(params.verbose)" == "true" ]; then
+            if [ "$(params.verbose)" == "true" ]; then
               TERRAFORM_CMD+=(--verbose)
             fi
             if [ "$(params.strict)" == "true" ]; then
               TERRAFORM_CMD+=(--strict)
             fi
             if [ "$(params.tf-policy-file)" ]; then
-              TERRAFORM_CMD+=(--policy-file $(params.tf-policy-file)")
+              TERRAFORM_CMD+=(--policy-file $(params.tf-policy-file))
             fi
             echo "${TERRAFORM_CMD[@]}"
             "${TERRAFORM_CMD[@]}"
