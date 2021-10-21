@@ -331,9 +331,15 @@ spec:
 
 
           if [ "$(params.tf-dir)" ]; then
-
+            wget --quiet https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip \
+            unzip terraform_1.0.0_linux_amd64.zip \
+            mv terraform /usr/bin \
+            rm terraform_1.0.0_linux_amd64.zip
+            
             cd $(params.path)
             echo -e "\n\nBeginning CRA Terraform Analyzer"
+
+
 
             cd $(params.tf-dir)
             TF_PLAN=$(params.tf-plan)
@@ -342,13 +348,13 @@ spec:
               TF_PLAN="terraformPlanCLI.json"
 
               if [ "$(params.tf-var-file)" ]; then
-                terraform plan -out=TF_PLAN -var-file=$(params.tf-var-file)
+                terraform plan -out=$TF_PLAN -var-file=$(params.tf-var-file)
               else
-                terraform plan -out=TF_PLAN
+                terraform plan -out=$TF_PLAN
               fi
             fi 
 
-            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan TF_PLAN --report $(params.terraform-report))
+            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $TF_PLAN --report $(params.terraform-report))
             if [ "$(params.verbose)" == "true" ]; then
               TERRAFORM_CMD+=(--verbose)
             fi
