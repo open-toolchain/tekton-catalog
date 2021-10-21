@@ -329,7 +329,8 @@ spec:
             cat $(params.deploy-report)
           fi
 
-          if [ "$(params.tf-dir)"]; then
+
+          if [ "$(params.tf-dir)" ]; then
 
             cd $(params.path)
             echo -e "\n\nBeginning CRA Terraform Analyzer"
@@ -337,10 +338,10 @@ spec:
             cd $(params.tf-dir)
             TF_PLAN=$(params.tf-plan)
 
-            if ! [ "$(params.tf-plan)"]; then
+            if ! [ "$(params.tf-plan)" ]; then
               TF_PLAN="terraformPlanCLI.json"
 
-              if [ "$(params.tf-var-file)"]; then
+              if [ "$(params.tf-var-file)" ]; then
                 terraform plan -out=TF_PLAN -var-file=$(params.tf-var-file)
               else
                 terraform plan -out=TF_PLAN
