@@ -112,10 +112,14 @@ spec:
     - name: terraform-report
       description: Filepath to store generated Terraform report
       default: "terraform.json"
-    - name: tf-plan
-      description: Filepath to Terraform Plan file
+    - name: tf-dir
+      description: (optional) The directory where the terraform main entry file is found if not in parent directory
+      default: ""
+    - name: tf-var-file
+      description: (optional) terraform var-file
+      default: ""
     - name: tf-policy-file
-      description: Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
+      description: (optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
 
     # User control params
     - name: cra-scan-image
@@ -322,9 +326,25 @@ spec:
             cat $(params.deploy-report)
           fi
 
-          if [ "$(params.tf-plan"]; then
+          if [ "$(params.tf-dir)"]; then
+
+            cd $(params.path)
             echo -e "\n\nBeginning CRA Terraform Analyzer"
-            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $(params.path)/$(params.tf-plan) --report $(params.terraform-report))
+
+            cd $(params.tf-dir)
+            TF_PLAN=$(params.tf-plan)
+
+            if ! [ "$(params.tf-plan)"]; then
+              TF_PLAN="terraformPlanCLI.json"
+
+              if [ "$(params.tf-var-file)"]; then
+                terraform plan -out=TF_PLAN -var-file=$(params.tf-var-file)
+              else
+                terraform plan -out=TF_PLAN
+              fi
+            fi 
+
+            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan TF_PLAN --report $(params.terraform-report))
             if [ -n "$(params.verbose)" == "true" ]; then
               TERRAFORM_CMD+=(--verbose)
             fi
