@@ -141,6 +141,8 @@ spec:
             fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
+      - name: VAR_FILE
+        value: $(params.tf-var-file)
 
   steps:
     - name: scan
@@ -347,13 +349,15 @@ spec:
               TF_PLAN="terraformPlanCLI.json"
 
               if [ "$(params.tf-var-file)" ]; then
-                terraform plan -out=$TF_PLAN -var-file=$(params.tf-var-file)
+                terraform plan -out=tfplan.binary -var-file=$(params.tf-var-file)
+                terraform show -json tfplan.binary > $TF_PLAN
               else
-                terraform plan -out=$TF_PLAN
+                terraform plan -out=tfplan.binary
+                terraform show -json tfplan.binary > $TF_PLAN
               fi
             fi 
 
-            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan ./$TF_PLAN --report $(params.terraform-report))
+            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $TF_PLAN --report $(params.terraform-report))
             if [ "$(params.verbose)" == "true" ]; then
               TERRAFORM_CMD+=(--verbose)
             fi
