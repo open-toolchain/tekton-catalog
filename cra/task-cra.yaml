@@ -115,8 +115,11 @@ spec:
     - name: tf-dir
       description: (optional) The directory where the terraform main entry file is found if not in parent directory
       default: ""
+    - name: tf-plan
+      description: (optional) Filepath to Terraform Plan file.
+      default: ""
     - name: tf-var-file
-      description: (optional) terraform var-file
+      description: (optional) Filepath to the Terraform var-file
       default: ""
     - name: tf-policy-file
       description: (optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks

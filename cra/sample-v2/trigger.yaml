@@ -122,6 +122,9 @@ spec:
     - name: tf-dir
       description: (optional) The directory where the terraform main entry file is found if not in parent directory
       default: ""
+    - name: tf-plan
+      description: (optional) Filepath to Terraform Plan file.
+      default: ""
     - name: tf-var-file
       description: (optional) terraform var-file
       default: ""
@@ -233,6 +236,8 @@ spec:
             value: $(params.terraform-report)
           - name: tf-dir
             value: $(params.tf-dir)
+          - name: tf-plan
+            value: $(params.tf-plan)
           - name: tf-var-file
             value: $(params.tf-var-file)
           - name: tf-policy-file
