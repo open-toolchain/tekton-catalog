@@ -123,7 +123,7 @@ spec:
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
 
   stepTemplate:
-    env
+    env:
       - name: PIPELINE_ID
         valueFrom:
           fieldRef:
