@@ -108,13 +108,22 @@ spec:
       description: Filepath to store generated Vulnerability report, not stored if empty
       default: "vulnerability.json"
 
+    # Terraform related parameters
+    - name: terraform-report
+      description: Filepath to store generated Terraform report
+      default: "terraform.json"
+    - name: tf-plan
+      description: Filepath to Terraform Plan file
+    - name: tf-policy-file
+      description: Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
+
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
 
   stepTemplate:
-    env:
+    env
       - name: PIPELINE_ID
         valueFrom:
           fieldRef:
@@ -313,7 +322,28 @@ spec:
             cat $(params.deploy-report)
           fi
 
-          if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS) -gt 0 ]; then
+          if [ "$(params.tf-plan"]; then
+            echo -e "\n\nBeginning CRA Terraform Analyzer"
+            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $(params.path)/$(params.tf-plan) --report $(params.terraform-report))
+            if [ -n "$(params.verbose)" == "true" ]; then
+              TERRAFORM_CMD+=(--verbose)
+            fi
+            if [ "$(params.strict)" == "true" ]; then
+              TERRAFORM_CMD+=(--strict)
+            fi
+            if [ "$(params.tf-policy-file)" ]; then
+              TERRAFORM_CMD+=(--policy-file $(params.tf-policy-file)")
+            fi
+            echo "${TERRAFORM_CMD[@]}"
+            "${TERRAFORM_CMD[@]}"
+            TERRAFORM_STATUS=$?
+
+            if [ "$(params.output)" == "true" ]; then
+              cat $(params.terraform-report)
+            fi
+          fi
+
+          if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS + $TERRAFORM_STATUS) -gt 0 ]; then
             exit 1
           fi
       volumeMounts:
@@ -344,10 +374,10 @@ spec:
         #
         # Use a workaround to by pass virtio-fs for Continuous Delivery shared workers
         - if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then
-            apk add e2fsprogs &&
-            truncate -s 20G /tmp/disk.img &&
-            mkfs.ext4 /tmp/disk.img &&
-            mount /tmp/disk.img /var/lib/docker; fi &&
+          apk add e2fsprogs &&
+          truncate -s 20G /tmp/disk.img &&
+          mkfs.ext4 /tmp/disk.img &&
+          mount /tmp/disk.img /var/lib/docker; fi &&
           dockerd-entrypoint.sh --mtu=1400;
       volumeMounts:
         - mountPath: /certs/client

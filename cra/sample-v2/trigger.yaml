@@ -115,6 +115,17 @@ spec:
       description: Filepath to store Vulnerability report, not stored if empty
       default: "vulnerability.json"
 
+    # Terraform related parameters
+    - name: terraform-report
+      description: Filepath to store generated Terraform report
+      default: "terraform.json"
+    - name: tf-plan
+      description: Filepath to Terraform Plan file
+      default: ""
+    - name: tf-policy-file
+      description: (Optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
+      default: ""
+
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
@@ -215,5 +226,11 @@ spec:
             value: $(params.exclude-dev)
           - name: vulnerability-report
             value: $(params.vulnerability-report)
+          - name: terraform-report
+            value: $(params.terraform-report)
+          - name: tf-plan
+            value: $(params.tf-plan)
+          - name: tf-policy-file
+            value: $(params.tf-policy-file)
           - name: cra-scan-image
             value: $(params.cra-scan-image)
