@@ -338,9 +338,9 @@ spec:
             cd $(params.path)
             echo -e "\n\nBeginning CRA Terraform Analyzer"
 
-            terraform init
-
             cd $(params.tf-dir)
+
+            terraform init
             TF_PLAN=$(params.tf-plan)
 
             if ! [ "$(params.tf-plan)" ]; then
@@ -353,7 +353,7 @@ spec:
               fi
             fi 
 
-            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $TF_PLAN --report $(params.terraform-report))
+            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan ./$TF_PLAN --report $(params.terraform-report))
             if [ "$(params.verbose)" == "true" ]; then
               TERRAFORM_CMD+=(--verbose)
             fi
