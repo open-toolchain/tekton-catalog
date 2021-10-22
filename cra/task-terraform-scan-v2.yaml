@@ -241,8 +241,6 @@ spec:
         items:
           - key: toolchain.json
             path: toolchain.json
-    - name: dind-certs
-      emptyDir: {}
     - name: environment-properties
       configMap:
         name: $(params.continuous-delivery-context-environment)
