@@ -102,7 +102,6 @@ spec:
       description: Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
   workspaces:
     - name: artifacts
-    -
 
   tasks:
     - name: extract-repository-url
