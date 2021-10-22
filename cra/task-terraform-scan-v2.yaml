@@ -1,0 +1,258 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: terraform-scan-v2
+spec:
+  params:
+    # Pipeline related parameters
+    - name: continuous-delivery-context-environment
+      description: Name of the configmap containing the continuous delivery pipeline context environment properties
+      default: environment-properties
+    - name: continuous-delivery-context-secret
+      description: Reference name for the secret resource
+      default: "secure-properties"
+    - name: ibmcloud-api
+      description: The ibmcloud api
+      default: "https://cloud.ibm.com"
+    - name: ibmcloud-apikey-secret-key
+      description: Field in the secret that contains the api key used to login to ibmcloud
+      default: apikey
+    - name: ibmcloud-region
+      description: (Optional) ibmcloud region to use
+      default: ""
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1
+      default: "0"
+    - name: registry-region
+      description: (Optional) The ibmcloud container registry region
+      default: ""
+    - name: resource-group
+      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+      default: ""
+
+    # Common command params
+    - name: env-props
+      description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
+      default: ""
+    - name: ibmcloud-trace
+      description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
+      default: "false"
+    - name: output
+      description: (Optional) Prints command result to console
+      default: "false"
+    - name: path
+      description: Directory where the repository is cloned
+      default: "/artifacts"
+    - name: strict
+      description: (Optional) Enables strict mode for scanning
+      default: "false"
+    - name: toolchainid
+      description: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
+      default: ""
+    - name: verbose
+      description: (Optional) Enable verbose log messages
+      default: "false"
+
+    # Terraform related parameters
+    - name: terraform-report
+      description: Filepath to store generated Terraform report
+      default: "terraform.json"
+    - name: tf-dir
+      description: (optional) The directory where the terraform main entry file is found if not in parent directory
+      default: "./"
+    - name: tf-plan
+      description: (optional) Filepath to Terraform Plan file.
+      default: ""
+    - name: tf-var-file
+      description: (optional) Filepath to the Terraform var-file
+      default: ""
+    - name: tf-policy-file
+      description: (optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
+
+    # User control params
+    - name: cra-scan-image
+      description: Image to use for `scan` task
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+
+  stepTemplate:
+    env:
+      - name: PIPELINE_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+      - name: VAR_FILE
+        value: $(params.tf-var-file)
+
+  steps:
+    - name: terraform-scan
+      image: $(params.cra-scan-image)
+      envFrom:
+        - configMapRef:
+            name: environment-properties
+        - secretRef:
+            name: secure-properties
+      env:
+        - name: API
+          value: $(params.ibmcloud-api)
+        - name: ENV_PROPS
+          value: $(params.env-props)
+        - name: REGION
+          value: $(params.ibmcloud-region)
+        - name: SCRIPT_CONTENTS
+          value: $(params.custom-script)
+
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.ibmcloud-apikey-secret-key)
+              optional: true
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+          if [ "$PIPELINE_DEBUG" = "1" ]; then
+            pwd
+            env
+            trap env EXIT
+            set -x +e
+          fi
+
+          if [ -n "$ENV_PROPS" ]; then
+            echo "${ENV_PROPS}" > ./env-props
+            source ./env-props
+          fi
+
+          if [ -n "$SCRIPT_CONTENTS" ]; then
+            echo "${SCRIPT_CONTENTS}" > ./input-script.sh
+            source ./input-script.sh
+          fi
+
+          if [ -n "$REGION" ]; then
+            TOOLCHAIN_REGION=$REGION
+          else
+            TOOLCHAIN_REGION=$(cat /config/toolchain.json | jq -r '.region_id' | awk -F: '{print $3}')
+          fi
+
+          if [ -n "$(params.toolchainid)" ]; then
+            export TOOLCHAIN_ID=$(params.toolchainid)
+          else
+            export TOOLCHAIN_ID=$(cat /config/toolchain.json | jq -r '.toolchain_guid')
+          fi
+
+          echo -e "\nFetching users's token"
+          ibmcloud config --check-version false
+          ibmcloud login -a $API --no-region --apikey $API_KEY
+          SC=$?
+          if [ $SC -gt 0 ]; then
+            echo -e "Failed to login to ibmcloud"
+            exit 1
+          fi
+          echo -e "Successfully logged into ibmcloud\n"
+
+          # Install the CRA plugin if it is not installed
+          CRA_VER=`ibmcloud plugin list |grep cra | awk '{print $2}'`
+          if [ -z "$CRA_VER" ]; then
+            ibmcloud plugin install cra -f
+            STATUS=$?
+            if [ $STATUS -gt 0 ]; then
+              echo "Error installing CRA plugin. Exiting"
+              exit 1
+            fi
+          else
+            ibmcloud plugin update cra -f
+            if [ $STATUS -gt 0 ]; then
+              echo "Error updating CRA plugin. Using version $CRA_VER"
+            fi
+          fi
+
+          TARGET_CMD=(ibmcloud target -r $TOOLCHAIN_REGION)
+          if [ -n "$(params.resource-group)" ]; then
+            TARGET_CMD+=(-g $(params.resource-group))
+          fi
+          echo "${TARGET_CMD[@]}"
+          "${TARGET_CMD[@]}"
+
+
+          wget --quiet https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip 
+          unzip terraform_1.0.0_linux_amd64.zip 
+          mv terraform /usr/bin 
+
+          cd $(params.path)
+          echo -e "\n\nBeginning CRA Terraform Analyzer"
+
+          cd $(params.tf-dir)
+
+          terraform init
+          TF_PLAN=$(params.tf-plan)
+
+          if ! [ "$(params.tf-plan)" ]; then
+            TF_PLAN="terraformPlanCLI.json"
+
+            if [ "$(params.tf-var-file)" ]; then
+              terraform plan -out=tfplan.binary -var-file=$(params.tf-var-file)
+              terraform show -json tfplan.binary > $TF_PLAN
+            else
+              terraform plan -out=tfplan.binary
+              terraform show -json tfplan.binary > $TF_PLAN
+            fi
+          fi 
+
+          TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $TF_PLAN --report $(params.terraform-report))
+          if [ "$(params.verbose)" == "true" ]; then
+            TERRAFORM_CMD+=(--verbose)
+          fi
+          if [ "$(params.strict)" == "true" ]; then
+            TERRAFORM_CMD+=(--strict)
+          fi
+          if [ "$(params.tf-policy-file)" ]; then
+            TERRAFORM_CMD+=(--policy-file $(params.tf-policy-file))
+          fi
+          echo "${TERRAFORM_CMD[@]}"
+          "${TERRAFORM_CMD[@]}"
+          TERRAFORM_STATUS=$?
+
+          if [ "$(params.output)" == "true" ]; then
+            cat $(params.terraform-report)
+          fi
+
+
+          if [ $(expr $TERRAFORM_STATUS) -gt 0 ]; then
+            exit 1
+          fi
+      volumeMounts:
+        - mountPath: /config
+          name: config-volume
+        - mountPath: /properties
+          name: environment-properties
+        - mountPath: /secrets
+          name: secure-properties
+
+  workspaces:
+    - name: artifacts
+      mountPath: /artifacts
+
+  volumes:
+    - name: config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: dind-certs
+      emptyDir: {}
+    - name: environment-properties
+      configMap:
+        name: $(params.continuous-delivery-context-environment)
+    - name: secure-properties
+      secret:
+        secretName: $(params.continuous-delivery-context-secret)
