@@ -222,12 +222,8 @@ spec:
           value: $(params.ibmcloud-region)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: registry-region
-          value: $(params.registry-region)
         - name: resource-group
           value: $(params.resource-group)
-        - name: custom-script
-          value: $(params.custom-script)
         - name: env-props
           value: $(params.env-props)
         - name: ibmcloud-trace
