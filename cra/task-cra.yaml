@@ -125,8 +125,6 @@ spec:
             fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
-      - name: VAR_FILE
-        value: $(params.tf-var-file)
 
   steps:
     - name: scan
