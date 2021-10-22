@@ -199,18 +199,6 @@ spec:
           value: $(params.exclude-dev)
         - name: vulnerability-report
           value: $(params.vulnerability-report)
-        - name: terraform-report
-          value: $(params.terraform-report)
-        - name: tf-dir
-          value: $(params.tf-dir)
-        - name: tf-plan
-          value: $(params.tf-plan)
-        - name: tf-var-file
-          value: $(params.tf-var-file)
-        - name: tf-policy-file
-          value: $(params.tf-policy-file)
-        - name: cra-scan-image
-          value: $(params.cra-scan-image)
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -221,7 +209,7 @@ spec:
           operator: notin
           values: [""]
       taskRef:
-        name: cra-terraform-scan-v2
+        name: terraform-scan-v2
       workspaces:
         - name: artifacts
           workspace: artifacts

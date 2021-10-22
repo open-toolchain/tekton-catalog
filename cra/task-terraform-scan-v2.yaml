@@ -24,9 +24,6 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1
       default: "0"
-    - name: registry-region
-      description: (Optional) The ibmcloud container registry region
-      default: ""
     - name: resource-group
       description: (Optional) Target resource group (name or id) for the ibmcloud login operation
       default: ""
@@ -105,9 +102,6 @@ spec:
           value: $(params.env-props)
         - name: REGION
           value: $(params.ibmcloud-region)
-        - name: SCRIPT_CONTENTS
-          value: $(params.custom-script)
-
         - name: API_KEY
           valueFrom:
             secretKeyRef:
@@ -132,9 +126,8 @@ spec:
             source ./env-props
           fi
 
-          if [ -n "$SCRIPT_CONTENTS" ]; then
-            echo "${SCRIPT_CONTENTS}" > ./input-script.sh
-            source ./input-script.sh
+          if [ "$(params.ibmcloud-trace)" == "true" ]; then
+            export IBMCLOUD_TRACE=true
           fi
 
           if [ -n "$REGION" ]; then
