@@ -175,7 +175,7 @@ spec:
           echo "${TARGET_CMD[@]}"
           "${TARGET_CMD[@]}"
 
-
+          echo -e "\n\nInstalling Terraform v1.0.0"
           wget --quiet https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip 
           unzip terraform_1.0.0_linux_amd64.zip 
           mv terraform /usr/bin 
@@ -197,6 +197,11 @@ spec:
             else
               terraform plan -out=tfplan.binary
               terraform show -json tfplan.binary > $TF_PLAN
+            fi
+
+            TF_PLAN_STATUS=$?
+            if [ $(expr $TF_PLAN_STATUS) -gt 0 ]; then
+              exit 1
             fi
           fi 
 
