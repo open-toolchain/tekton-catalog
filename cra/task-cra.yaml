@@ -108,22 +108,6 @@ spec:
       description: Filepath to store generated Vulnerability report, not stored if empty
       default: "vulnerability.json"
 
-    # Terraform related parameters
-    - name: terraform-report
-      description: Filepath to store generated Terraform report
-      default: "terraform.json"
-    - name: tf-dir
-      description: (optional) The directory where the terraform main entry file is found if not in parent directory
-      default: ""
-    - name: tf-plan
-      description: (optional) Filepath to Terraform Plan file.
-      default: ""
-    - name: tf-var-file
-      description: (optional) Filepath to the Terraform var-file
-      default: ""
-    - name: tf-policy-file
-      description: (optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
-
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
@@ -329,51 +313,6 @@ spec:
 
           if [ "$(params.output)" == "true" ]; then
             cat $(params.deploy-report)
-          fi
-
-
-          if [ "$(params.tf-dir)" ]; then
-            wget --quiet https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip 
-            unzip terraform_1.0.0_linux_amd64.zip 
-            mv terraform /usr/bin 
-
-            cd $(params.path)
-            echo -e "\n\nBeginning CRA Terraform Analyzer"
-
-            cd $(params.tf-dir)
-
-            terraform init
-            TF_PLAN=$(params.tf-plan)
-
-            if ! [ "$(params.tf-plan)" ]; then
-              TF_PLAN="terraformPlanCLI.json"
-
-              if [ "$(params.tf-var-file)" ]; then
-                terraform plan -out=tfplan.binary -var-file=$(params.tf-var-file)
-                terraform show -json tfplan.binary > $TF_PLAN
-              else
-                terraform plan -out=tfplan.binary
-                terraform show -json tfplan.binary > $TF_PLAN
-              fi
-            fi 
-
-            TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $TF_PLAN --report $(params.terraform-report))
-            if [ "$(params.verbose)" == "true" ]; then
-              TERRAFORM_CMD+=(--verbose)
-            fi
-            if [ "$(params.strict)" == "true" ]; then
-              TERRAFORM_CMD+=(--strict)
-            fi
-            if [ "$(params.tf-policy-file)" ]; then
-              TERRAFORM_CMD+=(--policy-file $(params.tf-policy-file))
-            fi
-            echo "${TERRAFORM_CMD[@]}"
-            "${TERRAFORM_CMD[@]}"
-            TERRAFORM_STATUS=$?
-
-            if [ "$(params.output)" == "true" ]; then
-              cat $(params.terraform-report)
-            fi
           fi
 
           if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS + $TERRAFORM_STATUS) -gt 0 ]; then
