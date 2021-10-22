@@ -208,6 +208,8 @@ spec:
         - input: "$(params.tf-dir)"
           operator: notin
           values: [""]
+      runAfter:
+        - code-risk-analyzer
       taskRef:
         name: terraform-scan-v2
       workspaces:
