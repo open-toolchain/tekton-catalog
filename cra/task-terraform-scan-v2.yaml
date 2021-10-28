@@ -183,7 +183,9 @@ spec:
           cd $(params.path)
           echo -e "\n\nBeginning CRA Terraform Analyzer"
 
-          cd $(params.tf-dir)
+          if [ "$(params.tf-dir)" ]; then
+            cd $(params.tf-dir)
+          fi
 
           terraform init
           TF_PLAN=$(params.tf-plan)
