@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: terraform-scan-v2
+  name: cra-terraform-scan-v2
 spec:
   params:
     # Pipeline related parameters

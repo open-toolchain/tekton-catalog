@@ -211,7 +211,7 @@ spec:
       runAfter:
         - code-risk-analyzer
       taskRef:
-        name: terraform-scan-v2
+        name: cra-terraform-scan-v2
       workspaces:
         - name: artifacts
           workspace: artifacts
