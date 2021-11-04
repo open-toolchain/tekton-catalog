@@ -69,6 +69,10 @@ spec:
       default: "0.15.5"
     - name: tf-policy-file
       description: (Optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
+    - name: tf-format
+      description: (Optional) Report format. Requires --policy-file. Supported values [OSCAL]
+    - name: tf-state-file
+      description: (Optional) Path of terraform state file. Requires --format to be set to OSCAL.
 
     # User control params
     - name: cra-scan-image
@@ -221,6 +225,12 @@ spec:
           fi
           if [ "$(params.tf-policy-file)" ]; then
             TERRAFORM_CMD+=(--policy-file $(params.tf-policy-file))
+          fi
+          if [ "$(params.tf-format)" ]; then
+            TERRAFORM_CMD+=(--tf-format $(params.tf-format))
+          fi
+          if [ "$(params.tf-state-file)" ]; then
+            TERRAFORM_CMD+=(--state-file $(params.tf-state-file))
           fi
           echo "${TERRAFORM_CMD[@]}"
           "${TERRAFORM_CMD[@]}"
