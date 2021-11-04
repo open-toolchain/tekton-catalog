@@ -85,16 +85,19 @@ spec:
       description: Filepath to store generated Terraform report. Default to `./terraform.json`
       default: "terraform.json"
     - name: tf-dir
-      description: (optional) The directory where the terraform main entry file is found if not in parent directory
-      default: "./"
+      description: The directory where the terraform main entry file is found if not in parent directory
+      default: ""
     - name: tf-plan
-      description: (optional) Filepath to Terraform Plan file.
+      description: (Optional) Filepath to Terraform Plan file.
       default: ""
     - name: tf-var-file
-      description: (optional) terraform var-file
+      description: (Optional) terraform var-file
       default: ""
+    - name: tf-version
+      description: (Optional) The terraform version to use to create Terraform plan
+      default: "0.15.5"
     - name: tf-policy-file
-      description: (optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks.
+      description: (Optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks.
       default: ""
 
     # User control params
@@ -224,8 +227,8 @@ spec:
           value: $(params.pipeline-debug)
         - name: resource-group
           value: $(params.resource-group)
-        - name: env-props
-          value: $(params.env-props)
+        - name: custom-script
+          value: $(params.custom-script)
         - name: ibmcloud-trace
           value: $(params.ibmcloud-trace)
         - name: output
@@ -248,5 +251,7 @@ spec:
           value: $(params.tf-var-file)
         - name: tf-policy-file
           value: $(params.tf-policy-file)
+        - name: tf-version
+          value: $(params.tf-version)
         - name: cra-scan-image
           value: $(params.cra-scan-image)

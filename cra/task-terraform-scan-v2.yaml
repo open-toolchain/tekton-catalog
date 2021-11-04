@@ -29,8 +29,8 @@ spec:
       default: ""
 
     # Common command params
-    - name: env-props
-      description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
+    - name: custom-script
+      description: (Optional) A custom script to be ran prior to CRA scanning
       default: ""
     - name: ibmcloud-trace
       description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
@@ -56,16 +56,19 @@ spec:
       description: Filepath to store generated Terraform report
       default: "terraform.json"
     - name: tf-dir
-      description: (optional) The directory where the terraform main entry file is found if not in parent directory
-      default: "./"
+      description: The directory where the terraform main entry file is found
+      default: ""
     - name: tf-plan
-      description: (optional) Filepath to Terraform Plan file.
+      description: (Optional) Filepath to Terraform Plan file.
       default: ""
     - name: tf-var-file
-      description: (optional) Filepath to the Terraform var-file
+      description: (Optional) Filepath to the Terraform var-file
       default: ""
+    - name: tf-version
+      description: (Optional) The terraform version to use to create Terraform plan
+      default: "0.15.5"
     - name: tf-policy-file
-      description: (optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
+      description: (Optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
 
     # User control params
     - name: cra-scan-image
@@ -98,10 +101,11 @@ spec:
       env:
         - name: API
           value: $(params.ibmcloud-api)
-        - name: ENV_PROPS
-          value: $(params.env-props)
         - name: REGION
           value: $(params.ibmcloud-region)
+        - name: SCRIPT_CONTENTS
+          value: $(params.custom-script)
+
         - name: API_KEY
           valueFrom:
             secretKeyRef:
@@ -121,9 +125,9 @@ spec:
             set -x +e
           fi
 
-          if [ -n "$ENV_PROPS" ]; then
-            echo "${ENV_PROPS}" > ./env-props
-            source ./env-props
+          if [ -n "$SCRIPT_CONTENTS" ]; then
+            echo "${SCRIPT_CONTENTS}" > ./input-script.sh
+            source ./input-script.sh
           fi
 
           if [ "$(params.ibmcloud-trace)" == "true" ]; then
@@ -175,11 +179,6 @@ spec:
           echo "${TARGET_CMD[@]}"
           "${TARGET_CMD[@]}"
 
-          echo -e "\n\nInstalling Terraform v1.0.0"
-          wget --quiet https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip 
-          unzip terraform_1.0.0_linux_amd64.zip 
-          mv terraform /usr/bin 
-
           cd $(params.path)
           echo -e "\n\nBeginning CRA Terraform Analyzer"
 
@@ -187,14 +186,20 @@ spec:
             cd $(params.tf-dir)
           fi
 
-          terraform init
           TF_PLAN=$(params.tf-plan)
 
           if ! [ "$(params.tf-plan)" ]; then
             TF_PLAN="terraformPlanCLI.json"
 
-            if [ "$(params.tf-var-file)" ]; then
-              terraform plan -out=tfplan.binary -var-file=$(params.tf-var-file)
+            echo -e "\n\nInstalling Terraform $(params.tf-version)" 
+            wget --quiet https://releases.hashicorp.com/terraform/"$(params.tf-version)"/terraform_"$(params.tf-version)"_linux_amd64.zip 
+            unzip terraform_"$(params.tf-version)"_linux_amd64.zip 
+            mv terraform /usr/bin 
+
+            terraform init
+            
+            if [ -n "$VAR_FILE" ]; then
+              terraform plan -out=tfplan.binary -var-file=$VAR_FILE
               terraform show -json tfplan.binary > $TF_PLAN
             else
               terraform plan -out=tfplan.binary
