@@ -178,7 +178,7 @@ spec:
 
           TARGET_CMD=(ibmcloud target -r $TOOLCHAIN_REGION)
           if [ -n "$(params.resource-group)" ]; then
-            TARGET_CMD+=(-g $(params.resource-group))
+            TARGET_CMD+=(-g "$(params.resource-group)")
           fi
           echo "${TARGET_CMD[@]}"
           "${TARGET_CMD[@]}"
