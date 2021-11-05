@@ -265,3 +265,5 @@ spec:
           value: $(params.tf-format)
         - name: tf-state-file
           value: $(params.tf-state-file)
+        - name: cra-scan-image
+          value: $(params.cra-scan-image)
