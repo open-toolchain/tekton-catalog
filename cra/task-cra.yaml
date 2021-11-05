@@ -313,7 +313,7 @@ spec:
             cat $(params.deploy-report)
           fi
 
-          if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS + $TERRAFORM_STATUS) -gt 0 ]; then
+          if [ $(expr $BOM_STATUS + $VULNERABILITY_STATUS + $DEPLOY_STATUS) -gt 0 ]; then
             exit 1
           fi
       volumeMounts:
