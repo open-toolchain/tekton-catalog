@@ -80,6 +80,24 @@ spec:
     - name: vulnerability-report
       description: Filepath to store Vulnerability report, not stored if empty. Default to `./vulnerability.json`
 
+    # Terraform related parameters
+    - name: terraform-report
+      description: Filepath to store generated Terraform report. Default to `./terraform.json`
+    - name: tf-dir
+      description: The directory where the terraform main entry file is found if not in parent directory
+    - name: tf-plan
+      description: (Optional) Filepath to Terraform Plan file.
+    - name: tf-var-file
+      description: (Optional) terraform var-file
+    - name: tf-version
+      description: (Optional) The terraform version to use to create Terraform plan
+    - name: tf-policy-file
+      description: (Optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks.
+    - name: tf-format
+      description: (Optional) Report format. Requires --policy-file. Supported values [OSCAL]
+    - name: tf-state-file
+      description: (Optional) Path of terraform state file. Requires --format to be set to OSCAL.
+
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
@@ -187,3 +205,57 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+
+    - name: cra-terraform-scan
+      when:
+        - input: "$(params.tf-dir)"
+          operator: notin
+          values: [""]
+      runAfter:
+        - code-risk-analyzer
+      taskRef:
+        name: cra-terraform-scan-v2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: ibmcloud-region
+          value: $(params.ibmcloud-region)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: resource-group
+          value: $(params.resource-group)
+        - name: custom-script
+          value: $(params.custom-script)
+        - name: ibmcloud-trace
+          value: $(params.ibmcloud-trace)
+        - name: output
+          value: $(params.output)
+        - name: path
+          value: $(params.path)
+        - name: strict
+          value: $(params.strict)
+        - name: toolchainid
+          value: $(params.toolchainid)
+        - name: verbose
+          value: $(params.verbose)
+        - name: terraform-report
+          value: $(params.terraform-report)
+        - name: tf-dir
+          value: $(params.tf-dir)
+        - name: tf-plan
+          value: $(params.tf-plan)
+        - name: tf-var-file
+          value: $(params.tf-var-file)
+        - name: tf-policy-file
+          value: $(params.tf-policy-file)
+        - name: tf-version
+          value: $(params.tf-version)
+        - name: tf-format
+          value: $(params.tf-format)
+        - name: tf-state-file
+          value: $(params.tf-state-file)
+        - name: cra-scan-image
+          value: $(params.cra-scan-image)
