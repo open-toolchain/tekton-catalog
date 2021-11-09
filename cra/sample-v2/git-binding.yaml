@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: git-binding
+  name: github-binding
 spec:
   params:
     - name: branch
@@ -15,3 +15,31 @@ spec:
       value: $(event.pull_request.head.repo.html_url)
     - name: repository
       value: $(event.repository.html_url)
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: gl-pr-binding
+spec:
+  params:
+    - name: branch
+      value: $(event.object_attributes.target_branch)
+    - name: commit-id
+      value: $(event.object_attributes.last_commit.id)
+    - name: pr-branch
+      value: $(event.object_attributes.source_branch)
+    - name: pr-repository
+      value: $(event.object_attributes.source.http_url)
+    - name: repository
+      value: $(event.project.http_url)
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: gl-ci-binding
+spec:
+  params:
+    - name: commit-id
+      value: $(event.after)
+    - name: repository
+      value: $(event.project.web_url)

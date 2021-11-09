@@ -2,10 +2,32 @@
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: git-listener
+  name: github-listener
 spec:
   triggers:
     - bindings:
-        - name: git-binding
+        - name: github-binding
+      template:
+        name: template-cra
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: gl-ci-listener
+spec:
+  triggers:
+    - bindings:
+        - name: gl-ci-binding
+      template:
+        name: template-cra
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: gl-pr-listener
+spec:
+  triggers:
+    - bindings:
+        - name: gl-pr-binding
       template:
         name: template-cra
