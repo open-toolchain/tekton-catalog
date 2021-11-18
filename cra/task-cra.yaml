@@ -228,12 +228,9 @@ spec:
 
           ibmcloud cr login
 
-          TARGET_CMD=(ibmcloud target -r $TOOLCHAIN_REGION)
           if [ -n "$(params.resource-group)" ]; then
-            TARGET_CMD+=(-g $(params.resource-group))
+            ibmcloud target -g $(params.resource-group)
           fi
-          echo "${TARGET_CMD[@]}"
-          "${TARGET_CMD[@]}"
 
           if [ -n "$(params.registry-region)" ]; then
             echo -e "\nUpdating IBM Cloud Container Registry region"
@@ -251,7 +248,7 @@ spec:
           fi
 
           echo -e "\n\nBeginning CRA discovery"
-          BOM_CMD=(ibmcloud cra bom-generate --path $(params.path) --report $(params.bom-report) --asset-type $(params.asset-type))
+          BOM_CMD=(ibmcloud cra bom-generate --path $(params.path) --report $(params.bom-report) --asset-type $(params.asset-type) --region $TOOLCHAIN_REGION)
           if [ -n "$(params.gradle-exclude-configs)" ]; then
             BOM_CMD+=(--gradle.excludeconfigurations "$(params.gradle-exclude-configs)")
           fi
@@ -279,7 +276,7 @@ spec:
           fi
 
           echo -e "\n\nBeginning CRA vulnerability scan"
-          VULNERABILITY_CMD=(ibmcloud cra vulnerability-scan --bom $(params.bom-report) --report $(params.vulnerability-report))
+          VULNERABILITY_CMD=(ibmcloud cra vulnerability-scan --bom $(params.bom-report) --report $(params.vulnerability-report) --region $TOOLCHAIN_REGION)
           if [ -n "$(params.cveignore)" ]; then
             VULNERABILITY_CMD+=(--cveignore $(params.cveignore))
           fi
@@ -298,7 +295,7 @@ spec:
           fi
 
           echo -e "\n\nBeginning CRA Deploy Analytic"
-          DEPLOY_CMD=(ibmcloud cra deployment-analyze --path $(params.path) --report $(params.deploy-report))
+          DEPLOY_CMD=(ibmcloud cra deployment-analyze --path $(params.path) --report $(params.deploy-report) --region $TOOLCHAIN_REGION)
           if [ -n "$(params.fileignore)" ]; then
             DEPLOY_CMD+=(--fileignore $(params.fileignore))
           fi
