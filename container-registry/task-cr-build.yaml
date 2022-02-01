@@ -80,7 +80,7 @@ spec:
         optional: true
   steps:
     - name: check-registry-and-build-image
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.7
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
       workingDir: /artifacts
       env:
         - name: API_KEY

@@ -59,7 +59,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: deploy-cf-app
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
       workingDir: /artifacts
       env:
         - name: CF_APP

@@ -63,7 +63,7 @@ spec:
         optional: true
   steps:
     - name: run-vulnerability-advisor-scan
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.9
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
       workingDir: /artifacts
       env:
         - name: API_KEY

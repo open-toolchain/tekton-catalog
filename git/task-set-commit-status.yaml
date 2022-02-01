@@ -77,7 +77,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: fetch-git-information
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
       env:
         - name: REPOSITORY
           value: $(params.repository)

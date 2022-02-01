@@ -62,7 +62,7 @@ spec:
       default: "0"
   steps:
     - name: publish-deployable-mapping
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
       env:
         - name: DEPLOYABLE_TYPE
           value: $(params.deployable-type)
