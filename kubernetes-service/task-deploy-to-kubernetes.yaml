@@ -60,7 +60,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: execute
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17
       workingDir: /artifacts
       env:
         - name: BUILD_NUMBER
@@ -125,7 +125,7 @@ spec:
         fi
 
         if ibmcloud ks cluster get --cluster $PIPELINE_KUBERNETES_CLUSTER_NAME; then
-          eval $(ibmcloud ks cluster config --cluster $PIPELINE_KUBERNETES_CLUSTER_NAME --export -s)
+          ibmcloud ks cluster config --cluster $PIPELINE_KUBERNETES_CLUSTER_NAME
         else
           echo "Cluster $PIPELINE_KUBERNETES_CLUSTER_NAME not found. Accessible clusters are:"
           ibmcloud ks clusters

@@ -17,7 +17,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: run-tests
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
       workingDir: /artifacts
       script: |
         #!/bin/bash
@@ -27,7 +27,6 @@ spec:
         # doing the export rather than env definition is a workaround
         # until https://github.com/tektoncd/pipeline/issues/1836 is fixed
         # and until 0.11 - https://ibm.ent.box.com/notes/599948660131?s=rqk76zkkdsz1cenvpw0ad8enxul6j0nv
-        export HOME=/root && source ~/.nvm/nvm.sh
         ##########################################################################
         TEST_STATUS=0
 
