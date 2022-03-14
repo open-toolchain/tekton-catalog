@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: signing-dct-enforcement-policy
+  labels:
+    tekton.dev/deprecated: true
 spec:
   params:
     - name: shuttle-properties-file

@@ -195,13 +195,13 @@ spec:
           if ! [ "$(params.tf-plan)" ]; then
             TF_PLAN="terraformPlanCLI.json"
 
-            echo -e "\n\nInstalling Terraform $(params.tf-version)" 
-            wget --quiet https://releases.hashicorp.com/terraform/"$(params.tf-version)"/terraform_"$(params.tf-version)"_linux_amd64.zip 
-            unzip terraform_"$(params.tf-version)"_linux_amd64.zip 
-            mv terraform /usr/bin 
+            echo -e "\n\nInstalling Terraform $(params.tf-version)"
+            wget --quiet https://releases.hashicorp.com/terraform/"$(params.tf-version)"/terraform_"$(params.tf-version)"_linux_amd64.zip
+            unzip terraform_"$(params.tf-version)"_linux_amd64.zip
+            mv terraform /usr/bin
 
             terraform init
-            
+
             if [ -n "$VAR_FILE" ]; then
               terraform plan -out=tfplan.binary -var-file=$VAR_FILE
               terraform show -json tfplan.binary > $TF_PLAN
@@ -214,7 +214,7 @@ spec:
             if [ $(expr $TF_PLAN_STATUS) -gt 0 ]; then
               exit 1
             fi
-          fi 
+          fi
 
           TERRAFORM_CMD=(ibmcloud cra tf --tf-plan $TF_PLAN --report $(params.terraform-report))
           if [ "$(params.verbose)" == "true" ]; then
@@ -239,7 +239,6 @@ spec:
           if [ "$(params.output)" == "true" ]; then
             cat $(params.terraform-report)
           fi
-
 
           if [ $(expr $TERRAFORM_STATUS) -gt 0 ]; then
             exit 1

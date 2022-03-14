@@ -276,7 +276,7 @@ spec:
         - mountPath: /steps
           name: steps-volume
         - name: cd-config-volume
-          mountPath: /cd-config          
+          mountPath: /cd-config
         - name: environment-properties
           mountPath: /cd-config/environment-properties
         - name: secure-properties
