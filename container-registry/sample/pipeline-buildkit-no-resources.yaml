@@ -48,6 +48,7 @@ spec:
           value: |
             # The script is providing tag(s) as output
             # But logs can be written as error stderr
+            env | sort >&2
             echo "** Here is some Continuous Delivery Tekon Pipeline support configuration properties:" >&2
             ls -l /cd-config >&2
             ls -l /cd-config/environment-properties >&2
