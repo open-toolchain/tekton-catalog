@@ -89,6 +89,8 @@ spec:
         valueFrom:
           fieldRef:
             fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+      - name: WORKSPACE_PATH
+        value: $(workspaces.artifacts.path)
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
       - name: VAR_FILE
@@ -117,7 +119,7 @@ spec:
               key: $(params.ibmcloud-apikey-secret-key)
               optional: true
       imagePullPolicy: Always
-      workingDir: "/artifacts"
+      workingDir: $(workspaces.artifacts.path)
       command: ["/bin/sh", "-c"]
       args:
         - |

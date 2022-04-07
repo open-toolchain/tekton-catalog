@@ -33,6 +33,8 @@ spec:
       image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
       workingDir: $(workspaces.cluster-configuration.path)
       env:
+        - name: WORKSPACE_PATH
+          value: $(workspaces.cluster-configuration.path)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
         # CD execution context injection

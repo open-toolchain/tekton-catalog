@@ -45,6 +45,8 @@ spec:
       mountPath: /artifacts
   stepTemplate:
     env:
+      - name: WORKSPACE_PATH
+        value: $(workspaces.workspace.path)
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
   steps:

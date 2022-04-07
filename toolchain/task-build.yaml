@@ -16,17 +16,19 @@ spec:
       default: "0"
   workspaces:
     - name: output
-      description: The git repo will be cloned onto the volume backing this workspace
+      description: A workspace backing by a volume
       mountPath: /artifacts
   steps:
     - name: run-build
       image: $(params.run-build-image)
       env:
+        - name: WORKSPACE_PATH
+          value: $(workspaces.output.path)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
         - name: CUSTOM_SCRIPT
           value: $(params.custom-script)
-      workingDir: "/artifacts"
+      workingDir: $(workspaces.output.path)
       script: |
         #!/bin/bash
         set -e -o pipefail;

@@ -184,7 +184,7 @@ spec:
           name: check-registry-scripts
     - name: build-image
       image: $(params.buildkit-image)
-      workingDir: /artifacts
+      workingDir: $(workspaces.source.path)
       env:
         # specifying DOCKER_CONFIG is required to allow buildkit to detect docker credentials
         - name: DOCKER_CONFIG
@@ -218,6 +218,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+        - name: WORKSPACE_PATH
+          value: $(workspaces.source.path)
       securityContext:
         privileged: true
       command: ["/bin/sh", "-c"]

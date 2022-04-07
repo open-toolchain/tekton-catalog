@@ -151,10 +151,12 @@ spec:
           if [[ "$(params.policy-config-json)" == "" ]];
           then
             node /usr/src/index.js --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH \
-              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.branch) --commitid $(params.commit-id) --gitSecureApi $gitsecureUrl --pipelinerunid $PIPELINE_RUN_ID --toolchainid $TOOLCHAIN_ID --prnumber "NA" --authToken ${IBM_CLOUD_BEARER} --LOG_LEVEL $LOG_LEVEL --silent 1
+              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.branch) --commitid $(params.commit-id) --gitSecureApi $gitsecureUrl \
+              --pipelinerunid $PIPELINE_RUN_ID --toolchainid $TOOLCHAIN_ID --prnumber "NA" --authToken ${IBM_CLOUD_BEARER} --LOG_LEVEL $LOG_LEVEL --silent 1
           else
             node /usr/src/index.js --policyConfig $(params.policy-config-json) --git_token "NA" --repository $(params.repository) --gitClonedDir $REPO_DIR_PATH \
-              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.branch) --commitid $(params.commit-id) --gitSecureApi $gitsecureUrl --pipelinerunid $PIPELINE_RUN_ID -toolchainid $TOOLCHAIN_ID --prnumber "NA" --authToken ${IBM_CLOUD_BEARER} --LOG_LEVEL $LOG_LEVEL --silent 1
+              --INPUT_TF_DIR $(params.tf-dir) --revision $(params.branch) --commitid $(params.commit-id) --gitSecureApi $gitsecureUrl \
+              --pipelinerunid $PIPELINE_RUN_ID -toolchainid $TOOLCHAIN_ID --prnumber "NA" --authToken ${IBM_CLOUD_BEARER} --LOG_LEVEL $LOG_LEVEL --silent 1
           fi
 
           if [ $? == 0 ]; then export result="success"; fi

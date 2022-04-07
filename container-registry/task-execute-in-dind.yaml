@@ -84,6 +84,8 @@ spec:
         optional: true
   stepTemplate:
     env:
+      - name: WORKSPACE_PATH
+        value: $(workspaces.source.path)
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
   steps:
@@ -186,7 +188,7 @@ spec:
           name: check-registry-scripts
     - name: run-docker-commands
       image: $(params.docker-client-image)
-      workingDir: /artifacts
+      workingDir: $(workspaces.source.path)
       env:
         - name: PROPERTIES_FILE
           value: $(params.properties-file)
