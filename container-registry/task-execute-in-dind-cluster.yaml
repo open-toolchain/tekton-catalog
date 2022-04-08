@@ -64,6 +64,12 @@ spec:
         docker inspect ${IMAGE_URL}:${IMAGE_TAG}
         docker push ${IMAGE_URL}:${IMAGE_TAG}
     #
+    - name: check-step-image
+      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+    - name: cluster-setup-step-image
+      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: properties-file
       description: file containing properties out of the docker in docker task
       default: build.properties
@@ -100,7 +106,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: check-registry
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.check-step-image)
       workingDir: /steps
       env:
         - name: API_KEY
@@ -285,7 +291,7 @@ spec:
           mountPath: /cd-config/secure-properties
   sidecars:
     - name: setup-docker-build-cluster
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.cluster-setup-step-image)
       env:
         - name: THE_POD_IP
           valueFrom:

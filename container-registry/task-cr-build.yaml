@@ -58,6 +58,9 @@ spec:
     - name: properties-file
       description: file containing properties out of containerize task
       default: build.properties
+    - name: check-and-build-step-image
+      description: image to use for the scan step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -80,7 +83,7 @@ spec:
         optional: true
   steps:
     - name: check-registry-and-build-image
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.check-and-build-step-image)
       workingDir: $(workspaces.source.path)
       env:
         - name: API_KEY

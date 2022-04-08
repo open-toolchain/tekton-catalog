@@ -62,6 +62,12 @@ spec:
         (optional) a url to set as the status detail link for the PR.
         If left empty, the status detail link will point to the pipeline run.
       default: ""
+    - name: fetch-git-information-step-image
+      description: image to use for the fetch-git-information step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+    - name: set-status-step-image
+      description: image to use for the fetch-git-information step (default to registry.access.redhat.com/ubi8/ubi:8.1)
+      default: "registry.access.redhat.com/ubi8/ubi:8.1"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -77,7 +83,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: fetch-git-information
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.fetch-git-information-step-image)
       env:
         - name: REPOSITORY
           value: $(params.repository)
@@ -197,7 +203,7 @@ spec:
         - mountPath: /steps
           name: steps-volume
     - name: set-status
-      image: registry.access.redhat.com/ubi8/ubi:8.1
+      image: $(params.set-status-step-image)
       env:
         - name: PIPELINE_ID
           valueFrom:

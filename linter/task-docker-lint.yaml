@@ -25,6 +25,9 @@ spec:
         flag (`true` | `false`) to indicate if the task should fail or continue
         if issues are found in the Dockerfile lint
       default: "true"
+    - name: hadolint-image
+      description: image containing hadolint (default to hadolint/hadolint:v1.18.0-alpine)
+      default: "hadolint/hadolint:v1.18.0-alpine"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -34,7 +37,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: check-dockerfile
-      image: hadolint/hadolint:v1.18.0-alpine
+      image: $(params.hadolint-image)
       workingDir: /artifacts
       env:
         - name: DOCKER_FILE

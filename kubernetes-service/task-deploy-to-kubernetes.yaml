@@ -38,6 +38,9 @@ spec:
     - name: post-execution-script
       description: script that get executed after the _deployment_ script has been executed.
       default: ""
+    - name: execute-step-image
+      description: image to use for the execute step (default to icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -60,7 +63,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: execute
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17
+      image: $(params.execute-step-image)
       workingDir: $(workspaces.artifacts.path)
       env:
         - name: BUILD_NUMBER

@@ -57,12 +57,15 @@ spec:
     - name: toolchain-apikey-secret-key
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
+    - name: publish-deployable-mapping-step-image
+      description: image to use for the publish-deployable-mapping step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
   steps:
     - name: publish-deployable-mapping
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.publish-deployable-mapping-step-image)
       env:
         - name: DEPLOYABLE_TYPE
           value: $(params.deployable-type)

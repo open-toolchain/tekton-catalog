@@ -34,6 +34,9 @@ spec:
         flag (`true` | `false`) to indicate if the task should fail or continue
         if unable to process the message or post to Slack.
       default: "false"
+    - name: post-to-slack-step-image
+      description: image to use for the post-to-slack step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -51,8 +54,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: post-to-slack
-      # tbd: use an image with curl and jq?
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.post-to-slack-step-image)
       env:
         # keep slack message injected in an env var to let YAML manage the quote for us
         - name: SLACK_MESSAGE
