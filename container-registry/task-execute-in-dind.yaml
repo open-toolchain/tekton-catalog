@@ -53,7 +53,7 @@ spec:
     - name: check-step-image
       description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
-    - name: dind-sidecar-image
+    - name: dind-image
       description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:19.03.15-dind)
       default: "icr.io/continuous-delivery/pipeline/docker:19.03.15-dind"
     - name: properties-file
@@ -333,7 +333,7 @@ spec:
           mountPath: /cd-config/secure-properties
   sidecars:
     - name: server
-      image: (params.dind-sidecar-image)
+      image: $(params.dind-image)
       securityContext:
         privileged: true
       command: ["sh", "-c"]
