@@ -81,7 +81,7 @@ spec:
   steps:
     - name: check-registry-and-build-image
       image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
-      workingDir: /artifacts
+      workingDir: $(workspaces.source.path)
       env:
         - name: API_KEY
           valueFrom:
@@ -96,6 +96,8 @@ spec:
           value: $(params.properties-file)
         - name: REGISTRY_CREATE_NAMESPACE
           value: $(params.registry-create-namespace)
+        - name: WORKSPACE_PATH
+          value: $(workspaces.source.path)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
         # CD execution context injection

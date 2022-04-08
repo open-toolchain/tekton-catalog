@@ -66,7 +66,7 @@ spec:
   steps:
     - name: setup
       image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
-      workingDir: /clusterconfig
+      workingDir: $(workspaces.cluster-configuration.path)
       env:
         - name: API_KEY
           valueFrom:

@@ -65,6 +65,7 @@ spec:
           value: |
             #!/bin/bash
             # Push app
+            env | sort
             if ! cf app "$CF_APP"; then
               cf push "$CF_APP"
             else

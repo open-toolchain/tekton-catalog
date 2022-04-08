@@ -42,6 +42,7 @@ spec:
           value: .tekton-clusters
         - name: script
           value: |
+            env | sort
             echo "** Here is the kubectl version:"
             kubectl version
             echo "** Here is the kubectl cluster-info:"

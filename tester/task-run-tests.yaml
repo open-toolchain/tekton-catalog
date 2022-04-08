@@ -42,7 +42,7 @@ spec:
   steps:
     - name: run-tests
       image: $(params.tests-image)
-      workingDir: /artifacts
+      workingDir: $(workspaces.artifacts.path)
       env:
         - name: BUILD_NUMBER
           valueFrom:
@@ -62,6 +62,8 @@ spec:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
         - name: SHUTTLE_PROPERTIES_FILE
           value: $(params.shuttle-properties-file)
+        - name: WORKSPACE_PATH
+          value: $(workspaces.artifacts.path)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
       script: |

@@ -61,7 +61,7 @@ spec:
   steps:
     - name: execute
       image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17
-      workingDir: /artifacts
+      workingDir: $(workspaces.artifacts.path)
       env:
         - name: BUILD_NUMBER
           valueFrom:
@@ -92,6 +92,8 @@ spec:
           value: $(params.image-url)
         - name: SHUTTLE_PROPERTIES_FILE
           value: $(params.shuttle-properties-file)
+        - name: WORKSPACE_PATH
+          value: $(workspaces.artifacts.path)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
       script: |
