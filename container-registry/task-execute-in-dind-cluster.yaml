@@ -354,8 +354,8 @@ spec:
             export BUILD_CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
 
-          echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s"
-          CLUSTER_CONFIG_COMMAND=$(ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s)
+          echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" -s"
+          CLUSTER_CONFIG_COMMAND=$(ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME")
           echo "$CLUSTER_CONFIG_COMMAND"
           eval $CLUSTER_CONFIG_COMMAND
 
