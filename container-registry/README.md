@@ -64,6 +64,8 @@ Build Image helper task using buildkit
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 *  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 *  **container-registry-apikey-secret-key**: field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `apikey`
+* **check-step-image**: (optional) image to use for the check (pre-build) step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
+* **process-log-step-image**: (optional) image to use for the process log (post-build) steps. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 
 ### Results
 
@@ -110,6 +112,7 @@ Build Image helper task using `ibmcloud cr build` command
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 *  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 *  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `apikey`
+* **check-and-build-step-image**: (optional) image to use for the scan step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 
 ### Results
 
@@ -162,6 +165,8 @@ and is available only during the task's lifespan.
   ```
 *  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 *  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `apikey`
+* **check-step-image**: (optional) image to use for the check (pre-build) step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
+* **dind-image**: (optional) image to use for the Docker-in-Docker sidecar. Default to `icr.io/continuous-delivery/pipeline/docker:19.03.15-dind`
 
 ### Results
 
@@ -215,6 +220,8 @@ This task runs `docker` commands (build, inspect...) that communicate with a  _D
   ```
 *  **continuous-delivery-context-secret**: (Optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 *  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `apikey`
+* **check-step-image**: (optional) image to use for the check (pre-build) step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
+* **cluster-setup-step-image**: (optional) image to use for the cluster setup step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 
 ### Results
 
@@ -263,6 +270,7 @@ Vulnerability Advisor helper task
 * **resource-group**: (optional) target resource group (name or id) for the ibmcloud login operation
 *  **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 *  **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `apikey`
+* **scan-step-image**: (optional) image to use for the scan step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 
 ### Results
 

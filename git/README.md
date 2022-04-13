@@ -58,6 +58,7 @@ Git integration clone task
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secret (default to `secure-properties`)
 * **ibmcloud-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **git-credentials-json-file**: (optional) name of JSON file to store git credentials found out of the clone task (it can be a file path relative to the workspace `workspace` backed by a volume). Default to '' meaning no output of this information.
+* **fetch-gitoken-step-image**: (optional) image to use for the fetch-gitoken step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 
 ### Workspaces
 
@@ -103,6 +104,8 @@ Git commit status setter task
 * **state-var**: Customized variable stored in `properties-file` (like `build-properties` for instance) to use as state if `state` input param is empty.
 * **properties-file**: (optional) name of a properties file that may contain the state as value for the entry/key defined by `state-var` (default to `build.properties`)
 * **target-url**: (optional) a url to set as the status detail link for the PR.  If left empty, the status detail link will point to the pipeline run.
+* **fetch-git-information-step-image**: (optional) image to use for the fetch-git-information step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`)
+* **set-status-step-image**: (optional) image to use for the fetch-git-information step (default to `registry.access.redhat.com/ubi8/ubi:8.1`)
 
 ### Workspaces
 

@@ -40,6 +40,7 @@ This task publishes build record to [DevOps Insights](https://cloud.ibm.com/docs
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
+* **publish-build-record-step-image**: (optional) image to use for the publish-build-record step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 
 ## doi-publish-testrecord
 This task publishes test record(s) to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-publishing-test-data)
@@ -53,6 +54,7 @@ This task publishes test record(s) to [DevOps Insights](https://cloud.ibm.com/do
 * **ibmcloud-api**: (optional) the ibmcloud api. Default to https://cloud.ibm.com
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
+* **publish-testrecord-step-image**: (optional) Image to use for the publish-testrecord step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
 ## doi-publish-deployrecord
@@ -68,6 +70,7 @@ This task publishes deploy record to [DevOps Insights](https://cloud.ibm.com/doc
 * **ibmcloud-api**: (optional) the ibmcloud api. Default to https://cloud.ibm.com
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
+* **publish-deployrecord-step-image**: (optional) Image to use for the publish-deployrecord step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
 ## doi-evaluate-gate
@@ -81,4 +84,5 @@ This task evaluates [DevOps Insights gate policy](https://cloud.ibm.com/docs/Con
 * **ibmcloud-api**: (optional) the ibmcloud api. Default to https://cloud.ibm.com
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
+* **evaluate-gate-step-image**: (optional) image to use for the evaluate-gate step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
