@@ -222,6 +222,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a  _D
 * **container-registry-apikey-secret-key**: (optional) field in the secret that contains the api key used to connect to ibmcloud container registry. Default to `apikey`
 * **check-step-image**: (optional) image to use for the check (pre-build) step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 * **cluster-setup-step-image**: (optional) image to use for the cluster setup step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
+* **dind-image**: (optional) image to use for the Docker-in-Docker sidecar. Default to `icr.io/continuous-delivery/pipeline/docker:19.03.15-dind`
 
 ### Results
 
