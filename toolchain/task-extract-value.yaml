@@ -13,6 +13,9 @@ spec:
       default: toolchain.json
     - name: expression
       description: A valid jq expression which is used to search
+    - name: extract-value-jq-step-image
+      description: image to use for the extract-value-jq step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -28,7 +31,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: extract-value-jq
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.extract-value-jq-step-image)
       env:
         - name: RAW
           value: $(params.raw)

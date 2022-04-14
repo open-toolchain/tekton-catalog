@@ -35,6 +35,9 @@ spec:
     - name: toolchain-apikey-secret-key
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
+    - name: publish-deployrecord-step-image
+      description: image to use for the publish-deployrecord step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -44,7 +47,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: publish-deployrecord
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.publish-deployrecord-step-image)
       env:
         - name: IBM_CLOUD_API
           value: $(params.ibmcloud-api)

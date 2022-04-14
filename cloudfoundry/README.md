@@ -21,17 +21,18 @@
 
 ### Parameters
 
-*  **region**: (Optional) Name of the region for IBM Public Cloud Cloud Foundry operation. Will default to the toolchain region if none or empty value. Accessible as `${CF_REGION}` in the cf commands snippet.
-*  **cf-org**: Name of organization to be targeted. Accessible as `${CF_ORG}` in the cf commands snippet.
-*  **cf-space**: Name of space to be targeted. Accessible as `${CF_SPACE}` in the cf commands snippet.
-*  **cf-app**: Name of the CF application to be managed. Accessible as `${CF_APP}` in the cf commands snippet.
+* **region**: (Optional) Name of the region for IBM Public Cloud Cloud Foundry operation. Will default to the toolchain region if none or empty value. Accessible as `${CF_REGION}` in the cf commands snippet.
+* **cf-org**: Name of organization to be targeted. Accessible as `${CF_ORG}` in the cf commands snippet.
+* **cf-space**: Name of space to be targeted. Accessible as `${CF_SPACE}` in the cf commands snippet.
+* **cf-app**: Name of the CF application to be managed. Accessible as `${CF_APP}` in the cf commands snippet.
 * **setup-script**: (optional) script that typically set up environment before the _cf-commands_ script execution.
-*  **cf-commands**: (Optional) The snippet with ibmcloud cf command(s) to run. Default to `ibmcloud cf push "${CF_APP}"`
+* **cf-commands**: (Optional) The snippet with ibmcloud cf command(s) to run. Default to `ibmcloud cf push "${CF_APP}"`
 * **post-execution-script**: (optional) script that get executed after the cf-commands script has been executed.
-*  **ibmcloud-api**: (Optional) the ibmcloud api. Default to https://cloud.ibm.com
-*  **continuous-delivery-context-secret**: (Optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
-*  **cloud-foundry-apikey-secret-key**: field in the secret that contains the api key used to connect to cloud foundry. Default to `cf-apikey`
+* **ibmcloud-api**: (Optional) the ibmcloud api. Default to https://cloud.ibm.com
+* **continuous-delivery-context-secret**: (Optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
+* **cloud-foundry-apikey-secret-key**: field in the secret that contains the api key used to connect to cloud foundry. Default to `cf-apikey`
 * **shuttle-properties-file**: (optional) name of the properties file that contain properties to include in the environment for the `cf-commands` snippet/script execution.
+* **deploy-step-image**: (optional) image to use for the deploy step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
 ### Results

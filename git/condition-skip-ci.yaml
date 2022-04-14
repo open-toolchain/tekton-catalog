@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1alpha1
 kind: Condition
 metadata:
   name: skip-ci
+  labels:
+    tekton.dev/deprecated: true
 spec:
   params:
     - name: commit-message

@@ -107,7 +107,8 @@ The following controls have been identified from CIS Docker 1.13.0 that we can i
   - **cveignore**: (Optional) File path to cveignore
   - **exclude-dev**: (Default: `false`) Exclude dev dependencies during vulnerability scan
   - **vulnerability-report**: (Default: `./vulnerability.json`) Filepath to store generated Vulnerability report
-  - *cra-scan-image***: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`) Image to use for `scan` task
+  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`) Image to use for `scan` task
+  - **dind-image**: (Default to `icr.io/continuous-delivery/pipeline/docker:19.03.15-dind`) Image to use for the Docker-in-Docker sidecar 
 
 #### Implicit
 The following inputs are coming from tekton annotation:

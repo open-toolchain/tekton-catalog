@@ -39,6 +39,9 @@ spec:
     - name: cloud-foundry-apikey-secret-key
       description: field in the secret that contains the api key used to connect to cloud foundry
       default: "cf-apikey"
+    - name: deploy-step-image
+      description: image to use for the deploy step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -59,7 +62,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: deploy-cf-app
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.deploy-step-image)
       workingDir: $(workspaces.source.path)
       env:
         - name: CF_APP

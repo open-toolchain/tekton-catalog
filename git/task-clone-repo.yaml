@@ -32,6 +32,9 @@ spec:
         the git revision/commit to update the git HEAD to.
         Default is to mean only use the branch
       default: ""
+    - name: fetch-gitoken-step-image
+      description: image to use for the fetch-gitoken step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
     - name: git-client-image
       description: The image to use to run git clone commands
       default: alpine/git
@@ -93,7 +96,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: fetch-git-token
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.fetch-gitoken-step-image)
       env:
         - name: REPOSITORY
           value: $(params.repository)

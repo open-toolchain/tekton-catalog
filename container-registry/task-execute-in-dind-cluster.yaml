@@ -64,6 +64,15 @@ spec:
         docker inspect ${IMAGE_URL}:${IMAGE_TAG}
         docker push ${IMAGE_URL}:${IMAGE_TAG}
     #
+    - name: check-step-image
+      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+    - name: cluster-setup-step-image
+      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+    - name: dind-image
+      description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:19.03.15-dind)
+      default: "icr.io/continuous-delivery/pipeline/docker:19.03.15-dind"
     - name: properties-file
       description: file containing properties out of the docker in docker task
       default: build.properties
@@ -100,7 +109,7 @@ spec:
         value: $(params.pipeline-debug)
   steps:
     - name: check-registry
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.check-step-image)
       workingDir: /steps
       env:
         - name: API_KEY
@@ -285,7 +294,7 @@ spec:
           mountPath: /cd-config/secure-properties
   sidecars:
     - name: setup-docker-build-cluster
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: $(params.cluster-setup-step-image)
       env:
         - name: THE_POD_IP
           valueFrom:
@@ -348,10 +357,8 @@ spec:
             export BUILD_CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
 
-          echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s"
-          CLUSTER_CONFIG_COMMAND=$(ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME" --export -s)
-          echo "$CLUSTER_CONFIG_COMMAND"
-          eval $CLUSTER_CONFIG_COMMAND
+          echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME""
+          ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME"
 
           echo "Checking cluster namespace $BUILD_CLUSTER_NAMESPACE"
           if ! kubectl get namespace "$BUILD_CLUSTER_NAMESPACE"; then
@@ -380,7 +387,7 @@ spec:
               spec:
                 containers:
                 - name: docker
-                  image: docker:dind
+                  image: $(params.dind-image)
                   env:
                   - name: DOCKER_TLS_CERTDIR
                     value: ''

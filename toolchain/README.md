@@ -35,6 +35,7 @@ You have to provide a jq expression and the targeted config map's details.
 - **config-map-name**: (Default: `toolchain`) The name of the ConfigMap
 - **config-map-key**: (Default: `toolchain.json`) The key of the ConfigMap
 - **expression**: A valid jq expression which is used to search
+- **extract-value-jq-step-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`) image to use for the extract-value-jq step
 - **pipeline-debug**: (Default: `"0"`) enable pipeline debug mode
 
 ### Usage
@@ -109,4 +110,5 @@ This task helps to create or update mappings between Toolchains & Deployables.
 * **ibmcloud-api**: (optional) the ibmcloud api. Default to https://cloud.ibm.com
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
+* **publish-deployable-mapping-step-image**: (optional) image to use for the publish-deployable-mapping step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
