@@ -28,6 +28,8 @@ spec:
       default: "output/thebuild.properties"
     - name: git-credentials-json-file
       default: "output/secrets/thecredentials.json"
+    - name: directory-name
+      default: "."
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -52,7 +54,7 @@ spec:
         - name: git-access-token
           value: $(params.git-access-token)
         - name: directory-name
-          value: "."
+          value: "$(params.directory-name)"
         - name: properties-file
           value: $(params.properties-file)
         - name: git-credentials-json-file
@@ -73,7 +75,7 @@ spec:
         - name: repository
           value: $(tasks.pipeline-git-event-clone-task.results.git-repository)
         - name: directory-name
-          value: "."
+          value: $(tasks.pipeline-git-event-clone-task.results.clone-directory)
         - name: properties-file
           value: $(params.properties-file)
         - name: git-credentials-json-file
