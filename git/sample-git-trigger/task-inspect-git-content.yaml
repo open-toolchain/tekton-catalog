@@ -41,7 +41,7 @@ spec:
           echo ""
           # show the directory content as a tree
           echo "##############"
-          apt-get install tree
+          yum install tree
           echo "Executing 'tree'"
           tree
           echo ""
