@@ -35,15 +35,14 @@ spec:
       args:
         - |
           cd "$DIRECTORY_NAME"
+          pwd
           # show the git content
           echo "Executing 'git show-branch --all'"
           git show-branch --all
           echo ""
-          # show the directory content as a tree
+          # show the directory content recursively
           echo "##############"
-          yum install tree
-          echo "Executing 'tree'"
-          tree
+          ls -l -R
           echo ""
           # show the README.md content
           echo "##############"
