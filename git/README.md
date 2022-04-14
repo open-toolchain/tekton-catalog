@@ -69,6 +69,7 @@ Git integration clone task
 * **git-branch**: The active branch for the repository
 * **git-commit**: The current commit id that was cloned
 * **git-user**: The auth user that cloned the repository
+* **clone-directory**: The directory where the cloned repository content is located
 
 ### Outcome
 The output of this task is the repository cloned into the directory on the workspace `workspace`.

@@ -34,21 +34,15 @@ spec:
       command: ["/bin/sh", "-c"]
       args:
         - |
-          if [ -z "$DIRECTORY_NAME" ]; then
-            # Find the "humanish" part of the git source repository that corresponds to the clone directory
-            # REPOSITORY contains the repository url and may end with .git suffix
-            DIRECTORY_NAME=$(basename "${REPOSITORY##*/}" .git)
-          fi
           cd "$DIRECTORY_NAME"
+          pwd
           # show the git content
           echo "Executing 'git show-branch --all'"
           git show-branch --all
           echo ""
-          # show the directory content as a tree
+          # show the directory content recursively
           echo "##############"
-          apt-get install tree
-          echo "Executing 'tree'"
-          tree
+          ls -l -R
           echo ""
           # show the README.md content
           echo "##############"
@@ -70,3 +64,4 @@ spec:
           echo "params.git-branch: $(params.git-branch)"
           echo "params.git-commit: $(params.git-commit)"
           echo "params.git-user: $(params.git-user)"
+          echo "params.directory-name: $(params.directory-name)"
