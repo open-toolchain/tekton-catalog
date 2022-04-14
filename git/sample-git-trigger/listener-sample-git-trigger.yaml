@@ -24,6 +24,8 @@ spec:
     - name: pr-revision
       description: the commit id/sha for the PullRequest
       default: " "
+    - name: directory-name
+      default: "."
     - name: triggerName
       default: "git-pr-process"
     - name: pipeline-debug
@@ -50,6 +52,8 @@ spec:
         params:
           - name: git-access-token
             value: $(params.git-access-token)
+          - name: directory-name
+            value: $(params.directory-name)
           - name: repository
             value: $(params.repository)
           - name: branch
