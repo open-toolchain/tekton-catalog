@@ -64,6 +64,10 @@ Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usa
 
 - **[slack-post-message](./slack/README.md)**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
+## SonarQube related tasks
+
+- **[sonarqube-scan](./sonarqube/README.md)**: This task starts a SonarQube scan for the code in a workspace using the SonarQube server integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/devsecops?topic=ContinuousDelivery-sonarqube).
+
 ## Tester related tasks
 
 - **[tester-run-tests](./tester/README.md#tester-run-tests)**: This task allows to invoke a script to execute test.

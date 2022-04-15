@@ -1,0 +1,134 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: sample-with-sonarqube
+spec:
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: repository
+      description: the git repo containing source code. If empty, the repository url will be found from toolchain
+      default: ""
+    - name: branch
+      description: the branch for the git repo
+      default: "master"
+    - name: revision
+      description: the git revision/commit for the git repo
+      default: ""
+    - name: directory-name
+      default: ""
+    - name: app-name
+      description: application name
+    - name: build-script
+      description: script involved for the build
+    - name: scan-step-image
+      default: icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli@sha256:af782cf68bbfe32982aac08e3215d95f57c9ce49444ab8bfa017819ba4905548
+    - name: sonarqube-project-key
+      default: ""
+    - name: sonar-scan-command
+      description: command for sonarqube scan
+    - name: doi-policy
+      description: DevOps Insights polciy to evaluate
+      default: "my-policy"
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      default: "0"
+
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: sample-with-sonarqube-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: sample-with-sonarqube-$(uid)
+      spec:
+        pipelineRef:
+          name: sample-with-sonarqube
+        params:
+          - name: ibmcloud-api
+            value: $(params.ibmcloud-api)
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: revision
+            value: $(params.revision)
+          - name: app-name
+            value: $(params.app-name)
+          - name: directory-name
+            value: $(params.directory-name)
+          - name: build-script
+            value: $(params.build-script)
+          - name: scan-step-image
+            value: $(params.scan-step-image)
+          - name: sonarqube-project-key
+            value: $(params.sonarqube-project-key)
+          - name: sonar-scan-command
+            value: $(params.sonar-scan-command)
+          - name: doi-policy
+            value: $(params.doi-policy)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: sample-with-sonarqube-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: default
+spec:
+  params:
+    - name: sonarqube-project-key
+      value: "default-sonarqube-sample"
+    - name: sonar-scan-command
+      value: sonar-scanner -Dsonar.working.directory=$SONAR_DIR
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: default
+spec:
+  triggers:
+    - binding:
+        name: default
+      template:
+        name: sample-with-sonarqube
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: maven
+spec:
+  params:
+    - name: sonarqube-project-key
+      value: "maven-sonarqube-sample"
+    - name: build-script
+      value: mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" clean compile
+    - name: scan-step-image
+      value: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+    - name: sonar-scan-command
+      value: mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.password="${SONAR_PASS}" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.projectKey="$SONAR_PROJECT_KEY" -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$SONAR_DIR" sonar:sonar
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: maven
+spec:
+  triggers:
+    - binding:
+        name: maven
+      template:
+        name: sample-with-sonarqube

@@ -1,0 +1,295 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: sonarqube-scan
+spec:
+  params:
+    - name: sonarqube-name
+      description: |
+        name of the sonarqube toolcard integration in the toolchain
+        (default to "" meaning the first sonarqube integration found will be used)
+      default: ""
+    - name: sonarqube-project-key
+      description: |
+        project key of the sonarqube project (default to "" meaning a project key will be computed out of the toolchain name)
+      default: ""
+    - name: path-to-sources
+      description: the path to the sources (default to `.` meaning current directory)
+      default: .
+    - name: prepare-step-image
+      description: image used for the prepare step
+      default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.3
+    - name: scan-step-image
+      description: image used for the scan step
+      default: icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli@sha256:af782cf68bbfe32982aac08e3215d95f57c9ce49444ab8bfa017819ba4905548
+    - name: post-to-doi-step-image
+      description: image used for the post to doi step
+      default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.3
+    - name: sonar-scan-command
+      description: |
+        Sonar scan command to use. Default to `sonar-scanner -Dsonar.working.directory=$SONAR_DIR`.
+        The following environment variables are available:
+        - SONAR_DIR : Sonar Scanner Working directory
+        - SONAR_HOST_URL: URL of the sonarqube server
+        - SONAR_USER : Sonar Userid
+        - SONAR_PASS : Sonar Password
+        - SONAR_PROJECT_KEY: Sonar Project key of the sonarqube project
+        - WORKSPACE_PATH: Path to the workspace
+        - PATH_TO_SOURCES : workspace relative path to the sources to scan
+
+        The command can be another kind of command for maven java project like
+          mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.password="${SONAR_PASS}"
+           -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.projectKey="$SONAR_PROJECT_KEY"
+           -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$SONAR_DIR" sonar:sonar
+      default: "sonar-scanner -Dsonar.working.directory=$SONAR_DIR"
+    - name: doi-app-name
+      description: Logical application name for DevOps Insights post
+      default: ""
+    - name: doi-toolchain-id
+      description: |
+        Toolchain service instance id used for DevOps Insights post.
+        Default to the toolchain containing the CD Tekton PipelineRun currently executed
+      default: ""
+    - name: doi-build-number
+      description: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
+      default: ""
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: continuous-delivery-context-secret
+      description: Name of the secret containing the continuous delivery pipeline context secrets
+      default: "secure-properties"
+    - name: toolchain-apikey-secret-key
+      description: field in the secret that contains the api key used to access toolchain and DOI instance
+      default: "toolchain-apikey"
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      default: "0"
+  workspaces:
+    - name: workspace
+      description: A workspace where the source is expected to be
+      mountPath: /artifacts
+  steps:
+    - name: prepare
+      image: $(params.prepare-step-image)
+      workingDir: $(workspaces.workspace.path)
+      env:
+        - name: SONARQUBE_NAME
+          value: $(params.sonarqube-name)
+        - name: SONARQUBE_PROJECT_KEY
+          value: $(params.sonarqube-project-key)
+        - name: WORKSPACE_PATH
+          value: $(workspaces.workspace.path)
+        - name: PATH_TO_SOURCES
+          value: $(params.path-to-sources)
+      script: |
+        #!/bin/bash
+
+        # Find the sonarqube toolcard
+        if [ "$SONARQUBE_NAME" ]; then
+          echo "Retrieving the Sonarqube integration with name $SONARQUBE_NAME"
+          NAME_SELECTOR="$SONARQUBE_NAME"
+        else
+          NAME_SELECTOR=".*"
+        fi
+        SONARQUBE_INTEGRATION=$(cat /cd-config/toolchain.json | jq --arg name_selector "$NAME_SELECTOR" -c -r '.services[] | select (.service_id=="sonarqube") | select (.parameters.name|test($name_selector))')
+
+        export SONAR_INSTANCE
+        export SONAR_HOST_URL
+        export SONAR_USER
+        export SONAR_PASS
+        export SONAR_CONFIGURED
+
+        if [ -n "$SONARQUBE_INTEGRATION" ]; then
+          read -r SONAR_INSTANCE <<< "$(echo "$SONARQUBE_INTEGRATION" | jq -r '.parameters.name')"
+          read -r SONAR_HOST_URL <<< "$(echo "$SONARQUBE_INTEGRATION" | jq -r '.parameters.dashboard_url' | sed 's:/*$::')"
+          read -r SONAR_USER <<< "$(echo "$SONARQUBE_INTEGRATION" | jq -r '.parameters.user_login')"
+          read -r SONAR_PASS <<< "$(echo "$SONARQUBE_INTEGRATION" | jq -r '.parameters.user_password')"
+        else
+          printf "SonarQube is not configured"
+          exit 1
+        fi
+
+        # Update the sonar-project.properties
+        if [ -f "$WORKSPACE_PATH/$PATH_TO_SOURCES/sonar-project.properties" ]; then
+          printf "Using user provided 'sonar-project.properties' file" >&2
+        else
+          printf "Creating $WORKSPACE_PATH/$PATH_TO_SOURCES/sonar-project.properties" >&2
+          if [ "$SONARQUBE_PROJECT_KEY" ]; then
+            echo "Using provided Sonarqube Project key"
+          else
+            SONARQUBE_PROJECT_KEY="$(cat /cd-config/toolchain.json | jq -r '.name')-check"
+          fi
+          echo "SonarQube project key is $SONARQUBE_PROJECT_KEY"
+          touch $WORKSPACE_PATH/$PATH_TO_SOURCES/sonar-project.properties
+
+          cat << EOF > $WORKSPACE_PATH/$PATH_TO_SOURCES/sonar-project.properties
+        sonar.projectKey=$SONARQUBE_PROJECT_KEY
+        sonar.host.url=$SONAR_HOST_URL
+        sonar.sources=.
+        sonar.login=$SONAR_USER
+        sonar.password=$SONAR_PASS
+        EOF
+        fi
+
+        # Keep properties for next step(s)
+        SONAR_DIR="/steps/__sonar_scan__"
+        mkdir -p $SONAR_DIR
+        SONAR_PROJECT_KEY=$(< $WORKSPACE_PATH/$PATH_TO_SOURCES/sonar-project.properties grep sonar.projectKey | cut -d "=" -f2)
+
+        echo "SONAR_DIR=$SONAR_DIR" >> /steps/step.properties
+        echo "SONAR_HOST_URL=$SONAR_HOST_URL" >> /steps/step.properties
+        echo "SONAR_USER=$SONAR_USER" >> /steps/step.properties
+        echo "SONAR_PASS=$SONAR_PASS" >> /steps/step.properties
+        echo "SONAR_PROJECT_KEY=$SONAR_PROJECT_KEY" >> /steps/step.properties
+
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
+    - name: scan
+      image: $(params.scan-step-image)
+      workingDir: $(workspaces.workspace.path)
+      env:
+        - name: WORKSPACE_PATH
+          value: $(workspaces.workspace.path)
+        - name: PATH_TO_SOURCES
+          value: $(params.path-to-sources)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
+
+        source /steps/step.properties
+        export $(cut -d= -f1 /steps/step.properties)
+
+        cd $PATH_TO_SOURCES
+
+        $(params.sonar-scan-command)
+
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
+    - name: post-to-doi
+      image: $(params.post-to-doi-step-image)
+      workingDir: $(workspaces.workspace.path)
+      env:
+        - name: IBM_CLOUD_API
+          value: $(params.ibmcloud-api)
+        - name: IBM_CLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.toolchain-apikey-secret-key)
+              optional: true
+        - name: DOI_APP_NAME
+          value: $(params.doi-app-name)
+        - name: DOI_TOOLCHAIN_ID
+          value: $(params.doi-toolchain-id)
+        - name: DOI_BUILD_NUMBER
+          value: $(params.doi-build-number)
+        - name: DEFAULT_BUILD_NUMBER
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+        set -e -o pipefail
+
+        # DOI processing is made here to self-contain generated sonarqube token manipulation inside this task
+        if [ $PIPELINE_DEBUG == 1 ]; then
+          pwd
+          env
+          trap env EXIT
+          set -x
+        fi
+
+        source /steps/step.properties
+        export $(cut -d= -f1 /steps/step.properties)
+
+        if [ -z "$DOI_TOOLCHAIN_ID" ]; then
+          dra_instance_number=$(jq -r 'reduce .services[] as $service (0; if $service.service_id=="draservicebroker" then .+1 else . end)' /cd-config/toolchain.json | tr -d '\n')
+          if [ "$dra_instance_number" == "1" ]; then
+            DOI_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
+          fi
+        fi
+
+        if [ -z "$DOI_TOOLCHAIN_ID" ]; then
+          echo "No Toolchain defined with Devops Insight. Exiting"
+          exit 0
+        fi
+
+        # Default build number if needed
+        if [ -z "$BUILD_NUMBER" ]; then
+          BUILD_NUMBER="$DEFAULT_BUILD_NUMBER"
+        fi
+
+        # Force doi plugin update until https://github.ibm.com/oneibmcloud/DevOps-Insights/issues/9268 fix
+        # which is part of the doi plugin version 0.3.5 is included in the base image
+        ibmcloud plugin update doi -f
+
+        ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
+
+        ONE_TIME_TOKEN_NAME=$(date +%s%3N)
+
+        # create a one-time token
+        curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
+          -X POST "${SONAR_HOST_URL}/api/user_tokens/generate?name=${ONE_TIME_TOKEN_NAME}" | \
+          jq -r '.token' > /steps/sonarqube-token
+
+        ibmcloud doi publishtestrecord \
+          --logicalappname "$DOI_APP_NAME" \
+          --buildnumber "$BUILD_NUMBER" \
+          --toolchainid="$DOI_TOOLCHAIN_ID" \
+          --filelocation "$SONAR_DIR/report-task.txt" \
+          --type sonarqube \
+          --sqtoken "$(cat /steps/sonarqube-token)"
+
+        # we have created a one-time token, revoke it at the server to clean up after ourselves
+        curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
+          -X POST "${SONAR_HOST_URL}/api/user_tokens/revoke?name=${ONE_TIME_TOKEN_NAME}"
+
+      volumeMounts:
+        - mountPath: /cd-config
+          name: cd-config-volume
+        - mountPath: /steps
+          name: steps-volume
+        - name: environment-properties
+          mountPath: /cd-config/environment-properties
+        - name: secure-properties
+          mountPath: /cd-config/secure-properties
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties

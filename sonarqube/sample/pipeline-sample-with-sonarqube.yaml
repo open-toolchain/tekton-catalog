@@ -1,0 +1,129 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sample-with-sonarqube
+spec:
+  params:
+    - name: ibmcloud-api
+      description: the ibmcloud api
+      default: https://cloud.ibm.com
+    - name: repository
+      description: the git repo containing source code. If empty, the repository url will be found from toolchain
+      default: ""
+    - name: branch
+      description: the branch for the git repo
+      default: "master"
+    - name: revision
+      description: the git revision/commit for the git repo
+      default: ""
+    - name: directory-name
+      description: the directory to clone
+      default: ""
+    - name: app-name
+      description: application name
+    - name: sonarqube-project-key
+    - name: build-script
+      description: script executed in build task
+      default: ""
+    - name: scan-step-image
+    - name: sonar-scan-command
+      description: command for sonarqube scan
+    - name: doi-policy
+      description: DevOps Insights polciy to evaluate
+      default: "sonarqube-policy"
+    - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      default: "0"
+
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: git-clone
+      taskRef:
+        name: git-clone-repo
+      params:
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: continuous-delivery-context-secret
+          value: "secure-properties"
+        - name: ibmcloud-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: repository
+          value: "$(params.repository)"
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.revision)
+        - name: directory-name
+          value: "$(params.directory-name)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: publish-doi-buildrecord
+      taskRef:
+        name: doi-publish-buildrecord
+      params:
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: toolchain-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: app-name
+          value: $(params.app-name)
+        - name: git-repository
+          value: $(tasks.git-clone.results.git-repository)
+        - name: git-branch
+          value: $(tasks.git-clone.results.git-branch)
+        - name: git-commit
+          value: $(tasks.git-clone.results.git-commit)
+    - name: build
+      runAfter: [git-clone]
+      taskRef:
+        name: toolchain-build
+      params:
+        - name: custom-script
+          value: |
+            cd ${WORKSPACE_PATH}/$(tasks.git-clone.results.clone-directory)
+            pwd
+            $(params.build-script)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+    - name: sonarqube-scan
+      runAfter: [build]
+      taskRef:
+        name: sonarqube-scan
+      params:
+        - name: ibmcloud-api
+          value: $(params.ibmcloud-api)
+        - name: toolchain-apikey-secret-key
+          value: "toolchain-apikey"
+        - name: doi-app-name
+          value: $(params.app-name)
+        - name: path-to-sources
+          value: $(tasks.git-clone.results.clone-directory)
+        - name: scan-step-image
+          value: "$(params.scan-step-image)"
+        - name: sonar-scan-command
+          value: $(params.sonar-scan-command)
+        - name: sonarqube-project-key
+          value: "$(params.sonarqube-project-key)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+    - name: final-gate
+      runAfter: [sonarqube-scan]
+      taskRef:
+        name: doi-evaluate-gate
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: policy
+          value: $(params.doi-policy)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
