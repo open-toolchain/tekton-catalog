@@ -55,6 +55,10 @@ spec:
       description: Filepath to store generated Bill of Materials. Default to `./bom.json`
     - name: docker-build-flags
       description: (Optional) Customize docker build command for build stage scanning
+    - name: docker-build-context
+      description: (Optional) If specified, CRA will use the directory in the path parameter as docker build context
+    - name: dockerfile-pattern
+      description: (Optional) Pattern to identify Dockerfile in the repository
     - name: docker-registry-url
       description: Registry url to use for docker login
     - name: docker-registry-username
@@ -180,6 +184,10 @@ spec:
           value: $(params.bom-report)
         - name: docker-build-flags
           value: $(params.docker-build-flags)
+        - name: docker-build-context
+          value: $(params.docker-build-context)
+        - name: dockerfile-pattern
+          value: $(params.dockerfile-pattern)
         - name: docker-registry-url
           value: $(params.docker-registry-url)
         - name: docker-registry-username

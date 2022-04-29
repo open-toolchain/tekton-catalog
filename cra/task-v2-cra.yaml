@@ -73,6 +73,12 @@ spec:
     - name: docker-build-flags
       description: (Optional) Customize docker build command for build stage scanning
       default: ""
+    - name: docker-build-context
+      description: (Optional) If specified, CRA will use the directory in the path parameter as docker build context
+      default: "false"
+    - name: dockerfile-pattern
+      description: (Optional) Pattern to identify Dockerfile in the repository
+      default: "Dockerfile"
     - name: docker-registry-url
       description: Registry url to use for docker login
       default: ""
@@ -271,6 +277,12 @@ spec:
           fi
           if [ -n "$(params.docker-build-flags)" ]; then
             BOM_CMD+=(--dockerbuildflags "$(params.docker-build-flags)")
+          fi
+          if [ "$(params.docker-build-context)" == "true" ]; then
+            BOM_CMD+=(--dockerbuildcontext)
+          fi
+          if [ -n "$(params.dockerfile-pattern)" ]; then
+            BOM_CMD+=(--dockerfilepattern "$(params.dockerfile-pattern)")
           fi
           echo "${BOM_CMD[@]}"
           "${BOM_CMD[@]}"

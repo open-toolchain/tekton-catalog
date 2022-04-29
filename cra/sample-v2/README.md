@@ -24,7 +24,7 @@ Click on Add Tool button, select DevOps Insights card and click on Create Integr
 Now, you need to add a card for your code repository to the toolchain.  Click on Add tool button then select the GitHub card or the Git Repos and Issue Tracking card to add the card to the toolchain.
 
 ## Add a card for the code repository where Tekton tasks have been defined
-Click on Add tool button and then click on GitHub card.  Add the existing repository https://github.com/open-toolchain/tekton-catalog.
+Click on Add tool button and then click on GitHub Enterprise Whitewater card.  Add the existing repository https://github.ibm.com/open-toolchain/tekton-catalog.
 
 ## Add and Configure a Tekton pipeline to your toolchain
 - In this step, you will add a Tekton pipeline to the toolchain. Click on Add tool button and then click on Delivery Pipeline card.  Specify a Pipeline Name. For Pipeline Type, select Tekton.  Click Create Integration.

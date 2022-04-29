@@ -97,6 +97,8 @@ The following controls have been identified from CIS Docker 1.13.0 that we can i
   - **asset-type**: (Default: `all`) Security checks to run (apps, image, os, all)
   - **bom-report**: (Default: `./bom.json`) Filepath to store generated Bill of Materials
   - **docker-build-flags**: (Optional) Customize docker build command for build stage scanning
+  - **docker-build-context**: (Optional) If specified, CRA will use the directory in the path parameter as docker build context
+  - **dockerfile-pattern**: (Optional) Pattern to identify Dockerfile in the repository
   - **docker-registry-url**: (Optional) Registry url to use for docker login. Valid only if combined with `docker-registry-username` and `docker-registry-secret`
   - **docker-registry-username**: (Optional) Username to authenticate for docker-registry-url. Valid only if combined with `docker-registry-url` and `docker-registry-secret`
   - **gradle-exclude-configs**: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
@@ -166,6 +168,10 @@ Example usage in a pipeline.
           value: $(params.bom-report)
         - name: docker-build-flags
           value: $(params.docker-build-flags)
+        - name: docker-build-context
+          value: $(params.docker-build-context)
+        - name: dockerfile-pattern
+          value: $(params.dockerfile-pattern)
         - name: docker-registry-url
           value: $(params.docker-registry-url)
         - name: docker-registry-username

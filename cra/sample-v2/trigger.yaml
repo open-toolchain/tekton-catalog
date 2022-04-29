@@ -78,6 +78,10 @@ spec:
     - name: docker-build-flags
       description: (Optional) Customize docker build command for build stage scanning
       default: ""
+    - name: docker-build-context
+      description: (Optional) If specified, CRA will use the directory in the path parameter as docker build context
+    - name: dockerfile-pattern
+      description: (Optional) Pattern to identify Dockerfile in the repository
     - name: docker-registry-secret
       description: Secret to authenticate for docker-registry-url
     - name: docker-registry-url
@@ -221,6 +225,10 @@ spec:
             value: $(params.bom-report)
           - name: docker-build-flags
             value: $(params.docker-build-flags)
+          - name: docker-build-context
+            value: $(params.docker-build-context)
+          - name: dockerfile-pattern
+            value: $(params.dockerfile-pattern)
           - name: docker-registry-url
             value: $(params.docker-registry-url)
           - name: docker-registry-username
