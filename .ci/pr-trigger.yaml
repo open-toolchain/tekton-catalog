@@ -39,7 +39,7 @@ spec:
         name: pr-status-$(uid)
       spec:
         pipelineRef:
-          name: pr-pipeline
+          name: pipeline-pr
         params:
           - name: repository
             value: $(params.repository)

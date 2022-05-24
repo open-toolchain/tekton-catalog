@@ -33,7 +33,7 @@ spec:
         name: ci-status-$(uid)
       spec:
         pipelineRef:
-          name: ci-pipeline
+          name: pipeline-ci
         params:
           - name: repository
             value: $(params.repository)
