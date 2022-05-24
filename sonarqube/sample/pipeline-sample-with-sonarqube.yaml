@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
@@ -95,7 +96,7 @@ spec:
     - name: sonarqube-scan
       runAfter: [build]
       taskRef:
-        name: sonarqube-scan
+        name: sonarqube-run-scan
       params:
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)

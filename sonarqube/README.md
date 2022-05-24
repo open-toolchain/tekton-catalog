@@ -2,7 +2,7 @@
 
 # Tasks
 
-- **[sonarqube-scan](#sonarqube-scan)**: This task starts a SonarQube scan for the code in a workspace using the SonarQube server integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/devsecops?topic=ContinuousDelivery-sonarqube) and upload the test results to DevOps Insights (optional)
+- **[sonarqube-run-scan](#sonarqube-run-scan)**: This task starts a SonarQube scan for the code in a workspace using the SonarQube server integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/devsecops?topic=ContinuousDelivery-sonarqube) and upload the test results to DevOps Insights (optional)
 
 ## Install the Tasks
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
@@ -10,11 +10,11 @@
 
 ## Usages
 
-- The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `sonarqube-scan` task.
+- The `sample` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `sonarqube-run-scan` task.
 
   See the documentation [here](./sample/README.md)
 
-## sonarqube-scan
+## sonarqube-run-scan
 
 This task starts a SonarQube scan for the code in a workspace using the SonarQube server integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/devsecops?topic=ContinuousDelivery-sonarqube) and upload the test results to DevOps Insights (optional)
 

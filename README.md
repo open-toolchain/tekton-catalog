@@ -66,7 +66,7 @@ Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usa
 
 ## SonarQube related tasks
 
-- **[sonarqube-scan](./sonarqube/README.md)**: This task starts a SonarQube scan for the code in a workspace using the SonarQube server integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/devsecops?topic=ContinuousDelivery-sonarqube).
+- **[sonarqube-run-scan](./sonarqube/README.md)**: This task starts a SonarQube scan for the code in a workspace using the SonarQube server integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/devsecops?topic=ContinuousDelivery-sonarqube).
 
 ## Tester related tasks
 

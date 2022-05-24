@@ -1,5 +1,5 @@
 # Sonarqube Scan Task example usage
-The `sample` sub-directory contains an `event-listener-container-registry` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `sonarqube-scan`.
+The `sample` sub-directory contains an `event-listener-container-registry` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `sonarqube-run-scan`.
 
 **Note:** this sample also relies on the `git-clone-repo`, `doi-publish-buildrecord`, `toolchain-build` and `doi-evaluate-gate`  tasks to clone the application, perform a build script, push the appropriate information to DevOps Insights and use the DevOps insights gate for evaluation.
 

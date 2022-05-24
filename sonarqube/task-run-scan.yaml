@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: sonarqube-scan
+  name: sonarqube-run-scan
 spec:
   params:
     - name: sonarqube-name
