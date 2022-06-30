@@ -237,19 +237,29 @@ spec:
             fi
           fi
 
-          ibmcloud cr login
-
           if [ -n "$(params.resource-group)" ]; then
             ibmcloud target -g $(params.resource-group)
           fi
 
           if [ -n "$(params.registry-region)" ]; then
             echo -e "\nUpdating IBM Cloud Container Registry region"
-            ibmcloud cr region-set $(params.registry-region)
+            # Log container registry to the appropriate region
+            if ibmcloud cr region-set $(params.registry-region) > /dev/null 2>&1; then
+              echo "ibmcloud container registry region set to $(params.registry-region)"
+            else
+              # the registry region specified is not supported - fallback on
+              # using ibmcloud target -r command to rely on region affinity
+              # for container registry region - for instance us-east does not have
+              # a container-registry service, it is defered to us-south
+              ibmcloud target -r $(params.registry-region)
+            fi
+            ibmcloud cr info
           fi
 
+          ibmcloud cr login
+
           if [ -n "$(params.docker-registry-url)" ] && [ -n "$(params.docker-registry-username)" ] && [ -n "$DOCKER_SECRET" ]; then
-            echo $DOCKER_SECRET | docker login $(params.docker-registry-url) -username $(params.docker-registry-username) ---password-stdin
+            echo $DOCKER_SECRET | docker login $(params.docker-registry-url) --username $(params.docker-registry-username) --password-stdin
           elif [ -n "$(params.docker-registry-url)" ] || [ -n "$(params.docker-registry-username)" ] || [ -n "$DOCKER_SECRET" ]; then
             echo "Registry url, username, and secret are required. Continuing without authentication."
           fi
@@ -258,7 +268,7 @@ spec:
             export IBMCLOUD_TRACE=true
           fi
 
-          echo -e "\n\nBeginning CRA discovery"
+          echo -e "\n\nBeginning CRA BOM Generation"
           BOM_CMD=(ibmcloud cra bom-generate --path $(params.path) --report $(params.bom-report) --asset-type $(params.asset-type) --region $TOOLCHAIN_REGION)
           if [ -n "$(params.gradle-exclude-configs)" ]; then
             BOM_CMD+=(--gradle.excludeconfigurations "$(params.gradle-exclude-configs)")
