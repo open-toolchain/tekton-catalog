@@ -240,18 +240,19 @@ spec:
           if [ -n "$(params.resource-group)" ]; then
             ibmcloud target -g $(params.resource-group)
           fi
-
-          if [ -n "$(params.registry-region)" ]; then
+          # if registry region is in the 'ibm:yp:<region>' format just keep the region part
+          REGISTRY_REGION=$(echo "$(params.registry-region)" | awk -F ':' '{print $NF;}')
+          if [ -n "${REGISTRY_REGION}" ]; then
             echo -e "\nUpdating IBM Cloud Container Registry region"
             # Log container registry to the appropriate region
-            if ibmcloud cr region-set $(params.registry-region) > /dev/null 2>&1; then
-              echo "ibmcloud container registry region set to $(params.registry-region)"
+            if ibmcloud cr region-set ${REGISTRY_REGION} > /dev/null 2>&1; then
+              echo "ibmcloud container registry region set to ${REGISTRY_REGION}"
             else
               # the registry region specified is not supported - fallback on
               # using ibmcloud target -r command to rely on region affinity
               # for container registry region - for instance us-east does not have
               # a container-registry service, it is defered to us-south
-              ibmcloud target -r $(params.registry-region)
+              ibmcloud target -r ${REGISTRY_REGION}
             fi
             ibmcloud cr info
           fi
