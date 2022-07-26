@@ -156,6 +156,10 @@ spec:
             fi
             # export the expected environment variables now that the container registry is logged in
             export REGISTRY_URL=$(ibmcloud cr info | grep -m1 -i '^Container Registry' | awk '{print $3;}')
+            #restore previous behaviour for us-east region -> map to us-south for icr
+            if [[ "${REGISTRY_URL}"=="icr.io" && "${REGISTRY_REGION}"=="us-east" ]]; then
+              REGISTRY_URL="us.icr.io"
+            fi
             export IMAGE_URL="${REGISTRY_URL}/${REGISTRY_NAMESPACE}/${IMAGE_NAME}"
           fi
 
