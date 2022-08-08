@@ -104,7 +104,7 @@ spec:
 
     # User control params
     - name: cra-scan-image
-      description: Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2`
+      description: Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8`
   workspaces:
     - name: artifacts
 

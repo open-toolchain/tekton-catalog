@@ -77,7 +77,7 @@ spec:
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8"
 
   stepTemplate:
     env:

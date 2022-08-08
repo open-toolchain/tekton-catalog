@@ -30,8 +30,8 @@ spec:
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
     - name: evaluate-gate-step-image
-      description: image to use for the evaluate-gate step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2"
+      description: image to use for the evaluate-gate step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"

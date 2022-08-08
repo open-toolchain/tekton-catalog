@@ -24,7 +24,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: inspect-git-content
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.2
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8
       env:
         - name: REPOSITORY
           value: $(params.repository)

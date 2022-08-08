@@ -19,13 +19,13 @@ spec:
       default: .
     - name: prepare-step-image
       description: image used for the prepare step
-      default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.3
+      default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8
     - name: scan-step-image
       description: image used for the scan step
       default: icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli@sha256:af782cf68bbfe32982aac08e3215d95f57c9ce49444ab8bfa017819ba4905548
     - name: post-to-doi-step-image
       description: image used for the post to doi step
-      default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.3
+      default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8
     - name: sonar-scan-command
       description: |
         Sonar scan command to use. Default to `sonar-scanner -Dsonar.working.directory=$SONAR_DIR`.

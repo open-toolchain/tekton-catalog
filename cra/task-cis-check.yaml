@@ -168,7 +168,7 @@ spec:
         - mountPath: /scripts
           name: retry-script
     - name: fetch-git-information
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.1
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.8
       env:
         - name: REPOSITORY
           value: $(params.repository)
