@@ -194,6 +194,14 @@ spec:
             source ./env-props
           fi
 
+          # install go cli for BOM go package dependency scanning if repo contains go.mod & yum package manager
+          if [[ $(find "$(params.path)" -name "go.mod" -type f) ]]; then
+            if ! [ -x "$(command -v go)" ] && [ -x "$(command -v yum)" ]; then
+              echo "go.mod found, installing go cli for CRA scanning."
+              yum module -y -q install go-toolset
+            fi
+          fi
+
           if [ -n "$SCRIPT_CONTENTS" ]; then
             echo "${SCRIPT_CONTENTS}" > ./input-script.sh
             source ./input-script.sh
