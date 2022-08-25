@@ -194,11 +194,15 @@ spec:
             source ./env-props
           fi
 
-          # install go cli for BOM go package dependency scanning if repo contains go.mod & yum package manager
+          # Install go cli for BOM go package dependency scanning if repo contains go.mod and go is not installed (get latest)
           if [[ $(find "$(params.path)" -name "go.mod" -type f) ]]; then
-            if ! [ -x "$(command -v go)" ] && [ -x "$(command -v yum)" ]; then
-              echo "go.mod found, installing go cli for CRA scanning."
-              yum module -y -q install go-toolset
+            if ! command -v go &>/dev/null; then
+                echo "go.mod found, installing go cli for CRA scanning."
+                curl -fsSLo- https://s.id/golang-linux | bash
+                export GOROOT="/home/$USER/go"
+                export GOPATH="/home/$USER/go/packages"
+                export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+                go version
             fi
           fi
 
@@ -240,6 +244,7 @@ spec:
             fi
           else
             ibmcloud plugin update cra -f
+            STATUS=$?
             if [ $STATUS -gt 0 ]; then
               echo "Error updating CRA plugin. Using version $CRA_VER"
             fi
