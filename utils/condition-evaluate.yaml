@@ -4,7 +4,7 @@ kind: Condition
 metadata:
   name: utils-evaluate
   labels:
-    tekton.dev/deprecated: true
+    tekton.dev/deprecated: "true"
 spec:
   params:
     - name: value
