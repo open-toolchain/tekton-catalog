@@ -12,6 +12,12 @@
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
 - Add this github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `toolchain`
 
+## Usages
+
+- The `sample-build` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `toolchain-build`.
+
+- The `sample-dm` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `toolchain-publish-deployable-mapping`.
+
 ## toolchain-build
 
 This task perform build operation on the given workspace. Default build operations managed are maven build for instance.
@@ -87,7 +93,7 @@ spec:
 
 ## toolchain-publish-deployable-mapping
 
-This task helps to create or update mappings between Toolchains & Deployables. 
+This task helps to create or update mappings between Toolchains & Deployables.
 
 ### Context - ConfigMap/Secret
 

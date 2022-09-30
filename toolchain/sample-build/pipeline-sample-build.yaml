@@ -1,0 +1,31 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-sample-build
+spec:
+  params:
+    - name: custom-script
+      description: The command(s) to run
+    - name: run-build-image
+      description: The name of the image used for the run-build step
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  workspaces:
+    - name: pipeline-ws
+  tasks:
+    - name: run
+      taskRef:
+        name: toolchain-build
+      workspaces:
+        - name: output
+          workspace: pipeline-ws
+      params:
+        - name: custom-script
+          value: $(params.custom-script)
+        - name: run-build-image
+          value: $(params.run-build-image)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

@@ -3,7 +3,7 @@ To configure Code Risk Analyzer for your repositories, you will need to take the
 - Create an empty Toolchain in Dallas location
 - Add DevOps Insights card to your Toolchain
 - Add a card for each code repository that you want to scan.  You can start with a single card and add more later.
-- Create a Tekton pipeline and configure it.  
+- Create a Tekton pipeline and configure it.
 
 Before you start, ensure that you have admin access to your code repositories.
 
@@ -11,7 +11,7 @@ Before you start, ensure that you have admin access to your code repositories.
 At this time, Code Risk Analyzer is supported only at Dallas location.  Your toolchain must be created Dallas location.
 
 ## Create an Empty Toolchain
-1. Login to your IBM Cloud account and go to the Toolchains page https://cloud.ibm.com/devops/toolchains?env_id=ibm:yp:us-south.  
+1. Login to your IBM Cloud account and go to the Toolchains page https://cloud.ibm.com/devops/toolchains?env_id=ibm:yp:us-south.
 
 2. Click on  `Create Toolchain`
 
@@ -52,8 +52,8 @@ Click on Add tool button and then click on GitHub card.  Add the existing reposi
 # Scanning your Pull Requests
 After the above set up is complete, follow these steps:
 - Open a Pull Request for your repository
-- The Code Risk Analyzer pipeline that you configured above will start running automatically. 
-- The pipeline first discovers the dependencies that your repository has.  These dependencies could be application packages, container images or OS pacakges. 
+- The Code Risk Analyzer pipeline that you configured above will start running automatically.
+- The pipeline first discovers the dependencies that your repository has.  These dependencies could be application packages, container images or OS pacakges.
 - The pipeline then identifies vulnerabilities associated with these dependencies and posts a comment to your Pull Request.
 - The pipeline then scans Dockerfiles and Kubernetes yaml files for best practices. It will then post a comment to your Pull Request.
 - The pipeline then posts a link to Bill of Materials to your Pull Request.

@@ -1,5 +1,5 @@
 # Container-Registry Build Task - deprecated
-The [`ibmcloud cr build`](https://cloud.ibm.com/docs/container-registry-cli-plugin?topic=container-registry-cli-plugin-containerregcli#bx_cr_build) command is deprecated. 
+The [`ibmcloud cr build`](https://cloud.ibm.com/docs/container-registry-cli-plugin?topic=container-registry-cli-plugin-containerregcli#bx_cr_build) command is deprecated.
 
 If you use this `icr-cr-build` Tekton task, you can migrate to one of the [three other Tekton tasks](../README.md) available in the catalog to build container images.
 

@@ -24,7 +24,7 @@ This task allows to invoke a script to execute tests
 
 ### Workspaces
 
-* **artifacts**: A workspace containing artifacts/elements 
+* **artifacts**: A workspace containing artifacts/elements
 
 ### Results
 

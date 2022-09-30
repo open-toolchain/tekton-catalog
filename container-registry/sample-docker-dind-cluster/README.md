@@ -38,5 +38,5 @@ It also contains a `dind-cluster-no-resources` EventListener definition which is
 5) Run the pipeline
 
 6) Verify that the image was build and pushed by looking at the pipeline run execution log:
-   
+
    ![Tekton pipeline sample log](./images/dind-cluster-sample-tekton-pipeline-run-log.png)

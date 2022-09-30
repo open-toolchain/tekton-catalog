@@ -15,5 +15,3 @@
 ## signing-dct-sign
 
 ## signing-dct-enforcement-policy
-
-

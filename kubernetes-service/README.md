@@ -140,7 +140,7 @@ This task allows to perform scripts typically doing deployment of a Kubernetes a
 
 ### Workspaces
 
-* **artifacts**: A workspace containing artifacts/elements 
+* **artifacts**: A workspace containing artifacts/elements
 
 ### Results
 

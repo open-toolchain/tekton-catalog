@@ -21,12 +21,12 @@ This sample illustrates the commit status support provided by the `git-set-commi
 3) Add the environment properties:
 
    - `apikey`: the API key used for the ibmcloud login/access
-   - `state`: (optional) the state value you want to set to a commit. 
+   - `state`: (optional) the state value you want to set to a commit.
 
    ![Tekton pipeline environment properties](./images/sample-set-commit-status-tekton-pipeline-environment-properties.png)
 
 4) Create Git Triggers for the different Git repositories that you have integrated to your Toolchain (corresponding to the repositories integrated to your Toolchain).
-   
+
    Event Listeners:
     - `github-commit` for Github Commit pushed event
     - `gitlab-commit` for GRIT/Gitlab Commit pushed event
@@ -36,7 +36,7 @@ This sample illustrates the commit status support provided by the `git-set-commi
 
 
 5) **Trigger on commit**: update the code in one of the repository that has the above triggers defined, using the tool and environment of your choice:
-  
+
    ```
    $ git clone https://github.com/jauninb/sample.git
    Cloning into 'sample'...

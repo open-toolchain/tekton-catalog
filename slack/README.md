@@ -5,7 +5,7 @@ The task retrieves a Slack integration(s) from the Toolchain,
 filtered on the Slack domain (if passed as a parameter) and posts the message to the corresponding channel(s).
 
 The message can be:
-- passed as a parameter 
+- passed as a parameter
    - a static Slack formatted JSON payload
    - a static text message (that will be converted to Slack JSON payload)
 - dynamically injected
@@ -63,7 +63,7 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
    - `message-script` (optional) Shell script that provides messsage content.
    - `message` (optional) the message to post to Slack.
 
-**Note:** when using JSON format, the message is posted as-is to Slack. 
+**Note:** when using JSON format, the message is posted as-is to Slack.
 
    ![Tekton pipeline environment properties](./sample/sample-tekton-pipeline-environment-properties.png)
 
@@ -82,7 +82,7 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
    ![Tekton pipeline sample trigger](./sample/sample-log.png)
 
-8) Optionnal: Create a message using snippet 
+8) Optionnal: Create a message using snippet
 
    a) Define the snippet in the `message-script` environment property of the pipeline
 

@@ -28,7 +28,7 @@ The status being sucess or failing according to the commit message (it the commi
    ![Tekton pipeline environment properties](./images/sample-git-pr-status-tekton-pipeline-environment-properties.png)
 
 4) Create Git Triggers for the different Git repositories that you have integrated to your Toolchain (corresponding to the repositories integrated to your Toolchain).
-   
+
    Github:
     - `eventlistener-git-pr-status-github-pr` for Github PullRequest opened/updated event
 

@@ -151,11 +151,11 @@ and is available only during the task's lifespan.
 ### Parameters
 
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
-* **image-tag**: (optional) the tag for the built image (default to `latest`) 
+* **image-tag**: (optional) the tag for the built image (default to `latest`)
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
-* **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
-* **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
+* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`)
+* **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`)
+* **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`)
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **docker-commands**: (optional) The docker command(s) to run. Default commands:
   ```
@@ -206,11 +206,11 @@ This task runs `docker` commands (build, inspect...) that communicate with a  _D
 * **cluster-namespace**: (optional) the kubernetes cluster namespace where the docker engine is hosted/deployed (default to `build`)
 * **cluster-name**: (optional) name of the docker build cluster - required if no cluster pipeline resource provided to this task
 * **image-url** : (optional) the url of the image to build - required if no image pipeline resource provided to this task
-* **image-tag**: (optional) the tag for the built image (default to `latest`) 
+* **image-tag**: (optional) the tag for the built image (default to `latest`)
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
-* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`) 
-* **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`) 
-* **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`) 
+* **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.`)
+* **dockerfile**: (optional) the name of the Dockerfile that is used for the build (default to `Dockerfile`)
+* **docker-client-image**: (optional) The Docker image to use to run the Docker client (default to `docker`)
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
 * **docker-commands**: (optional) The docker command(s) to run. Default commands:
   ```
@@ -287,4 +287,3 @@ Vulnerability Advisor helper task
 #### Inputs
 
 * **image**: (optional) The Image PipelineResource that this task will process the Vulnerability Advisor scan result.
-

@@ -2,13 +2,13 @@
 
 Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usable in [Continuous Delivery Tekton Pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 
-**Notes**: 
+**Notes**:
 - These tasks are usable with Continuous Delivery Tekton Pipeline Worker Agent (Tekton definition with apiVersion: v1beta1). These tasks have been updated  following migration path described in https://github.com/tektoncd/pipeline/blob/v0.11.2/docs/migrating-v1alpha1-to-v1beta1.md
 - If you want `v1alpha1` resources, you need to reference the [`tekton_pipeline0.10.1`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1) tag (or
 [`tekton_pipeline0.10.1_workspace`](https://github.com/open-toolchain/tekton-catalog/releases/tag/tekton_pipeline0.10.1_workspace) tag to have `v1alpha1` resources using workspaces).
 - When moving from from tag `tekton_pipeline0.10.1`, `tekton_pipeline0.10.1` and/or branch `tkn_v1beta1` to use `master`branch of this catalog, take a look at [breaking changes section](./README.md#breaking-changes)
 
-# Tasks 
+# Tasks
 
 ## Cloud Foundry related tasks
 
@@ -78,7 +78,7 @@ Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usa
 - **[toolchain-extract-value](./toolchain/README.md#toolchain-extract-value)**: This task extracts values from the desired config map with a given jq expression.
 - **[toolchain-publish-deployable-mapping](./toolchain/README.md#toolchain-publish-deployable-mapping)**: This task creates or updates a toolchain deployable mapping for a [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using).
 
-## Breaking Changes 
+## Breaking Changes
 
 ### when moving from tag "tekton_pipeline0.10.1"
 
@@ -114,7 +114,7 @@ Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usa
 - Tasks that use workspace(s) may have changed the expected workspace name. Here is the list of the breaking changes for the expected workspace name
 
   | Folder | Task | Old workspace name | New workspace name | Description |
-  | -- | -- | -- | -- | -- | 
+  | -- | -- | -- | -- | -- |
   | container-registry | icr-containerize | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
   | container-registry | icr-cr-build | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
   | container-registry | icr-execute-in-dind | workspace | source | A workspace containing the source (Dockerfile, Docker context) to create the image |
@@ -124,7 +124,7 @@ Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usa
   | git | git-set-commit-status | workspace | artifacts | Workspace that may contain git repository information (ie build.properties). Should be marked as optional when Tekton will permit it |
   | kubernetes-service | iks-fetch-config | workspace | cluster-configuration | A workspace where the kubernetes cluster config is exported |
   | kubernetes-service | iks-contextual-execution | workspace | cluster-configuration | A workspace that contain the kubectl cluster config to be used |
-  
+
 ### when moving from tag "tekton_pipeline0.10.1" and/or branch "tkn_v1beta1"
 
 - Tasks that are expecting a secret to retrieve apikey and/or secret values have been updated to use the default secret `secure-properties` injected by Continuous Delivery Tekton Pipeline support. The updated tasks are:

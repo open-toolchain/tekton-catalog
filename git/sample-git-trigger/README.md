@@ -40,7 +40,7 @@ This sample illustrates the PullRequest support provided by the `git-clone-repo`
    ![Tekton pipeline sample-git-trigger manual run view](./images/sample-git-trigger-tekton-pipeline-run-manual-trigger-view.png)
 
 7) Create Git Triggers for the different Git repositories that you have integrated to your Toolchain (corresponding to the repositories integrated to your Toolchain).
-   
+
    Github:
     - `eventlistener-git-trigger-github-commit` for Github Commit pushed event
 
@@ -59,7 +59,7 @@ This sample illustrates the PullRequest support provided by the `git-clone-repo`
     - `eventlistener-git-trigger-bitbucket-pr` for BitBucket PullRequest opened/updated event
 
 8) **Trigger on commit**: update the code in one of the repository that has the above triggers defined, using the tool and environment of your choice:
-  
+
    ```
    $ git clone https://github.com/jauninb/sample.git
    Cloning into 'sample'...

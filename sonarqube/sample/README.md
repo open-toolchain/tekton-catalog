@@ -47,7 +47,7 @@ The `sample` sub-directory contains an `event-listener-container-registry` Event
    If your sample code is a maven project then you can select the alternate `maven` EventListener that will define the appropriate command and target `mvn sonar:sonar` to perform the sonarqube scan
 
 6) Run the pipeline using the manual trigger created
- 
+
    When pipeline-run is started (or terminated) you can click on it to open the pipelinerun dashboard
 
    ![Pipeline runs](./images/sonarqube-pipeline-runs.png)
@@ -56,7 +56,7 @@ The `sample` sub-directory contains an `event-listener-container-registry` Event
 
    ![SonarQube sample pipeline run](./images/sonarqube-sample-pipeline-run.png)
 
-7) If you navigate to the sonarqube server, the sonarqube project will have been created and scanned 
+7) If you navigate to the sonarqube server, the sonarqube project will have been created and scanned
 
    ![SonarQube project overview](./images/sonarqube-project-overview.png)
 

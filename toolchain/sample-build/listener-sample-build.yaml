@@ -1,0 +1,64 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: trigger-template-sample-build
+spec:
+  params:
+    - name: custom-script
+      description: The command(s) to run
+      default: "ls -l -R /cd-config"
+    - name: run-build-image
+      description: The name of the image used for the run-build step
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9"
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline-sample-build
+        params:
+          - name: custom-script
+            value: $(params.custom-script)
+          - name: run-build-image
+            value: $(params.run-build-image)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+        workspaces:
+          - name: pipeline-ws
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: trigger-binding-sample-build
+spec:
+  params:
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: event-listener-sample-build
+spec:
+  triggers:
+    - binding:
+        name: trigger-binding-sample-build
+      template:
+        name: trigger-template-sample-build

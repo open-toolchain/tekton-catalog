@@ -37,5 +37,5 @@ It also contains a `dind-no-resources` EventListener definition which is the pro
 5) Run the pipeline
 
 6) Verify that the image was build and pushed by looking at the pipeline run execution log:
-   
+
    ![Tekton pipeline sample log](./images/dind-sample-tekton-pipeline-run-log.png)
