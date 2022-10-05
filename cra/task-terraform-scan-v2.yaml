@@ -30,7 +30,7 @@ spec:
 
     # Common command params
     - name: custom-script
-      description: (Optional) A custom script to be ran prior to CRA scanning
+      description: (Optional) Filepath to a custom script that is ran prior to CRA scanning
       default: ""
     - name: ibmcloud-trace
       description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
@@ -109,7 +109,7 @@ spec:
           value: $(params.ibmcloud-api)
         - name: REGION
           value: $(params.ibmcloud-region)
-        - name: SCRIPT_CONTENTS
+        - name: CUSTOM_SCRIPT
           value: $(params.custom-script)
 
         - name: API_KEY
@@ -131,9 +131,12 @@ spec:
             set -x +e
           fi
 
-          if [ -n "$SCRIPT_CONTENTS" ]; then
-            echo "${SCRIPT_CONTENTS}" > ./input-script.sh
-            source ./input-script.sh
+          if [ -n "$CUSTOM_SCRIPT" ]; then
+            echo "Running custom script."
+            if [ -f "$CUSTOM_SCRIPT" ]; then
+                chmod +x $CUSTOM_SCRIPT  # ensure execute permissions are set
+            fi
+            $CUSTOM_SCRIPT
           fi
 
           if [ "$(params.ibmcloud-trace)" == "true" ]; then

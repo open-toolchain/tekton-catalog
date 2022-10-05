@@ -30,7 +30,7 @@ spec:
 
     # Common command related params
     - name: custom-script
-      description: (Optional) A custom script to be ran prior to CRA scanning
+      description: (Optional) Filepath to a custom script that is ran prior to CRA scanning
     - name: env-props
       description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
     - name: fileignore
