@@ -79,6 +79,14 @@ data:
     fi
 
     # Log container registry to the appropriate region
+    # Previously the ibmcloud cli would use us-east as an alias for us-south
+    # when logging in to ibmcloud CR with us-east. Recently this be behaviour was
+    # changed and us-east became an alias for global
+    # Changing to explicity switch us-east region to us-south before setting CR region
+    # to mimic previous behaviour
+    if [[ "${REGISTRY_REGION}" == "us-east" ]]; then
+      REGISTRY_REGION="us-south"
+    fi
     if ibmcloud cr region-set $REGISTRY_REGION > /dev/null 2>&1; then
       echo "ibmcloud container registry region set to $REGISTRY_REGION"
     else
