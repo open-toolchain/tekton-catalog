@@ -140,6 +140,21 @@ spec:
           fi;
           GIT_TOKEN="$(params.git-access-token)"
           if [ -z "$GIT_TOKEN" ]; then
+          AUTHTYPE=$(jq -r --arg git_repo "$REPOSITORY" \
+            '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.auth_type' \
+            /cd-config/toolchain.json)
+            if [[ "${AUTHTYPE}" == "pat" ]]; then
+              TOKEN=$(jq -r --arg git_repo "$REPOSITORY" \
+              '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.api_token' \
+              /cd-config/toolchain.json)
+              if [[ "${TOKEN}" ]]; then
+                echo "Using access token from toolchain"
+                GIT_TOKEN="${TOKEN}"
+              fi
+            fi
+          fi
+
+          if [ -z "$GIT_TOKEN" ]; then
             echo "Fetching token for $REPOSITORY"
             ibmcloud config --check-version false
             ibmcloud login -a $(params.ibmcloud-api) --no-region --apikey $API_KEY
