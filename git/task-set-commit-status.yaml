@@ -63,8 +63,8 @@ spec:
         If left empty, the status detail link will point to the pipeline run.
       default: ""
     - name: fetch-git-information-step-image
-      description: image to use for the fetch-git-information step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9"
+      description: image to use for the fetch-git-information step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
     - name: set-status-step-image
       description: image to use for the fetch-git-information step (default to registry.access.redhat.com/ubi8/ubi:8.1)
       default: "registry.access.redhat.com/ubi8/ubi:8.1"

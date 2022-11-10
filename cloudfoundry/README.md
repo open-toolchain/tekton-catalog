@@ -1,3 +1,5 @@
+# This task has been deprecated and is no longer supported.
+
 # Cloud Foundry related tasks
 
 - **cf-deploy-app**: This task allows to perform a deployment of a Cloud Foundry application using `ibmcloud cf` commands
@@ -32,7 +34,7 @@
 * **continuous-delivery-context-secret**: (Optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **cloud-foundry-apikey-secret-key**: field in the secret that contains the api key used to connect to cloud foundry. Default to `cf-apikey`
 * **shuttle-properties-file**: (optional) name of the properties file that contain properties to include in the environment for the `cf-commands` snippet/script execution.
-* **deploy-step-image**: (optional) image to use for the deploy step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9`
+* **deploy-step-image**: (optional) image to use for the deploy step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
 ### Results

@@ -109,7 +109,7 @@ The following controls have been identified from CIS Docker 1.13.0 that we can i
   - **cveignore**: (Optional) File path to cveignore
   - **exclude-dev**: (Default: `false`) Exclude dev dependencies during vulnerability scan
   - **vulnerability-report**: (Default: `./vulnerability.json`) Filepath to store generated Vulnerability report
-  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9`) Image to use for `scan` task
+  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`) Image to use for `scan` task
   - **dind-image**: (Default to `icr.io/continuous-delivery/pipeline/docker:19.03.15-dind`) Image to use for the Docker-in-Docker sidecar
 
 #### Implicit
@@ -230,7 +230,7 @@ This task uses `ibmcloud cli` and the `cra` plugin to scan ibm-terraform-provide
   - **tf-policy-file**: (Optional) Filepath to policy profile. This file should contain "scc_goals" and "scc_goal_parameters" that will overwrite default checks
   - **tf-format**: (Optional) Report format. Requires --policy-file. Supported values: OSCAL
   - **tf-state-file**: (Optional) Path of terraform state file. Requires --format to be set to OSCAL.
-  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9`) Image to use for `scan` task
+  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`) Image to use for `scan` task
 
 #### Implicit
 The following inputs are coming from tekton annotation:

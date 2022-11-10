@@ -65,11 +65,11 @@ spec:
         docker push ${IMAGE_URL}:${IMAGE_TAG}
     #
     - name: check-step-image
-      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9"
+      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
     - name: cluster-setup-step-image
-      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9"
+      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
     - name: dind-image
       description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:19.03.15-dind)
       default: "icr.io/continuous-delivery/pipeline/docker:19.03.15-dind"

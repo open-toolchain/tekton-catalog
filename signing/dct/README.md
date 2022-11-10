@@ -1,3 +1,4 @@
+# These tasks have been deprecated and are no longer supported.
 # Signing - Docker Content Trust related tasks
 
 # Tasks

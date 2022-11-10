@@ -23,9 +23,9 @@ This task starts a SonarQube scan for the code in a workspace using the SonarQub
 * **sonarqube-name**: Name of the sonarqube toolcard integration in the toolchain. Default to "" meaning the first sonarqube integration found will be used.
 * **sonarqube-project-key**: Project key of the sonarqube project. Default to "" meaning a project key will be computed out of the toolchain name
 * **path-to-sources**: The path to the sources. Default to `.` meaning current directory of the mounted workspace.
-* **prepare-step-image**: Image used for the prepare step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9`
+* **prepare-step-image**: Image used for the prepare step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`
 * **scan-step-image**: Image used for the scan step. Default to `icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli@sha256:af782cf68bbfe32982aac08e3215d95f57c9ce49444ab8bfa017819ba4905548`
-* **post-to-doi-step-image**: Image used for the post to doi step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9`
+* **post-to-doi-step-image**: Image used for the post to doi step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`
 * **sonar-scan-command**: Sonar scan command to use. Default to `sonar-scanner -Dsonar.working.directory=$SONAR_DIR`.
   The following environment variables are available:
     - SONAR_DIR : Sonar Scanner Working directory

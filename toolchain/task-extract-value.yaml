@@ -14,8 +14,8 @@ spec:
     - name: expression
       description: A valid jq expression which is used to search
     - name: extract-value-jq-step-image
-      description: image to use for the extract-value-jq step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9"
+      description: image to use for the extract-value-jq step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"

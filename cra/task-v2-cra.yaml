@@ -117,7 +117,7 @@ spec:
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.9"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
     - name: dind-image
       description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:19.03.15-dind)
       default: "icr.io/continuous-delivery/pipeline/docker:19.03.15-dind"
