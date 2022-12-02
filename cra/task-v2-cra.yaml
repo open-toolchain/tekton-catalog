@@ -88,6 +88,9 @@ spec:
     - name: gradle-exclude-configs
       description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
       default: ""
+    - name: gradle-props
+      description: (Optional) Customize gradle command with props for gradle dependency scanning.
+      default: ""
     - name: maven-exclude-scopes
       description: (Optional) Exclude maven scopes, ex. 'test,compile'
       default: ""
@@ -289,6 +292,9 @@ spec:
           BOM_CMD=(ibmcloud cra bom-generate --path $(params.path) --report $(params.bom-report) --asset-type $(params.asset-type) --region $TOOLCHAIN_REGION)
           if [ -n "$(params.gradle-exclude-configs)" ]; then
             BOM_CMD+=(--gradle.excludeconfigurations "$(params.gradle-exclude-configs)")
+          fi
+          if [ -n "$(params.gradle-props)" ]; then
+            BOM_CMD+=(--gradleprops "$(params.gradle-props)")
           fi
           if [ -n "$(params.maven-exclude-scopes)" ]; then
             BOM_CMD+=(--maven.excludescopes "$(params.maven-exclude-scopes)")

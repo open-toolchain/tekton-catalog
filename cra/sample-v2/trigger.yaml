@@ -93,6 +93,9 @@ spec:
     - name: gradle-exclude-configs
       description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
       default: ""
+    - name: gradle-props
+      description: (Optional) Customize gradle command with props for gradle dependency scanning.
+      default: ""
     - name: maven-exclude-scopes
       description: (Optional) Exclude maven scopes, ex. 'test,compile'
       default: ""
@@ -235,6 +238,8 @@ spec:
             value: $(params.docker-registry-username)
           - name: gradle-exclude-configs
             value: $(params.gradle-exclude-configs)
+          - name: gradle-props
+            value: $(params.gradle-props)
           - name: maven-exclude-scopes
             value: $(params.maven-exclude-scopes)
           - name: nodejs-create-package-lock
