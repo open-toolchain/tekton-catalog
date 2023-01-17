@@ -195,7 +195,7 @@ spec:
       env:
         # enable BUILDKIT Option
         - name: DOCKER_BUILDKIT
-          value: 1
+          value: '1'
         # Write generated certs to the path shared with the client.
         - name: DOCKER_TLS_CERTDIR
           value: /certs
