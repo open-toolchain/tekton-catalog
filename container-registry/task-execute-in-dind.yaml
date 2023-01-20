@@ -54,8 +54,8 @@ spec:
       description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
     - name: dind-image
-      description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:19.03.15-dind)
-      default: "icr.io/continuous-delivery/pipeline/docker:19.03.15-dind"
+      description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:20.10.22-dind)
+      default: "icr.io/continuous-delivery/pipeline/docker:20.10.22-dind"
     - name: properties-file
       description: file containing properties out of the docker in docker task
       default: build.properties
