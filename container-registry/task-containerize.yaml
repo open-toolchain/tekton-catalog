@@ -50,6 +50,9 @@ spec:
     - name: buildkit-image
       description: The name of the BuildKit image
       default: "moby/buildkit:v0.8.1"
+    - name: push-to-registry
+      description: option to push the built image to registry or not. Default is `true`
+      default: "true"
     - name: check-step-image
       description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
@@ -288,7 +291,7 @@ spec:
             ${BUILD_ARGS} \
             --local context=$(workspaces.source.path)/$(params.path-to-context) \
             --local dockerfile=$(workspaces.source.path)/$(params.path-to-dockerfile) \
-            --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
+            --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=$(params.push-to-registry)" \
             --export-cache type=inline \
             --import-cache type=registry,ref=$IMAGE_REPOSITORY 2>&1 | tee /steps/build.log
 
@@ -331,6 +334,15 @@ spec:
 
           source /steps/next-step-env.properties
           export $(cut -d= -f1 /steps/next-step-env.properties)
+
+          if [[ "$(params.push-to-registry)" != "true" ]]; then
+            # image is not pushed to a registry
+            echo "image is not pushed to a registry. exiting"
+            echo -n "" > $(results.image-repository.path)
+            echo -n "" > $(results.image-tags.path)
+            echo -n "" > $(results.image-digest.path)
+            exit 0
+          fi
 
           # buildctl/buildkit does not provide an index.json as part of the output
           # https://github.com/moby/buildkit/issues/1158 and https://github.com/moby/buildkit/issues/993

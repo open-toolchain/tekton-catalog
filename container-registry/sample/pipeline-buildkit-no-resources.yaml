@@ -13,6 +13,8 @@ spec:
       description: the url of the image to build
     - name: path-to-dockerfile
       default: "."
+    - name: push-to-registry
+      default: "true"
     - name: pipeline-debug
       default: "0"
   workspaces:
@@ -42,6 +44,8 @@ spec:
           value: $(params.path-to-dockerfile)
         - name: path-to-dockerfile
           value: $(params.path-to-dockerfile)
+        - name: push-to-registry
+          value: $(params.push-to-registry)
         - name: additional-tags
           value: latest,1.0.0-$(tasks.pipeline-1-clone-task.results.git-branch)-$(tasks.pipeline-1-clone-task.results.git-commit)
         - name: additional-tags-script

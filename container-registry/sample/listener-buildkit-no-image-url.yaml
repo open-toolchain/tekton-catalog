@@ -17,6 +17,8 @@ spec:
       description: the image name
     - name: path-to-dockerfile
       default: "."
+    - name: push-to-registry
+      default: "true"
     - name: pipeline-debug
       default: "0"
   resourcetemplates:
@@ -51,6 +53,8 @@ spec:
             value: $(params.image-name)
           - name: path-to-dockerfile
             value: $(params.path-to-dockerfile)
+          - name: push-to-registry
+            value: $(params.push-to-registry)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
         workspaces:

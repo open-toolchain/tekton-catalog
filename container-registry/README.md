@@ -1,6 +1,6 @@
 # Container-Registry related tasks
 
-- **[icr-containerize](#icr-containerize)**: This task builds and pushes an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
+- **[icr-containerize](#icr-containerize)**: This task builds and pushes (optionaly) an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started). This task relies on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
 - **[icr-execute-in-dind](#icr-execute-in-dind)**: This task runs `docker` commands (build, inspect...) against a Docker engine running as a sidecar container, and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
 - **[icr-execute-in-dind-cluster](#icr-execute-in-dind-cluster)**: This task runs `docker` commands (build, inspect...) against a Docker engine running in a Kubernetes cluster (a Docker DinD instance will be deployed if none is available on the build cluster), and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
 - **[icr-check-va-scan](#icr-check-va-scan)**: This task verifies that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and processes the outcome of the scan.
@@ -57,6 +57,7 @@ Build Image helper task using buildkit
 * **image-name**: (optional) image name. required if no image-url or no image pipeline resources provided.
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+* **push-to-registry**: (optional) indicate if the built image has to be pushed to the registry (default to `true`)
 * **buildkit-image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
 * **additional-tags**: (optional) comma-separated list of tags for the built image
 * **additional-tags-script**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
