@@ -37,8 +37,8 @@ spec:
       description: directory in the workspace that will be used to store the cluster and worker nodes export json files
       default: ""
     - name: setup-step-image
-      description: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6"
+      description: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -118,7 +118,8 @@ spec:
             export CLUSTER_NAME="$(resources.inputs.cluster.name)"
           fi
           if ibmcloud ks cluster get --cluster $CLUSTER_NAME; then
-            KUBECONFIG_FILE=$(ibmcloud ks cluster config --cluster $CLUSTER_NAME --export -s | awk -F= '{print $2}')
+            export KUBECONFIG=$(mktemp)
+            ibmcloud ks cluster config --cluster $CLUSTER_NAME
           else
             echo "Cluster $CLUSTER_NAME not found. Accessible clusters are:"
             ibmcloud ks clusters
@@ -139,11 +140,11 @@ spec:
             # TODO Need to update the Cluster Pipeline Resource with this values
             # This can only be done when TriggerTemplate#resourcetemplates will accept
             # Role and Binding K8S resources definition
-            echo "TODO - Processing $KUBECONFIG_FILE"
-            K8S_USER_NAME=$(yq r $KUBECONFIG_FILE users[0].name)
-            K8S_USER_TOKEN=$(yq r $KUBECONFIG_FILE users[0].user.auth-provider.config.id-token)
-            K8S_CLUSTER_URL=$(yq r $KUBECONFIG_FILE clusters[0].cluster.server)
-            CA_PEM_FILE="$(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority)"
+            echo "TODO - Processing $KUBECONFIG"
+            K8S_USER_NAME=$(yq r $KUBECONFIG users[0].name)
+            K8S_USER_TOKEN=$(yq r $KUBECONFIG users[0].user.auth-provider.config.id-token)
+            K8S_CLUSTER_URL=$(yq r $KUBECONFIG clusters[0].cluster.server)
+            CA_PEM_FILE=$(yq r $KUBECONFIG clusters[0].cluster.certificate-authority)
             K8S_CLUSTER_CADATA=$(base64 -w0 $CA_PEM_FILE)
             echo "K8S_USER_NAME=$K8S_USER_NAME"
             #echo "K8S_USER_TOKEN=$K8S_USER_TOKEN"
@@ -151,14 +152,16 @@ spec:
             #echo "K8S_CLUSTER_CADATA=$K8S_CLUSTER_CADATA"
           else
             echo "Access to pipelineresources.tekton.dev is required to update Cluser Pipeline Resource accordingly"
-            echo "Falling back to copy of $(basename $KUBECONFIG_FILE) to the pipeline run volume"
+            echo "Falling back to copy of kubconfig file $(basename $KUBECONFIG) to the pipeline run volume"
             mkdir -p /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
-            cp $(dirname $KUBECONFIG_FILE)/$(yq r $KUBECONFIG_FILE clusters[0].cluster.certificate-authority) \
+            cp $(yq r $KUBECONFIG clusters[0].cluster.certificate-authority) \
               /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
-            cp $KUBECONFIG_FILE \
+            cp $KUBECONFIG \
               /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
             echo -n "Kubeconfig file(s) copied to "
             echo "/clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME"
+            yq write --inplace /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig \
+              'clusters[0].cluster.certificate-authority' $(ls /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/*.pem)
           fi
 
           ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > /steps/$CLUSTER_NAME.json
