@@ -80,7 +80,7 @@ Build Image helper task using buildkit
 
 ### Resources
 
-#### Outputs
+### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
@@ -127,7 +127,7 @@ Build Image helper task using `ibmcloud cr build` command
 
 ### Resources
 
-#### Outputs
+### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
@@ -138,7 +138,7 @@ This task runs `docker` commands (build, inspect...) that communicate with a sid
 **Note:** the **Docker engine** used to execute the commands is **transient**, created by the task as a sidecar container,
 and is available only during the task's lifespan.
 
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task may rely on the following kubernetes resources to be defined:
 
@@ -181,7 +181,7 @@ and is available only during the task's lifespan.
 
 ### Resources
 
-#### Outputs
+### Outputs
 
 * **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
@@ -189,7 +189,7 @@ and is available only during the task's lifespan.
 
 This task runs `docker` commands (build, inspect...) that communicate with a  _Docker-In-Docker_ (DIND) instance hosted in a kubernetes cluster (eventually deploying the Docker DinD if needed), and pushes the resulting image to the IBM Cloud Container Registry.
 
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task may rely on the following kubernetes resources to be defined:
 

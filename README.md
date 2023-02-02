@@ -145,4 +145,4 @@ To ensure code quality, protected branches will be enabled soon, and every PR th
 Code quality checks currently enabled:
 - yaml lint - using yamllint-rules.yaml as configuration file: `yamllint --config-file yamllint-rules.yaml .`
 - tekton task lint: `tekton-lint '**/*.yaml'`
-- Tasks definition validation: [check_tasks.sh](./.ci/check_tasks.sh))
+- Tasks definition validation: [check_tasks.sh](./.ci/check_tasks.sh)

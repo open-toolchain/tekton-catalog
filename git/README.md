@@ -29,7 +29,7 @@
 
 Git integration clone task
 
-#### Context - ConfigMap/Secret
+### Context - ConfigMap/Secret
 
   The task may rely on the following kubernetes resources to be defined:
 
@@ -42,7 +42,7 @@ Git integration clone task
 
   Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
 
-#### Parameters
+### Parameters
 
 * **git-access-token**: (optional) token to access the git repository. Either `secure-properties` or git-access-token has to be provided.
 * **git-max-retry**: max retry for the git clone operation (default to "1")
