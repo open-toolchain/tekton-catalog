@@ -91,11 +91,6 @@ spec:
       description: A workspace containing the source (Dockerfile, Docker context) to create the image
       mountPath: /artifacts
   resources:
-    inputs:
-      - name: cluster
-        type: cluster
-        description: "(Optional) The cluster used for Docker build"
-        optional: true
     outputs:
       - name: built-image
         type: image
@@ -351,11 +346,7 @@ spec:
           echo "Cluster list:"
           ibmcloud ks clusters
 
-          if [ "$(resources.inputs.cluster.name)" == "" ]; then
-            export BUILD_CLUSTER_NAME="$(params.cluster-name)"
-          else
-            export BUILD_CLUSTER_NAME="$(resources.inputs.cluster.name)"
-          fi
+          export BUILD_CLUSTER_NAME="$(params.cluster-name)"
 
           echo "Running ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME""
           ibmcloud ks cluster config --cluster "$BUILD_CLUSTER_NAME"

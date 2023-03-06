@@ -42,15 +42,6 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
-  resources:
-    inputs:
-      - name: cluster
-        type: cluster
-        optional: true
-    outputs:
-      - name: cluster
-        type: cluster
-        optional: true
   results:
     - name: cluster-name
       description: The cluster name
@@ -112,11 +103,7 @@ spec:
             ibmcloud target -g "$(params.resource-group)"
           fi
           # Look for the cluster
-          if [ "$(resources.inputs.cluster.name)" == "" ]; then
-            export CLUSTER_NAME="$(params.cluster-name)"
-          else
-            export CLUSTER_NAME="$(resources.inputs.cluster.name)"
-          fi
+          export CLUSTER_NAME="$(params.cluster-name)"
           if ibmcloud ks cluster get --cluster $CLUSTER_NAME; then
             export KUBECONFIG=$(mktemp)
             ibmcloud ks cluster config --cluster $CLUSTER_NAME

@@ -22,11 +22,6 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
-  resources:
-    inputs:
-      - name: cluster
-        type: cluster
-        optional: true
   workspaces:
     - name: cluster-configuration
       description: A workspace that contain the kubectl cluster config to be used
@@ -84,11 +79,7 @@ spec:
           fi
 
           # Find cluster information
-          if [ "$(resources.inputs.cluster.name)" == "" ]; then
-            export CLUSTER_NAME="$(params.cluster-name)"
-          else
-            export CLUSTER_NAME="$(resources.inputs.cluster.name)"
-          fi
+          export CLUSTER_NAME="$(params.cluster-name)"
           export KUBECONFIG="/clusterconfig/$(params.cluster-pipeline-resources-directory)/$CLUSTER_NAME/kubeconfig"
 
           # Validate KUBECONFIG
