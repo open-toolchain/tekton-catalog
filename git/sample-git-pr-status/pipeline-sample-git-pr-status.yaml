@@ -105,7 +105,8 @@ spec:
       runAfter: [git-clone, set-git-commit-running]
       params:
         - name: repository
-          value: $(tasks.git-clone.results.git-repository)
+          value: "$(params.repository)"
+#          value: "$(tasks.git-clone.results.git-repository)"
         - name: branch
           value: $(params.pr-branch)
       workspaces:
