@@ -40,7 +40,7 @@ spec:
       default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
   steps:
     - name: set-sign-context
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      image: ""
       env:
         - name: IBM_CLOUD_API_KEY
           valueFrom:

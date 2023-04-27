@@ -20,6 +20,7 @@ This `sample` sub-directory contains an EventListener definition `kubernetes-ser
 
    - `apikey` to provide an API key used for the ibmcloud login/access
    - `cluster-name` to indicate the name of the IKS cluster that you want to target
+   - `resource-group` to indicate the resource group being used. Example defaults to `default`
 
    ![Tekton pipeline environment properties](./kubernetes-service-sample-tekton-pipeline-environment-properties.png)
 

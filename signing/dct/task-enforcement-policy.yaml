@@ -36,7 +36,7 @@ spec:
       default: "https://raw.githubusercontent.com/open-toolchain/commons/master"
   steps:
     - name: apply-image-enforcement-policy
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.7
+      image: ""
       env:
         - name: IBM_CLOUD_API_KEY
           valueFrom:

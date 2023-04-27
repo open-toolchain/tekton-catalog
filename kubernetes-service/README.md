@@ -43,7 +43,7 @@ Fetch IKS Cluster Configuration helper task
 * **pipeline-debug**: (optional) turn on task script context debugging
 * **continuous-delivery-context-secret**: (optional) name of the secret containing the continuous delivery pipeline context secret (default to `secure-properties`)
 * **kubernetes-service-apikey-secret-key**: (optional) field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
-* **setup-step-image**: (optional) image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17`)
+* **setup-step-image**: (optional) image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27`)
 
 ### Workspaces
 
@@ -68,7 +68,7 @@ Kubernetes Contextual Execution helper task
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
 * **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be value of `iks-fetch-config#cluster-pipeline-resources-directory-fallback` if cluster pipeline resource update is not made by the `iks-fetch-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
-* **execute-step-image**: (optional) image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17`)
+* **execute-step-image**: (optional) image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27`)
 * **pipeline-debug**: (optional) turn on task script context debugging
 
 ### Workspaces

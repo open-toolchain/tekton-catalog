@@ -39,8 +39,8 @@ spec:
       description: script that get executed after the _deployment_ script has been executed.
       default: ""
     - name: execute-step-image
-      description: image to use for the execute step (default to icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2.17"
+      description: image to use for the execute step (default to icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"

@@ -47,7 +47,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: create-dct-keys
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6
+      image: ""
       env:
         - name: IBM_CLOUD_API_KEY
           valueFrom:
