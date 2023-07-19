@@ -14,23 +14,19 @@
 
 ## Usages
 
-- The `sample` sub-directory contains an `event-listener-container-registry` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-containerize` and `icr-check-va-scan`.
-  It also contains a `buildkit-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
+- The `sample` sub-directory contains an `buildkit-no-resources` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-containerize` and `icr-check-va-scan`.
 
   See the documentation [here](./sample/README.md)
 
-- The `sample-cr-build` sub-directory contains an `cr-build` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-cr-build` and `icr-check-va-scan`.
-  It also contains a `cr-build-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information.
+- The `sample-cr-build` sub-directory contains an `cr-build-no-resources` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-cr-build` and `icr-check-va-scan`.
 
   See the documentation [here](./sample-cr-build/README.md)
 
-- The `sample-docker-dind-sidecar` sub-directory contains an `event-listener-dind` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind` and `icr-check-va-scan`.
-  It also contains a `dind-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
+- The `sample-docker-dind-sidecar` sub-directory contains an `dind-no-resources` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind` and `icr-check-va-scan`.
 
   See the documentation [here](./sample-docker-dind-sidecar/README.md)
 
-- The `sample-docker-dind-cluster` sub-directory contains an `event-listener-dind-cluster` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind-cluster` and `icr-check-va-scan`.
-  It also contains a `dind-cluster-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information
+- The `sample-docker-dind-cluster` sub-directory contains an `dind-cluster-no-resources` EventListener definition that you can include in your Tekton pipeline configuration to run an example usage of the `icr-execute-in-dind-cluster` and `icr-check-va-scan`.
 
   See the documentation [here](./sample-docker-dind-cluster/README.md)
 
@@ -58,7 +54,7 @@ Build Image helper task using buildkit
 * **path-to-context**: (optional) the path to the context that is used for the build (default to `.` meaning current directory)
 * **path-to-dockerfile**: (optional) the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
 * **push-to-registry**: (optional) indicate if the built image has to be pushed to the registry (default to `true`)
-* **buildkit-image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.6.3-rootless`)
+* **buildkit-image**: (optional) The name of the BuildKit image used (default to `moby/buildkit:v0.10.6`)
 * **additional-tags**: (optional) comma-separated list of tags for the built image
 * **additional-tags-script**: (optional) Shell script commands that will be invoked to provide additional tags for the build image
 * **properties-file**: (optional) name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the pvc. This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
@@ -79,10 +75,6 @@ Build Image helper task using buildkit
 * **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
 
 ### Resources
-
-### Outputs
-
-* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## icr-cr-build - deprecated
 
@@ -126,10 +118,6 @@ Build Image helper task using `ibmcloud cr build` command
 * **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
 
 ### Resources
-
-### Outputs
-
-* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## icr-execute-in-dind
 
@@ -178,12 +166,6 @@ and is available only during the task's lifespan.
 ### Workspaces
 
 * **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
-
-### Resources
-
-### Outputs
-
-* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
 
 ## icr-execute-in-dind-cluster
 
@@ -235,16 +217,6 @@ This task runs `docker` commands (build, inspect...) that communicate with a  _D
 
 * **source**: A workspace containing the source (Dockerfile, Docker context) to create the image
 
-### Resources
-
-#### Inputs
-
-* **cluster**: (optional) The Cluster PipelineResource that will be used to host the Docker DinD to build Docker images. Only the name property is used to identify the cluster name.
-
-#### Outputs
-
-* **built-image**: (optional) The Image PipelineResource that will be created as output of this task.
-
 ## icr-check-va-scan
 
 Vulnerability Advisor helper task
@@ -282,9 +254,3 @@ Vulnerability Advisor helper task
 ### Workspaces
 
 * **artifacts**: Workspace that may contain image information and will have the va report from the VA scan after this task execution
-
-### Resources
-
-#### Inputs
-
-* **image**: (optional) The Image PipelineResource that this task will process the Vulnerability Advisor scan result.

@@ -21,7 +21,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: toolchain-dm-k8s-$(uid)
@@ -38,7 +38,7 @@ spec:
             persistentVolumeClaim:
               claimName: toolchain-dm-k8s-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: toolchain-dm-k8s
@@ -49,7 +49,7 @@ spec:
     - name: pipeline-debug
       value: $(params.pipeline-debug)
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: toolchain-dm-k8s

@@ -11,9 +11,7 @@
 - Add that github integration to the Definitions tab of your Continuous Delivery tekton pipeline, with the Path set to `kubernetes-service`
 
 ## Usage
-The `sample` sub-directory contains an EventListener definition `kubernetes-service` that you can include in your tekton pipeline configuration to run an example usage of the `iks-fetch-config` and `iks-contextual-execution` tasks.
-
-It also contains a `kubernetes-service-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for cluster as it uses the task's parameter `cluster-name` to provide the information
+The `sample` sub-directory contains an EventListener definition `kubernetes-service-no-resources` that you can include in your tekton pipeline configuration to run an example usage of the `iks-fetch-config` and `iks-contextual-execution` tasks.
 
   See the documentation [here](./sample/README.md)
 
@@ -49,16 +47,6 @@ Fetch IKS Cluster Configuration helper task
 
 * **cluster-configuration**: A workspace where the kubernetes cluster config is exported
 
-### Resources
-
-#### Inputs
-
-* **cluster**: (optional) the Cluster PipelineResource that will be updated as output of this task. Only the name property is used to identify the cluster name.
-
-#### Outputs
-
-* **cluster**: (optional) The Cluster PipelineResource that will be updated as output of this task.
-
 ## iks-contextual-execution
 
 Kubernetes Contextual Execution helper task
@@ -66,7 +54,7 @@ Kubernetes Contextual Execution helper task
 ### Parameters
 
 * **cluster-name**: (optional) the name of the cluster - required if no cluster pipeline resource provided to this task
-* **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for clusterPipelineResources are available (default to `/workspace` but this may need to be value of `iks-fetch-config#cluster-pipeline-resources-directory-fallback` if cluster pipeline resource update is not made by the `iks-fetch-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
+* **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for cluster are available (default to `/workspace` but this may need to be value of `iks-fetch-config#cluster-pipeline-resources-directory-fallback` if cluster pipeline resource update is not made by the `iks-fetch-config` task - ie using the fallback mechanism of kubeconfig copy to the pipelinerun pvc)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
 * **execute-step-image**: (optional) image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27`)
 * **pipeline-debug**: (optional) turn on task script context debugging
@@ -74,12 +62,6 @@ Kubernetes Contextual Execution helper task
 ### Workspaces
 
 * **cluster-configuration**: A workspace that contain the kubectl cluster config to be used
-
-### Resources
-
-#### Inputs
-
-* **cluster**: (optional) The Cluster PipelineResource that corresponds to the kubernetes cluster target for the kubectl command execution.
 
 ## iks-deploy-to-kubernetes
 

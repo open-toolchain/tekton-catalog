@@ -90,12 +90,6 @@ spec:
     - name: source
       description: A workspace containing the source (Dockerfile, Docker context) to create the image
       mountPath: /artifacts
-  resources:
-    outputs:
-      - name: built-image
-        type: image
-        description: "(Optional) The image to build"
-        optional: true
   stepTemplate:
     env:
       - name: WORKSPACE_PATH
@@ -129,11 +123,7 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(resources.outputs.built-image.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(params.image-url)"
-          else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
-          fi
+          export IMAGE_RESOURCE_URL="$(params.image-url)"
 
           # Parse the image url to find registry information
           source /scripts/parse_image_url.sh
@@ -226,15 +216,9 @@ spec:
               set -x
           fi
 
-          if [ "$(resources.outputs.built-image.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(params.image-url)"
-          else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
-          fi
+          export IMAGE_RESOURCE_URL="$(params.image-url)"
 
           # Parse the image url to find information (region, namespace, image name and eventually tag)
-          # as url of Image PipelineResource is the complete path to the image, including the registry
-          # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
           IMAGE_URL=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $1}')
           IMAGE_TAG=$(echo $IMAGE_RESOURCE_URL |  awk -F: '{print $2}')
           if [ -z "$IMAGE_TAG" ]; then

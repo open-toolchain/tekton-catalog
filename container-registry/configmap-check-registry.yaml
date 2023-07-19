@@ -7,8 +7,6 @@ data:
   parse_image_url.sh: |
     ##########################################################################
     # Parse the image url to find information (region, namespace, image name and eventually tag)
-    # as url of Image PipelineResource is the complete path to the image, including the registry
-    # and the image tag - https://github.com/tektoncd/pipeline/blob/v0.10.1/docs/resources.md#image-resource
     # Environment variables:
     # - IMAGE_RESOURCE_URL (input) : can include a tag
     # - IMAGE_URL (output)

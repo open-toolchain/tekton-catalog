@@ -58,12 +58,6 @@ spec:
         Workspace that may contain image information and will have the va report from the VA scan
         after this task execution.
       mountPath: /artifacts
-  resources:
-    inputs:
-      - name: image
-        type: image
-        description: "(Optional) The image that has to be VA scanned"
-        optional: true
   steps:
     - name: run-vulnerability-advisor-scan
       image: $(params.scan-step-image)
@@ -96,11 +90,7 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(resources.inputs.image.url)" == "" ]; then
-            INPUT_IMAGE_URL=$(echo "$(params.image-url)" |  awk -F: '{print $1}')
-          else
-            INPUT_IMAGE_URL=$(echo "$(resources.inputs.image.url)" |  awk -F: '{print $1}')
-          fi
+          INPUT_IMAGE_URL=$(echo "$(params.image-url)" |  awk -F: '{print $1}')
 
           # Parse the image input to find information (region, namespace, image name, tag & digest/sha)
           INPUT_REGISTRY_URL=$(echo $INPUT_IMAGE_URL |  awk -F/ '{print $1}')
@@ -108,11 +98,7 @@ spec:
           INPUT_IMAGE_NAME=$(echo $INPUT_IMAGE_URL |  awk -F/ '{print $3}')
           INPUT_IMAGE_TAG=$(echo $INPUT_IMAGE_URL |  awk -F: '{print $2}')
 
-          if [ "$(resources.inputs.image.digest)" == "" ]; then
-            INPUT_IMAGE_DIGEST=$(params.image-digest)
-          else
-            INPUT_IMAGE_DIGEST=$(resources.inputs.image.digest)
-          fi
+          INPUT_IMAGE_DIGEST=$(params.image-digest)
 
           # Find the ibmcloud container registry region
           # https://cloud.ibm.com/docs/services/Registry?topic=registry-registry_overview#registry_regions_local

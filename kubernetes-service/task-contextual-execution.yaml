@@ -5,10 +5,8 @@ metadata:
   name: iks-contextual-execution
 spec:
   params:
-    # As Cluster Pipeline Resources are not properly updated after kubernetes cluster setup
-    # Allow user to specify kubeconfig copy fallback directory provided by fetch-iks-cluster-context task
     - name: cluster-pipeline-resources-directory
-      description: directory in which the kubeconfig file(s) for clusterPipelineResources are available
+      description: directory in which the kubeconfig file(s) for cluster are available
       default: /clusters
     - name: cluster-name
       description: name of the cluster - required if no cluster pipeline resource provided to this task

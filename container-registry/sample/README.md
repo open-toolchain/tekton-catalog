@@ -1,9 +1,7 @@
 # Containerize Task example usage
-The `sample` sub-directory contains an `event-listener-container-registry` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-containerize` and `icr-check-va-scan`.
+The `sample` sub-directory contains an `buildkit-no-resources` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-containerize` and `icr-check-va-scan`. This pipeline definition uses the task's parameter `image-url` to provide the information on image to build and scan.
 
-It also contains a `buildkit-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information.
-
-It also contains a `buildkit-no-image-url` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image, neither parameter `image-url`. The information on the IBM Cloud container registry and image to build is provided using parameters `registry-region`, `registry-namespace` and `image-name`.
+It also contains a `buildkit-no-image-url` EventListener definition which is the providing the same example but without the needs to set parameter `image-url`. The information on the IBM Cloud container registry and image to build is provided using parameters `registry-region`, `registry-namespace` and `image-name`.
 
 **Note:** this sample also relies on the clone-repo task to clone the application to containerize.
 

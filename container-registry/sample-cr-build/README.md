@@ -8,9 +8,7 @@ For more information about this replacement, see the [IBM Cloud™ Container Reg
 
 
 # Exemple usage
-The `sample-cr-build` sub-directory contains an `cr-build` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-cr-build` and `icr-check-va-scan`.
-
-It also contains a `cr-build-no-resources` EventListener definition which is the providing the same example but without the needs to define PipelineResources for image as it uses the task's parameter `image-url` to provide the information.
+The `sample-cr-build` sub-directory contains an `cr-build-no-resources` EventListener definition that you can include in your tekton pipeline configuration to run an example usage of the `icr-cr-build` and `icr-check-va-scan`. This pipeline definition uses the task's parameter `image-url` to provide the information on the image to build and scan.
 
 **Note:** this sample also relies on the clone-repo task to clone the application to containerize.
 

@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: icr-cr-build
+  labels:
+    tekton.dev/deprecated: "true"
 spec:
   params:
     - name: ibmcloud-api
@@ -75,12 +77,6 @@ spec:
     - name: source
       description: A workspace containing the source (Dockerfile, Docker context) to create the image
       mountPath: /artifacts
-  resources:
-    outputs:
-      - name: built-image
-        type: image
-        description: "(Optional) The image to build"
-        optional: true
   steps:
     - name: check-registry-and-build-image
       image: $(params.check-and-build-step-image)
@@ -151,11 +147,7 @@ spec:
           export HOME="/root"
           ##########################################################################
 
-          if [ "$(resources.outputs.built-image.url)" == "" ]; then
-            export IMAGE_RESOURCE_URL="$(params.image-url)"
-          else
-            export IMAGE_RESOURCE_URL="$(resources.outputs.built-image.url)"
-          fi
+          export IMAGE_RESOURCE_URL="$(params.image-url)"
 
           if [ "$IMAGE_RESOURCE_URL" ]; then
             # Parse the image url to find registry information
