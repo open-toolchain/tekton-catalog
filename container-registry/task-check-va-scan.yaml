@@ -130,6 +130,9 @@ spec:
               REGISTRY_REGION="ca-tor"
             elif [ "$REGISTRY_REGION" == "br" ]; then
               REGISTRY_REGION="br-sao"
+            elif [ "$REGISTRY_REGION" == "icr" ]; then
+              # REGISTRY_URL is icr.io meaning region is global
+              REGISTRY_REGION="global"
             else
               echo "No IBM Cloud Container Registry region found for the registry url $INPUT_REGISTRY_URL"
               exit 1
