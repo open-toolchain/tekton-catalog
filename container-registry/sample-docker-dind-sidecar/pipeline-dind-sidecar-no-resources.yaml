@@ -13,6 +13,8 @@ spec:
       description: the url of the image to build
     - name: pipeline-debug
       default: "0"
+    - name: properties-file
+      default: ""
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -25,7 +27,7 @@ spec:
         - name: branch
           value: $(params.branch)
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -41,7 +43,7 @@ spec:
         - name: image-tag
           value: 1.0.0-$(tasks.clone-repository.results.git-branch)-$(tasks.clone-repository.results.git-commit)
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:

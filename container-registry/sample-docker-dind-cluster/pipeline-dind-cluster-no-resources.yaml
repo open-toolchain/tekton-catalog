@@ -15,6 +15,8 @@ spec:
       description: name of the docker build cluster
     - name: pipeline-debug
       default: "0"
+    - name: properties-file
+      default: ""
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -27,7 +29,7 @@ spec:
         - name: branch
           value: $(params.branch)
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
@@ -45,7 +47,7 @@ spec:
         - name: cluster-name
           value: $(params.cluster-name)
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
