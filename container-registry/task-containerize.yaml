@@ -341,18 +341,9 @@ spec:
 
           MANIFEST_SHA=$(grep -i 'exporting manifest' build.log | grep -i 'done' | awk '{print $4}')
           CONFIG_SHA=$(grep -i 'exporting config' build.log | grep -i 'done' | awk '{print $4}')
-          FULLY_QUALIFIED_IMAGE=$(grep -i 'pushing manifest' build.log | grep -i 'done' | awk '{print $5}')
 
-          # Because of https://github.com/tektoncd/pipeline/issues/216
-          # the image digest for input is/will always empty
-          # there was an alternative/workaround but it is updating using a specific account
-          # and using a kubectl command to update the resources
-          # see https://github.com/nlewo/poc-tekton#deploy-tasks
-          # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/image-digest-updater.yaml
-          # https://raw.githubusercontent.com/tektoncd/catalog/0b48da8e336a4214aff46af242658dc056199b1c/update-image-digests/update-image-digests.yaml
-          # Here the workaround will be to add registry and image information in an output properties file
           IMAGE_TAGS=$(grep -i 'pushing manifest' /steps/build.log | grep -i 'done' | awk '{print $5}' | \
-            awk -F: '{print $2}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
+            awk -F: '{print $2}' | awk -F@ '{print $1}' | tr -s '\r\n' ',' | sed -e 's/,$/\n/')
           if [ "$PROPERTIES_FILE" ]; then
             mkdir -p $(workspaces.source.path)/$(dirname "$PROPERTIES_FILE")
             echo "REGISTRY_URL=${REGISTRY_URL}" >> $(workspaces.source.path)/$PROPERTIES_FILE

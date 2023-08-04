@@ -21,6 +21,8 @@ spec:
       default: "true"
     - name: pipeline-debug
       default: "0"
+    - name: properties-file
+      default: ""
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -39,7 +41,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -79,7 +81,7 @@ spec:
             # Add a specific tag with cd build number
             echo "1.0.0-${BUILD_NUMBER}"
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:

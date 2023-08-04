@@ -17,6 +17,8 @@ spec:
       default: "true"
     - name: pipeline-debug
       default: "0"
+    - name: properties-file
+      default: ""
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -49,6 +51,8 @@ spec:
             value: $(params.push-to-registry)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
+          - name: properties-file
+            value: $(params.properties-file)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

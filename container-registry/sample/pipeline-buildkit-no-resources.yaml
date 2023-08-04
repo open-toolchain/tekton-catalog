@@ -17,6 +17,8 @@ spec:
       default: "true"
     - name: pipeline-debug
       default: "0"
+    - name: properties-file
+      default: ""
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -31,7 +33,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
       workspaces:
         - name: output
           workspace: pipeline-ws
@@ -63,7 +65,7 @@ spec:
         - name: image-url
           value: $(params.image-url)
         - name: properties-file
-          value: ""
+          value: $(params.properties-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
