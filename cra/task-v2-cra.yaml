@@ -201,9 +201,15 @@ spec:
           if [[ $(find "$(params.path)" -name "go.mod" -type f) ]]; then
             if ! command -v go &>/dev/null; then
                 echo "go.mod found, installing go cli for CRA scanning."
-                curl -fsSLo- https://s.id/golang-linux | bash
-                export GOROOT="/home/$USER/go"
-                export GOPATH="/home/$USER/go/packages"
+                echo "Checking latest Go version...\n";
+                LATEST_GO_VERSION="$(curl --silent https://go.dev/VERSION?m=text | head -n 1)";
+                LATEST_GO_DOWNLOAD_URL="https://go.dev/dl/${LATEST_GO_VERSION}.linux-amd64.tar.gz "
+                echo "Downloading ${LATEST_GO_DOWNLOAD_URL}\n\n";
+                cd $HOME
+                curl -OJ -L --progress-bar https://golang.org/dl/${LATEST_GO_VERSION}.linux-amd64.tar.gz
+                tar -xf ${LATEST_GO_VERSION}.linux-amd64.tar.gz
+                export GOROOT="$HOME/go"
+                export GOPATH="$HOME/go/packages"
                 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
                 go version
             fi
