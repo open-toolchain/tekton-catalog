@@ -196,6 +196,8 @@ spec:
             echo "${ENV_PROPS}" > ./env-props
             source ./env-props
           fi
+          #Current Working Directory
+          WORKING_DIR=$PWD
 
           # Install go cli for BOM go package dependency scanning if repo contains go.mod and go is not installed (get latest)
           if [[ $(find "$(params.path)" -name "go.mod" -type f) ]]; then
@@ -211,6 +213,8 @@ spec:
                 export GOROOT="$HOME/go"
                 export GOPATH="$HOME/go/packages"
                 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+                #Return to working directory after go setup
+                cd ${WORKING_DIR}
                 go version
             fi
           fi
@@ -219,8 +223,10 @@ spec:
             echo "Running custom script."
             if [ -f "$CUSTOM_SCRIPT" ]; then
                 chmod +x $CUSTOM_SCRIPT  # ensure execute permissions are set
+                source $CUSTOM_SCRIPT
+            else
+                $CUSTOM_SCRIPT
             fi
-            $CUSTOM_SCRIPT
           fi
 
           if [ -n "$REGION" ]; then
