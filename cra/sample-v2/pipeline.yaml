@@ -27,6 +27,8 @@ spec:
       description: The forked git repo from where the PR is made
     - name: repository
       description: The git repo
+    - name: git-credentials-json-file
+      default: "output/secrets/thecredentials.json"
 
     # Common command related params
     - name: custom-script
@@ -138,6 +140,8 @@ spec:
           value: $(params.pr-repository)
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
+        - name: git-credentials-json-file
+          value: $(params.git-credentials-json-file)
         - name: revision
           value: $(params.commit-id)
       workspaces:

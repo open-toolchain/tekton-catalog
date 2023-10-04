@@ -38,6 +38,9 @@ spec:
       default: ""
     - name: repository
       description: The git repo
+    - name: git-credentials-json-file
+      description: (Optional) JSON file containing the git credentials as found out of the clone task
+      default: "output/secrets/thecredentials.json"
 
     # Common command related params
     - name: custom-script
@@ -201,6 +204,8 @@ spec:
             value: $(params.pr-repository)
           - name: repository
             value: $(params.repository)
+          - name: git-credentials-json-file
+            value: $(params.git-credentials-json-file)
           - name: custom-script
             value: $(params.custom-script)
           - name: env-props
