@@ -118,7 +118,7 @@ spec:
     - name: build-script
       value: mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" clean compile
     - name: scan-step-image
-      value: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11
+      value: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29
     - name: sonar-scan-command
       value: mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.password="${SONAR_PASS}" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.projectKey="$SONAR_PROJECT_KEY" -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$SONAR_DIR" sonar:sonar
 ---

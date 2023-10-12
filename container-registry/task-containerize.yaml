@@ -54,11 +54,11 @@ spec:
       description: option to push the built image to registry or not. Default is `true`
       default: "true"
     - name: check-step-image
-      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
+      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
     - name: process-log-step-image
-      description: image to use for the process log (post-build) steps (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
+      description: image to use for the process log (post-build) steps (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
     - name: additional-tags
       description: comma-separated list of additional-tags
       # can not be defined as an array because of variable substition error for array

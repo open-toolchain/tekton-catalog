@@ -151,7 +151,7 @@ spec:
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim

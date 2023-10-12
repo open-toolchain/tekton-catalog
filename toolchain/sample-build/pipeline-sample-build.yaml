@@ -9,7 +9,7 @@ spec:
       description: The command(s) to run
     - name: run-build-image
       description: The name of the image used for the run-build step
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"

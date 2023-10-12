@@ -12,8 +12,8 @@ spec:
       description: name of the configmap containing values for the task
       default: environment-properties
     - name: tests-image
-      description: Container image to be used for _tests_ script execution. Default to "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11"
+      description: Container image to be used for _tests_ script execution. Default to "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
     - name: shuttle-properties-file
       description: file containing properties
       default: ""
