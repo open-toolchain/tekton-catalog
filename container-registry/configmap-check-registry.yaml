@@ -101,7 +101,7 @@ data:
 
     # Check available quota on CR
     if ibmcloud cr quota | grep 'Your account has exceeded its storage quota.'; then
-      echo "Your account has exceeded its storage quota. You can check your images at https://cloud.ibm.com/kubernetes/registry/main/images"
+      echo "Your account has exceeded its storage quota. You can check your images at https://cloud.ibm.com/registry/images"
       exit 1
     fi
 
