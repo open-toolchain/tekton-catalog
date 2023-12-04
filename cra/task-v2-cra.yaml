@@ -241,15 +241,30 @@ spec:
             export TOOLCHAIN_ID=$(cat /config/toolchain.json | jq -r '.toolchain_guid')
           fi
 
-          echo -e "\nFetching users's token"
-          ibmcloud config --check-version false
-          ibmcloud login -a $API --no-region --apikey $API_KEY
-          SC=$?
-          if [ $SC -gt 0 ]; then
-            echo -e "Failed to login to ibmcloud"
-            exit 1
-          fi
-          echo -e "Successfully logged into ibmcloud\n"
+          ibmcloud_login() {
+            echo -e "\nFetching users's token"
+            ibmcloud config --check-version false
+            ibmcloud login -a $API --no-region --apikey $API_KEY
+            SC=$?
+            if [ $SC -gt 0 ]; then
+              echo -e "Failed to login to ibmcloud"
+              exit 1
+            fi
+            echo -e "Successfully logged into ibmcloud\n"
+          }
+
+          refresh_ibmcloud_session() {
+            local login_temp_file="/tmp/ibmcloud-login-cache"
+            if [[ ! -f "$login_temp_file" ]]; then
+              ibmcloud_login
+              touch "$login_temp_file"
+            elif [[ -n "$(find "$login_temp_file" -mmin +15)" ]]; then
+              ibmcloud_login
+              touch "$login_temp_file"
+            fi
+          }
+
+          refresh_ibmcloud_session
 
           # Install the CRA plugin if it is not installed
           CRA_VER=`ibmcloud plugin list |grep cra | awk '{print $2}'`
@@ -337,6 +352,8 @@ spec:
             cat $(params.bom-report)
           fi
 
+          refresh_ibmcloud_session
+
           echo -e "\n\nBeginning CRA vulnerability scan"
           VULNERABILITY_CMD=(ibmcloud cra vulnerability-scan --bom $(params.bom-report) --report $(params.vulnerability-report) --region $TOOLCHAIN_REGION)
           if [ -n "$(params.cveignore)" ]; then
@@ -355,6 +372,8 @@ spec:
           if [ "$(params.output)" == "true" ]; then
             cat $(params.vulnerability-report)
           fi
+
+          refresh_ibmcloud_session
 
           echo -e "\n\nBeginning CRA Deploy Analytic"
           DEPLOY_CMD=(ibmcloud cra deployment-analyze --path $(params.path) --report $(params.deploy-report) --region $TOOLCHAIN_REGION)
