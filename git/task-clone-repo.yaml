@@ -257,6 +257,14 @@ spec:
         GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
         ARTIFACTS_PATH="$(workspaces.output.path)"
         cd $ARTIFACTS_PATH
+
+        # The attached storage for running pipelines is changing to a Block type from a Local PV.
+        # This Block type has a "lost+found" directory present.
+        # This causes an issue when the Git Clone task destination is set to root ".", which is the pattern that the Tekton templates use.
+        # When attempting a clone, it detects that the clone directory is not empty and fails.
+        # Note: The remove command needs to come after the cd $ARTIFACTS_PATH command
+        rm -rf "lost+found"
+
         if [ "$REVISION" ]; then
           # check if the branch exists (that may not be the case in case of a pipeline-run re-run)
           echo "Fetching specific -${REVISION}- commit"
