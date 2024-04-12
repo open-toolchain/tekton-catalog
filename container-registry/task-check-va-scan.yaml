@@ -130,6 +130,8 @@ spec:
               REGISTRY_REGION="ca-tor"
             elif [ "$REGISTRY_REGION" == "br" ]; then
               REGISTRY_REGION="br-sao"
+            elif [ "$REGISTRY_REGION" == "es" ]; then
+              REGISTRY_REGION="eu-es"
             elif [ "$REGISTRY_REGION" == "icr" ]; then
               # REGISTRY_URL is icr.io meaning region is global
               REGISTRY_REGION="global"
