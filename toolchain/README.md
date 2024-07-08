@@ -25,7 +25,7 @@ This task perform build operation on the given workspace. Default build operatio
 ### Parameters
 
 * **custom-script**: (optional) The script (commands) to run the build in run-build step. It will override the default commands. Default to ``.
-* **run-build-image**: (optional) The name of the image used for the run-build step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`
+* **run-build-image**: (optional) The name of the image used for the run-build step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0
 
 ### Workspaces
@@ -41,7 +41,7 @@ You have to provide a jq expression and the targeted config map's details.
 - **config-map-name**: (Default: `toolchain`) The name of the ConfigMap
 - **config-map-key**: (Default: `toolchain.json`) The key of the ConfigMap
 - **expression**: A valid jq expression which is used to search
-- **extract-value-jq-step-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`) image to use for the extract-value-jq step
+- **extract-value-jq-step-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46`) image to use for the extract-value-jq step
 - **pipeline-debug**: (Default: `"0"`) enable pipeline debug mode
 
 ### Usage
@@ -116,5 +116,5 @@ This task helps to create or update mappings between Toolchains & Deployables.
 * **ibmcloud-api**: (optional) the ibmcloud api. Default to https://cloud.ibm.com
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
-* **publish-deployable-mapping-step-image**: (optional) image to use for the publish-deployable-mapping step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`
+* **publish-deployable-mapping-step-image**: (optional) image to use for the publish-deployable-mapping step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46`
 * **pipeline-debug**: (optional) Pipeline debug mode. Value can be 0 or 1. Default to 0

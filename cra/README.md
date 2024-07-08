@@ -108,7 +108,7 @@ The following controls have been identified from CIS Docker 1.13.0 that we can i
   - **cveignore**: (Optional) File path to cveignore
   - **exclude-dev**: (Default: `false`) Exclude dev dependencies during vulnerability scan
   - **vulnerability-report**: (Default: `./vulnerability.json`) Filepath to store generated Vulnerability report
-  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`) Image to use for `scan` task
+  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46`) Image to use for `scan` task
   - **dind-image**: (Default to `icr.io/continuous-delivery/pipeline/docker:20.10.22-dind`) Image to use for the Docker-in-Docker sidecar
 
 #### Implicit
@@ -234,7 +234,7 @@ This task uses `ibmcloud cli` and the `cra` plugin to scan ibm-terraform-provide
   - **tf-version**: (Default: `0.15.5`)  The terraform version to use to create Terraform plan
   - **tf-policy-file**: (Optional) Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules.
   - **tf-attachment-file**: (Optional) Path of SCC V2 attachment file.
-  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`) Image to use for `scan` task
+  - **cra-scan-image**: (Default: `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46`) Image to use for `scan` task
 
 #### Implicit
 

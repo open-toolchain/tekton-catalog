@@ -61,8 +61,8 @@ spec:
       description: file containing properties out of containerize task
       default: build.properties
     - name: check-and-build-step-image
-      description: image to use for the scan step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+      description: image to use for the scan step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"

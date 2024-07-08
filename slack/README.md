@@ -41,7 +41,7 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 * **message-script**: (optional) Shell script that provides messsage content.
 * **message**: (optional) the message to send to Slack.
 * **exit-on-error**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
-* **post-to-slack-step-image**: (optional) image to use for the post-to-slack step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.11`
+* **post-to-slack-step-image**: (optional) image to use for the post-to-slack step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46`
 
 ## Workspaces
 

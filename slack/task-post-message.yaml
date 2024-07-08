@@ -35,8 +35,8 @@ spec:
         if unable to process the message or post to Slack.
       default: "false"
     - name: post-to-slack-step-image
-      description: image to use for the post-to-slack step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.29"
+      description: image to use for the post-to-slack step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
