@@ -33,11 +33,11 @@ spec:
         Default is to mean only use the branch
       default: ""
     - name: fetch-gitoken-step-image
-      description: image to use for the fetch-gitoken step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
+      description: image to use for the fetch-gitoken step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49"
     - name: git-client-image
       description: The image to use to run git clone commands
-      default: alpine/git
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49"
     - name: git-max-retry
       description: max retry for the git clone operation
       default: "1"
