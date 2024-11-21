@@ -268,12 +268,13 @@ spec:
           state = build["$(params.state-var)"]
 
         # If state is one of PipelineRun Taks execution status convert it to a generic state one
-        if state == "Succeeded":
+        if state in ["Succeeded", "Completed"]:
           state = "success"
         elif state == "Failed":
           state = "failed"
         elif state == "None":
           state = "pending"
+        elif state == "Completed":
 
         # Make the state value consistent to the git flavor
         # Generic state values are: pending, running, success, failed, canceled
