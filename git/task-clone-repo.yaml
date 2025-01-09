@@ -180,16 +180,27 @@ spec:
           # as there is already an url param git_id, just put the additional ones using &
 
           GIT_BROKER_URL="${GIT_TOKEN_URL}&toolchain_id=${TOOLCHAIN_ID}&service_instance_id=${GIT_SERVICE_INSTANCE_ID}&repo_url=${REPOSITORY}"
-          echo "Doing cURL to ${GIT_BROKER_URL}"
+          echo ""
+          echo "Executing cURL to ${GIT_BROKER_URL}"
+          echo ""
 
-          curl -s -o /steps/github_token_result.json -X GET -H "Accept: application/json" \
-            -H "Authorization: $TOKEN" "$GIT_BROKER_URL"
+          # retry 5 times with a delay of 5 secs between attempts
+          http_code=$(curl --retry 5 --retry-delay 5 -s -o /steps/github_token_result.json -w "%{http_code}" -X GET -H "Accept: application/json" \
+            -H "Authorization: $TOKEN" "$GIT_BROKER_URL")
+
           if jq -e '.access_token' /steps/github_token_result.json > /dev/null 2>&1; then
             GIT_TOKEN=$(jq -r '.access_token' /steps/github_token_result.json)
             echo "Access token found for the Git integration (repository url: $REPOSITORY)"
           else
-            echo "No access token found for the Git integration (repository url: $REPOSITORY)"
-            cat /steps/github_token_result.json
+            echo "Error! No access token found for the Git integration (repository url: $REPOSITORY)"
+            echo ""
+            echo "http code for the curl command is: ${http_code}"
+            echo ""
+            echo "Exiting..."
+            echo ""
+            if [ -f /steps/github_token_result.json ]; then
+              cat /steps/github_token_result.json
+            fi
             exit 1
           fi
         else
