@@ -40,7 +40,7 @@ spec:
     # Docker Client configuration
     - name: docker-client-image
       description: The Docker image to use to run the Docker client
-      default: docker
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
     # Docker commands
     - name: docker-commands
       description: The docker command(s) to run.
