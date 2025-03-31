@@ -26,8 +26,11 @@ spec:
         if issues are found in the Dockerfile lint
       default: "true"
     - name: hadolint-image
-      description: image containing hadolint (default to hadolint/hadolint:v1.18.0-alpine)
-      default: "hadolint/hadolint:v1.18.0-alpine"
+      description: image for installing Hadolint
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
+    - name: hadolint-version
+      description: "The version of Hadolint to use."
+      default: "v2.12.0"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -52,8 +55,14 @@ spec:
           value: $(params.trusted-registries)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
+        - name: HADOLINT_VERSION
+          value: $(params.hadolint-version)
       script: |
         #!/bin/sh
+        wget -L "https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-x86_64"
+        chmod +x hadolint-Linux-x86_64
+        mv hadolint-Linux-x86_64 /bin/hadolint
+
         if [ $PIPELINE_DEBUG == 1 ]; then
           pwd
           env
