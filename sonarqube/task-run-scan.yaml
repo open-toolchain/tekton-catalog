@@ -22,7 +22,7 @@ spec:
       default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
     - name: scan-step-image
       description: image used for the scan step
-      default: icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli@sha256:af782cf68bbfe32982aac08e3215d95f57c9ce49444ab8bfa017819ba4905548
+      default: icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli:29-11-2024-10-26
     - name: post-to-doi-step-image
       description: image used for the post to doi step
       default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
@@ -33,13 +33,13 @@ spec:
         - SONAR_DIR : Sonar Scanner Working directory
         - SONAR_HOST_URL: URL of the sonarqube server
         - SONAR_USER : Sonar Userid
-        - SONAR_PASS : Sonar Password
+        - SONAR_PASS : Sonar Password/Token
         - SONAR_PROJECT_KEY: Sonar Project key of the sonarqube project
         - WORKSPACE_PATH: Path to the workspace
         - PATH_TO_SOURCES : workspace relative path to the sources to scan
 
         The command can be another kind of command for maven java project like
-          mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.password="${SONAR_PASS}"
+          mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.token="${SONAR_PASS}"
            -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.projectKey="$SONAR_PROJECT_KEY"
            -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$SONAR_DIR" sonar:sonar
       default: "sonar-scanner -Dsonar.working.directory=$SONAR_DIR"
@@ -129,13 +129,14 @@ spec:
         sonar.host.url=$SONAR_HOST_URL
         sonar.sources=.
         sonar.login=$SONAR_USER
-        sonar.password=$SONAR_PASS
+        sonar.token=$SONAR_PASS
         EOF
         fi
 
         # Keep properties for next step(s)
         SONAR_DIR="/steps/__sonar_scan__"
-        mkdir -p $SONAR_DIR
+        # Ensure SONAR_DIR is writable subsequent step - as sonar step image may not be root
+        mkdir -p --mode=777 $SONAR_DIR
         SONAR_PROJECT_KEY=$(< $WORKSPACE_PATH/$PATH_TO_SOURCES/sonar-project.properties grep sonar.projectKey | cut -d "=" -f2)
 
         echo "SONAR_DIR=$SONAR_DIR" >> /steps/step.properties
