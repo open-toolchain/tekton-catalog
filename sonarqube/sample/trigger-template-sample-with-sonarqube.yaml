@@ -30,8 +30,13 @@ spec:
     - name: sonar-scan-command
       description: command for sonarqube scan
     - name: doi-policy
-      description: DevOps Insights polciy to evaluate
+      description: DevOps Insights policy to evaluate
       default: "my-policy"
+    - name: sonarqube-name
+      description: |
+        name of the sonarqube toolcard integration in the toolchain
+        (default to "" meaning the first sonarqube integration found will be used)
+      default: ""
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -76,6 +81,8 @@ spec:
             value: $(params.sonarqube-project-key)
           - name: sonar-scan-command
             value: $(params.sonar-scan-command)
+          - name: sonarqube-name
+            value: $(params.sonarqube-name)
           - name: doi-policy
             value: $(params.doi-policy)
           - name: pipeline-debug

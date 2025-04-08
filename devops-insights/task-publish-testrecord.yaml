@@ -117,6 +117,7 @@ spec:
         fi
 
         export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
+        ibmcloud config --check-version false
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
 
         IFS=';' read -ra locations <<< "$FILE_LOCATIONS"

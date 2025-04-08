@@ -245,18 +245,19 @@ spec:
           BUILD_NUMBER="$DEFAULT_BUILD_NUMBER"
         fi
 
-        # Force doi plugin update until https://github.ibm.com/oneibmcloud/DevOps-Insights/issues/9268 fix
-        # which is part of the doi plugin version 0.3.5 is included in the base image
-        ibmcloud plugin update doi -f
-
+        ibmcloud config --check-version=false
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
 
-        ONE_TIME_TOKEN_NAME=$(date +%s%3N)
-
-        # create a one-time token
-        curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
-          -X POST "${SONAR_HOST_URL}/api/user_tokens/generate?name=${ONE_TIME_TOKEN_NAME}" | \
-          jq -r '.token' > /steps/sonarqube-token
+        if [ -n "${SONAR_USER}" ]; then
+          ONE_TIME_TOKEN_NAME=$(date +%s%3N)
+          # create a one-time token
+          curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
+            -X POST "${SONAR_HOST_URL}/api/user_tokens/generate?name=${ONE_TIME_TOKEN_NAME}" | \
+            jq -r '.token' > /steps/sonarqube-token
+        else
+          ONE_TIME_TOKEN_NAME=""
+          echo -n "${SONAR_PASS}" > /steps/sonarqube-token
+        fi
 
         ibmcloud doi publishtestrecord \
           --logicalappname "$DOI_APP_NAME" \
@@ -266,9 +267,11 @@ spec:
           --type sonarqube \
           --sqtoken "$(cat /steps/sonarqube-token)"
 
-        # we have created a one-time token, revoke it at the server to clean up after ourselves
-        curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
-          -X POST "${SONAR_HOST_URL}/api/user_tokens/revoke?name=${ONE_TIME_TOKEN_NAME}"
+        if [ -n "$ONE_TIME_TOKEN_NAME" ]; then
+          # we have created a one-time token, revoke it at the server to clean up after ourselves
+          curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
+            -X POST "${SONAR_HOST_URL}/api/user_tokens/revoke?name=${ONE_TIME_TOKEN_NAME}"
+        fi
 
       volumeMounts:
         - mountPath: /cd-config

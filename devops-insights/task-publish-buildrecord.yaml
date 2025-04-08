@@ -122,6 +122,7 @@ spec:
         fi
 
         export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
+        ibmcloud config --check-version false
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
         ibmcloud doi publishbuildrecord --logicalappname="${APP_NAME}" --buildnumber=${BUILD_NUMBER} \
           --branch=${GIT_BRANCH} --repositoryurl=${GIT_URL} --commitid=${GIT_COMMIT} \

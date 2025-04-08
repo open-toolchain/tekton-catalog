@@ -121,6 +121,7 @@ spec:
         fi
 
         export TOOLCHAIN_ID=${TOOLCHAIN_ID} # for doi plugin
+        ibmcloud config --check-version false
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
         ibmcloud doi publishdeployrecord --env "${ENVIRONMENT}" --status=${DEPLOY_STATUS} --joburl="${JOB_URL}" \
           --buildnumber="${BUILD_NUMBER}" --logicalappname="${APP_NAME}" ${APP_URL}
