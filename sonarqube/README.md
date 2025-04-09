@@ -43,6 +43,7 @@ This task starts a SonarQube scan for the code in a workspace using the SonarQub
 * **ibmcloud-api**: (optional) the ibmcloud api. Default to https://cloud.ibm.com
 * **continuous-delivery-context-secret**: (optional) Name of the secret containing the continuous delivery pipeline context secrets. Default to `secure-properties`
 * **toolchain-apikey-secret-key**: (optional) field in the secret that contains the api key used to access toolchain and DOI instance. Default to `toolchain-apikey`
+* **doi-sonarqube-token-secret-key**: (optional) field in the secret that contains the SonarQube token to publish the SonarQube report to DOI. It has some specific permissions which are required that a Global Analysis Token may not have. See  https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-for-sonarqube-token. Default to `doi-sonarqube-token`
 * **pipeline-debug**: (optional) turn on task script context debugging
 
 ### Workspaces

@@ -37,6 +37,15 @@ spec:
         name of the sonarqube toolcard integration in the toolchain
         (default to "" meaning the first sonarqube integration found will be used)
       default: ""
+    - name: toolchain-apikey-secret-key
+      description: field in the secret that contains the api key used to access toolchain and DOI instance
+      default: "toolchain-apikey"
+    - name: doi-sonarqube-token-secret-key
+      description: |
+        field in the secret that contains the SonarQube token to publish the SonarQube report to DOI.
+        It has some specific permissions which are required that a Global Analysis Token may not have.
+        See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-for-sonarqube-token
+      default: "doi-sonarqube-token"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -74,7 +83,7 @@ spec:
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
         - name: toolchain-apikey-secret-key
-          value: "toolchain-apikey"
+          value: $(params.toolchain-apikey-secret-key)
         - name: app-name
           value: $(params.app-name)
         - name: git-repository
@@ -106,7 +115,9 @@ spec:
         - name: ibmcloud-api
           value: $(params.ibmcloud-api)
         - name: toolchain-apikey-secret-key
-          value: "toolchain-apikey"
+          value: $(params.toolchain-apikey-secret-key)
+        - name: doi-sonarqube-token-secret-key
+          value: $(params.doi-sonarqube-token-secret-key)
         - name: doi-app-name
           value: $(params.app-name)
         - name: path-to-sources

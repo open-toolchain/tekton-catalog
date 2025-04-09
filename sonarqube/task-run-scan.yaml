@@ -63,6 +63,12 @@ spec:
     - name: toolchain-apikey-secret-key
       description: field in the secret that contains the api key used to access toolchain and DOI instance
       default: "toolchain-apikey"
+    - name: doi-sonarqube-token-secret-key
+      description: |
+        field in the secret that contains the SonarQube token to publish the SonarQube report to DOI.
+        It has some specific permissions which are required that a Global Analysis Token may not have.
+        See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-for-sonarqube-token
+      default: "doi-sonarqube-token"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -207,6 +213,12 @@ spec:
           value: $(params.doi-toolchain-id)
         - name: DOI_BUILD_NUMBER
           value: $(params.doi-build-number)
+        - name: DOI_SONARQUBE_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: $(params.continuous-delivery-context-secret)
+              key: $(params.doi-sonarqube-token-secret-key)
+              optional: true
         - name: DEFAULT_BUILD_NUMBER
           valueFrom:
             fieldRef:
@@ -248,15 +260,22 @@ spec:
         ibmcloud config --check-version=false
         ibmcloud login --apikey ${IBM_CLOUD_API_KEY} -a ${IBM_CLOUD_API} --no-region
 
-        if [ -n "${SONAR_USER}" ]; then
-          ONE_TIME_TOKEN_NAME=$(date +%s%3N)
-          # create a one-time token
-          curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
-            -X POST "${SONAR_HOST_URL}/api/user_tokens/generate?name=${ONE_TIME_TOKEN_NAME}" | \
-            jq -r '.token' > /steps/sonarqube-token
+        ONE_TIME_TOKEN_NAME=""
+        if [ -z "${DOI_SONARQUBE_TOKEN}" ]; then
+          if [ -n "${SONAR_USER}" ]; then
+            ONE_TIME_TOKEN_NAME=$(date +%s%3N)
+            # create a one-time token
+            echo "Creating a one-time sonarqube token ${ONE_TIME_TOKEN_NAME} for doi publishtestrecord"
+            curl --fail --silent --show-error --location --user "${SONAR_USER}:${SONAR_PASS}" \
+              -X POST "${SONAR_HOST_URL}/api/user_tokens/generate?name=${ONE_TIME_TOKEN_NAME}" | \
+              jq -r '.token' > /steps/sonarqube-token
+          else
+            echo "Using configured sonarqube token for doi publishtestrecord"
+            echo -n "${SONAR_PASS}" > /steps/sonarqube-token
+          fi
         else
-          ONE_TIME_TOKEN_NAME=""
-          echo -n "${SONAR_PASS}" > /steps/sonarqube-token
+            echo "Using secret $(params.doi-sonarqube-token-secret-key) as sonarqube token for doi publishtestrecord"
+          echo -n "${DOI_SONARQUBE_TOKEN}" > /steps/sonarqube-token
         fi
 
         ibmcloud doi publishtestrecord \

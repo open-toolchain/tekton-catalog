@@ -106,7 +106,6 @@ spec:
       params:
         - name: repository
           value: "$(params.repository)"
-#          value: "$(tasks.git-clone.results.git-repository)"
         - name: branch
           value: $(params.pr-branch)
       workspaces:
