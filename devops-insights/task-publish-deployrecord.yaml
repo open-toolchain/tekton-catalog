@@ -77,7 +77,6 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
-      workingDir: /artifacts
       script: |
         #!/bin/bash
         set -e -o pipefail

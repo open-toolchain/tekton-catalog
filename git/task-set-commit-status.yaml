@@ -42,7 +42,8 @@ spec:
     - name: state
       description: |
         The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled`
-        or the execution status of pipelineTask: `Succeeded`, `Failed`, and `None` - see https://github.com/tektoncd/pipeline/blob/master/docs/pipelines.md#using-execution-status-of-pipelinetask
+        or the execution status of pipelineTask (or aggregation status of pipeline Tasks) : `Succeeded`, `Failed`, `Completed` and `None`
+          (see https://github.com/tektoncd/pipeline/blob/main/docs/pipelines.md#using-aggregate-execution-status-of-all-tasks)
         or a value meaningful for the target git repository
         - gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled`
         - github/integrated github: `pending`, `success`, `failure`, `error`
@@ -267,8 +268,10 @@ spec:
           print("Looking for state in $(params.build-properties)")
           state = build["$(params.state-var)"]
 
-        # If state is one of PipelineRun Taks execution status convert it to a generic state one
+        # If state is one of PipelineRun Taks execution status (or Aggregate) convert it to a generic state one
         if state == "Succeeded":
+          state = "success"
+        elif state == "Completed":
           state = "success"
         elif state == "Failed":
           state = "failed"
