@@ -280,11 +280,11 @@ spec:
           done
 
           if [ $DISABLE_CACHING == 1 ]; then
-            DISABLE_CACHING="--no-cache"
+            NO_CACHE="--no-cache"
           fi
 
           buildctl --addr tcp://0.0.0.0:1234 build \
-            ${DISABLE_CACHING} \
+            ${NO_CACHE} \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
