@@ -73,6 +73,9 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
+    - name: disable-caching
+      description: Disable caching layers when building images. Value can be 0 or 1. Default to 0
+      default: "0"
   results:
     - name: image-repository
       description: the repository for the built image
