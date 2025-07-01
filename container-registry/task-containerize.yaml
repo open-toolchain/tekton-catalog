@@ -275,6 +275,7 @@ spec:
           done
 
           buildctl --addr tcp://0.0.0.0:1234 build \
+            --no-cache \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
