@@ -219,6 +219,8 @@ spec:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
         - name: WORKSPACE_PATH
           value: $(workspaces.source.path)
+        - name: DISABLE_CACHING
+          value: $(params.disable-caching)
       securityContext:
         privileged: true
       command: ["/bin/sh", "-c"]
@@ -274,8 +276,12 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
+          if [ $DISABLE_CACHING == 1 ]; then
+            DISABLE_CACHING="--no-cache"
+          fi
+
           buildctl --addr tcp://0.0.0.0:1234 build \
-            --no-cache \
+            ${DISABLE_CACHING} \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \
