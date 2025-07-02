@@ -19,6 +19,8 @@ spec:
       default: "0"
     - name: properties-file
       default: ""
+    - name: disable-caching
+      default: "0"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -53,6 +55,8 @@ spec:
             value: $(params.pipeline-debug)
           - name: properties-file
             value: $(params.properties-file)
+          - name: disable-caching
+            value: $(params.disable-caching)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
