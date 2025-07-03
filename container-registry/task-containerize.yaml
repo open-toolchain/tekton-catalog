@@ -73,6 +73,9 @@ spec:
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
+    - name: disable-caching
+      description: Disable caching layers when building images. Value can be 0 or 1. Default to 0
+      default: "0"
   results:
     - name: image-repository
       description: the repository for the built image
@@ -219,6 +222,8 @@ spec:
               fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
         - name: WORKSPACE_PATH
           value: $(workspaces.source.path)
+        - name: DISABLE_CACHING
+          value: $(params.disable-caching)
       securityContext:
         privileged: true
       command: ["/bin/sh", "-c"]
@@ -274,7 +279,12 @@ spec:
             BUILD_ARGS="${BUILD_ARGS} --opt build-arg:$buildArg "
           done
 
+          if [ $DISABLE_CACHING == 1 ]; then
+            NO_CACHE="--no-cache"
+          fi
+
           buildctl --addr tcp://0.0.0.0:1234 build \
+            ${NO_CACHE} \
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(params.dockerfile) \

@@ -19,6 +19,8 @@ spec:
       default: "0"
     - name: properties-file
       default: ""
+    - name: disable-caching
+      default: "0"
   workspaces:
     - name: pipeline-ws
   tasks:
@@ -68,6 +70,8 @@ spec:
           value: $(params.properties-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: disable-caching
+          value: $(params.disable-caching)
       workspaces:
         - name: source
           workspace: pipeline-ws
