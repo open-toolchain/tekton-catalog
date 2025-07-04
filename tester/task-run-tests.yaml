@@ -85,8 +85,18 @@ spec:
         fi
         echo -n "" > $(results.test-result-file-paths.path)
         echo -n "" > $(results.test-types.path)
-        printf "#!/bin/bash\n" > /steps/tests-script.sh
-        printf "%s " '$(params.tests-script)' >> /steps/tests-script.sh
+
+        printf "#!/bin/bash\n\n" > /steps/tests-script.sh
+        printf 'FILE_LOCATIONS=""\n' >> /steps/tests-script.sh
+        printf 'TEST_TYPES=""\n\n' >> /steps/tests-script.sh
+        printf "# function to export tests results file locations and test types as task results\n" >> /steps/tests-script.sh
+        printf "function keep_results {\n" >> /steps/tests-script.sh
+        printf '  echo -n "$FILE_LOCATIONS" > %s\n' "$(results.test-result-file-paths.path)" >> /steps/tests-script.sh
+        printf '  echo -n "$TEST_TYPES" > %s\n' "$(results.test-types.path)" >> /steps/tests-script.sh
+        printf "}\n\n" >> /steps/tests-script.sh
+        printf "# Trap the EXIT signal to call the keep_results function\n" >> /steps/tests-script.sh
+        printf "trap keep_results EXIT\n\n" >> /steps/tests-script.sh
+        printf "%s\n" '$(params.tests-script)' >> /steps/tests-script.sh
         chmod +x /steps/tests-script.sh
 
         if [ $PIPELINE_DEBUG == 1 ]; then
