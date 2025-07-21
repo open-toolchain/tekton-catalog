@@ -54,12 +54,6 @@ Catalog of [Tekton Tasks](https://tekton.dev/docs/pipelines/tasks/#overview) usa
 ## Linter related tasks
 - **[linter-docker-lint](./linter/README.md#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://hub.docker.com/r/hadolint/hadolint).
 
-## Signing - Docker Content Trust related tasks
-
-- **[signing-dct-init](./signing/dct/README.md#signing-dct-init)**: This task initialize Docker Content Trust GUN/repository
-- **[signing-dct-sign](./signing/dct/README.md#signing-dct-sign)**: This task performs a Docker Content Trust signature on a given image
-- **[signing-dct-enforcement-policy](./signing/dct/README.md#signing-dct-enforcement-policy)**: This task installs [Container Image Security Enforcement](https://cloud.ibm.com/docs/Registry?topic=Registry-security_enforce) on a given cluster.
-
 ## Slack related tasks
 
 - **[slack-post-message](./slack/README.md)**: This task posts a message to the Slack channel(s) integrated to your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
