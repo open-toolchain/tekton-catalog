@@ -128,6 +128,8 @@ spec:
               REGISTRY_REGION="eu-fr2"
             elif [ "$REGISTRY_REGION" == "ca" ]; then
               REGISTRY_REGION="ca-tor"
+            elif [ "$REGISTRY_REGION" == "ca2" ]; then
+              REGISTRY_REGION="ca-mon"
             elif [ "$REGISTRY_REGION" == "br" ]; then
               REGISTRY_REGION="br-sao"
             elif [ "$REGISTRY_REGION" == "es" ]; then
