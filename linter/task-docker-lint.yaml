@@ -27,7 +27,7 @@ spec:
       default: "true"
     - name: hadolint-image
       description: image for installing Hadolint
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: hadolint-version
       description: "The version of Hadolint to use."
       default: "v2.12.0"

@@ -17,7 +17,7 @@ spec:
       mountPath: /artifacts
   steps:
     - name: run-tests
-      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72
       workingDir: /artifacts
       script: |
         #!/bin/bash

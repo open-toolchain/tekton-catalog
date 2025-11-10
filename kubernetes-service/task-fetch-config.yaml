@@ -37,8 +37,8 @@ spec:
       description: directory in the workspace that will be used to store the cluster and worker nodes export json files
       default: ""
     - name: setup-step-image
-      description: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27"
+      description: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
@@ -128,10 +128,10 @@ spec:
             # This can only be done when TriggerTemplate#resourcetemplates will accept
             # Role and Binding K8S resources definition
             echo "TODO - Processing $KUBECONFIG"
-            K8S_USER_NAME=$(yq r $KUBECONFIG users[0].name)
-            K8S_USER_TOKEN=$(yq r $KUBECONFIG users[0].user.auth-provider.config.id-token)
-            K8S_CLUSTER_URL=$(yq r $KUBECONFIG clusters[0].cluster.server)
-            CA_PEM_FILE=$(yq r $KUBECONFIG clusters[0].cluster.certificate-authority)
+            K8S_USER_NAME=$(yq '.users[0].name' $KUBECONFIG)
+            K8S_USER_TOKEN=$(yq '.users[0].user.auth-provider.config.id-token' $KUBECONFIG)
+            K8S_CLUSTER_URL=$(yq '.clusters[0].cluster.server' $KUBECONFIG)
+            CA_PEM_FILE=$(yq '.clusters[0].cluster.certificate-authority' $KUBECONFIG)
             K8S_CLUSTER_CADATA=$(base64 -w0 $CA_PEM_FILE)
             echo "K8S_USER_NAME=$K8S_USER_NAME"
             #echo "K8S_USER_TOKEN=$K8S_USER_TOKEN"
@@ -141,14 +141,16 @@ spec:
             echo "Access to pipelineresources.tekton.dev is required to update Cluser Pipeline Resource accordingly"
             echo "Falling back to copy of kubconfig file $(basename $KUBECONFIG) to the pipeline run volume"
             mkdir -p /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
-            cp $(yq r $KUBECONFIG clusters[0].cluster.certificate-authority) \
+            cp $(yq '.clusters[0].cluster.certificate-authority' $KUBECONFIG) \
               /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME
             cp $KUBECONFIG \
               /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
             echo -n "Kubeconfig file(s) copied to "
             echo "/clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME"
-            yq write --inplace /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig \
-              'clusters[0].cluster.certificate-authority' $(ls /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/*.pem)
+            export value_update
+            value_update=$(ls /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/*.pem)
+            yq -i '.clusters[0].cluster.certificate-authority = env(value_update)' /clusterconfig/$(params.cluster-pipeline-resources-directory-fallback)/$CLUSTER_NAME/kubeconfig
+
           fi
 
           ibmcloud ks cluster get --cluster $CLUSTER_NAME --json > /steps/$CLUSTER_NAME.json

@@ -134,12 +134,11 @@ spec:
           - name: branch
         steps:
           - name: tekton-lint
-            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72
             workingDir: /artifacts
             script: |
               #!/bin/bash
               set +ex
-              . /root/.nvm/nvm.sh
 
               npm install -g tekton-lint@latest
 
@@ -196,7 +195,7 @@ spec:
           - name: branch
         steps:
           - name: check-tasks
-            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.27
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72
             workingDir: /artifacts
             script: |
               #!/bin/bash

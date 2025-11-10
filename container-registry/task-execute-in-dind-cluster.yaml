@@ -54,7 +54,7 @@ spec:
     # Docker Client configuration
     - name: docker-client-image
       description: The Docker image to use to run the Docker client
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     # Docker commands
     - name: docker-commands
       description: The docker command(s) to run.
@@ -65,11 +65,11 @@ spec:
         docker push ${IMAGE_URL}:${IMAGE_TAG}
     #
     - name: check-step-image
-      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
+      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: cluster-setup-step-image
-      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46"
+      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: dind-image
       description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:20.10.22-dind)
       default: "icr.io/continuous-delivery/pipeline/docker:20.10.22-dind"

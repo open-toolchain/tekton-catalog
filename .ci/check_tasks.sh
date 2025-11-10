@@ -8,9 +8,9 @@ exit_status=0
 # shellcheck disable=SC2044
 for file in $(find . -type f -name "*.yaml")
 do
-  if [[ "$(yq r "$file" 'kind')" == "Task" ]]; then
+  if [[ "$(yq '.kind' "$file")" == "Task" ]]; then
     # Only check non deprecated task
-    if [[ "$(yq r "$file" 'metadata.labels."tekton.dev/deprecated"')" != "true" ]]; then
+    if [[ "$(yq '.metadata.labels."tekton.dev/deprecated"' "$file")" != "true" ]]; then
     # shellcheck disable=SC2001
       file=$(echo "$file" | sed 's|^./||')
       folder=$(dirname "$file")
@@ -27,7 +27,7 @@ do
         else
           prefix=$(echo "$folder" | tr -s '/' '-')
         fi
-        fully_qualified_task_name="$(yq r "$file" 'metadata.name')"
+        fully_qualified_task_name="$(yq '.metadata.name' "$file")"
         task_name=${fully_qualified_task_name#"$prefix-"}
         # Check task name
         if [[ "$prefix-$task_name" != "$fully_qualified_task_name" ]]; then
@@ -41,7 +41,7 @@ do
           exit_status=1
         fi
         # Check if each Task parameters has a description
-        parameters=$(yq r --tojson "$file" | jq -r '.spec.params | .[] | select(has("description") | not) | .name')
+        parameters=$(yq ea -o=json "$file" | jq -r '.spec.params | .[] |select(has("description") | not) | .name ')
         # shellcheck disable=SC2236
         if  [[ ! -z "$parameters" ]]; then
           echo "Task $fully_qualified_task_name (in $file) is missing description for parameter(s):"
