@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-pr-listener
@@ -10,7 +10,7 @@ spec:
       template:
         name: pr-template
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: gitlab-pr-listener
@@ -21,7 +21,7 @@ spec:
       template:
         name: pr-template
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-ent-pr-listener

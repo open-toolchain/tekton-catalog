@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: github-binding
@@ -16,7 +16,7 @@ spec:
     - name: repository
       value: $(event.repository.html_url)
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: gl-pr-binding
@@ -33,7 +33,7 @@ spec:
     - name: repository
       value: $(event.project.http_url)
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: gl-ci-binding

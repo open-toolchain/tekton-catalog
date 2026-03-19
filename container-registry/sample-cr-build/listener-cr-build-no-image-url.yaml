@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerTemplate
 metadata:
   name: cr-build-no-image-url
@@ -33,7 +33,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
         name: cr-build-no-image-url-$(uid)
@@ -62,7 +62,7 @@ spec:
             persistentVolumeClaim:
               claimName: cr-build-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: cr-build-no-image-url
@@ -71,7 +71,7 @@ spec:
     - name: branch
       value: "master"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: cr-build-no-image-url

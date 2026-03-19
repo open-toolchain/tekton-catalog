@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerTemplate
 metadata:
   name: set-commit-status
@@ -29,7 +29,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)
@@ -54,7 +54,7 @@ spec:
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: github-commit
@@ -67,7 +67,7 @@ spec:
     - name: revision
       value: "$(event.head_commit.id)"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-commit
@@ -78,7 +78,7 @@ spec:
       template:
         name: set-commit-status
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: gitlab-commit
@@ -91,7 +91,7 @@ spec:
     - name: revision
       value: "$(event.checkout_sha)"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: gitlab-commit
@@ -102,7 +102,7 @@ spec:
       template:
         name: set-commit-status
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: bitbucket-commit
@@ -115,7 +115,7 @@ spec:
     - name: revision
       value: "$(event.push.changes[0].new.target.hash)"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: bitbucket-commit

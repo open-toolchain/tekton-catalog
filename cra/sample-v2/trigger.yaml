@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerTemplate
 metadata:
   name: template-cra
@@ -151,7 +151,7 @@ spec:
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -172,7 +172,7 @@ spec:
       stringData:
         API_KEY: $(params.apikey)
         DOCKER_SECRET: $(params.docker-registry-secret)
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)

@@ -1,8 +1,10 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: cra-v2-cra
+  labels:
+    tekton.dev/deprecated: "true"
 spec:
   params:
     # Pipeline related parameters
@@ -120,7 +122,7 @@ spec:
     # User control params
     - name: cra-scan-image
       description: Image to use for `scan` task
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
     - name: dind-image
       description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:20.10.22-dind)
       default: "icr.io/continuous-delivery/pipeline/docker:20.10.22-dind"

@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: pipeline-pr
@@ -134,7 +134,7 @@ spec:
           - name: branch
         steps:
           - name: tekton-lint
-            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79
             workingDir: /artifacts
             script: |
               #!/bin/bash
@@ -195,7 +195,7 @@ spec:
           - name: branch
         steps:
           - name: check-tasks
-            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79
             workingDir: /artifacts
             script: |
               #!/bin/bash

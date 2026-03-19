@@ -1,8 +1,10 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: cra-terraform-scan
+  labels:
+    tekton.dev/deprecated: "true"
 spec:
   params:
     - name: ibmcloud-api

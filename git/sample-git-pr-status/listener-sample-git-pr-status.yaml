@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerTemplate
 metadata:
   name: triggertemplate-git-pr-status
@@ -37,7 +37,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
         name: $(params.triggerName)-$(uid)
@@ -64,7 +64,7 @@ spec:
             persistentVolumeClaim:
               claimName: $(params.triggerName)-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-pr-status-github-pr
@@ -83,7 +83,7 @@ spec:
     - name: triggerName
       value: "github-pullrequest"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-pr-status-github-pr
@@ -94,7 +94,7 @@ spec:
       template:
         name: triggertemplate-git-pr-status
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-pr-status-grit-mr
@@ -113,7 +113,7 @@ spec:
     - name: triggerName
       value: "grit-mergerequest"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-pr-status-grit-mr
@@ -124,7 +124,7 @@ spec:
       template:
         name: triggertemplate-git-pr-status
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-pr-status-bitbucket-pr
@@ -143,7 +143,7 @@ spec:
     - name: triggerName
       value: "bitbucket-pullrequest"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-pr-status-bitbucket-pr

@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerTemplate
 metadata:
   name: pr-template
@@ -81,7 +81,7 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.apikey)
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)

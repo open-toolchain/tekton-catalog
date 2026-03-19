@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerTemplate
 metadata:
   name: triggertemplate-git-trigger
@@ -42,7 +42,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
         name: $(params.triggerName)-$(uid)
@@ -73,7 +73,7 @@ spec:
             persistentVolumeClaim:
               claimName: $(params.triggerName)-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-manual
@@ -86,7 +86,7 @@ spec:
     - name: triggerName
       value: manual-trigger
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-manual
@@ -97,7 +97,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-github-pr
@@ -116,7 +116,7 @@ spec:
     - name: triggerName
       value: "github-pullrequest"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-github-commit
@@ -131,7 +131,7 @@ spec:
     - name: triggerName
       value: "github-commit"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-github-pr
@@ -142,7 +142,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-github-commit
@@ -153,7 +153,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-grit-mr
@@ -172,7 +172,7 @@ spec:
     - name: triggerName
       value: "grit-mergerequest"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-grit-commit
@@ -187,7 +187,7 @@ spec:
     - name: triggerName
       value: "grit-commit"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-grit-mr
@@ -198,7 +198,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-grit-commit
@@ -209,7 +209,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-bitbucket-pr
@@ -228,7 +228,7 @@ spec:
     - name: triggerName
       value: "bitbucket-pullrequest"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: triggerbinding-git-trigger-bitbucket-commit
@@ -243,7 +243,7 @@ spec:
     - name: triggerName
       value: "bitbucket-commit"
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-bitbucket-pr
@@ -254,7 +254,7 @@ spec:
       template:
         name: triggertemplate-git-trigger
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-bitbucket-commit

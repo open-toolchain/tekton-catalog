@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-ci-listener
@@ -10,7 +10,7 @@ spec:
       template:
         name: ci-template
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: gitlab-ci-listener
@@ -21,7 +21,7 @@ spec:
       template:
         name: ci-template
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-ent-ci-listener

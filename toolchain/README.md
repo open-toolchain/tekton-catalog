@@ -51,7 +51,7 @@ Check out the example below, where we pass the result of the `extract-value` tas
 In addition, you have to add the `extracted-value` param to the `use-result-task` task itself.
 
 ``` yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Pipeline
 metadata:
   name: example-pipeline
@@ -75,7 +75,7 @@ spec:
           value: "$(tasks.extract-value.results.extracted-value)"
 ```
 ``` yaml
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: use-result-task

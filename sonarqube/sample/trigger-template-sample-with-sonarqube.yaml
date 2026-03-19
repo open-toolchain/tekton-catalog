@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerTemplate
 metadata:
   name: sample-with-sonarqube
@@ -62,7 +62,7 @@ spec:
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1
       kind: PipelineRun
       metadata:
         name: sample-with-sonarqube-$(uid)
@@ -105,7 +105,7 @@ spec:
             persistentVolumeClaim:
               claimName: sample-with-sonarqube-$(uid)-pvc
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: default
@@ -116,7 +116,7 @@ spec:
     - name: sonar-scan-command
       value: sonar-scanner -Dsonar.working.directory=$SONAR_DIR
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: default
@@ -127,7 +127,7 @@ spec:
       template:
         name: sample-with-sonarqube
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: TriggerBinding
 metadata:
   name: maven
@@ -138,11 +138,11 @@ spec:
     - name: build-script
       value: mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" clean compile
     - name: scan-step-image
-      value: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72
+      value: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79
     - name: sonar-scan-command
       value: mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.token="${SONAR_PASS}" -Dsonar.host.url="$SONAR_HOST_URL" -Dsonar.projectKey="$SONAR_PROJECT_KEY" -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$SONAR_DIR" sonar:sonar
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: maven

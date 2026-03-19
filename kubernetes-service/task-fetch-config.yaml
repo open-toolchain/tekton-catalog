@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: Task
 metadata:
   name: iks-fetch-config
@@ -37,8 +37,8 @@ spec:
       description: directory in the workspace that will be used to store the cluster and worker nodes export json files
       default: ""
     - name: setup-step-image
-      description: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
+      description: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"

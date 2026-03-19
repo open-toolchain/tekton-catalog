@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-listener
@@ -10,7 +10,7 @@ spec:
       template:
         name: template-cra
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: gl-ci-listener
@@ -21,7 +21,7 @@ spec:
       template:
         name: template-cra
 ---
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: gl-pr-listener

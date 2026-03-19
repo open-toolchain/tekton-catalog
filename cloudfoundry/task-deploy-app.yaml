@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: cf-deploy-app
+  labels:
+    tekton.dev/deprecated: "true"
 spec:
   params:
     - name: region
@@ -40,8 +42,8 @@ spec:
       description: field in the secret that contains the api key used to connect to cloud foundry
       default: "cf-apikey"
     - name: deploy-step-image
-      description: image to use for the deploy step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
-      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
+      description: image to use for the deploy step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79)
+      default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
