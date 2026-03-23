@@ -4,12 +4,19 @@ kind: Task
 metadata:
   name: iks-fetch-config
 spec:
+  description: >-
+    This task is fetching the configuration of a [IBM Cloud Kubernetes Service cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started)
+    that is required to perform `kubectl` commands.
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
     - name: continuous-delivery-context-secret
-      description: name of the secret containing the continuous delivery pipeline context secrets
+      description: |
+        Name of the secret containing the continuous delivery pipeline context secrets.
+
+        Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support.
+        See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
       default: secure-properties
     - name: kubernetes-service-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud kubernetes service

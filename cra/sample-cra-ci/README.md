@@ -56,3 +56,92 @@ After the above set up is complete, follow these steps:
 - The pipeline first discovers the dependencies that your repository has.  These dependencies could be application packages, container images or OS pacakges.
 - The pipeline then identifies vulnerabilities associated with these dependencies and update the result status for this task with `success|failure`.
 - The pipeline then scans Dockerfiles and Kubernetes yaml files for best practices. It will update the result status for this task with `success|failure`.
+
+## Detailed Description
+
+This pipeline and relevant trigger(s) can be configured using the properties described below.
+
+See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
+
+### github-ci-listener
+
+**EventListener**: github-ci-listener
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` | the ibmcloud api key | - | Yes | string |
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | branch | - | Yes | string |
+| `commit-id` | commit id | - | Yes | string |
+| `commit-timestamp` | commit timestamp | - | Yes | string |
+| `exclude-dev` | (optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `gradle-exclude-configs` | (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan | - | Yes | string |
+| `maven-exclude-scopes` | (optional) Exclude the specified scope dependencies for the vulnerability scan | - | Yes | string |
+| `nodejs-create-package-lock` | (optional) Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
+| `pipeline-debug` | toggles debug mode for the pipeline | `0` | No | string |
+| `policy-config-json` | Configure policies to control thresholds | - | Yes | string |
+| `project-id` | project id | - | Yes | string |
+| `python-create-requirements-txt` | (optional) Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
+| `repo-dir` | Specifies the path for the repository or .cracveomit file | `/artifacts` | No | string |
+| `repository` | the git repo | - | Yes | string |
+| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `scm-type` | source code type used (github, github-ent, gitlab) | - | Yes | string |
+| `tf-dir` | the directory where the terraform main entry file is found | - | Yes | string |
+| `tf-var-file` | (optional) terraform var-file | - | Yes | string |
+
+
+### gitlab-ci-listener
+
+**EventListener**: gitlab-ci-listener
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` | the ibmcloud api key | - | Yes | string |
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | branch | - | Yes | string |
+| `commit-id` | commit id | - | Yes | string |
+| `commit-timestamp` | commit timestamp | - | Yes | string |
+| `exclude-dev` | (optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `gradle-exclude-configs` | (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan | - | Yes | string |
+| `maven-exclude-scopes` | (optional) Exclude the specified scope dependencies for the vulnerability scan | - | Yes | string |
+| `nodejs-create-package-lock` | (optional) Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
+| `pipeline-debug` | toggles debug mode for the pipeline | `0` | No | string |
+| `policy-config-json` | Configure policies to control thresholds | - | Yes | string |
+| `project-id` | project id | - | Yes | string |
+| `python-create-requirements-txt` | (optional) Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
+| `repo-dir` | Specifies the path for the repository or .cracveomit file | `/artifacts` | No | string |
+| `repository` | the git repo | - | Yes | string |
+| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `scm-type` | source code type used (github, github-ent, gitlab) | - | Yes | string |
+| `tf-dir` | the directory where the terraform main entry file is found | - | Yes | string |
+| `tf-var-file` | (optional) terraform var-file | - | Yes | string |
+
+
+### github-ent-ci-listener
+
+**EventListener**: github-ent-ci-listener
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` | the ibmcloud api key | - | Yes | string |
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | branch | - | Yes | string |
+| `commit-id` | commit id | - | Yes | string |
+| `commit-timestamp` | commit timestamp | - | Yes | string |
+| `exclude-dev` | (optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `gradle-exclude-configs` | (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan | - | Yes | string |
+| `maven-exclude-scopes` | (optional) Exclude the specified scope dependencies for the vulnerability scan | - | Yes | string |
+| `nodejs-create-package-lock` | (optional) Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
+| `pipeline-debug` | toggles debug mode for the pipeline | `0` | No | string |
+| `policy-config-json` | Configure policies to control thresholds | - | Yes | string |
+| `project-id` | project id | - | Yes | string |
+| `python-create-requirements-txt` | (optional) Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
+| `repo-dir` | Specifies the path for the repository or .cracveomit file | `/artifacts` | No | string |
+| `repository` | the git repo | - | Yes | string |
+| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `scm-type` | source code type used (github, github-ent, gitlab) | - | Yes | string |
+| `tf-dir` | the directory where the terraform main entry file is found | - | Yes | string |
+| `tf-var-file` | (optional) terraform var-file | - | Yes | string |

@@ -1,19 +1,7 @@
-# Post to Slack task helper
-This Task posts a message to the Slack channel(s) integrated with your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
+# Slack related tasks
 
-The task retrieves a Slack integration(s) from the Toolchain,
-filtered on the Slack domain (if passed as a parameter) and posts the message to the corresponding channel(s).
-
-The message can be:
-- passed as a parameter
-   - a static Slack formatted JSON payload
-   - a static text message (that will be converted to Slack JSON payload)
-- dynamically injected
-   - by a bash script
-   - based on the output of previous task(s) stored in the PVC
-- default message if not set
-
-    ![Default value](./sample/default-message.png)
+## Available tasks
+- **[slack-post-message](#slack-post-message)**: This Task posts a message to the Slack channel(s) integrated with your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack). The task retrieves a Slack integration(s) from the Toolchain, filtered on the Slack domain (if passed as a parameter) and posts the message to the corresponding channel(s). The message can be: - passed as a parameter - a static Slack formatted JSON payload - a static text message (that will be converted to Slack JSON payload) - dynamically injected - by a bash script - based on the output of previous task(s) stored in the PVC - default message if not set ![Default value](./sample/default-message.png)
 
 ## Prerequisites
 ### Slack
@@ -31,23 +19,39 @@ The `sample` sub-directory contains an EventListener and Pipeline definition tha
 
   See the documentation [here](./sample/README.md)
 
-## slack-post-message
+## Details
+### slack-post-message
 
-### Parameters
+This Task posts a message to the Slack channel(s) integrated with your [Continuous Delivery toolchain](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-integrations#slack).
 
-* **domain**: (optional) the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-* **channel**: (optional) the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL. Only non-private channel can override the default channel. If the target channel is a private channel, the Slack Webhook URL in the Slack toolchain integration card needs to be updated.
-* **message-format**: (optional) the format of the message. Value: text(default) or JSON.
-* **message-script**: (optional) Shell script that provides messsage content.
-* **message**: (optional) the message to send to Slack.
-* **exit-on-error**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack (default `false`).
-* **post-to-slack-step-image**: (optional) image to use for the post-to-slack step. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46`
+The task retrieves a Slack integration(s) from the Toolchain,
+filtered on the Slack domain (if passed as a parameter) and posts the message to the corresponding channel(s).
 
-## Workspaces
+The message can be:
+- passed as a parameter
+  - a static Slack formatted JSON payload
+  - a static text message (that will be converted to Slack JSON payload)
+- dynamically injected
+  - by a bash script
+  - based on the output of previous task(s) stored in the PVC
+- default message if not set
 
-* **workspace**: A workspace that contain data useful for the script/slack message resolution. Should be marked as optional when Tekton will permit it.
+    ![Default value](./sample/default-message.png)
 
-## Outputs
-None.
 
-## Usage
+#### Parameters
+
+* **domain**: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
+* **channel**: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL. Only non-private channel can override the default channel. If the target channel is a private channel, the Slack Webhook URL in the Slack toolchain integration card needs to be updated.
+* **message-format**: the format of the message. text(default) or JSON payload. (default to `text`)
+* **message-script**: Shell script that provides messsage content.
+* **message**: the message to send to Slack (default to `Tekton Pipeline completed successfully. :heavy_check_mark:
+Visit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*
+`)
+* **exit-on-error**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack. (default to `false`)
+* **post-to-slack-step-image**: image to use for the post-to-slack step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **pipeline-debug**: Pipeline debug mode (default to `0`)
+
+#### Workspaces
+
+* **workspace**: A workspace that contain data useful for the script/slack message resolution. Should be marked as optional when Tekton will permit it

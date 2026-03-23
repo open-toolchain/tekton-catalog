@@ -6,6 +6,7 @@ metadata:
   labels:
     tekton.dev/deprecated: "true"
 spec:
+  description: This task evaluates [DevOps Insights gate policy](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-evaluate-gates-cli)
   params:
     - name: app-name
       description: Logical application name for DevOps Insights

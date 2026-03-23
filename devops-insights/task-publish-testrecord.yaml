@@ -6,6 +6,7 @@ metadata:
   labels:
     tekton.dev/deprecated: "true"
 spec:
+  description: This task publishes test record(s) to [DevOps Insights](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-publishing-test-data)
   params:
     - name: app-name
       description: Logical application name for DevOps Insights

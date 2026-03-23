@@ -8,14 +8,20 @@ spec:
     - name: repository
       description: The git repo
     - name: branch
+      description: the branch for the git repo
       default: "master"
     - name: revision
+      description: the git revision/commit to update the git HEAD to. Default is to mean only use the branch
       default: ""
     - name: state
+      description: >-
+        The state of the status. Can be one of the following: pending, success, error, or failure
       default: "success"
     - name: description
+      description: A short description of the status
       default: "status from cd tekton"
     - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   resourcetemplates:
     - apiVersion: v1

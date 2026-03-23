@@ -71,3 +71,56 @@ This sample illustrates the commit status support provided by the `git-set-commi
 6) After the pipeline run is finished, the commit status can be seen in the selected git repository
 
    ![Tekton pipeline sample-set-commit-status commit status](./images/sample-set-commit-status-trigger-github-commit-status.png)
+
+## Detailed Description
+
+This pipeline and relevant trigger(s) can be configured using the properties described below.
+
+See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
+
+### github-commit
+
+**EventListener**: github-commit
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | the branch for the git repo | `$(event.ref)` | No | string |
+| `description` | A short description of the status | `status from cd tekton` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `repository` | The git repo | `$(event.repository.url)` | No | string |
+| `revision` | the git revision/commit to update the git HEAD to. Default is to mean only use the branch | `$(event.head_commit.id)` | No | string |
+| `state` | The state of the status. Can be one of the following: pending, success, error, or failure | `success` | No | string |
+
+
+### gitlab-commit
+
+**EventListener**: gitlab-commit
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | the branch for the git repo | `$(event.ref)` | No | string |
+| `description` | A short description of the status | `status from cd tekton` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `repository` | The git repo | `$(event.repository.git_http_url)` | No | string |
+| `revision` | the git revision/commit to update the git HEAD to. Default is to mean only use the branch | `$(event.checkout_sha)` | No | string |
+| `state` | The state of the status. Can be one of the following: pending, success, error, or failure | `success` | No | string |
+
+
+### bitbucket-commit
+
+**EventListener**: bitbucket-commit
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | the branch for the git repo | `$(event.push.changes[0].new.name)` | No | string |
+| `description` | A short description of the status | `status from cd tekton` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `repository` | The git repo | `$(event.repository.links.html.href)` | No | string |
+| `revision` | the git revision/commit to update the git HEAD to. Default is to mean only use the branch | `$(event.push.changes[0].new.target.hash)` | No | string |
+| `state` | The state of the status. Can be one of the following: pending, success, error, or failure | `success` | No | string |

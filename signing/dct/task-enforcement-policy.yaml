@@ -6,6 +6,9 @@ metadata:
   labels:
     tekton.dev/deprecated: "true"
 spec:
+  description: >-
+    This task installs [Container Image Security Enforcement](https://cloud.ibm.com/docs/Registry?topic=Registry-security_enforce)
+    on a given cluster.
   params:
     - name: shuttle-properties-file
       description: properties file in the workspace that contains DCT initialization information
@@ -24,7 +27,11 @@ spec:
       description: the ibmcloud api
       default: https://cloud.ibm.com
     - name: continuous-delivery-context-secret
-      description: name of the secret containing the continuous delivery pipeline context secrets
+      description: |
+        Name of the secret containing the continuous delivery pipeline context secrets.
+
+        Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support.
+        See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
       default: secure-properties
     - name: apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud service
@@ -130,4 +137,5 @@ spec:
       # yamllint enable rule:line-length
   workspaces:
     - name: artifacts
+      description: The workspace where the artifacts are located
       mountPath: /artifacts

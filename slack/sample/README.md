@@ -56,3 +56,32 @@ This `sample` sub-directory contains an EventListener and Pipeline definition th
    c) Check the execution log
 
       ![Tekton pipeline sample snippet message](./sample-snippet-log.png)
+
+## Detailed Description
+
+This pipeline and relevant trigger(s) can be configured using the properties described below.
+
+See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
+
+### event-listener-post-slack
+
+**EventListener**: event-listener-post-slack
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `channel` | the Slack channel to send the message to.
+When set, overrides the default channel as set in the Slack Webhook URL.
+ | ` ` | No | string |
+| `domain` | the Slack domain to send the message to.
+If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
+ | ` ` | No | string |
+| `exit-on-error` | flag (`true` | `false`) to indicate if the task should fail
+or continue if unable to process the message or post to Slack.
+ | `false` | No | string |
+| `message` | the message to send to Slack | `Tekton Pipeline completed successfully. :heavy_check_mark:
+Visit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*
+` | No | string |
+| `message-format` | the format of the message. text(default) or JSON. | `text` | No | string |
+| `message-script` | Shell script that provides messsage content. | ` ` | No | string |
+| `pipeline-debug` | - | `0` | No | string |

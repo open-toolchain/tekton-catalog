@@ -67,3 +67,74 @@ The status being sucess or failing according to the commit message (it the commi
    The Pull Request status check is updated to failure corresponding to the last commit status
 
    ![github pull request status check](./images/sample-git-pr-status-github-pr-status-check-failure.png)
+
+## Detailed Description
+
+This pipeline and relevant trigger(s) can be configured using the properties described below.
+
+See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
+
+### eventlistener-git-pr-status-github-pr
+
+**EventListener**: eventlistener-git-pr-status-github-pr
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | the api key used to login to ibmcloud | - | Yes | secret |
+| `branch` | the branch for the git repo | `$(event.pull_request.base.ref)` | No | string |
+| `context` | - | `commit message check` | No | string |
+| `description` | - | `verify the commit message` | No | string |
+| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pr-branch` | The source branch for the PullRequest | `$(event.pull_request.head.ref)` | No | string |
+| `pr-repository` | The source git repo for the PullRequest | `$(event.pull_request.head.repo.clone_url)` | No | string |
+| `pr-revision` | the commit id/sha for the PullRequest | `$(event.pull_request.head.sha)` | No | string |
+| `properties-file` | - | `output/thebuild.properties` | No | string |
+| `repository` | the git repo | `$(event.pull_request.base.repo.clone_url)` | No | string |
+| `triggerName` | name of the trigger | `github-pullrequest` | No | string |
+
+
+### eventlistener-git-pr-status-grit-mr
+
+**EventListener**: eventlistener-git-pr-status-grit-mr
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | the api key used to login to ibmcloud | - | Yes | secret |
+| `branch` | the branch for the git repo | `$(event.object_attributes.target_branch)` | No | string |
+| `context` | - | `commit message check` | No | string |
+| `description` | - | `verify the commit message` | No | string |
+| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pr-branch` | The source branch for the PullRequest | `$(event.object_attributes.source_branch)` | No | string |
+| `pr-repository` | The source git repo for the PullRequest | `$(event.object_attributes.source.git_http_url)` | No | string |
+| `pr-revision` | the commit id/sha for the PullRequest | `$(event.object_attributes.last_commit.id)` | No | string |
+| `properties-file` | - | `output/thebuild.properties` | No | string |
+| `repository` | the git repo | `$(event.object_attributes.target.git_http_url)` | No | string |
+| `triggerName` | name of the trigger | `grit-mergerequest` | No | string |
+
+
+### eventlistener-git-pr-status-bitbucket-pr
+
+**EventListener**: eventlistener-git-pr-status-bitbucket-pr
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | the api key used to login to ibmcloud | - | Yes | secret |
+| `branch` | the branch for the git repo | `$(event.pullrequest.destination.branch.name)` | No | string |
+| `context` | - | `commit message check` | No | string |
+| `description` | - | `verify the commit message` | No | string |
+| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pr-branch` | The source branch for the PullRequest | `$(event.pullrequest.source.branch.name)` | No | string |
+| `pr-repository` | The source git repo for the PullRequest | `$(event.pullrequest.source.repository.links.html.href)` | No | string |
+| `pr-revision` | the commit id/sha for the PullRequest | `$(event.pullrequest.source.commit.hash)` | No | string |
+| `properties-file` | - | `output/thebuild.properties` | No | string |
+| `repository` | the git repo | `$(event.pullrequest.destination.repository.links.html.href)` | No | string |
+| `triggerName` | name of the trigger | `bitbucket-pullrequest` | No | string |

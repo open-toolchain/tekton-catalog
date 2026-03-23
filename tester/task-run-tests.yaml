@@ -4,9 +4,14 @@ kind: Task
 metadata:
   name: tester-run-tests
 spec:
+  description: This task allows to invoke a script to execute test
   params:
     - name: pipeline-secret
-      description: name of the secret containing secret values for the task
+      description: |
+        Name of the secret containing the continuous delivery pipeline context secrets.
+
+        Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support.
+        See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
       default: secure-properties
     - name: pipeline-configmap
       description: name of the configmap containing values for the task

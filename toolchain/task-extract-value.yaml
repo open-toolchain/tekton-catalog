@@ -4,6 +4,8 @@ kind: Task
 metadata:
   name: toolchain-extract-value
 spec:
+  description: >-
+   This task extracts values from the desired config map with a given jq expression.
   params:
     - name: config-map-name
       description: name of the config map

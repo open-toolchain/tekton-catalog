@@ -6,6 +6,7 @@ metadata:
   labels:
     tekton.dev/deprecated: "true"
 spec:
+  description: This tasks runs configuration checks on kubernetes deployment manifests.
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
@@ -342,8 +343,10 @@ spec:
 
   workspaces:
     - name: artifacts
+      description: The workspace where the artifacts are located
       mountPath: /artifacts
     - name: secrets
+      description: The workspace where the secrets are located
       mountPath: /secrets
 
   volumes:

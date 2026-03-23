@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # iterate over all the task files to ensure
 # - task name is appropriately prefiexed according to folder

@@ -6,6 +6,9 @@ metadata:
   labels:
     tekton.dev/deprecated: "true"
 spec:
+  description: |
+    This task scans ibm-terraform-provider files for compliance issues.
+    To configure CRA Terraform scan, Read more about using [terraform scan profile](./terraform-profile.md)
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
@@ -358,8 +361,10 @@ spec:
 
   workspaces:
     - name: artifacts
+      description: The workspace where the artifacts are located
       mountPath: /artifacts
     - name: secrets
+      description: The workspace where the secrets are located
       mountPath: /secrets
 
   volumes:

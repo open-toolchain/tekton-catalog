@@ -6,6 +6,8 @@ metadata:
   labels:
     tekton.dev/deprecated: "true"
 spec:
+  description: |
+    This task uses `ibmcloud cli` and the `cra` plugin to scan ibm-terraform-provider files for compliance issues.
   params:
     # Pipeline related parameters
     - name: continuous-delivery-context-environment
@@ -255,6 +257,7 @@ spec:
 
   workspaces:
     - name: artifacts
+      description: The workspace where the artifacts are located
       mountPath: /artifacts
 
   volumes:

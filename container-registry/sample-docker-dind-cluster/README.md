@@ -36,3 +36,27 @@ The `sample-docker-dind-cluster` sub-directory contains an `dind-cluster-no-reso
 6) Verify that the image was build and pushed by looking at the pipeline run execution log:
 
    ![Tekton pipeline sample log](./images/dind-cluster-sample-tekton-pipeline-run-log.png)
+
+## Detailed Description
+
+This pipeline and relevant trigger(s) can be configured using the properties described below.
+
+See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
+
+### dind-cluster-no-resources
+
+**EventListener**: dind-cluster-no-resources
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | the branch for the git repo | `master` | No | string |
+| `build-cluster` | name of the cluster that will host the docker dind to build docker images | - | Yes | string |
+| `cluster-name` | name of the docker build cluster | - | Yes | string |
+| `image-url` | the url of the image to build | - | Yes | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `properties-file` | name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace.
+ This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
+ and image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`) | - | Yes | string |
+| `repository` | the git repo | - | Yes | string |

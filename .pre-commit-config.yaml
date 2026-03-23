@@ -1,0 +1,67 @@
+---
+repos:
+  - repo: https://github.com/ibm/detect-secrets
+    rev: 0.13.1+ibm.61.dss
+    hooks:
+      - id: detect-secrets  # pragma: whitelist secret
+        args: [--baseline, .secrets.baseline, --use-all-plugins]
+        additional_dependencies: [boxsdk<4]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: check-yaml
+        args:
+          - --multi
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        name: Lint YAML files
+        args: ['-c', 'yamllint-rules.yaml']
+        types: [yaml]
+
+  - repo: local
+    hooks:
+      - id: check-tasks
+        name: Check Tekton Tasks
+        entry: .ci/check_tasks.sh
+        language: script
+        pass_filenames: false
+        files: '\.yaml$'
+        description: |
+          Validates Tekton task files to ensure:
+          - Task names are appropriately prefixed according to folder
+          - Folder/filename match task name
+          - Each task parameter has a description
+
+      - id: update-task-readmes
+        name: Update Task README files
+        entry: .ci/update_all_tasks_readmes.sh
+        language: script
+        pass_filenames: false
+        files: '^(task-.*\.yaml|.*/README\.md)$'
+        description: |
+          Updates README.md files in all task folders with generated
+          task documentation when task files are modified
+
+      - id: update-sample-readmes
+        name: Update Sample README files
+        entry: .ci/update_all_samples_readmes.sh
+        language: script
+        pass_filenames: false
+        files: '^(.*sample.*/.*\.yaml|.*sample.*/README\.md)$'
+        description: |
+          Updates README.md files in all sample folders with generated
+          pipeline/trigger template documentation
+
+      - id: update-root-readme
+        name: Update Root README
+        entry: python3 .ci/update_root_readme.py
+        language: system
+        pass_filenames: false
+        files: '^(task-.*\.yaml|README\.md)$'
+        description: |
+          Updates the root README.md file with task summaries from all
+          folders when task files are modified

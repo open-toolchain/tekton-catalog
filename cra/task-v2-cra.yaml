@@ -4,8 +4,13 @@ kind: Task
 metadata:
   name: cra-v2-cra
   labels:
+    tekton.dev/displayName: "cra"
     tekton.dev/deprecated: "true"
 spec:
+  description: |
+    This task accesses various source artifacts from a repository and performs deep discovery to identify all dependencies (including transitive dependencies).
+    A Bill-of-Material (BoM) is generated that captures pedigree of all dependencies, collected at different granularities. The BoM is scanned to discover and
+    report any known vulnerabilities in OS and Application pacakges. Finally, configuration checks on kubernetes deployment manifests are performed to uncover any issues.
   params:
     # Pipeline related parameters
     - name: continuous-delivery-context-environment
@@ -438,6 +443,7 @@ spec:
 
   workspaces:
     - name: artifacts
+      description: The workspace where the artifacts are located
       mountPath: /artifacts
 
   volumes:

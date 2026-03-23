@@ -4,12 +4,18 @@ kind: Task
 metadata:
   name: icr-check-va-scan
 spec:
+  description: >-
+    This task verifies that a [Vulnerability Advisor scan](https://cloud.ibm.com/docs/services/Registry?topic=va-va_index) has been made for the image and processes the outcome of the scan.
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
     - name: continuous-delivery-context-secret
-      description: Name of the secret containing the continuous delivery pipeline context secrets
+      description: |
+        Name of the secret containing the continuous delivery pipeline context secrets.
+
+        Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support.
+        See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
       default: secure-properties
     - name: container-registry-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud container registry

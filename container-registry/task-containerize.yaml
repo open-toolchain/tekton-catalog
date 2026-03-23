@@ -4,12 +4,19 @@ kind: Task
 metadata:
   name: icr-containerize
 spec:
+  description: >-
+    This task builds and pushes (optionaly) an image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
+    This task relies on [Buildkit](https://github.com/moby/buildkit) to perform the build of the image.
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
     - name: continuous-delivery-context-secret
-      description: Name of the secret containing the continuous delivery pipeline context secrets
+      description: |
+        Name of the secret containing the continuous delivery pipeline context secrets.
+
+        Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support.
+        See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop)
       default: secure-properties
     - name: container-registry-apikey-secret-key
       description: field in the secret that contains the api key used to login to ibmcloud container registry
@@ -68,7 +75,10 @@ spec:
       description: Shell script that allows to add tags for the image to be build.
       default: ""
     - name: properties-file
-      description: file containing properties out of containerize task
+      description: >-
+        name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace.
+        This file will contains the image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`).
+        This file can be used by downstream tasks to access the image registry-related information.
       default: build.properties
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1. Default to 0

@@ -4,6 +4,7 @@ kind: Task
 metadata:
   name: linter-docker-lint
 spec:
+  description: This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint)
   params:
     - name: path-to-dockerfile
       description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)

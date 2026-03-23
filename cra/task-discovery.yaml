@@ -6,6 +6,9 @@ metadata:
   labels:
     tekton.dev/deprecated: "true"
 spec:
+  description: |
+    This task accesses various source artifacts from the repository
+    and performs deep discovery to identify all dependencies (including transitive dependencies).
   params:
     - name: repository
       description: the git repo
@@ -210,6 +213,7 @@ spec:
 
   workspaces:
     - name: artifacts
+      description: The workspace where the artifacts are located
       mountPath: /artifacts
 
   volumes:

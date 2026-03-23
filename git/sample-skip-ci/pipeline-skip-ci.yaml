@@ -10,8 +10,10 @@ spec:
     - name: branch
       description: the branch for the git repo
     - name: commit-message
+      description: the commit message
       default: ""
     - name: pipeline-debug
+      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
       default: "0"
   workspaces:
     - name: pipeline-ws

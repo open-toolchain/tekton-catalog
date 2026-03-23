@@ -1,6 +1,7 @@
 # Linter related tasks
 
-- **[linter-docker-lint](#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://hub.docker.com/r/hadolint/hadolint)
+## Available tasks
+- **[linter-docker-lint](#linter-docker-lint)**: This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint)
 
 ## Install the Tasks
 - Add a github integration to your toolchain with the repository containing the tasks (https://github.com/open-toolchain/tekton-catalog)
@@ -23,3 +24,25 @@ This task performs a lint on the given Dockerfile using [Hadolint](https://githu
 ### Workspaces
 
 * **workspace**: A workspace containing the Dockerfile to lint
+
+
+## Details
+### linter-docker-lint
+
+This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint)
+
+#### Parameters
+
+* **path-to-dockerfile**: the path to the Dockerfile that is used for the build (default to `.` meaning current directory) (default to `.`)
+* **dockerfile**: The name of the Dockerfile (default to `Dockerfile`)
+* **path-to-hadolint-config**: The path to the hadolint configuration file
+* **hadolint-ignored-rules**: Comma separated list of ignored rules for the lint
+* **trusted-registries**: Comma separated list of trusted repositories that can be used in Dockerfiles
+* **fail-on-lint-errors**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the Dockerfile lint (default to `true`)
+* **hadolint-image**: image for installing Hadolint (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **hadolint-version**: The version of Hadolint to use. (default to `v2.12.0`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+
+#### Workspaces
+
+* **workspace**: A workspace where the Dockerfile is expected to be

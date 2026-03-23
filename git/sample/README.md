@@ -26,3 +26,22 @@ This `sample` sub-directory contains an EventListener definition that you can in
    ![Tekton pipeline sample trigger](./sample-tekton-pipeline-sample-triggers.png)
 
 5) Run the pipeline
+
+## Detailed Description
+
+This pipeline and relevant trigger(s) can be configured using the properties described below.
+
+See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
+
+### event-listener-simple-clone
+
+**EventListener**: event-listener-simple-clone
+
+
+| Properties | Description | Default | Required | Type |
+|------------|-------------|---------|----------|------|
+| `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
+| `branch` | the branch for the git repo | `master` | No | string |
+| `git-access-token` | illustrate alternate way to provide/get git access token | - | Yes | string |
+| `pipeline-debug` | - | `0` | No | string |
+| `repository` | the git repo | - | Yes | string |

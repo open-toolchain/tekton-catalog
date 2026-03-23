@@ -4,6 +4,7 @@ kind: Task
 metadata:
   name: iks-contextual-execution
 spec:
+  description: This task is executing bash snippet/script in the context of a Kubernetes cluster configuration.
   params:
     - name: cluster-pipeline-resources-directory
       description: directory in which the kubeconfig file(s) for cluster are available
