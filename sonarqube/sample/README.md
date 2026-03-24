@@ -92,13 +92,13 @@ It has some specific permissions which are required that a Global Analysis Token
 See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-for-sonarqube-token
  | `doi-sonarqube-token` | No | string |
 | `ibmcloud-api` | the ibmcloud api | `https://cloud.ibm.com` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `repository` | the git repo containing source code. If empty, the repository url will be found from toolchain | - | Yes | string |
 | `revision` | the git revision/commit for the git repo | - | Yes | string |
 | `scan-step-image` | - | `icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli:29-11-2024-10-26` | No | string |
 | `sonar-scan-command` | command for sonarqube scan | `sonar-scanner -Dsonar.working.directory=$SONAR_DIR` | No | string |
 | `sonarqube-name` | name of the sonarqube toolcard integration in the toolchain
-(default to "" meaning the first sonarqube integration found will be used)
+("" meaning the first sonarqube integration found will be used)
  | - | Yes | string |
 | `sonarqube-project-key` | - | `default-sonarqube-sample` | No | string |
 | `toolchain-apikey` (**secured property**) | the api key used to access toolchain and DOI instance | - | Yes | secret |
@@ -127,14 +127,14 @@ It has some specific permissions which are required that a Global Analysis Token
 See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-for-sonarqube-token
  | `doi-sonarqube-token` | No | string |
 | `ibmcloud-api` | the ibmcloud api | `https://cloud.ibm.com` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `repository` | the git repo containing source code. If empty, the repository url will be found from toolchain | - | Yes | string |
 | `revision` | the git revision/commit for the git repo | - | Yes | string |
 | `scan-step-image` | - | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | No | string |
 | `sonar-scan-command` | command for sonarqube scan | `mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.token="${SONAR_PASS}" -Dsonar.host.url="$SONAR_HOST_URL"
  -Dsonar.projectKey="$SONAR_PROJECT_KEY" -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$SONAR_DIR" sonar:sonar` | No | string |
 | `sonarqube-name` | name of the sonarqube toolcard integration in the toolchain
-(default to "" meaning the first sonarqube integration found will be used)
+("" meaning the first sonarqube integration found will be used)
  | - | Yes | string |
 | `sonarqube-project-key` | - | `maven-sonarqube-sample` | No | string |
 | `toolchain-apikey` (**secured property**) | the api key used to access toolchain and DOI instance | - | Yes | secret |

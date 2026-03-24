@@ -21,7 +21,7 @@ spec:
       description: A short description of the status
       default: "status from cd tekton"
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
   resourcetemplates:
     - apiVersion: v1

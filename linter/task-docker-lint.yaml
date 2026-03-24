@@ -7,7 +7,7 @@ spec:
   description: This task performs a lint on the given Dockerfile using [Hadolint](https://github.com/hadolint/hadolint)
   params:
     - name: path-to-dockerfile
-      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+      description: the path to the Dockerfile that is used for the build (`.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -33,7 +33,7 @@ spec:
       description: "The version of Hadolint to use."
       default: "v2.12.0"
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
   workspaces:
     - name: workspace

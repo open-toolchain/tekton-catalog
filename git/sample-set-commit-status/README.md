@@ -88,7 +88,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.ref)` | No | string |
 | `description` | A short description of the status | `status from cd tekton` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `repository` | The git repo | `$(event.repository.url)` | No | string |
 | `revision` | the git revision/commit to update the git HEAD to. Default is to mean only use the branch | `$(event.head_commit.id)` | No | string |
 | `state` | The state of the status. Can be one of the following: pending, success, error, or failure | `success` | No | string |
@@ -104,7 +104,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.ref)` | No | string |
 | `description` | A short description of the status | `status from cd tekton` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `repository` | The git repo | `$(event.repository.git_http_url)` | No | string |
 | `revision` | the git revision/commit to update the git HEAD to. Default is to mean only use the branch | `$(event.checkout_sha)` | No | string |
 | `state` | The state of the status. Can be one of the following: pending, success, error, or failure | `success` | No | string |
@@ -120,7 +120,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.push.changes[0].new.name)` | No | string |
 | `description` | A short description of the status | `status from cd tekton` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `repository` | The git repo | `$(event.repository.links.html.href)` | No | string |
 | `revision` | the git revision/commit to update the git HEAD to. Default is to mean only use the branch | `$(event.push.changes[0].new.target.hash)` | No | string |
 | `state` | The state of the status. Can be one of the following: pending, success, error, or failure | `success` | No | string |

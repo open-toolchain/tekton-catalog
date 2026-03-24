@@ -128,10 +128,10 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `master` | No | string |
-| `directory-name` | name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
+| `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |
@@ -150,10 +150,10 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.pull_request.base.ref)` | No | string |
-| `directory-name` | name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
+| `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pull_request.head.ref)` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | `$(event.pull_request.head.repo.clone_url)` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.pull_request.head.sha)` | No | string |
@@ -172,10 +172,10 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.ref)` | No | string |
-| `directory-name` | name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
+| `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |
@@ -194,10 +194,10 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.object_attributes.target_branch)` | No | string |
-| `directory-name` | name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
+| `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.object_attributes.source_branch)` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | `$(event.object_attributes.source.git_http_url)` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.object_attributes.last_commit.id)` | No | string |
@@ -216,10 +216,10 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.ref)` | No | string |
-| `directory-name` | name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
+| `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |
@@ -238,10 +238,10 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.pullrequest.destination.branch.name)` | No | string |
-| `directory-name` | name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
+| `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pullrequest.source.branch.name)` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | `$(event.pullrequest.source.repository.links.html.href)` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.pullrequest.source.commit.hash)` | No | string |
@@ -260,10 +260,10 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.push.changes[0].new.name)` | No | string |
-| `directory-name` | name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
+| `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |

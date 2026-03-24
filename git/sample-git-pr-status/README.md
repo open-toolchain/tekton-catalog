@@ -87,7 +87,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `description` | - | `verify the commit message` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pull_request.head.ref)` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | `$(event.pull_request.head.repo.clone_url)` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.pull_request.head.sha)` | No | string |
@@ -109,7 +109,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `description` | - | `verify the commit message` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.object_attributes.source_branch)` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | `$(event.object_attributes.source.git_http_url)` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.object_attributes.last_commit.id)` | No | string |
@@ -131,7 +131,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `description` | - | `verify the commit message` | No | string |
 | `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pullrequest.source.branch.name)` | No | string |
 | `pr-repository` | The source git repo for the PullRequest | `$(event.pullrequest.source.repository.links.html.href)` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.pullrequest.source.commit.hash)` | No | string |

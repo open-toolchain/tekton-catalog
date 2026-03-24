@@ -47,10 +47,10 @@ spec:
         if issues are found in the image scan result
       default: "true"
     - name: scan-step-image
-      description: image to use for the scan step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79)
+      description: image to use for the scan step
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
   results:
     - name: scan-report-file

@@ -103,7 +103,7 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **project-id**: for gitlab repository specify project-id
 * **directory-name**: directory name where the repository is cloned
 * **scm-type**: source code type used (github, github-ent, gitlab) (default to `github-ent`)
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
 #### Workspaces
 
@@ -154,7 +154,7 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **commit-id**: git commit id
 * **commit-timestamp**: git commit timestamp
 * **directory-name**: directory name where the repository is cloned
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 * **continuous-delivery-context-secret**: Reference name for the secret resource (default to `secure-properties`)
 * **ibmcloud-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **continuous-delivery-context-environment**: Name of the configmap containing the continuous delivery pipeline context environment properties (default to `environment-properties`)
@@ -316,7 +316,7 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **exclude-dev**: (Optional) Exclude dev dependencies during vulnerability scan (default to `false`)
 * **vulnerability-report**: Filepath to store generated Vulnerability report, not stored if empty (default to `vulnerability.json`)
 * **cra-scan-image**: Image to use for `scan` task (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
-* **dind-image**: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:20.10.22-dind) (default to `icr.io/continuous-delivery/pipeline/docker:20.10.22-dind`)
+* **dind-image**: image to use for the Docker-in-Docker sidecar (default to `icr.io/continuous-delivery/pipeline/docker:20.10.22-dind`)
 
 #### Workspaces
 
@@ -352,7 +352,7 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **resource-group**: target resource group (name or id) for the ibmcloud login operation
 * **project-id**: for gitlab repository, specify project-id
 * **scm-type**: source code type used (github, github-ent, gitlab) (default to `github-ent`)
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 * **exclude-dev**: (optional) Exclude dev dependencies during scan (default to `false`)
 * **repo-dir**: Specifies the path for the repository or .cracveomit file (default to `/artifacts`)
 

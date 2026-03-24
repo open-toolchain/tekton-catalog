@@ -87,7 +87,7 @@ This task extracts values from the desired config map with a given jq expression
 * **config-map-name**: name of the config map (default to `toolchain`)
 * **config-map-key**: key of the config map (default to `toolchain.json`)
 * **expression**: A valid jq expression which is used to search
-* **extract-value-jq-step-image**: image to use for the extract-value-jq step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **extract-value-jq-step-image**: image to use for the extract-value-jq step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode (default to `0`)
 * **raw**: determines if extracted value should be a raw string (default to `1`)
 
@@ -125,5 +125,5 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets (default to `secure-properties`)
 * **toolchain-apikey-secret-key**: field in the secret that contains the api key used to access toolchain and DOI instance (default to `toolchain-apikey`)
-* **publish-deployable-mapping-step-image**: image to use for the publish-deployable-mapping step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **publish-deployable-mapping-step-image**: image to use for the publish-deployable-mapping step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode (default to `0`)

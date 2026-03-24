@@ -17,7 +17,7 @@ spec:
       description: name of the configmap containing values for the task
       default: environment-properties
     - name: tests-image
-      description: Container image to be used for _tests_ script execution. Default to "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
+      description: Container image to be used for _tests_ script execution.
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
     - name: shuttle-properties-file
       description: file containing properties
@@ -28,7 +28,7 @@ spec:
     - name: fail-on-test-errors
       description: |
         flag ("true" | "false") to indicate if the task should be marked as fail or successfull
-        if _tests_ script is failing with exit not equal to 0. Default to "true"
+        if _tests_ script is failing with exit not equal to 0.
       default: "true"
     - name: pipeline-debug
       description: Pipeline debug mode

@@ -6,7 +6,7 @@ metadata:
 spec:
   description: >-
     This task runs `docker` commands (build, inspect...) against a Docker engine running as a sidecar container,
-     and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
+    and pushes the resulting image to the [IBM Cloud Container Registry](https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started).
   params:
     - name: ibmcloud-api
       description: the ibmcloud api
@@ -36,10 +36,10 @@ spec:
       default: latest
     # Dockerfile location
     - name: path-to-context
-      description: the path to the context that is used for the build (default to `.` meaning current directory)
+      description: the path to the context that is used for the build (`.` meaning current directory)
       default: .
     - name: path-to-dockerfile
-      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+      description: the path to the Dockerfile that is used for the build (`.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -58,16 +58,16 @@ spec:
         docker push ${IMAGE_URL}:${IMAGE_TAG}
     #
     - name: check-step-image
-      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
+      description: image to use for the check (pre-build) step
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: dind-image
-      description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:20.10.22-dind)
+      description: image to use for the Docker-in-Docker sidecar
       default: "icr.io/continuous-delivery/pipeline/docker:20.10.22-dind"
     - name: properties-file
       description: file containing properties out of the docker in docker task
       default: build.properties
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
     - name: registry-region
       description: container registry region id. required if no image-url or no image pipeline resources provided

@@ -129,7 +129,7 @@ spec:
       description: Image to use for `scan` task
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79"
     - name: dind-image
-      description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:20.10.22-dind)
+      description: image to use for the Docker-in-Docker sidecar
       default: "icr.io/continuous-delivery/pipeline/docker:20.10.22-dind"
 
   stepTemplate:

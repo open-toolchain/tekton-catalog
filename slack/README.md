@@ -49,7 +49,7 @@ The message can be:
 Visit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*
 `)
 * **exit-on-error**: flag (`true` | `false`) to indicate if the task should fail or continue if unable to process the message or post to Slack. (default to `false`)
-* **post-to-slack-step-image**: image to use for the post-to-slack step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **post-to-slack-step-image**: image to use for the post-to-slack step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode (default to `0`)
 
 #### Workspaces

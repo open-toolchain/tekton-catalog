@@ -27,8 +27,8 @@ This task is executing bash snippet/script in the context of a Kubernetes cluste
 * **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for cluster are available (default to `/clusters`)
 * **cluster-name**: name of the cluster - required if no cluster pipeline resource provided to this task
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
-* **execute-step-image**: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **execute-step-image**: image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
 #### Workspaces
 
@@ -62,8 +62,8 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **setup-script**: script that typically set up environment before the _deployment_ script execution.
 * **script**: _deployment_ script to be executed
 * **post-execution-script**: script that get executed after the _deployment_ script has been executed.
-* **execute-step-image**: image to use for the execute step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **execute-step-image**: image to use for the execute step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
 #### Workspaces
 
@@ -103,8 +103,8 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **kube-api-server-accessible**: indicates if the kubeAPIServer is exposed which is not the case for IBM Cloud Public Shared Workers (Calico network policy). If 'true', the task is trying to update the Cluster Pipeline Resources definition with the appropriate informations; When 'false', the fallback mechanism (copy file(s)) is used. (default to `false`)
 * **cluster-pipeline-resources-directory-fallback**: directory in the workspace that will be used as a fallback mechanism to store the kubeconfig file (default to `.tekton-cluster-pipeline-resources`)
 * **cluster-and-worker-nodes-json-export**: directory in the workspace that will be used to store the cluster and worker nodes export json files
-* **setup-step-image**: image to use for the setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **setup-step-image**: image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
 #### Workspaces
 

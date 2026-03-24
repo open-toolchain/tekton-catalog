@@ -9,7 +9,7 @@ spec:
       description: the application name
       default: "my-app"
     - name: repository
-      description: The git repo - default to https://github.com/open-toolchain/Microservices_CatalogAPI_helm
+      description: The git repo
       default: "https://github.com/open-toolchain/Microservices_CatalogAPI_helm"
     - name: branch
       description: the branch for the git repo

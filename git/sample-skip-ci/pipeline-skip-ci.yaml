@@ -13,7 +13,7 @@ spec:
       description: the commit message
       default: ""
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
   workspaces:
     - name: pipeline-ws

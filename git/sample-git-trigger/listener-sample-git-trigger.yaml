@@ -25,13 +25,13 @@ spec:
       description: the commit id/sha for the PullRequest
       default: " "
     - name: directory-name
-      description: name of the new directory to clone into. Default to . in order to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank
+      description: name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank
       default: "."
     - name: triggerName
       description: name of the trigger
       default: "git-pr-process"
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
   resourcetemplates:
     - apiVersion: v1

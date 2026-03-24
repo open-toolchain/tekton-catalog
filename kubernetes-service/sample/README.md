@@ -46,5 +46,5 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | the api key used to login to ibmcloud kubernetes service | - | Yes | secret |
 | `cluster-name` | name of the cluster - required if no cluster pipeline resource provided to this task | - | Yes | string |
 | `cluster-region` | (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region) | - | Yes | string |
-| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. Default to 0 | `0` | No | string |
+| `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `resource-group` | target resource group (name or id) for the ibmcloud login operation | `default` | No | string |

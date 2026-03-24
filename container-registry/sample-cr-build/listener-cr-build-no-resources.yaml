@@ -12,16 +12,16 @@ spec:
     - name: image-url
       description: The image url in your container registry
     - name: path-to-dockerfile
-      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+      description: the path to the Dockerfile that is used for the build (`.` meaning current directory)
       default: "."
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
     - name: properties-file
       description: >-
         name of the properties file that will be created (if needed) or updated (if existing) as an additional
-         outcome of this task in the workspace. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
-         and image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
+        outcome of this task in the workspace. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`)
+        and image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`)
       default: ""
   resourcetemplates:
     - apiVersion: v1

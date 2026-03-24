@@ -12,14 +12,14 @@ spec:
     - name: sonarqube-name
       description: |
         name of the sonarqube toolcard integration in the toolchain
-        (default to "" meaning the first sonarqube integration found will be used)
+        ("" meaning the first sonarqube integration found will be used)
       default: ""
     - name: sonarqube-project-key
       description: |
-        project key of the sonarqube project (default to "" meaning a project key will be computed out of the toolchain name)
+        project key of the sonarqube project ("" meaning a project key will be computed out of the toolchain name)
       default: ""
     - name: path-to-sources
-      description: the path to the sources (default to `.` meaning current directory)
+      description: the path to the sources (`.` meaning current directory)
       default: .
     - name: prepare-step-image
       description: image used for the prepare step
@@ -32,7 +32,7 @@ spec:
       default: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79
     - name: sonar-scan-command
       description: |
-        Sonar scan command to use. Default to `sonar-scanner -Dsonar.working.directory=$SONAR_DIR`.
+        Sonar scan command to use.
         The following environment variables are available:
         - SONAR_DIR : Sonar Scanner Working directory
         - SONAR_HOST_URL: URL of the sonarqube server
@@ -74,7 +74,7 @@ spec:
         See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-for-sonarqube-token
       default: "doi-sonarqube-token"
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
   workspaces:
     - name: workspace

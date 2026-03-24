@@ -50,10 +50,10 @@ spec:
       default: latest
     # Dockerfile location
     - name: path-to-context
-      description: the path to the context that is used for the build (default to `.` meaning current directory)
+      description: the path to the context that is used for the build (`.` meaning current directory)
       default: .
     - name: path-to-dockerfile
-      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+      description: the path to the Dockerfile that is used for the build (`.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -72,13 +72,13 @@ spec:
         docker push ${IMAGE_URL}:${IMAGE_TAG}
     #
     - name: check-step-image
-      description: image to use for the check (pre-build) step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
+      description: image to use for the check (pre-build) step
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: cluster-setup-step-image
-      description: image to use for the cluster setup step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
+      description: image to use for the cluster setup step
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: dind-image
-      description: image to use for the Docker-in-Docker sidecar (default to icr.io/continuous-delivery/pipeline/docker:20.10.22-dind)
+      description: image to use for the Docker-in-Docker sidecar
       default: "icr.io/continuous-delivery/pipeline/docker:20.10.22-dind"
     - name: properties-file
       description: file containing properties out of the docker in docker task

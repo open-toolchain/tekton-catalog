@@ -46,10 +46,10 @@ spec:
       description: image name. required if no image-url or no image pipeline resources provided
       default: ""
     - name: path-to-context
-      description: the path to the context that is used for the build (default to `.` meaning current directory)
+      description: the path to the context that is used for the build (`.` meaning current directory)
       default: .
     - name: path-to-dockerfile
-      description: the path to the Dockerfile that is used for the build (default to `.` meaning current directory)
+      description: the path to the Dockerfile that is used for the build (`.` meaning current directory)
       default: .
     - name: dockerfile
       description: The name of the Dockerfile
@@ -69,10 +69,10 @@ spec:
       description: file containing properties out of containerize task
       default: build.properties
     - name: check-and-build-step-image
-      description: image to use for the scan step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72)
+      description: image to use for the scan step
       default: "icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72"
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
   results:
     - name: image-repository

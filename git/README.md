@@ -55,16 +55,16 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **repository**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default to `master`)
 * **revision**: the git revision/commit to update the git HEAD to. Default is to mean only use the branch
-* **fetch-gitoken-step-image**: image to use for the fetch-gitoken step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49`)
+* **fetch-gitoken-step-image**: image to use for the fetch-gitoken step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49`)
 * **git-client-image**: The image to use to run git clone commands (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49`)
 * **git-max-retry**: max retry for the git clone operation (default to `1`)
-* **pr-repository**: the originating repository where the PullRequest comes from (in case of a fork) default to '' means same repository (not a fork) or it can be the same as the repository to clone
+* **pr-repository**: the originating repository where the PullRequest comes from (in case of a fork) '' means same repository (not a fork) or it can be the same as the repository to clone
 * **pr-branch**: the branch that is the source of this PullRequest
 * **pr-revision**: the commit/revision in the source branch of the PullRequest that is to be built
-* **directory-name**: name of the new directory to clone into. Default to . in order to clone at the root of the workspace It will be set to the "humanish" part of the repository if this param is set to blank (default to `.`)
+* **directory-name**: name of the new directory to clone into. `.` means to clone at the root of the workspace It will be set to the "humanish" part of the repository if this param is set to blank (default to `.`)
 * **properties-file**: name of the properties file that will be created as an additional outcome of this task in the workspace `workspace`. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`). This file can be used by downstream tasks to get the git information. (default to `build.properties`)
 * **git-credentials-json-file**: JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace). Default to '' meaning no output of this information
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
 #### Workspaces
 
@@ -109,9 +109,9 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **state-var**: Customized variable stored in build-properties to use as state if state params is empty.
 * **build-properties**: file containing properties out of clone task (can be a filepath name relative to the workspace/volume) (default to `build.properties`)
 * **target-url**: (optional) a url to set as the status detail link for the PR. If left empty, the status detail link will point to the pipeline run.
-* **fetch-git-information-step-image**: image to use for the fetch-git-information step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
-* **set-status-step-image**: image to use for the fetch-git-information step (default to registry.access.redhat.com/ubi8/ubi:8.1) (default to `registry.access.redhat.com/ubi8/ubi:8.1`)
-* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. Default to 0 (default to `0`)
+* **fetch-git-information-step-image**: image to use for the fetch-git-information step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **set-status-step-image**: image to use for the fetch-git-information step (default to `registry.access.redhat.com/ubi8/ubi:8.1`)
+* **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
 #### Workspaces
 

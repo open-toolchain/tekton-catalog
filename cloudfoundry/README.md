@@ -43,7 +43,7 @@ ibmcloud cf push "${CF_APP}"
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **cloud-foundry-apikey-secret-key**: field in the secret that contains the api key used to connect to cloud foundry (default to `cf-apikey`)
-* **deploy-step-image**: image to use for the deploy step (default to icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79) (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **deploy-step-image**: image to use for the deploy step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode (default to `0`)
 
 #### Workspaces

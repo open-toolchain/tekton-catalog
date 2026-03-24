@@ -35,7 +35,7 @@ spec:
     - name: sonarqube-name
       description: |
         name of the sonarqube toolcard integration in the toolchain
-        (default to "" meaning the first sonarqube integration found will be used)
+        ("" meaning the first sonarqube integration found will be used)
       default: ""
     - name: toolchain-apikey-secret-key
       description: field in the secret that contains the api key used to access toolchain and DOI instance
@@ -47,7 +47,7 @@ spec:
         See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-for-sonarqube-token
       default: "doi-sonarqube-token"
     - name: pipeline-debug
-      description: Pipeline debug mode. Value can be 0 or 1. Default to 0
+      description: Pipeline debug mode. Value can be 0 or 1.
       default: "0"
 
   workspaces:
