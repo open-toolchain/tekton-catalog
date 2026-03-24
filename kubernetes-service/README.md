@@ -25,7 +25,7 @@ This task is executing bash snippet/script in the context of a Kubernetes cluste
 #### Parameters
 
 * **cluster-pipeline-resources-directory**: directory in which the kubeconfig file(s) for cluster are available (default to `/clusters`)
-* **cluster-name**: name of the cluster - required if no cluster pipeline resource provided to this task
+* **cluster-name**: name of the cluster - required if no cluster pipeline resource provided to this task (default to empty string)
 * **script**: the bash snippet to execute within the context of the kubernetes configuration (default to `kubectl version`)
 * **execute-step-image**: image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
@@ -54,14 +54,14 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **kubernetes-service-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud kubernetes service (default to `apikey`)
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **cluster-region**: the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
-* **cluster-name**: name of the cluster - required if no cluster pipeline resource provided to this task
-* **image-url**: URL of an image that is relevant to the deployment action
-* **shuttle-properties-file**: name of the properties file that contain properties to include in the environment for the `script` snippet/script execution
-* **setup-script**: script that typically set up environment before the _deployment_ script execution.
-* **script**: _deployment_ script to be executed
-* **post-execution-script**: script that get executed after the _deployment_ script has been executed.
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **cluster-region**: the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region) (default to empty string)
+* **cluster-name**: name of the cluster - required if no cluster pipeline resource provided to this task (default to empty string)
+* **image-url**: URL of an image that is relevant to the deployment action (default to empty string)
+* **shuttle-properties-file**: name of the properties file that contain properties to include in the environment for the `script` snippet/script execution (default to empty string)
+* **setup-script**: script that typically set up environment before the _deployment_ script execution. (default to empty string)
+* **script**: _deployment_ script to be executed (default to empty string)
+* **post-execution-script**: script that get executed after the _deployment_ script has been executed. (default to empty string)
 * **execute-step-image**: image to use for the execute step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
@@ -97,12 +97,12 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **kubernetes-service-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud kubernetes service (default to `apikey`)
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **cluster-region**: (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
-* **cluster-name**: name of the cluster - required if no cluster pipeline resource provided to this task
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **cluster-region**: the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region) (default to empty string)
+* **cluster-name**: name of the cluster - required if no cluster pipeline resource provided to this task (default to empty string)
 * **kube-api-server-accessible**: indicates if the kubeAPIServer is exposed which is not the case for IBM Cloud Public Shared Workers (Calico network policy). If 'true', the task is trying to update the Cluster Pipeline Resources definition with the appropriate informations; When 'false', the fallback mechanism (copy file(s)) is used. (default to `false`)
 * **cluster-pipeline-resources-directory-fallback**: directory in the workspace that will be used as a fallback mechanism to store the kubeconfig file (default to `.tekton-cluster-pipeline-resources`)
-* **cluster-and-worker-nodes-json-export**: directory in the workspace that will be used to store the cluster and worker nodes export json files
+* **cluster-and-worker-nodes-json-export**: directory in the workspace that will be used to store the cluster and worker nodes export json files (default to empty string)
 * **setup-step-image**: image to use for the setup step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 

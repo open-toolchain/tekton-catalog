@@ -120,6 +120,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: default
+  annotations:
+    tekton.dev/displayName: "listener for default sonarqube"
 spec:
   triggers:
     - binding:
@@ -148,6 +150,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: maven
+  annotations:
+    tekton.dev/displayName: "listener for sonarqube maven plugin"
 spec:
   triggers:
     - binding:

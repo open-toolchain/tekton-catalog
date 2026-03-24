@@ -11,7 +11,7 @@ spec:
       description: Resource group for the ibmcloud operation
       default: "default"
     - name: cluster-region
-      description: (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+      description: the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
       default: ""
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1.
@@ -60,6 +60,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: kubernetes-service-no-resources
+  annotations:
+    tekton.dev/displayName: "simple listener for kubernetes service sample"
 spec:
   triggers:
     - binding:

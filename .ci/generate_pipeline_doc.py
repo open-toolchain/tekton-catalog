@@ -21,7 +21,7 @@ Usage:
     python generate_pipeline_doc.py -f *.yaml -o README.md -a "## Parameters" -v
 
 Options:
-    --file, -f              Path to YAML file (can be used multiple times)
+    --file, -f              Path to YAML file (can be used multiple times, supports glob patterns)
     --output, -o            Output markdown file (default: stdout)
     --anchor-output, -a     Heading anchor where content should be inserted (requires --output and existing file)
     --verbose, -v           Enable verbose output
@@ -38,6 +38,7 @@ Features:
 """
 
 import argparse
+import glob
 import os
 import sys
 from pathlib import Path
@@ -71,12 +72,15 @@ def extract_pipeline_params(pipeline_doc: Dict) -> List[Dict]:
         param_list = []
 
     for param in param_list:
+        # Use None as sentinel to detect missing 'default' key
+        default_value = param.get('default', None)
         params.append({
             'name': param.get('name', ''),
             'description': param.get('description', ''),
-            'default': param.get('default', ''),
+            'default': default_value,
             'type': param.get('type', 'string'),
-            'source': 'Pipeline'
+            'source': 'Pipeline',
+            'has_default': 'default' in param
         })
 
     return params
@@ -97,12 +101,15 @@ def extract_trigger_template_params(trigger_doc: Dict) -> List[Dict]:
         param_list = []
 
     for param in param_list:
+        # Use None as sentinel to detect missing 'default' key
+        default_value = param.get('default', None)
         params.append({
             'name': param.get('name', ''),
             'description': param.get('description', ''),
-            'default': param.get('default', ''),
+            'default': default_value,
             'type': param.get('type', 'string'),
-            'source': 'TriggerTemplate'
+            'source': 'TriggerTemplate',
+            'has_default': 'default' in param
         })
 
     return params
@@ -241,6 +248,10 @@ def extract_event_listener_info(listener_doc: Dict) -> Dict:
     spec = listener_doc.get('spec', {})
     triggers = spec.get('triggers', [])
 
+    # Extract display name from annotations
+    annotations = metadata.get('annotations', {})
+    display_name = annotations.get('tekton.dev/displayName', '')
+
     trigger_refs = []
     for trigger in triggers:
         trigger_info = {
@@ -266,6 +277,7 @@ def extract_event_listener_info(listener_doc: Dict) -> Dict:
 
     return {
         'name': metadata.get('name', 'Unknown'),
+        'display_name': display_name,
         'triggers': trigger_refs
     }
 
@@ -477,16 +489,18 @@ def merge_parameters(pipeline_params: List[Dict],
             param_dict[name] = {
                 'name': name,
                 'description': param.get('description', ''),
-                'default': param.get('default', ''),
+                'default': param.get('default'),
                 'type': param.get('type', 'string'),
-                'sources': []
+                'sources': [],
+                'has_default': param.get('has_default', False)
             }
         param_dict[name]['sources'].append('Pipeline')
         if param.get('description'):
             param_dict[name]['description'] = param['description']
-        # Store default if not already set
-        if not param_dict[name]['default'] and param.get('default'):
-            param_dict[name]['default'] = param['default']
+        # Store default if not already set and has a default
+        if param_dict[name]['default'] is None and param.get('has_default'):
+            param_dict[name]['default'] = param.get('default')
+            param_dict[name]['has_default'] = True
 
     # Process trigger template parameters
     for param in trigger_params:
@@ -495,17 +509,19 @@ def merge_parameters(pipeline_params: List[Dict],
             param_dict[name] = {
                 'name': name,
                 'description': param.get('description', ''),
-                'default': param.get('default', ''),
+                'default': param.get('default'),
                 'type': param.get('type', 'string'),
-                'sources': []
+                'sources': [],
+                'has_default': param.get('has_default', False)
             }
         else:
             # Use trigger description if pipeline didn't have one
             if not param_dict[name]['description'] and param.get('description'):
                 param_dict[name]['description'] = param['description']
-            # Use trigger default if pipeline didn't have one
-            if not param_dict[name]['default'] and param.get('default'):
-                param_dict[name]['default'] = param['default']
+            # Use trigger default if pipeline didn't have one and trigger has a default
+            if param_dict[name]['default'] is None and param.get('has_default'):
+                param_dict[name]['default'] = param.get('default')
+                param_dict[name]['has_default'] = True
         param_dict[name]['sources'].append('TriggerTemplate')
 
     # Process binding parameters - these override defaults
@@ -518,12 +534,14 @@ def merge_parameters(pipeline_params: List[Dict],
                 'description': '',
                 'default': binding_value,  # Binding value becomes the default
                 'type': 'string',
-                'sources': []
+                'sources': [],
+                'has_default': True
             }
         else:
             # Binding value overrides any default
             if binding_value:
                 param_dict[name]['default'] = binding_value
+                param_dict[name]['has_default'] = True
         param_dict[name]['sources'].append('TriggerBinding')
 
     # Convert back to list and sort by name
@@ -667,12 +685,33 @@ def generate_combined_markdown(pipeline_params: List[Dict],
         intro.append("See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.")
         markdown_sections.append('\n'.join(intro))
 
+        # Add table of contents if there are multiple EventListeners
+        if len(event_listeners) > 1:
+            toc = ["\n**EventListeners:**\n"]
+            for listener_info in event_listeners:
+                listener_name = listener_info.get('name', 'Unknown')
+                display_name = listener_info.get('display_name', '')
+
+                # Create markdown link to the section
+                if display_name:
+                    toc.append(f"- [{listener_name}](#{listener_name}) - {display_name}")
+                else:
+                    toc.append(f"- [{listener_name}](#{listener_name})")
+
+            markdown_sections.append('\n'.join(toc))
+
         for listener_info in event_listeners:
             listener_name = listener_info.get('name', 'Unknown')
+            display_name = listener_info.get('display_name', '')
+
             # Use heading one level deeper than the anchor for each EventListener
             section = [f"{params_heading_prefix} {listener_name}\n"]
 
-            section.append(f"**EventListener**: {listener_name}")
+            # Show EventListener with display name if available
+            if display_name:
+                section.append(f"**EventListener**: {listener_name} - {display_name}")
+            else:
+                section.append(f"**EventListener**: {listener_name}")
             section.append('\n')
 
             # Resolve parameters for this EventListener
@@ -702,14 +741,19 @@ def generate_combined_markdown(pipeline_params: List[Dict],
                     name = param['name']
                     desc = param['description'] or '-'
                     default = param['default']
+                    has_default = param.get('has_default', False)
 
-                    # Determine if required (no default value)
-                    if default == '':
+                    # Determine if required based on whether default key exists
+                    if not has_default:
                         required = 'Yes'
                         default_str = '-'
                     else:
                         required = 'No'
-                        default_str = f'`{default}`'
+                        # Handle None, empty string, and other values
+                        if default is None or default == '':
+                            default_str = f'`{default if default is not None else ""}`'
+                        else:
+                            default_str = f'`{default}`'
 
                     param_type = param['type']
 
@@ -788,14 +832,19 @@ def generate_combined_markdown(pipeline_params: List[Dict],
         name = param['name']
         desc = param['description'] or '-'
         default = param['default']
+        has_default = param.get('has_default', False)
 
-        # Determine if required (no default value)
-        if default == '':
+        # Determine if required based on whether default key exists
+        if not has_default:
             required = 'Yes'
             default_str = '-'
         else:
             required = 'No'
-            default_str = f'`{default}`'
+            # Handle None, empty string, and other values
+            if default is None or default == '':
+                default_str = f'`{default if default is not None else ""}`'
+            else:
+                default_str = f'`{default}`'
 
         param_type = param['type']
 
@@ -809,6 +858,39 @@ def generate_combined_markdown(pipeline_params: List[Dict],
     return result
 
 
+def expand_file_patterns(patterns: List[str]) -> List[Path]:
+    """
+    Expand file patterns (including globs) into a list of Path objects.
+
+    Args:
+        patterns: List of file patterns (can include wildcards like *.yaml)
+
+    Returns:
+        List of Path objects for all matching files
+    """
+    expanded_files = []
+    seen_files = set()  # Track files to avoid duplicates
+
+    for pattern in patterns:
+        # Check if pattern contains wildcards
+        if '*' in pattern or '?' in pattern or '[' in pattern:
+            # Use glob to expand the pattern
+            matched_files = glob.glob(pattern, recursive=False)
+            for file_path in matched_files:
+                abs_path = os.path.abspath(file_path)
+                if abs_path not in seen_files:
+                    seen_files.add(abs_path)
+                    expanded_files.append(Path(file_path))
+        else:
+            # Regular file path
+            abs_path = os.path.abspath(pattern)
+            if abs_path not in seen_files:
+                seen_files.add(abs_path)
+                expanded_files.append(Path(pattern))
+
+    return expanded_files
+
+
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
@@ -819,13 +901,16 @@ Examples:
   # Process multiple YAML files and print to stdout
   python generate_pipeline_doc.py --file pipeline.yaml --file listener.yaml
 
+  # Use glob pattern to process all YAML files
+  python generate_pipeline_doc.py -f *.yaml
+
   # Save to a new file
   python generate_pipeline_doc.py -f pipeline.yaml -f listener.yaml -o PARAMETERS.md
 
   # Insert at anchor in existing file
   python generate_pipeline_doc.py -f pipeline.yaml -f listener.yaml -o README.md -a "## Parameters"
 
-  # Process all YAML files in directory
+  # Process all YAML files in directory with glob
   python generate_pipeline_doc.py -f *.yaml -o PARAMETERS.md
 
   # Verbose mode
@@ -836,7 +921,7 @@ Examples:
                        action='append',
                        dest='files',
                        required=True,
-                       help='Path to YAML file (can be used multiple times). Files can contain Pipeline, TriggerTemplate, or TriggerBinding resources.')
+                       help='Path to YAML file (can be used multiple times, supports glob patterns like *.yaml). Files can contain Pipeline, TriggerTemplate, or TriggerBinding resources.')
     parser.add_argument('--output', '-o',
                        help='Output markdown file (default: print to stdout)')
     parser.add_argument('--anchor-output', '-a',
@@ -846,11 +931,13 @@ Examples:
 
     args = parser.parse_args()
 
-    # Convert file paths to Path objects
-    file_paths = [Path(f) for f in args.files]
+    # Expand file patterns (including globs)
+    file_paths = expand_file_patterns(args.files)
 
     if args.verbose:
         print(f"Processing {len(file_paths)} file(s)...", file=sys.stderr)
+        for fp in file_paths:
+            print(f"  - {fp}", file=sys.stderr)
 
     # Determine heading level from anchor if provided
     heading_level = 1  # Default

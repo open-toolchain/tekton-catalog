@@ -74,9 +74,16 @@ This pipeline and relevant trigger(s) can be configured using the properties des
 
 See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
 
+
+**EventListeners:**
+
+- [eventlistener-git-pr-status-github-pr](#eventlistener-git-pr-status-github-pr) - github pull-request listener to set status on pull-request commit
+- [eventlistener-git-pr-status-grit-mr](#eventlistener-git-pr-status-grit-mr) - grit/gitlab merge-request listener to set status on merge-request commit
+- [eventlistener-git-pr-status-bitbucket-pr](#eventlistener-git-pr-status-bitbucket-pr) - bitbucket pull-request listener to set status on pull-request commit
+
 ### eventlistener-git-pr-status-github-pr
 
-**EventListener**: eventlistener-git-pr-status-github-pr
+**EventListener**: eventlistener-git-pr-status-github-pr - github pull-request listener to set status on pull-request commit
 
 
 | Properties | Description | Default | Required | Type |
@@ -85,7 +92,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `branch` | the branch for the git repo | `$(event.pull_request.base.ref)` | No | string |
 | `context` | - | `commit message check` | No | string |
 | `description` | - | `verify the commit message` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pull_request.head.ref)` | No | string |
@@ -98,7 +105,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### eventlistener-git-pr-status-grit-mr
 
-**EventListener**: eventlistener-git-pr-status-grit-mr
+**EventListener**: eventlistener-git-pr-status-grit-mr - grit/gitlab merge-request listener to set status on merge-request commit
 
 
 | Properties | Description | Default | Required | Type |
@@ -107,7 +114,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `branch` | the branch for the git repo | `$(event.object_attributes.target_branch)` | No | string |
 | `context` | - | `commit message check` | No | string |
 | `description` | - | `verify the commit message` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.object_attributes.source_branch)` | No | string |
@@ -120,7 +127,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### eventlistener-git-pr-status-bitbucket-pr
 
-**EventListener**: eventlistener-git-pr-status-bitbucket-pr
+**EventListener**: eventlistener-git-pr-status-bitbucket-pr - bitbucket pull-request listener to set status on pull-request commit
 
 
 | Properties | Description | Default | Required | Type |
@@ -129,7 +136,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `branch` | the branch for the git repo | `$(event.pullrequest.destination.branch.name)` | No | string |
 | `context` | - | `commit message check` | No | string |
 | `description` | - | `verify the commit message` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pullrequest.source.branch.name)` | No | string |

@@ -52,11 +52,11 @@ spec:
       default: ""
     - name: git-access-token
       description: |
-        (optional) token to access the git repository. If this token is provided, there will not be an attempt
+        token to access the git repository. If this token is provided, there will not be an attempt
         to use the git token obtained from the authorization flow when adding the git integration in the toolchain
       default: ""
     - name: tf-var-file
-      description: (optional) terraform var-file
+      description: terraform var-file
       default: ""
 
   results:

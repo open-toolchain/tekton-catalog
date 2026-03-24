@@ -28,11 +28,11 @@ This task installs [Container Image Security Enforcement](https://cloud.ibm.com/
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **shuttle-properties-file**: properties file in the workspace that contains DCT initialization information
-* **region**: target region
-* **resource-group**: the resource group
-* **cluster-name**: the name of the targeted cluster
-* **cluster-namespace**: The cluster namespace to deploy rules
+* **shuttle-properties-file** **[required]**: properties file in the workspace that contains DCT initialization information
+* **region** **[required]**: target region
+* **resource-group** **[required]**: the resource group
+* **cluster-name** **[required]**: the name of the targeted cluster
+* **cluster-namespace** **[required]**: The cluster namespace to deploy rules
 * **helm-version**: specific helm version (default to `2.16.6`)
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
@@ -61,14 +61,14 @@ This task initialize Docker Content Trust GUN/repository
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **image-name**: The image name that Docker Content Trust will be configured for
-* **vault-region**: the region of the keyprotect instance
-* **vault-resource-group**: the resource group of the keyprotect instance
-* **vault-name**: the key protect instance name
-* **registry-namespace**: The registry namespace
-* **registry-region**: the registry region
-* **validation-signer**: validation signer
-* **build-signer**: build signer
+* **image-name** **[required]**: The image name that Docker Content Trust will be configured for
+* **vault-region**: the region of the keyprotect instance (default to empty string)
+* **vault-resource-group**: the resource group of the keyprotect instance (default to empty string)
+* **vault-name** **[required]**: the key protect instance name
+* **registry-namespace** **[required]**: The registry namespace
+* **registry-region** **[required]**: the registry region
+* **validation-signer** **[required]**: validation signer
+* **build-signer** **[required]**: build signer
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud service (default to `apikey`)
@@ -99,13 +99,13 @@ This task performs a Docker Content Trust signature on a given image
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **image-repository**: the repository of the image to sign
-* **image-digest**: the image digest (sha-256 hash) for the image to sign
-* **image-tags**: the tags for the image to sign
-* **signer**: current signer
-* **vault-region**: the region of the keyprotect instance
-* **vault-resource-group**: the resource group of the keyprotect instance
-* **vault-name**: the key protect instance name
+* **image-repository** **[required]**: the repository of the image to sign
+* **image-digest** **[required]**: the image digest (sha-256 hash) for the image to sign
+* **image-tags** **[required]**: the tags for the image to sign
+* **signer** **[required]**: current signer
+* **vault-region** **[required]**: the region of the keyprotect instance
+* **vault-resource-group** **[required]**: the resource group of the keyprotect instance
+* **vault-name** **[required]**: the key protect instance name
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud service (default to `apikey`)

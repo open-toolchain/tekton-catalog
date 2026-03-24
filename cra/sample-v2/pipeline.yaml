@@ -8,13 +8,13 @@ spec:
     - name: ibmcloud-api
       description: The ibmcloud api
     - name: ibmcloud-region
-      description: (Optional) ibmcloud region to use
+      description: ibmcloud region to use
     - name: pipeline-debug
       description: Toggles debug mode for the pipeline
     - name: registry-region
-      description: (Optional) The ibmcloud container registry region
+      description: The ibmcloud container registry region
     - name: resource-group
-      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+      description: Target resource group (name or id) for the ibmcloud login operation
 
     # Event params
     - name: branch
@@ -32,23 +32,23 @@ spec:
 
     # Common command related params
     - name: custom-script
-      description: (Optional) Filepath to a custom script that is ran prior to CRA scanning
+      description: Filepath to a custom script that is ran prior to CRA scanning
     - name: env-props
-      description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
+      description: A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
     - name: fileignore
-      description: (Optional) Filepath to .fileignore
+      description: Filepath to .fileignore
     - name: ibmcloud-trace
-      description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
+      description: Enables IBMCLOUD_TRACE for ibmcloud cli logging
     - name: output
-      description: (Optional) Prints command result to console
+      description: Prints command result to console
     - name: path
       description: Repository path to scan
     - name: strict
-      description: (Optional) Enables strict mode for scanning
+      description: Enables strict mode for scanning
     - name: toolchainid
-      description: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
+      description: The target toolchain id to be used. Defaults to the current toolchain id
     - name: verbose
-      description: (Optional) Enable verbose log messages
+      description: Enable verbose log messages
 
     # BOM related params
     - name: asset-type
@@ -56,23 +56,23 @@ spec:
     - name: bom-report
       description: Filepath to store generated Bill of Materials. Default to `./bom.json`
     - name: docker-build-flags
-      description: (Optional) Customize docker build command for build stage scanning
+      description: Customize docker build command for build stage scanning
     - name: docker-build-context
-      description: (Optional) If specified, CRA will use the directory in the path parameter as docker build context
+      description: If specified, CRA will use the directory in the path parameter as docker build context
     - name: dockerfile-pattern
-      description: (Optional) Pattern to identify Dockerfile in the repository
+      description: Pattern to identify Dockerfile in the repository
     - name: docker-registry-url
       description: Registry url to use for docker login
     - name: docker-registry-username
       description: Username to authenticate for docker-registry-url
     - name: gradle-exclude-configs
-      description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
+      description: Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
     - name: gradle-props
-      description: (Optional) Customize gradle command with props for gradle dependency scanning.
+      description: Customize gradle command with props for gradle dependency scanning.
     - name: maven-exclude-scopes
-      description: (Optional) Exclude maven scopes, ex. 'test,compile'
+      description: Exclude maven scopes, ex. 'test,compile'
     - name: nodejs-create-package-lock
-      description: (Optional) Enable the task to build the package-lock.json for node.js projects
+      description: Enable the task to build the package-lock.json for node.js projects
     - name: prev-report
       description: Filepath to previous BoM report to skip Dockerfile or application manifest scans
 
@@ -82,9 +82,9 @@ spec:
 
     # Vulnerability related params
     - name: cveignore
-      description: (Optional) Filepath to cveignore
+      description: Filepath to cveignore
     - name: exclude-dev
-      description: (Optional) Exclude dev dependencies during vulnerability scan
+      description: Exclude dev dependencies during vulnerability scan
     - name: vulnerability-report
       description: Filepath to store Vulnerability report, not stored if empty. Default to `./vulnerability.json`
 
@@ -94,15 +94,15 @@ spec:
     - name: tf-dir
       description: The directory where the terraform main entry file is found if not in parent directory
     - name: tf-plan
-      description: (Optional) Filepath to Terraform Plan file.
+      description: Filepath to Terraform Plan file.
     - name: tf-var-file
-      description: (Optional) terraform var-file
+      description: terraform var-file
     - name: tf-version
-      description: (Optional) The terraform version to use to create Terraform plan
+      description: The terraform version to use to create Terraform plan
     - name: tf-policy-file
-      description: (Optional) Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules.
+      description: Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules.
     - name: tf-attachment-file
-      description: (Optional) Path of SCC V2 attachment file.
+      description: Path of SCC V2 attachment file.
 
     # User control params
     - name: cra-scan-image

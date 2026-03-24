@@ -63,9 +63,16 @@ This pipeline and relevant trigger(s) can be configured using the properties des
 
 See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
 
+
+**EventListeners:**
+
+- [github-listener](#github-listener) - github enterprise pull-request listener
+- [gl-ci-listener](#gl-ci-listener) - github enterprise commit push listener
+- [gl-pr-listener](#gl-pr-listener) - grit/gitlab pull-request listener
+
 ### github-listener
 
-**EventListener**: github-listener
+**EventListener**: github-listener - github enterprise pull-request listener
 
 
 | Properties | Description | Default | Required | Type |
@@ -74,55 +81,55 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `asset-type` | Security checks to run (apps, image, os, all) | `all` | No | string |
 | `bom-report` | Filepath to store generated Bill of Materials. Default to `./bom.json` | `bom.json` | No | string |
-| `branch` | The git branch | - | Yes | string |
-| `commit-id` | commit id | - | Yes | string |
+| `branch` | The git branch | `` | No | string |
+| `commit-id` | commit id | `` | No | string |
 | `cra-scan-image` | Image to use for `scan` task. | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72` | No | string |
-| `custom-script` | (Optional) Filepath to a custom script that is ran prior to CRA scanning | - | Yes | string |
-| `cveignore` | (Optional) Filepath to cveignore | - | Yes | string |
+| `custom-script` | Filepath to a custom script that is ran prior to CRA scanning | `` | No | string |
+| `cveignore` | Filepath to cveignore | `` | No | string |
 | `deploy-report` | Filepath to store generated Deploy Analytic report. Default to `./deploy.json` | `deploy.json` | No | string |
-| `docker-build-context` | (Optional) If specified, CRA will use the directory in the path parameter as docker build context | - | Yes | string |
-| `docker-build-flags` | (Optional) Customize docker build command for build stage scanning | - | Yes | string |
+| `docker-build-context` | If specified, CRA will use the directory in the path parameter as docker build context | - | Yes | string |
+| `docker-build-flags` | Customize docker build command for build stage scanning | `` | No | string |
 | `docker-registry-secret` | Secret to authenticate for docker-registry-url | - | Yes | string |
 | `docker-registry-secret` (**secured property**) | the secret used to login to docker-registry-url | - | Yes | secret |
-| `docker-registry-url` | Registry url to use for docker login | - | Yes | string |
-| `docker-registry-username` | Username to authenticate for docker-registry-url | - | Yes | string |
-| `dockerfile-pattern` | (Optional) Pattern to identify Dockerfile in the repository | - | Yes | string |
-| `env-props` | (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456' | - | Yes | string |
-| `exclude-dev` | (Optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
-| `fileignore` | (Optional) Filepath to .fileignore | - | Yes | string |
-| `git-credentials-json-file` | (Optional) JSON file containing the git credentials as found out of the clone task | `output/secrets/thecredentials.json` | No | string |
-| `gradle-exclude-configs` | (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath' | - | Yes | string |
-| `gradle-props` | (Optional) Customize gradle command with props for gradle dependency scanning. | - | Yes | string |
+| `docker-registry-url` | Registry url to use for docker login | `` | No | string |
+| `docker-registry-username` | Username to authenticate for docker-registry-url | `` | No | string |
+| `dockerfile-pattern` | Pattern to identify Dockerfile in the repository | - | Yes | string |
+| `env-props` | A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456' | `` | No | string |
+| `exclude-dev` | Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `fileignore` | Filepath to .fileignore | `` | No | string |
+| `git-credentials-json-file` | JSON file containing the git credentials as found out of the clone task | `output/secrets/thecredentials.json` | No | string |
+| `gradle-exclude-configs` | Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath' | `` | No | string |
+| `gradle-props` | Customize gradle command with props for gradle dependency scanning. | `` | No | string |
 | `ibmcloud-api` | The ibmcloud api | `https://cloud.ibm.com` | No | string |
-| `ibmcloud-region` | (Optional) ibmcloud region to use | - | Yes | string |
-| `ibmcloud-trace` | (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging | `false` | No | string |
-| `maven-exclude-scopes` | (Optional) Exclude maven scopes, ex. 'test,compile' | - | Yes | string |
-| `nodejs-create-package-lock` | (Optional) Enable the task to build the package-lock.json for node.js projects | `false` | No | string |
-| `output` | (Optional) Prints command result to console | `false` | No | string |
+| `ibmcloud-region` | ibmcloud region to use | `` | No | string |
+| `ibmcloud-trace` | Enables IBMCLOUD_TRACE for ibmcloud cli logging | `false` | No | string |
+| `maven-exclude-scopes` | Exclude maven scopes, ex. 'test,compile' | `` | No | string |
+| `nodejs-create-package-lock` | Enable the task to build the package-lock.json for node.js projects | `false` | No | string |
+| `output` | Prints command result to console | `false` | No | string |
 | `path` | Repository path to scan | `/artifacts` | No | string |
 | `pipeline-debug` | Toggles debug mode for the pipeline | `0` | No | string |
-| `pr-branch` | The branch in the forked git repo from where the PR is made | - | Yes | string |
-| `pr-repository` | The forked git repo from where the PR is made | - | Yes | string |
-| `prev-report` | Filepath to previous BoM report to skip Dockerfile or application manifest scans | - | Yes | string |
-| `registry-region` | (Optional) The ibmcloud container registry region | - | Yes | string |
+| `pr-branch` | The branch in the forked git repo from where the PR is made | `` | No | string |
+| `pr-repository` | The forked git repo from where the PR is made | `` | No | string |
+| `prev-report` | Filepath to previous BoM report to skip Dockerfile or application manifest scans | `` | No | string |
+| `registry-region` | The ibmcloud container registry region | `` | No | string |
 | `repository` | The git repo | - | Yes | string |
-| `resource-group` | (Optional) Target resource group (name or id) for the ibmcloud login operation | - | Yes | string |
-| `strict` | (Optional) Enables strict mode for scanning | `false` | No | string |
+| `resource-group` | Target resource group (name or id) for the ibmcloud login operation | `` | No | string |
+| `strict` | Enables strict mode for scanning | `false` | No | string |
 | `terraform-report` | Filepath to store generated Terraform report. Default to `./terraform.json` | `terraform.json` | No | string |
-| `tf-attachment-file` | (Optional) Path of SCC V2 attachment file. | - | Yes | string |
-| `tf-dir` | The directory where the terraform main entry file is found if not in parent directory | - | Yes | string |
-| `tf-plan` | (Optional) Filepath to Terraform Plan file. | - | Yes | string |
-| `tf-policy-file` | (Optional) Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules. | - | Yes | string |
-| `tf-var-file` | (Optional) terraform var-file | - | Yes | string |
-| `tf-version` | (Optional) The terraform version to use to create Terraform plan | `0.15.5` | No | string |
-| `toolchainid` | (Optional) The target toolchain id to be used. Defaults to the current toolchain id | - | Yes | string |
-| `verbose` | (Optional) Enable verbose log messages | `false` | No | string |
+| `tf-attachment-file` | Path of SCC V2 attachment file. | `` | No | string |
+| `tf-dir` | The directory where the terraform main entry file is found if not in parent directory | `` | No | string |
+| `tf-plan` | Filepath to Terraform Plan file. | `` | No | string |
+| `tf-policy-file` | Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules. | `` | No | string |
+| `tf-var-file` | terraform var-file | `` | No | string |
+| `tf-version` | The terraform version to use to create Terraform plan | `0.15.5` | No | string |
+| `toolchainid` | The target toolchain id to be used. Defaults to the current toolchain id | `` | No | string |
+| `verbose` | Enable verbose log messages | `false` | No | string |
 | `vulnerability-report` | Filepath to store Vulnerability report, not stored if empty. Default to `./vulnerability.json` | `vulnerability.json` | No | string |
 
 
 ### gl-ci-listener
 
-**EventListener**: gl-ci-listener
+**EventListener**: gl-ci-listener - github enterprise commit push listener
 
 
 | Properties | Description | Default | Required | Type |
@@ -131,55 +138,55 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `asset-type` | Security checks to run (apps, image, os, all) | `all` | No | string |
 | `bom-report` | Filepath to store generated Bill of Materials. Default to `./bom.json` | `bom.json` | No | string |
-| `branch` | The git branch | - | Yes | string |
-| `commit-id` | commit id | - | Yes | string |
+| `branch` | The git branch | `` | No | string |
+| `commit-id` | commit id | `` | No | string |
 | `cra-scan-image` | Image to use for `scan` task. | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72` | No | string |
-| `custom-script` | (Optional) Filepath to a custom script that is ran prior to CRA scanning | - | Yes | string |
-| `cveignore` | (Optional) Filepath to cveignore | - | Yes | string |
+| `custom-script` | Filepath to a custom script that is ran prior to CRA scanning | `` | No | string |
+| `cveignore` | Filepath to cveignore | `` | No | string |
 | `deploy-report` | Filepath to store generated Deploy Analytic report. Default to `./deploy.json` | `deploy.json` | No | string |
-| `docker-build-context` | (Optional) If specified, CRA will use the directory in the path parameter as docker build context | - | Yes | string |
-| `docker-build-flags` | (Optional) Customize docker build command for build stage scanning | - | Yes | string |
+| `docker-build-context` | If specified, CRA will use the directory in the path parameter as docker build context | - | Yes | string |
+| `docker-build-flags` | Customize docker build command for build stage scanning | `` | No | string |
 | `docker-registry-secret` | Secret to authenticate for docker-registry-url | - | Yes | string |
 | `docker-registry-secret` (**secured property**) | the secret used to login to docker-registry-url | - | Yes | secret |
-| `docker-registry-url` | Registry url to use for docker login | - | Yes | string |
-| `docker-registry-username` | Username to authenticate for docker-registry-url | - | Yes | string |
-| `dockerfile-pattern` | (Optional) Pattern to identify Dockerfile in the repository | - | Yes | string |
-| `env-props` | (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456' | - | Yes | string |
-| `exclude-dev` | (Optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
-| `fileignore` | (Optional) Filepath to .fileignore | - | Yes | string |
-| `git-credentials-json-file` | (Optional) JSON file containing the git credentials as found out of the clone task | `output/secrets/thecredentials.json` | No | string |
-| `gradle-exclude-configs` | (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath' | - | Yes | string |
-| `gradle-props` | (Optional) Customize gradle command with props for gradle dependency scanning. | - | Yes | string |
+| `docker-registry-url` | Registry url to use for docker login | `` | No | string |
+| `docker-registry-username` | Username to authenticate for docker-registry-url | `` | No | string |
+| `dockerfile-pattern` | Pattern to identify Dockerfile in the repository | - | Yes | string |
+| `env-props` | A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456' | `` | No | string |
+| `exclude-dev` | Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `fileignore` | Filepath to .fileignore | `` | No | string |
+| `git-credentials-json-file` | JSON file containing the git credentials as found out of the clone task | `output/secrets/thecredentials.json` | No | string |
+| `gradle-exclude-configs` | Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath' | `` | No | string |
+| `gradle-props` | Customize gradle command with props for gradle dependency scanning. | `` | No | string |
 | `ibmcloud-api` | The ibmcloud api | `https://cloud.ibm.com` | No | string |
-| `ibmcloud-region` | (Optional) ibmcloud region to use | - | Yes | string |
-| `ibmcloud-trace` | (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging | `false` | No | string |
-| `maven-exclude-scopes` | (Optional) Exclude maven scopes, ex. 'test,compile' | - | Yes | string |
-| `nodejs-create-package-lock` | (Optional) Enable the task to build the package-lock.json for node.js projects | `false` | No | string |
-| `output` | (Optional) Prints command result to console | `false` | No | string |
+| `ibmcloud-region` | ibmcloud region to use | `` | No | string |
+| `ibmcloud-trace` | Enables IBMCLOUD_TRACE for ibmcloud cli logging | `false` | No | string |
+| `maven-exclude-scopes` | Exclude maven scopes, ex. 'test,compile' | `` | No | string |
+| `nodejs-create-package-lock` | Enable the task to build the package-lock.json for node.js projects | `false` | No | string |
+| `output` | Prints command result to console | `false` | No | string |
 | `path` | Repository path to scan | `/artifacts` | No | string |
 | `pipeline-debug` | Toggles debug mode for the pipeline | `0` | No | string |
-| `pr-branch` | The branch in the forked git repo from where the PR is made | - | Yes | string |
-| `pr-repository` | The forked git repo from where the PR is made | - | Yes | string |
-| `prev-report` | Filepath to previous BoM report to skip Dockerfile or application manifest scans | - | Yes | string |
-| `registry-region` | (Optional) The ibmcloud container registry region | - | Yes | string |
+| `pr-branch` | The branch in the forked git repo from where the PR is made | `` | No | string |
+| `pr-repository` | The forked git repo from where the PR is made | `` | No | string |
+| `prev-report` | Filepath to previous BoM report to skip Dockerfile or application manifest scans | `` | No | string |
+| `registry-region` | The ibmcloud container registry region | `` | No | string |
 | `repository` | The git repo | - | Yes | string |
-| `resource-group` | (Optional) Target resource group (name or id) for the ibmcloud login operation | - | Yes | string |
-| `strict` | (Optional) Enables strict mode for scanning | `false` | No | string |
+| `resource-group` | Target resource group (name or id) for the ibmcloud login operation | `` | No | string |
+| `strict` | Enables strict mode for scanning | `false` | No | string |
 | `terraform-report` | Filepath to store generated Terraform report. Default to `./terraform.json` | `terraform.json` | No | string |
-| `tf-attachment-file` | (Optional) Path of SCC V2 attachment file. | - | Yes | string |
-| `tf-dir` | The directory where the terraform main entry file is found if not in parent directory | - | Yes | string |
-| `tf-plan` | (Optional) Filepath to Terraform Plan file. | - | Yes | string |
-| `tf-policy-file` | (Optional) Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules. | - | Yes | string |
-| `tf-var-file` | (Optional) terraform var-file | - | Yes | string |
-| `tf-version` | (Optional) The terraform version to use to create Terraform plan | `0.15.5` | No | string |
-| `toolchainid` | (Optional) The target toolchain id to be used. Defaults to the current toolchain id | - | Yes | string |
-| `verbose` | (Optional) Enable verbose log messages | `false` | No | string |
+| `tf-attachment-file` | Path of SCC V2 attachment file. | `` | No | string |
+| `tf-dir` | The directory where the terraform main entry file is found if not in parent directory | `` | No | string |
+| `tf-plan` | Filepath to Terraform Plan file. | `` | No | string |
+| `tf-policy-file` | Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules. | `` | No | string |
+| `tf-var-file` | terraform var-file | `` | No | string |
+| `tf-version` | The terraform version to use to create Terraform plan | `0.15.5` | No | string |
+| `toolchainid` | The target toolchain id to be used. Defaults to the current toolchain id | `` | No | string |
+| `verbose` | Enable verbose log messages | `false` | No | string |
 | `vulnerability-report` | Filepath to store Vulnerability report, not stored if empty. Default to `./vulnerability.json` | `vulnerability.json` | No | string |
 
 
 ### gl-pr-listener
 
-**EventListener**: gl-pr-listener
+**EventListener**: gl-pr-listener - grit/gitlab pull-request listener
 
 
 | Properties | Description | Default | Required | Type |
@@ -188,47 +195,47 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `asset-type` | Security checks to run (apps, image, os, all) | `all` | No | string |
 | `bom-report` | Filepath to store generated Bill of Materials. Default to `./bom.json` | `bom.json` | No | string |
-| `branch` | The git branch | - | Yes | string |
-| `commit-id` | commit id | - | Yes | string |
+| `branch` | The git branch | `` | No | string |
+| `commit-id` | commit id | `` | No | string |
 | `cra-scan-image` | Image to use for `scan` task. | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72` | No | string |
-| `custom-script` | (Optional) Filepath to a custom script that is ran prior to CRA scanning | - | Yes | string |
-| `cveignore` | (Optional) Filepath to cveignore | - | Yes | string |
+| `custom-script` | Filepath to a custom script that is ran prior to CRA scanning | `` | No | string |
+| `cveignore` | Filepath to cveignore | `` | No | string |
 | `deploy-report` | Filepath to store generated Deploy Analytic report. Default to `./deploy.json` | `deploy.json` | No | string |
-| `docker-build-context` | (Optional) If specified, CRA will use the directory in the path parameter as docker build context | - | Yes | string |
-| `docker-build-flags` | (Optional) Customize docker build command for build stage scanning | - | Yes | string |
+| `docker-build-context` | If specified, CRA will use the directory in the path parameter as docker build context | - | Yes | string |
+| `docker-build-flags` | Customize docker build command for build stage scanning | `` | No | string |
 | `docker-registry-secret` | Secret to authenticate for docker-registry-url | - | Yes | string |
 | `docker-registry-secret` (**secured property**) | the secret used to login to docker-registry-url | - | Yes | secret |
-| `docker-registry-url` | Registry url to use for docker login | - | Yes | string |
-| `docker-registry-username` | Username to authenticate for docker-registry-url | - | Yes | string |
-| `dockerfile-pattern` | (Optional) Pattern to identify Dockerfile in the repository | - | Yes | string |
-| `env-props` | (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456' | - | Yes | string |
-| `exclude-dev` | (Optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
-| `fileignore` | (Optional) Filepath to .fileignore | - | Yes | string |
-| `git-credentials-json-file` | (Optional) JSON file containing the git credentials as found out of the clone task | `output/secrets/thecredentials.json` | No | string |
-| `gradle-exclude-configs` | (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath' | - | Yes | string |
-| `gradle-props` | (Optional) Customize gradle command with props for gradle dependency scanning. | - | Yes | string |
+| `docker-registry-url` | Registry url to use for docker login | `` | No | string |
+| `docker-registry-username` | Username to authenticate for docker-registry-url | `` | No | string |
+| `dockerfile-pattern` | Pattern to identify Dockerfile in the repository | - | Yes | string |
+| `env-props` | A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456' | `` | No | string |
+| `exclude-dev` | Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `fileignore` | Filepath to .fileignore | `` | No | string |
+| `git-credentials-json-file` | JSON file containing the git credentials as found out of the clone task | `output/secrets/thecredentials.json` | No | string |
+| `gradle-exclude-configs` | Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath' | `` | No | string |
+| `gradle-props` | Customize gradle command with props for gradle dependency scanning. | `` | No | string |
 | `ibmcloud-api` | The ibmcloud api | `https://cloud.ibm.com` | No | string |
-| `ibmcloud-region` | (Optional) ibmcloud region to use | - | Yes | string |
-| `ibmcloud-trace` | (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging | `false` | No | string |
-| `maven-exclude-scopes` | (Optional) Exclude maven scopes, ex. 'test,compile' | - | Yes | string |
-| `nodejs-create-package-lock` | (Optional) Enable the task to build the package-lock.json for node.js projects | `false` | No | string |
-| `output` | (Optional) Prints command result to console | `false` | No | string |
+| `ibmcloud-region` | ibmcloud region to use | `` | No | string |
+| `ibmcloud-trace` | Enables IBMCLOUD_TRACE for ibmcloud cli logging | `false` | No | string |
+| `maven-exclude-scopes` | Exclude maven scopes, ex. 'test,compile' | `` | No | string |
+| `nodejs-create-package-lock` | Enable the task to build the package-lock.json for node.js projects | `false` | No | string |
+| `output` | Prints command result to console | `false` | No | string |
 | `path` | Repository path to scan | `/artifacts` | No | string |
 | `pipeline-debug` | Toggles debug mode for the pipeline | `0` | No | string |
-| `pr-branch` | The branch in the forked git repo from where the PR is made | - | Yes | string |
-| `pr-repository` | The forked git repo from where the PR is made | - | Yes | string |
-| `prev-report` | Filepath to previous BoM report to skip Dockerfile or application manifest scans | - | Yes | string |
-| `registry-region` | (Optional) The ibmcloud container registry region | - | Yes | string |
+| `pr-branch` | The branch in the forked git repo from where the PR is made | `` | No | string |
+| `pr-repository` | The forked git repo from where the PR is made | `` | No | string |
+| `prev-report` | Filepath to previous BoM report to skip Dockerfile or application manifest scans | `` | No | string |
+| `registry-region` | The ibmcloud container registry region | `` | No | string |
 | `repository` | The git repo | - | Yes | string |
-| `resource-group` | (Optional) Target resource group (name or id) for the ibmcloud login operation | - | Yes | string |
-| `strict` | (Optional) Enables strict mode for scanning | `false` | No | string |
+| `resource-group` | Target resource group (name or id) for the ibmcloud login operation | `` | No | string |
+| `strict` | Enables strict mode for scanning | `false` | No | string |
 | `terraform-report` | Filepath to store generated Terraform report. Default to `./terraform.json` | `terraform.json` | No | string |
-| `tf-attachment-file` | (Optional) Path of SCC V2 attachment file. | - | Yes | string |
-| `tf-dir` | The directory where the terraform main entry file is found if not in parent directory | - | Yes | string |
-| `tf-plan` | (Optional) Filepath to Terraform Plan file. | - | Yes | string |
-| `tf-policy-file` | (Optional) Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules. | - | Yes | string |
-| `tf-var-file` | (Optional) terraform var-file | - | Yes | string |
-| `tf-version` | (Optional) The terraform version to use to create Terraform plan | `0.15.5` | No | string |
-| `toolchainid` | (Optional) The target toolchain id to be used. Defaults to the current toolchain id | - | Yes | string |
-| `verbose` | (Optional) Enable verbose log messages | `false` | No | string |
+| `tf-attachment-file` | Path of SCC V2 attachment file. | `` | No | string |
+| `tf-dir` | The directory where the terraform main entry file is found if not in parent directory | `` | No | string |
+| `tf-plan` | Filepath to Terraform Plan file. | `` | No | string |
+| `tf-policy-file` | Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules. | `` | No | string |
+| `tf-var-file` | terraform var-file | `` | No | string |
+| `tf-version` | The terraform version to use to create Terraform plan | `0.15.5` | No | string |
+| `toolchainid` | The target toolchain id to be used. Defaults to the current toolchain id | `` | No | string |
+| `verbose` | Enable verbose log messages | `false` | No | string |
 | `vulnerability-report` | Filepath to store Vulnerability report, not stored if empty. Default to `./vulnerability.json` | `vulnerability.json` | No | string |

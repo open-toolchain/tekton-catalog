@@ -56,6 +56,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: event-listener-sample-build
+  annotations:
+    tekton.dev/displayName: "listener for sample toolchain build"
 spec:
   triggers:
     - binding:

@@ -26,7 +26,7 @@ spec:
       default: ""
     - name: cluster-region
       description: |
-        (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+        the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
       default: ""
     - name: cluster-name
       description: name of the cluster - required if no cluster pipeline resource provided to this task

@@ -86,6 +86,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: buildkit-no-image-url
+  annotations:
+    tekton.dev/displayName: "buildkit with no image-url provided"
 spec:
   triggers:
     - binding:

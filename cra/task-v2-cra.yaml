@@ -29,45 +29,45 @@ spec:
       description: Field in the secret that contains the api key used to login to ibmcloud
       default: apikey
     - name: ibmcloud-region
-      description: (Optional) ibmcloud region to use
+      description: ibmcloud region to use
       default: ""
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1
       default: "0"
     - name: registry-region
-      description: (Optional) The ibmcloud container registry region
+      description: The ibmcloud container registry region
       default: ""
     - name: resource-group
-      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+      description: Target resource group (name or id) for the ibmcloud login operation
       default: ""
 
     # Common command params
     - name: custom-script
-      description: (Optional) Filepath to a custom script that is ran prior to CRA scanning
+      description: Filepath to a custom script that is ran prior to CRA scanning
       default: ""
     - name: env-props
-      description: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
+      description: A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
       default: ""
     - name: fileignore
-      description: (Optional) Filepath to .fileignore
+      description: Filepath to .fileignore
       default: ""
     - name: ibmcloud-trace
-      description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
+      description: Enables IBMCLOUD_TRACE for ibmcloud cli logging
       default: "false"
     - name: output
-      description: (Optional) Prints command result to console
+      description: Prints command result to console
       default: "false"
     - name: path
       description: Directory where the repository is cloned
       default: "/artifacts"
     - name: strict
-      description: (Optional) Enables strict mode for scanning
+      description: Enables strict mode for scanning
       default: "false"
     - name: toolchainid
-      description: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
+      description: The target toolchain id to be used. Defaults to the current toolchain id
       default: ""
     - name: verbose
-      description: (Optional) Enable verbose log messages
+      description: Enable verbose log messages
       default: "false"
 
     # BOM related parameters
@@ -78,13 +78,13 @@ spec:
       description: Filepath to store generated Bill of Materials
       default: "bom.json"
     - name: docker-build-flags
-      description: (Optional) Customize docker build command for build stage scanning
+      description: Customize docker build command for build stage scanning
       default: ""
     - name: docker-build-context
-      description: (Optional) If specified, CRA will use the directory in the path parameter as docker build context
+      description: If specified, CRA will use the directory in the path parameter as docker build context
       default: "false"
     - name: dockerfile-pattern
-      description: (Optional) Pattern to identify Dockerfile in the repository
+      description: Pattern to identify Dockerfile in the repository
       default: "Dockerfile"
     - name: docker-registry-url
       description: Registry url to use for docker login
@@ -93,19 +93,19 @@ spec:
       description: Username to authenticate for docker-registry-url
       default: ""
     - name: gradle-exclude-configs
-      description: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
+      description: Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
       default: ""
     - name: gradle-props
-      description: (Optional) Customize gradle command with props for gradle dependency scanning.
+      description: Customize gradle command with props for gradle dependency scanning.
       default: ""
     - name: maven-exclude-scopes
-      description: (Optional) Exclude maven scopes, ex. 'test,compile'
+      description: Exclude maven scopes, ex. 'test,compile'
       default: ""
     - name: nodejs-create-package-lock
-      description: (Optional) Enable the task to build the package-lock.json for node.js projects
+      description: Enable the task to build the package-lock.json for node.js projects
       default: "false"
     - name: prev-report
-      description: (Optional) Filepath to previous BoM report to skip Dockerfile or application manifest scans
+      description: Filepath to previous BoM report to skip Dockerfile or application manifest scans
       default: ""
 
     # Deploy Analytic related params
@@ -115,10 +115,10 @@ spec:
 
     # Vulnerability related parameters
     - name: cveignore
-      description: (Optional) File path to cveignore
+      description: File path to cveignore
       default: ""
     - name: exclude-dev
-      description: (Optional) Exclude dev dependencies during vulnerability scan
+      description: Exclude dev dependencies during vulnerability scan
       default: "false"
     - name: vulnerability-report
       description: Filepath to store generated Vulnerability report, not stored if empty

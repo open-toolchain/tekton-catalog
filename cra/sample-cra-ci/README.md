@@ -63,9 +63,16 @@ This pipeline and relevant trigger(s) can be configured using the properties des
 
 See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
 
+
+**EventListeners:**
+
+- [github-ci-listener](#github-ci-listener) - github pull-request listener
+- [gitlab-ci-listener](#gitlab-ci-listener) - grit/gitlab merge-request listener
+- [github-ent-ci-listener](#github-ent-ci-listener) - github enterprise pull-request listener
+
 ### github-ci-listener
 
-**EventListener**: github-ci-listener
+**EventListener**: github-ci-listener - github pull-request listener
 
 
 | Properties | Description | Default | Required | Type |
@@ -75,25 +82,25 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `branch` | branch | - | Yes | string |
 | `commit-id` | commit id | - | Yes | string |
 | `commit-timestamp` | commit timestamp | - | Yes | string |
-| `exclude-dev` | (optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
-| `gradle-exclude-configs` | (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan | - | Yes | string |
-| `maven-exclude-scopes` | (optional) Exclude the specified scope dependencies for the vulnerability scan | - | Yes | string |
-| `nodejs-create-package-lock` | (optional) Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
+| `exclude-dev` | Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `gradle-exclude-configs` | Exclude the specified gradle configuration dependencies for the vulnerability scan | `` | No | string |
+| `maven-exclude-scopes` | Exclude the specified scope dependencies for the vulnerability scan | `` | No | string |
+| `nodejs-create-package-lock` | Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
 | `pipeline-debug` | toggles debug mode for the pipeline | `0` | No | string |
-| `policy-config-json` | Configure policies to control thresholds | - | Yes | string |
-| `project-id` | project id | - | Yes | string |
-| `python-create-requirements-txt` | (optional) Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
+| `policy-config-json` | Configure policies to control thresholds | `` | No | string |
+| `project-id` | project id | `` | No | string |
+| `python-create-requirements-txt` | Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
 | `repo-dir` | Specifies the path for the repository or .cracveomit file | `/artifacts` | No | string |
 | `repository` | the git repo | - | Yes | string |
-| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `revision` | the git revision/commit for the git repo | `` | No | string |
 | `scm-type` | source code type used (github, github-ent, gitlab) | - | Yes | string |
-| `tf-dir` | the directory where the terraform main entry file is found | - | Yes | string |
-| `tf-var-file` | (optional) terraform var-file | - | Yes | string |
+| `tf-dir` | the directory where the terraform main entry file is found | `` | No | string |
+| `tf-var-file` | terraform var-file | `` | No | string |
 
 
 ### gitlab-ci-listener
 
-**EventListener**: gitlab-ci-listener
+**EventListener**: gitlab-ci-listener - grit/gitlab merge-request listener
 
 
 | Properties | Description | Default | Required | Type |
@@ -103,25 +110,25 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `branch` | branch | - | Yes | string |
 | `commit-id` | commit id | - | Yes | string |
 | `commit-timestamp` | commit timestamp | - | Yes | string |
-| `exclude-dev` | (optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
-| `gradle-exclude-configs` | (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan | - | Yes | string |
-| `maven-exclude-scopes` | (optional) Exclude the specified scope dependencies for the vulnerability scan | - | Yes | string |
-| `nodejs-create-package-lock` | (optional) Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
+| `exclude-dev` | Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `gradle-exclude-configs` | Exclude the specified gradle configuration dependencies for the vulnerability scan | `` | No | string |
+| `maven-exclude-scopes` | Exclude the specified scope dependencies for the vulnerability scan | `` | No | string |
+| `nodejs-create-package-lock` | Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
 | `pipeline-debug` | toggles debug mode for the pipeline | `0` | No | string |
-| `policy-config-json` | Configure policies to control thresholds | - | Yes | string |
-| `project-id` | project id | - | Yes | string |
-| `python-create-requirements-txt` | (optional) Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
+| `policy-config-json` | Configure policies to control thresholds | `` | No | string |
+| `project-id` | project id | `` | No | string |
+| `python-create-requirements-txt` | Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
 | `repo-dir` | Specifies the path for the repository or .cracveomit file | `/artifacts` | No | string |
 | `repository` | the git repo | - | Yes | string |
-| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `revision` | the git revision/commit for the git repo | `` | No | string |
 | `scm-type` | source code type used (github, github-ent, gitlab) | - | Yes | string |
-| `tf-dir` | the directory where the terraform main entry file is found | - | Yes | string |
-| `tf-var-file` | (optional) terraform var-file | - | Yes | string |
+| `tf-dir` | the directory where the terraform main entry file is found | `` | No | string |
+| `tf-var-file` | terraform var-file | `` | No | string |
 
 
 ### github-ent-ci-listener
 
-**EventListener**: github-ent-ci-listener
+**EventListener**: github-ent-ci-listener - github enterprise pull-request listener
 
 
 | Properties | Description | Default | Required | Type |
@@ -131,17 +138,17 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `branch` | branch | - | Yes | string |
 | `commit-id` | commit id | - | Yes | string |
 | `commit-timestamp` | commit timestamp | - | Yes | string |
-| `exclude-dev` | (optional) Exclude dev dependencies during vulnerability scan | `false` | No | string |
-| `gradle-exclude-configs` | (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan | - | Yes | string |
-| `maven-exclude-scopes` | (optional) Exclude the specified scope dependencies for the vulnerability scan | - | Yes | string |
-| `nodejs-create-package-lock` | (optional) Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
+| `exclude-dev` | Exclude dev dependencies during vulnerability scan | `false` | No | string |
+| `gradle-exclude-configs` | Exclude the specified gradle configuration dependencies for the vulnerability scan | `` | No | string |
+| `maven-exclude-scopes` | Exclude the specified scope dependencies for the vulnerability scan | `` | No | string |
+| `nodejs-create-package-lock` | Enable CRA discovery to build the package-lock.json file for node.js repos | `false` | No | string |
 | `pipeline-debug` | toggles debug mode for the pipeline | `0` | No | string |
-| `policy-config-json` | Configure policies to control thresholds | - | Yes | string |
-| `project-id` | project id | - | Yes | string |
-| `python-create-requirements-txt` | (optional) Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
+| `policy-config-json` | Configure policies to control thresholds | `` | No | string |
+| `project-id` | project id | `` | No | string |
+| `python-create-requirements-txt` | Enable CRA discovery to build the requirements.txt file for python repos | `false` | No | string |
 | `repo-dir` | Specifies the path for the repository or .cracveomit file | `/artifacts` | No | string |
 | `repository` | the git repo | - | Yes | string |
-| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `revision` | the git revision/commit for the git repo | `` | No | string |
 | `scm-type` | source code type used (github, github-ent, gitlab) | - | Yes | string |
-| `tf-dir` | the directory where the terraform main entry file is found | - | Yes | string |
-| `tf-var-file` | (optional) terraform var-file | - | Yes | string |
+| `tf-dir` | the directory where the terraform main entry file is found | `` | No | string |
+| `tf-var-file` | terraform var-file | `` | No | string |

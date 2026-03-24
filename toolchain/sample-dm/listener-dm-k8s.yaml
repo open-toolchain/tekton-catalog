@@ -53,6 +53,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: toolchain-dm-k8s
+  annotations:
+    tekton.dev/displayName: "listener for deployable mapping for kubernetes cluster"
 spec:
   triggers:
     - binding:

@@ -75,6 +75,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: cr-build-no-image-url
+  annotations:
+    tekton.dev/displayName: "ibmcloud cr build with no image-url provided"
 spec:
   triggers:
     - binding:

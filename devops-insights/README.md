@@ -34,10 +34,10 @@ This task evaluates [DevOps Insights gate policy](https://cloud.ibm.com/docs/Con
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **app-name**: Logical application name for DevOps Insights
-* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed
-* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
-* **policy**: The name of the policy that the gate uses to make its decision
+* **app-name** **[required]**: Logical application name for DevOps Insights
+* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed (default to empty string)
+* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number (default to empty string)
+* **policy** **[required]**: The name of the policy that the gate uses to make its decision
 * **force**: indicate if the evaluation gate should be forced or not ("true" | "false") (default to `true`)
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets (default to `secure-properties`)
@@ -62,14 +62,14 @@ This task publishes build record to [DevOps Insights](https://cloud.ibm.com/docs
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **app-name**: Logical application name for DevOps Insights
-* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed
-* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
+* **app-name** **[required]**: Logical application name for DevOps Insights
+* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed (default to empty string)
+* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number (default to empty string)
 * **build-status**: the build status (can be either pass | fail) (default to `pass`)
-* **git-repository**: The url of the git repository
-* **git-branch**: The repository branch on which the build has been performed
-* **git-commit**: The git commit id
-* **job-url**: The url to the job's build logs. Default to the CD Tekton PipelineRun currently executed
+* **git-repository** **[required]**: The url of the git repository
+* **git-branch** **[required]**: The repository branch on which the build has been performed
+* **git-commit** **[required]**: The git commit id
+* **job-url**: The url to the job's build logs. Default to the CD Tekton PipelineRun currently executed (default to empty string)
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets (default to `secure-properties`)
 * **toolchain-apikey-secret-key**: field in the secret that contains the api key used to access toolchain and DOI instance (default to `toolchain-apikey`)
@@ -96,13 +96,13 @@ This task publishes deploy record to [DevOps Insights](https://cloud.ibm.com/doc
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **app-name**: Logical application name for DevOps Insights
-* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed
-* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
-* **environment**: The environment where the pipeline job deployed the app.
+* **app-name** **[required]**: Logical application name for DevOps Insights
+* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed (default to empty string)
+* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number (default to empty string)
+* **environment** **[required]**: The environment where the pipeline job deployed the app.
 * **deploy-status**: The deployment status (can be either pass | fail) (default to `pass`)
-* **job-url**: The url to the job's deployment logs. Default to the CD Tekton PipelineRun currently executed
-* **app-url**: The URL where the deployed app is running
+* **job-url**: The url to the job's deployment logs. Default to the CD Tekton PipelineRun currently executed (default to empty string)
+* **app-url**: The URL where the deployed app is running (default to empty string)
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets (default to `secure-properties`)
 * **toolchain-apikey-secret-key**: field in the secret that contains the api key used to access toolchain and DOI instance (default to `toolchain-apikey`)
@@ -126,12 +126,12 @@ This task publishes test record(s) to [DevOps Insights](https://cloud.ibm.com/do
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **app-name**: Logical application name for DevOps Insights
-* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed
-* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number
-* **file-locations**: Semi-colon separated list of test result file locations
-* **test-types**: Semi-colon separated list of test result types
-* **environment**: Optional, The environment name to associate with the test results. This option is ignored for unit tests, code coverage tests, and static security scans.
+* **app-name** **[required]**: Logical application name for DevOps Insights
+* **toolchain-id**: Toolchain service instance id. Default to the toolchain containing the CD Tekton PipelineRun currently executed (default to empty string)
+* **build-number**: Devops Insights build number reference. Default to the CD Tekton Pipeline build number (default to empty string)
+* **file-locations** **[required]**: Semi-colon separated list of test result file locations
+* **test-types** **[required]**: Semi-colon separated list of test result types
+* **environment**: Optional, The environment name to associate with the test results. This option is ignored for unit tests, code coverage tests, and static security scans. (default to empty string)
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets (default to `secure-properties`)
 * **toolchain-apikey-secret-key**: field in the secret that contains the api key used to access toolchain and DOI instance (default to `toolchain-apikey`)

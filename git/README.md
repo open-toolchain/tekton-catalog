@@ -50,20 +50,20 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **ibmcloud-apikey-secret-key**: field in the secret that contains an [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). (default to `apikey`)
-* **git-access-token**: (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **repository**: the git repository url that the toolchain is integrating
+* **git-access-token**: token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain (default to empty string)
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **repository** **[required]**: the git repository url that the toolchain is integrating
 * **branch**: the git branch (default to `master`)
-* **revision**: the git revision/commit to update the git HEAD to. Default is to mean only use the branch
+* **revision**: the git revision/commit to update the git HEAD to. Default is to mean only use the branch (default to empty string)
 * **fetch-gitoken-step-image**: image to use for the fetch-gitoken step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49`)
 * **git-client-image**: The image to use to run git clone commands (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.49`)
 * **git-max-retry**: max retry for the git clone operation (default to `1`)
-* **pr-repository**: the originating repository where the PullRequest comes from (in case of a fork) '' means same repository (not a fork) or it can be the same as the repository to clone
-* **pr-branch**: the branch that is the source of this PullRequest
-* **pr-revision**: the commit/revision in the source branch of the PullRequest that is to be built
+* **pr-repository**: the originating repository where the PullRequest comes from (in case of a fork) '' means same repository (not a fork) or it can be the same as the repository to clone (default to empty string)
+* **pr-branch**: the branch that is the source of this PullRequest (default to empty string)
+* **pr-revision**: the commit/revision in the source branch of the PullRequest that is to be built (default to empty string)
 * **directory-name**: name of the new directory to clone into. `.` means to clone at the root of the workspace It will be set to the "humanish" part of the repository if this param is set to blank (default to `.`)
 * **properties-file**: name of the properties file that will be created as an additional outcome of this task in the workspace `workspace`. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`). This file can be used by downstream tasks to get the git information. (default to `build.properties`)
-* **git-credentials-json-file**: JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace). Default to '' meaning no output of this information
+* **git-credentials-json-file**: JSON file containing the git credentials as found out of the clone task (can be a file path relative to the workspace). Default to '' meaning no output of this information (default to empty string)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
 #### Workspaces
@@ -99,16 +99,16 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **ibmcloud-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
-* **git-access-token**: (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **repository**: The git repository url
-* **revision**: (optional) Commit SHA to set the status for. If left empty, will attempt to read GIT_COMMIT from build-properties
-* **description**: A short description of the status.
+* **git-access-token**: token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain (default to empty string)
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **repository** **[required]**: The git repository url
+* **revision**: Commit SHA to set the status for. If left empty, will attempt to read GIT_COMMIT from build-properties (default to empty string)
+* **description** **[required]**: A short description of the status.
 * **context**: A string label to differentiate this status from the status of other systems. ie: "continuous-integration/tekton" (default to `continuous-integration/tekton`)
-* **state**: The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled` or the execution status of pipelineTask (or aggregation status of pipeline Tasks) : `Succeeded`, `Failed`, `Completed` and `None` (see https://github.com/tektoncd/pipeline/blob/main/docs/pipelines.md#using-aggregate-execution-status-of-all-tasks) or a value meaningful for the target git repository - gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled` - github/integrated github: `pending`, `success`, `failure`, `error` - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED`
-* **state-var**: Customized variable stored in build-properties to use as state if state params is empty.
+* **state**: The state of the status. Can be one of the following: `pending`, `running`, `success`, `failed`, `canceled` or the execution status of pipelineTask (or aggregation status of pipeline Tasks) : `Succeeded`, `Failed`, `Completed` and `None` (see https://github.com/tektoncd/pipeline/blob/main/docs/pipelines.md#using-aggregate-execution-status-of-all-tasks) or a value meaningful for the target git repository - gitlab/hostedgit: `pending`, `running`, `success`, `failed`, `canceled` - github/integrated github: `pending`, `success`, `failure`, `error` - bitbucket: `SUCCESSFUL`, `FAILED`, `INPROGRESS`, `STOPPED` (default to empty string)
+* **state-var**: Customized variable stored in build-properties to use as state if state params is empty. (default to empty string)
 * **build-properties**: file containing properties out of clone task (can be a filepath name relative to the workspace/volume) (default to `build.properties`)
-* **target-url**: (optional) a url to set as the status detail link for the PR. If left empty, the status detail link will point to the pipeline run.
+* **target-url**: a url to set as the status detail link for the PR. If left empty, the status detail link will point to the pipeline run. (default to empty string)
 * **fetch-git-information-step-image**: image to use for the fetch-git-information step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **set-status-step-image**: image to use for the fetch-git-information step (default to `registry.access.redhat.com/ubi8/ubi:8.1`)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)

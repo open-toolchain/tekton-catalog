@@ -119,9 +119,20 @@ This pipeline and relevant trigger(s) can be configured using the properties des
 
 See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
 
+
+**EventListeners:**
+
+- [eventlistener-git-trigger-manual](#eventlistener-git-trigger-manual) - manual trigger for git sample
+- [eventlistener-git-trigger-github-pr](#eventlistener-git-trigger-github-pr) - github pull-request listener for git sample
+- [eventlistener-git-trigger-github-commit](#eventlistener-git-trigger-github-commit) - github commit push event listener for git sample
+- [eventlistener-git-trigger-grit-mr](#eventlistener-git-trigger-grit-mr) - grit/gitlab merge-request listener for git sample
+- [eventlistener-git-trigger-grit-commit](#eventlistener-git-trigger-grit-commit) - grit/gitlab commit push event listener for git sample
+- [eventlistener-git-trigger-bitbucket-pr](#eventlistener-git-trigger-bitbucket-pr) - bitbucket pull-request listener for git sample
+- [eventlistener-git-trigger-bitbucket-commit](#eventlistener-git-trigger-bitbucket-commit) - bitbucket git commit push event listener for git sample
+
 ### eventlistener-git-trigger-manual
 
-**EventListener**: eventlistener-git-trigger-manual
+**EventListener**: eventlistener-git-trigger-manual - manual trigger for git sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -129,21 +140,21 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `master` | No | string |
 | `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
-| `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
-| `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |
+| `pr-branch` | The source branch for the PullRequest | `` | No | string |
+| `pr-repository` | The source git repo for the PullRequest | `` | No | string |
+| `pr-revision` | the commit id/sha for the PullRequest | `` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
 | `repository` | the git repo | `$(params.repositoryForManualTrigger)` | No | string |
-| `revision` | the commit id/sha for the clone action | ` ` | No | string |
+| `revision` | the commit id/sha for the clone action | `` | No | string |
 | `triggerName` | name of the trigger | `manual-trigger` | No | string |
 
 
 ### eventlistener-git-trigger-github-pr
 
-**EventListener**: eventlistener-git-trigger-github-pr
+**EventListener**: eventlistener-git-trigger-github-pr - github pull-request listener for git sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -151,7 +162,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.pull_request.base.ref)` | No | string |
 | `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pull_request.head.ref)` | No | string |
@@ -159,13 +170,13 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.pull_request.head.sha)` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
 | `repository` | the git repo | `$(event.pull_request.base.repo.clone_url)` | No | string |
-| `revision` | the commit id/sha for the clone action | ` ` | No | string |
+| `revision` | the commit id/sha for the clone action | `` | No | string |
 | `triggerName` | name of the trigger | `github-pullrequest` | No | string |
 
 
 ### eventlistener-git-trigger-github-commit
 
-**EventListener**: eventlistener-git-trigger-github-commit
+**EventListener**: eventlistener-git-trigger-github-commit - github commit push event listener for git sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -173,12 +184,12 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.ref)` | No | string |
 | `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
-| `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
-| `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |
+| `pr-branch` | The source branch for the PullRequest | `` | No | string |
+| `pr-repository` | The source git repo for the PullRequest | `` | No | string |
+| `pr-revision` | the commit id/sha for the PullRequest | `` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
 | `repository` | the git repo | `$(event.repository.url)` | No | string |
 | `revision` | the commit id/sha for the clone action | `$(event.head_commit.id)` | No | string |
@@ -187,7 +198,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### eventlistener-git-trigger-grit-mr
 
-**EventListener**: eventlistener-git-trigger-grit-mr
+**EventListener**: eventlistener-git-trigger-grit-mr - grit/gitlab merge-request listener for git sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -195,7 +206,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.object_attributes.target_branch)` | No | string |
 | `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.object_attributes.source_branch)` | No | string |
@@ -203,13 +214,13 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.object_attributes.last_commit.id)` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
 | `repository` | the git repo | `$(event.object_attributes.target.git_http_url)` | No | string |
-| `revision` | the commit id/sha for the clone action | ` ` | No | string |
+| `revision` | the commit id/sha for the clone action | `` | No | string |
 | `triggerName` | name of the trigger | `grit-mergerequest` | No | string |
 
 
 ### eventlistener-git-trigger-grit-commit
 
-**EventListener**: eventlistener-git-trigger-grit-commit
+**EventListener**: eventlistener-git-trigger-grit-commit - grit/gitlab commit push event listener for git sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -217,12 +228,12 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.ref)` | No | string |
 | `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
-| `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
-| `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |
+| `pr-branch` | The source branch for the PullRequest | `` | No | string |
+| `pr-repository` | The source git repo for the PullRequest | `` | No | string |
+| `pr-revision` | the commit id/sha for the PullRequest | `` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
 | `repository` | the git repo | `$(event.repository.git_http_url)` | No | string |
 | `revision` | the commit id/sha for the clone action | `$(event.checkout_sha)` | No | string |
@@ -231,7 +242,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### eventlistener-git-trigger-bitbucket-pr
 
-**EventListener**: eventlistener-git-trigger-bitbucket-pr
+**EventListener**: eventlistener-git-trigger-bitbucket-pr - bitbucket pull-request listener for git sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -239,7 +250,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.pullrequest.destination.branch.name)` | No | string |
 | `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `pr-branch` | The source branch for the PullRequest | `$(event.pullrequest.source.branch.name)` | No | string |
@@ -247,13 +258,13 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `pr-revision` | the commit id/sha for the PullRequest | `$(event.pullrequest.source.commit.hash)` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
 | `repository` | the git repo | `$(event.pullrequest.destination.repository.links.html.href)` | No | string |
-| `revision` | the commit id/sha for the clone action | ` ` | No | string |
+| `revision` | the commit id/sha for the clone action | `` | No | string |
 | `triggerName` | name of the trigger | `bitbucket-pullrequest` | No | string |
 
 
 ### eventlistener-git-trigger-bitbucket-commit
 
-**EventListener**: eventlistener-git-trigger-bitbucket-commit
+**EventListener**: eventlistener-git-trigger-bitbucket-commit - bitbucket git commit push event listener for git sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -261,12 +272,12 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `$(event.push.changes[0].new.name)` | No | string |
 | `directory-name` | name of the new directory to clone into. `.`means to clone at the root of the workspace. It will be set to the "humanish" part of the repository if this param is set to blank | `.` | No | string |
-| `git-access-token` | the token to access the git repository for the clone operations | - | Yes | string |
+| `git-access-token` | the token to access the git repository for the clone operations | `` | No | string |
 | `git-credentials-json-file` | - | `output/secrets/thecredentials.json` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `pr-branch` | The source branch for the PullRequest | ` ` | No | string |
-| `pr-repository` | The source git repo for the PullRequest | ` ` | No | string |
-| `pr-revision` | the commit id/sha for the PullRequest | ` ` | No | string |
+| `pr-branch` | The source branch for the PullRequest | `` | No | string |
+| `pr-repository` | The source git repo for the PullRequest | `` | No | string |
+| `pr-revision` | the commit id/sha for the PullRequest | `` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
 | `repository` | the git repo | `$(event.repository.links.html.href)` | No | string |
 | `revision` | the commit id/sha for the clone action | `$(event.push.changes[0].new.target.hash)` | No | string |

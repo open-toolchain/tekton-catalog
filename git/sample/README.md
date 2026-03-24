@@ -35,13 +35,13 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### event-listener-simple-clone
 
-**EventListener**: event-listener-simple-clone
+**EventListener**: event-listener-simple-clone - simple clone
 
 
 | Properties | Description | Default | Required | Type |
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `branch` | the branch for the git repo | `master` | No | string |
-| `git-access-token` | illustrate alternate way to provide/get git access token | - | Yes | string |
+| `git-access-token` | illustrate alternate way to provide/get git access token | `` | No | string |
 | `pipeline-debug` | - | `0` | No | string |
 | `repository` | the git repo | - | Yes | string |

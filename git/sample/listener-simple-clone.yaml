@@ -60,6 +60,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: event-listener-simple-clone
+  annotations:
+    tekton.dev/displayName: "simple clone"
 spec:
   triggers:
     - binding:

@@ -89,6 +89,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-pr-status-github-pr
+  annotations:
+    tekton.dev/displayName: "github pull-request listener to set status on pull-request commit"
 spec:
   triggers:
     - binding:
@@ -119,6 +121,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-pr-status-grit-mr
+  annotations:
+    tekton.dev/displayName: "grit/gitlab merge-request listener to set status on merge-request commit"
 spec:
   triggers:
     - binding:
@@ -149,6 +153,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-pr-status-bitbucket-pr
+  annotations:
+    tekton.dev/displayName: "bitbucket pull-request listener to set status on pull-request commit"
 spec:
   triggers:
     - binding:

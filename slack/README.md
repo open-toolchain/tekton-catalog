@@ -41,10 +41,10 @@ The message can be:
 
 #### Parameters
 
-* **domain**: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain.
-* **channel**: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL. Only non-private channel can override the default channel. If the target channel is a private channel, the Slack Webhook URL in the Slack toolchain integration card needs to be updated.
+* **domain**: the Slack domain to send the message to. If not set, the message will be posted to the Slack integration(s) as defined in the Toolchain. (default to empty string)
+* **channel**: the Slack channel to send the message to. When set, overrides the default channel as set in the Slack Webhook URL. Only non-private channel can override the default channel. If the target channel is a private channel, the Slack Webhook URL in the Slack toolchain integration card needs to be updated. (default to empty string)
 * **message-format**: the format of the message. text(default) or JSON payload. (default to `text`)
-* **message-script**: Shell script that provides messsage content.
+* **message-script**: Shell script that provides messsage content. (default to empty string)
 * **message**: the message to send to Slack (default to `Tekton Pipeline completed successfully. :heavy_check_mark:
 Visit *<https://api.slack.com/reference/surfaces/formatting|More on Slack message formatting.>*
 `)

@@ -68,6 +68,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: dind-no-resources
+  annotations:
+    tekton.dev/displayName: "docker build with dind as a sidecar"
 spec:
   triggers:
     - binding:

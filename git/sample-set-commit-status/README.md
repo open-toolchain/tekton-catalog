@@ -78,9 +78,16 @@ This pipeline and relevant trigger(s) can be configured using the properties des
 
 See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
 
+
+**EventListeners:**
+
+- [github-commit](#github-commit) - github pull-request listener for sample
+- [gitlab-commit](#gitlab-commit) - grit/gitlab merge-request listener for sample
+- [bitbucket-commit](#bitbucket-commit) - bitbucket pull-request listener for sample
+
 ### github-commit
 
-**EventListener**: github-commit
+**EventListener**: github-commit - github pull-request listener for sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -96,7 +103,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### gitlab-commit
 
-**EventListener**: gitlab-commit
+**EventListener**: gitlab-commit - grit/gitlab merge-request listener for sample
 
 
 | Properties | Description | Default | Required | Type |
@@ -112,7 +119,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### bitbucket-commit
 
-**EventListener**: bitbucket-commit
+**EventListener**: bitbucket-commit - bitbucket pull-request listener for sample
 
 
 | Properties | Description | Default | Required | Type |

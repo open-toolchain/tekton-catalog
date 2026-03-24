@@ -10,7 +10,7 @@ spec:
   params:
     - name: region
       description: |
-        (optional) Name of the region for IBM Public Cloud Cloud Foundry operation.
+        Name of the region for IBM Public Cloud Cloud Foundry operation.
         Will default to the toolchain region if none or empty value.
       default: ""
     - name: cf-org

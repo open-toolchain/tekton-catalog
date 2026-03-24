@@ -30,16 +30,16 @@ This task allows to perform a deployment of a Cloud Foundry application using ib
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **region**: (optional) Name of the region for IBM Public Cloud Cloud Foundry operation. Will default to the toolchain region if none or empty value.
-* **cf-org**: Name of organization to be targeted
-* **cf-space**: Name of space to be targeted
-* **cf-app**: Name of the CF application to be managed
-* **setup-script**: script that typically set up environment before the _cf-commands_ script execution.
+* **region**: Name of the region for IBM Public Cloud Cloud Foundry operation. Will default to the toolchain region if none or empty value. (default to empty string)
+* **cf-org** **[required]**: Name of organization to be targeted
+* **cf-space** **[required]**: Name of space to be targeted
+* **cf-app** **[required]**: Name of the CF application to be managed
+* **setup-script**: script that typically set up environment before the _cf-commands_ script execution. (default to empty string)
 * **cf-commands**: The ibmcloud cf command(s) to run. (default to `# Push app
 ibmcloud cf push "${CF_APP}"
 `)
-* **post-execution-script**: script that get executed after the _cf-commands_ script has been executed.
-* **shuttle-properties-file**: name of the properties file that contain properties to include in the environment for the _cf-commands_ script execution.
+* **post-execution-script**: script that get executed after the _cf-commands_ script has been executed. (default to empty string)
+* **shuttle-properties-file**: name of the properties file that contain properties to include in the environment for the _cf-commands_ script execution. (default to empty string)
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets. Note: the `secure-properties` secret is injected in the Tekton Pipeline environment by Continuous Delivery Tekton Pipeline support. See [Tekton Pipelines environment and resources](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop) (default to `secure-properties`)
 * **cloud-foundry-apikey-secret-key**: field in the secret that contains the api key used to connect to cloud foundry (default to `cf-apikey`)

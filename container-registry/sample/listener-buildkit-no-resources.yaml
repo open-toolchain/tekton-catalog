@@ -83,6 +83,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: buildkit-no-resources
+  annotations:
+    tekton.dev/displayName: "buildkit with no tekton resources defined"
 spec:
   triggers:
     - binding:

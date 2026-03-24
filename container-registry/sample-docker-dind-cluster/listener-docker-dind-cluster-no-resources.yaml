@@ -72,6 +72,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: dind-cluster-no-resources
+  annotations:
+    tekton.dev/displayName: "docker build with dind in a cluster"
 spec:
   triggers:
     - binding:

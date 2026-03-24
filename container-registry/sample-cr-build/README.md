@@ -60,9 +60,15 @@ This pipeline and relevant trigger(s) can be configured using the properties des
 
 See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
 
+
+**EventListeners:**
+
+- [cr-build-no-image-url](#cr-build-no-image-url) - ibmcloud cr build with no image-url provided
+- [cr-build-no-resources](#cr-build-no-resources) - ibmcloud cr build without tekton resources defined
+
 ### cr-build-no-image-url
 
-**EventListener**: cr-build-no-image-url
+**EventListener**: cr-build-no-image-url - ibmcloud cr build with no image-url provided
 
 
 | Properties | Description | Default | Required | Type |
@@ -72,7 +78,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `image-name` | the image name | - | Yes | string |
 | `path-to-dockerfile` | - | `.` | No | string |
 | `pipeline-debug` | - | `0` | No | string |
-| `properties-file` | - | - | Yes | string |
+| `properties-file` | - | `` | No | string |
 | `registry-namespace` | the container registry namespace | - | Yes | string |
 | `registry-region` | the container registry region | - | Yes | string |
 | `repository` | the git repo | - | Yes | string |
@@ -80,7 +86,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### cr-build-no-resources
 
-**EventListener**: cr-build-no-resources
+**EventListener**: cr-build-no-resources - ibmcloud cr build without tekton resources defined
 
 
 | Properties | Description | Default | Required | Type |
@@ -90,5 +96,5 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `image-url` | the url of the image to build | - | Yes | string |
 | `path-to-dockerfile` | the path to the Dockerfile that is used for the build (`.` meaning current directory) | `.` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `properties-file` | name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`) and image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`) | - | Yes | string |
+| `properties-file` | name of the properties file that will be created (if needed) or updated (if existing) as an additional outcome of this task in the workspace. This file will contains the git related information (`GIT_URL`, `GIT_BRANCH` and `GIT_COMMIT`) and image registry-related information (`REGISTRY_URL`, `REGISTRY_NAMESPACE`, `REGISTRY_REGION`, `IMAGE_NAME`, `IMAGE_TAGS` and `IMAGE_MANIFEST_SHA`) | `` | No | string |
 | `repository` | the git repo | - | Yes | string |

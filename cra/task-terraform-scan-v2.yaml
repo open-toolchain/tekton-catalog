@@ -23,36 +23,36 @@ spec:
       description: Field in the secret that contains the api key used to login to ibmcloud
       default: apikey
     - name: ibmcloud-region
-      description: (Optional) ibmcloud region to use
+      description: ibmcloud region to use
       default: ""
     - name: pipeline-debug
       description: Pipeline debug mode. Value can be 0 or 1
       default: "0"
     - name: resource-group
-      description: (Optional) Target resource group (name or id) for the ibmcloud login operation
+      description: Target resource group (name or id) for the ibmcloud login operation
       default: ""
 
     # Common command params
     - name: custom-script
-      description: (Optional) Filepath to a custom script that is ran prior to CRA scanning
+      description: Filepath to a custom script that is ran prior to CRA scanning
       default: ""
     - name: ibmcloud-trace
-      description: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging
+      description: Enables IBMCLOUD_TRACE for ibmcloud cli logging
       default: "false"
     - name: output
-      description: (Optional) Prints command result to console
+      description: Prints command result to console
       default: "false"
     - name: path
       description: Directory where the repository is cloned
       default: "/artifacts"
     - name: strict
-      description: (Optional) Enables strict mode for scanning
+      description: Enables strict mode for scanning
       default: "false"
     - name: toolchainid
-      description: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
+      description: The target toolchain id to be used. Defaults to the current toolchain id
       default: ""
     - name: verbose
-      description: (Optional) Enable verbose log messages
+      description: Enable verbose log messages
       default: "false"
 
     # Terraform related parameters
@@ -63,18 +63,18 @@ spec:
       description: The directory where the terraform main entry file is found
       default: ""
     - name: tf-plan
-      description: (Optional) Filepath to Terraform Plan file.
+      description: Filepath to Terraform Plan file.
       default: ""
     - name: tf-var-file
-      description: (Optional) Filepath to the Terraform var-file
+      description: Filepath to the Terraform var-file
       default: ""
     - name: tf-version
-      description: (Optional) The terraform version to use to create Terraform plan
+      description: The terraform version to use to create Terraform plan
       default: "0.15.5"
     - name: tf-policy-file
-      description: (Optional) Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules.
+      description: Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules.
     - name: tf-attachment-file
-      description: (Optional) Path of SCC V2 attachment file.
+      description: Path of SCC V2 attachment file.
 
     # User control params
     - name: cra-scan-image

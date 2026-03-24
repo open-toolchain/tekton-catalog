@@ -77,6 +77,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-commit
+  annotations:
+    tekton.dev/displayName: "github pull-request listener for sample"
 spec:
   triggers:
     - binding:
@@ -101,6 +103,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: gitlab-commit
+  annotations:
+    tekton.dev/displayName: "grit/gitlab merge-request listener for sample"
 spec:
   triggers:
     - binding:
@@ -125,6 +129,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: bitbucket-commit
+  annotations:
+    tekton.dev/displayName: "bitbucket pull-request listener for sample"
 spec:
   triggers:
     - binding:

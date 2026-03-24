@@ -91,6 +91,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: event-listener-post-slack
+  annotations:
+    tekton.dev/displayName: "listener for slack sample"
 spec:
   triggers:
     - binding:

@@ -49,18 +49,18 @@ Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
-* **repository**: the git repo url
+* **repository** **[required]**: the git repo url
 * **revision**: the revision (default to `master`)
-* **source-repository**: the source git repo which could be different in case of forked repo
-* **commit-id**: git commit id
-* **pr-url**: pull request html url
+* **source-repository**: the source git repo which could be different in case of forked repo (default to empty string)
+* **commit-id** **[required]**: git commit id
+* **pr-url**: pull request html url (default to empty string)
 * **ibmcloud-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **continuous-delivery-context-secret**: Reference name for the secret resource (default to `secure-properties`)
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **git-access-token**: (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-* **target-branch**: target branch
-* **target-commit-id**: target branch commit id
-* **project-id**: for gitlab repository, specify project-id
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **git-access-token**: token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain (default to empty string)
+* **target-branch**: target branch (default to empty string)
+* **target-commit-id**: target branch commit id (default to empty string)
+* **project-id**: for gitlab repository, specify project-id (default to empty string)
 * **scm-type**: source code type used (github, github-ent, gitlab) (default to `github-ent`)
 * **pipeline-debug**: toggles debug mode for the pipeline (default to `0`)
 
@@ -91,17 +91,17 @@ Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
-* **repository**: the git repo
+* **repository** **[required]**: the git repo
 * **revision**: the revision (default to `master`)
-* **source-repository**: the source git repo which could be different in case of forked repo
-* **commit-id**: git commit id
-* **pr-url**: pull request html url
+* **source-repository**: the source git repo which could be different in case of forked repo (default to empty string)
+* **commit-id** **[required]**: git commit id
+* **pr-url**: pull request html url (default to empty string)
 * **ibmcloud-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **continuous-delivery-context-secret**: Reference name for the secret resource (default to `secure-properties`)
-* **git-access-token**: (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **project-id**: for gitlab repository specify project-id
-* **directory-name**: directory name where the repository is cloned
+* **git-access-token**: token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain (default to empty string)
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **project-id**: for gitlab repository specify project-id (default to empty string)
+* **directory-name** **[required]**: directory name where the repository is cloned
 * **scm-type**: source code type used (github, github-ent, gitlab) (default to `github-ent`)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 
@@ -120,11 +120,11 @@ This task creates comments on Pull Requests and opens issues regarding bill of m
 
 #### Parameters
 
-* **repository**: the git repo url
-* **pr-url**: merge request url
-* **project-id**: project id
-* **comment-fp**: comments filepath
-* **scm-type**: source code type used (github, github-ent, gitlab)
+* **repository** **[required]**: the git repo url
+* **pr-url**: merge request url (default to empty string)
+* **project-id**: project id (default to empty string)
+* **comment-fp** **[required]**: comments filepath
+* **scm-type** **[required]**: source code type used (github, github-ent, gitlab)
 
 #### Workspaces
 
@@ -149,17 +149,17 @@ and performs deep discovery to identify all dependencies (including transitive d
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **repository**: the git repo
+* **repository** **[required]**: the git repo
 * **revision**: the revision (default to `master`)
-* **commit-id**: git commit id
-* **commit-timestamp**: git commit timestamp
-* **directory-name**: directory name where the repository is cloned
+* **commit-id** **[required]**: git commit id
+* **commit-timestamp** **[required]**: git commit timestamp
+* **directory-name** **[required]**: directory name where the repository is cloned
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
 * **continuous-delivery-context-secret**: Reference name for the secret resource (default to `secure-properties`)
 * **ibmcloud-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **continuous-delivery-context-environment**: Name of the configmap containing the continuous delivery pipeline context environment properties (default to `environment-properties`)
-* **maven-exclude-scopes**: Tag dependencies in scope as dev for the vulnerability scan
-* **gradle-exclude-configs**: Tag dependencies in gradle configurations as dev for the vulnerability scan
+* **maven-exclude-scopes**: Tag dependencies in scope as dev for the vulnerability scan (default to empty string)
+* **gradle-exclude-configs**: Tag dependencies in gradle configurations as dev for the vulnerability scan (default to empty string)
 * **nodejs-create-package-lock**: Enable CRA discovery to build the package-lock.json file for node.js repos (default to `false`)
 * **python-create-requirements-txt**: Enable CRA discovery to build the requirements.txt file for python repos (default to `false`)
 
@@ -192,23 +192,23 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **continuous-delivery-context-secret**: Reference name for the secret resource (default to `secure-properties`)
 * **ibmcloud-api**: The ibmcloud api (default to `https://cloud.ibm.com`)
 * **ibmcloud-apikey-secret-key**: Field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
-* **ibmcloud-region**: (Optional) ibmcloud region to use
+* **ibmcloud-region**: ibmcloud region to use (default to empty string)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1 (default to `0`)
-* **resource-group**: (Optional) Target resource group (name or id) for the ibmcloud login operation
-* **custom-script**: (Optional) Filepath to a custom script that is ran prior to CRA scanning
-* **ibmcloud-trace**: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging (default to `false`)
-* **output**: (Optional) Prints command result to console (default to `false`)
+* **resource-group**: Target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **custom-script**: Filepath to a custom script that is ran prior to CRA scanning (default to empty string)
+* **ibmcloud-trace**: Enables IBMCLOUD_TRACE for ibmcloud cli logging (default to `false`)
+* **output**: Prints command result to console (default to `false`)
 * **path**: Directory where the repository is cloned (default to `/artifacts`)
-* **strict**: (Optional) Enables strict mode for scanning (default to `false`)
-* **toolchainid**: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
-* **verbose**: (Optional) Enable verbose log messages (default to `false`)
+* **strict**: Enables strict mode for scanning (default to `false`)
+* **toolchainid**: The target toolchain id to be used. Defaults to the current toolchain id (default to empty string)
+* **verbose**: Enable verbose log messages (default to `false`)
 * **terraform-report**: Filepath to store generated Terraform report (default to `terraform.json`)
-* **tf-dir**: The directory where the terraform main entry file is found
-* **tf-plan**: (Optional) Filepath to Terraform Plan file.
-* **tf-var-file**: (Optional) Filepath to the Terraform var-file
-* **tf-version**: (Optional) The terraform version to use to create Terraform plan (default to `0.15.5`)
-* **tf-policy-file**: (Optional) Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules.
-* **tf-attachment-file**: (Optional) Path of SCC V2 attachment file.
+* **tf-dir**: The directory where the terraform main entry file is found (default to empty string)
+* **tf-plan**: Filepath to Terraform Plan file. (default to empty string)
+* **tf-var-file**: Filepath to the Terraform var-file (default to empty string)
+* **tf-version**: The terraform version to use to create Terraform plan (default to `0.15.5`)
+* **tf-policy-file** **[required]**: Filepath to policy profile. This flag can accept an SCC V2 profile or a custom json file with a set of SCC rules.
+* **tf-attachment-file** **[required]**: Path of SCC V2 attachment file.
 * **cra-scan-image**: Image to use for `scan` task (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 
 #### Workspaces
@@ -235,21 +235,21 @@ Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
-* **repository**: the git repo
+* **repository** **[required]**: the git repo
 * **branch**: the branch (default to `master`)
-* **commit-id**: git commit id
-* **tf-dir**: the directory where the terraform main entry file is found
+* **commit-id**: git commit id (default to empty string)
+* **tf-dir**: the directory where the terraform main entry file is found (default to empty string)
 * **ibmcloud-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **continuous-delivery-context-secret**: Reference name for the secret resource (default to `secure-properties`)
-* **directory-name**: directory name where the repository is cloned
+* **directory-name** **[required]**: directory name where the repository is cloned
 * **pipeline-debug**: toggles debug mode for the pipeline (default to `0`)
-* **policy-config-json**: Configure policies to control thresholds
-* **pr-url**: pull request html url
-* **project-id**: for gitlab repository, specify project-id
+* **policy-config-json**: Configure policies to control thresholds (default to empty string)
+* **pr-url**: pull request html url (default to empty string)
+* **project-id**: for gitlab repository, specify project-id (default to empty string)
 * **scm-type**: source code type used (github, github-ent, gitlab) (default to `github-ent`)
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **git-access-token**: (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-* **tf-var-file**: (optional) terraform var-file
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **git-access-token**: token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain (default to empty string)
+* **tf-var-file**: terraform var-file (default to empty string)
 
 #### Workspaces
 
@@ -286,34 +286,34 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **docker-registry-secret**: Field in the secret that contains the secret used to login to docker-registry-url (default to `docker-registry-secret`)
 * **ibmcloud-api**: The ibmcloud api (default to `https://cloud.ibm.com`)
 * **ibmcloud-apikey-secret-key**: Field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
-* **ibmcloud-region**: (Optional) ibmcloud region to use
+* **ibmcloud-region**: ibmcloud region to use (default to empty string)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1 (default to `0`)
-* **registry-region**: (Optional) The ibmcloud container registry region
-* **resource-group**: (Optional) Target resource group (name or id) for the ibmcloud login operation
-* **custom-script**: (Optional) Filepath to a custom script that is ran prior to CRA scanning
-* **env-props**: (Optional) A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456'
-* **fileignore**: (Optional) Filepath to .fileignore
-* **ibmcloud-trace**: (Optional) Enables IBMCLOUD_TRACE for ibmcloud cli logging (default to `false`)
-* **output**: (Optional) Prints command result to console (default to `false`)
+* **registry-region**: The ibmcloud container registry region (default to empty string)
+* **resource-group**: Target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **custom-script**: Filepath to a custom script that is ran prior to CRA scanning (default to empty string)
+* **env-props**: A custom configuration of environment properties to source before execution, ex. 'export ABC=123 export DEF=456' (default to empty string)
+* **fileignore**: Filepath to .fileignore (default to empty string)
+* **ibmcloud-trace**: Enables IBMCLOUD_TRACE for ibmcloud cli logging (default to `false`)
+* **output**: Prints command result to console (default to `false`)
 * **path**: Directory where the repository is cloned (default to `/artifacts`)
-* **strict**: (Optional) Enables strict mode for scanning (default to `false`)
-* **toolchainid**: (Optional) The target toolchain id to be used. Defaults to the current toolchain id
-* **verbose**: (Optional) Enable verbose log messages (default to `false`)
+* **strict**: Enables strict mode for scanning (default to `false`)
+* **toolchainid**: The target toolchain id to be used. Defaults to the current toolchain id (default to empty string)
+* **verbose**: Enable verbose log messages (default to `false`)
 * **asset-type**: Security checks to run (apps, image, os, all) (default to `all`)
 * **bom-report**: Filepath to store generated Bill of Materials (default to `bom.json`)
-* **docker-build-flags**: (Optional) Customize docker build command for build stage scanning
-* **docker-build-context**: (Optional) If specified, CRA will use the directory in the path parameter as docker build context (default to `false`)
-* **dockerfile-pattern**: (Optional) Pattern to identify Dockerfile in the repository (default to `Dockerfile`)
-* **docker-registry-url**: Registry url to use for docker login
-* **docker-registry-username**: Username to authenticate for docker-registry-url
-* **gradle-exclude-configs**: (Optional) Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath'
-* **gradle-props**: (Optional) Customize gradle command with props for gradle dependency scanning.
-* **maven-exclude-scopes**: (Optional) Exclude maven scopes, ex. 'test,compile'
-* **nodejs-create-package-lock**: (Optional) Enable the task to build the package-lock.json for node.js projects (default to `false`)
-* **prev-report**: (Optional) Filepath to previous BoM report to skip Dockerfile or application manifest scans
+* **docker-build-flags**: Customize docker build command for build stage scanning (default to empty string)
+* **docker-build-context**: If specified, CRA will use the directory in the path parameter as docker build context (default to `false`)
+* **dockerfile-pattern**: Pattern to identify Dockerfile in the repository (default to `Dockerfile`)
+* **docker-registry-url**: Registry url to use for docker login (default to empty string)
+* **docker-registry-username**: Username to authenticate for docker-registry-url (default to empty string)
+* **gradle-exclude-configs**: Exclude gradle configurations, ex. 'runtimeClasspath,testCompileClasspath' (default to empty string)
+* **gradle-props**: Customize gradle command with props for gradle dependency scanning. (default to empty string)
+* **maven-exclude-scopes**: Exclude maven scopes, ex. 'test,compile' (default to empty string)
+* **nodejs-create-package-lock**: Enable the task to build the package-lock.json for node.js projects (default to `false`)
+* **prev-report**: Filepath to previous BoM report to skip Dockerfile or application manifest scans (default to empty string)
 * **deploy-report**: Filepath to store generated Deploy Analytic report (default to `deploy.json`)
-* **cveignore**: (Optional) File path to cveignore
-* **exclude-dev**: (Optional) Exclude dev dependencies during vulnerability scan (default to `false`)
+* **cveignore**: File path to cveignore (default to empty string)
+* **exclude-dev**: Exclude dev dependencies during vulnerability scan (default to `false`)
 * **vulnerability-report**: Filepath to store generated Vulnerability report, not stored if empty (default to `vulnerability.json`)
 * **cra-scan-image**: Image to use for `scan` task (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72`)
 * **dind-image**: image to use for the Docker-in-Docker sidecar (default to `icr.io/continuous-delivery/pipeline/docker:20.10.22-dind`)
@@ -341,19 +341,19 @@ Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
-* **repository**: the git repo
-* **source-repository**: the source git repo which could be different in case of forked repo
+* **repository** **[required]**: the git repo
+* **source-repository**: the source git repo which could be different in case of forked repo (default to empty string)
 * **revision**: the revision (default to `master`)
-* **pr-url**: pull request url
-* **commit-id**: git commit id
+* **pr-url**: pull request url (default to empty string)
+* **commit-id** **[required]**: git commit id
 * **ibmcloud-apikey-secret-key**: field in the secret that contains the api key used to login to ibmcloud (default to `apikey`)
 * **continuous-delivery-context-secret**: Reference name for the secret resource (default to `secure-properties`)
-* **git-access-token**: (optional) token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain
-* **resource-group**: target resource group (name or id) for the ibmcloud login operation
-* **project-id**: for gitlab repository, specify project-id
+* **git-access-token**: token to access the git repository. If this token is provided, there will not be an attempt to use the git token obtained from the authorization flow when adding the git integration in the toolchain (default to empty string)
+* **resource-group**: target resource group (name or id) for the ibmcloud login operation (default to empty string)
+* **project-id**: for gitlab repository, specify project-id (default to empty string)
 * **scm-type**: source code type used (github, github-ent, gitlab) (default to `github-ent`)
 * **pipeline-debug**: Pipeline debug mode. Value can be 0 or 1. (default to `0`)
-* **exclude-dev**: (optional) Exclude dev dependencies during scan (default to `false`)
+* **exclude-dev**: Exclude dev dependencies during scan (default to `false`)
 * **repo-dir**: Specifies the path for the repository or .cracveomit file (default to `/artifacts`)
 
 #### Workspaces

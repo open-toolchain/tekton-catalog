@@ -39,7 +39,7 @@ spec:
       description: Configure policies to control thresholds
       default: ""
     - name: tf-var-file
-      description: (optional) terraform var-file
+      description: terraform var-file
       default: ""
     - name: pr-repository
       value: $(params.pr-repository)
@@ -47,7 +47,7 @@ spec:
       value: $(params.pr-branch)
     - name: exclude-dev
       value: $(params.exclude-dev)
-      description: (optional) Exclude dev dependencies during vulnerability scan
+      description: Exclude dev dependencies during vulnerability scan
       default: "false"
     - name: repo-dir
       value: $(params.repo-dir)
@@ -55,19 +55,19 @@ spec:
       default: "/artifacts"
     - name: maven-exclude-scopes
       value: $(params.maven-exclude-scopes)
-      description: (optional) Exclude the specified scope dependencies for the vulnerability scan
+      description: Exclude the specified scope dependencies for the vulnerability scan
       default: ""
     - name: gradle-exclude-configs
       value: $(params.gradle-exclude-configs)
-      description: (optional) Exclude the specified gradle configuration dependencies for the vulnerability scan
+      description: Exclude the specified gradle configuration dependencies for the vulnerability scan
       default: ""
     - name: nodejs-create-package-lock
       value: $(params.nodejs-create-package-lock)
-      description: (optional) Enable CRA discovery to build the package-lock.json file for node.js repos
+      description: Enable CRA discovery to build the package-lock.json file for node.js repos
       default: "false"
     - name: python-create-requirements-txt
       value: $(params.python-create-requirements-txt)
-      description: (optional) Enable CRA discovery to build the requirements.txt file for python repos
+      description: Enable CRA discovery to build the requirements.txt file for python repos
       default: "false"
   workspaces:
     - name: artifacts

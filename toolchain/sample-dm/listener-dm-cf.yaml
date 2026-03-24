@@ -63,6 +63,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: toolchain-dm-cf
+  annotations:
+    tekton.dev/displayName: "listener for deployable mapping for CF application"
 spec:
   triggers:
     - binding:

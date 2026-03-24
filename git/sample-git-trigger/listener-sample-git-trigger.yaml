@@ -93,6 +93,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-manual
+  annotations:
+    tekton.dev/displayName: "manual trigger for git sample"
 spec:
   triggers:
     - binding:
@@ -138,6 +140,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-github-pr
+  annotations:
+    tekton.dev/displayName: "github pull-request listener for git sample"
 spec:
   triggers:
     - binding:
@@ -149,6 +153,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-github-commit
+  annotations:
+    tekton.dev/displayName: "github commit push event listener for git sample"
 spec:
   triggers:
     - binding:
@@ -194,6 +200,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-grit-mr
+  annotations:
+    tekton.dev/displayName: "grit/gitlab merge-request listener for git sample"
 spec:
   triggers:
     - binding:
@@ -205,6 +213,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-grit-commit
+  annotations:
+    tekton.dev/displayName: "grit/gitlab commit push event listener for git sample"
 spec:
   triggers:
     - binding:
@@ -250,6 +260,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-bitbucket-pr
+  annotations:
+    tekton.dev/displayName: "bitbucket pull-request listener for git sample"
 spec:
   triggers:
     - binding:
@@ -261,6 +273,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: eventlistener-git-trigger-bitbucket-commit
+  annotations:
+    tekton.dev/displayName: "bitbucket git commit push event listener for git sample"
 spec:
   triggers:
     - binding:

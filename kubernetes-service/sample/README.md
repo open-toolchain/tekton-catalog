@@ -38,13 +38,13 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### kubernetes-service-no-resources
 
-**EventListener**: kubernetes-service-no-resources
+**EventListener**: kubernetes-service-no-resources - simple listener for kubernetes service sample
 
 
 | Properties | Description | Default | Required | Type |
 |------------|-------------|---------|----------|------|
 | `apikey` (**secured property**) | the api key used to login to ibmcloud kubernetes service | - | Yes | secret |
 | `cluster-name` | name of the cluster - required if no cluster pipeline resource provided to this task | - | Yes | string |
-| `cluster-region` | (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region) | - | Yes | string |
+| `cluster-region` | the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region) | `` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
 | `resource-group` | target resource group (name or id) for the ibmcloud login operation | `default` | No | string |

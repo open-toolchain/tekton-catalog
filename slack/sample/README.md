@@ -65,7 +65,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 
 ### event-listener-post-slack
 
-**EventListener**: event-listener-post-slack
+**EventListener**: event-listener-post-slack - listener for slack sample
 
 
 | Properties | Description | Default | Required | Type |

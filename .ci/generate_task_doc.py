@@ -24,13 +24,17 @@ def parse_task_yaml(file_path: str) -> Dict[str, Any]:
         return yaml.safe_load(f)
 
 
-def format_param_description(description: str, default: Optional[str] = None) -> str:
+def format_param_description(description: str, default: Optional[str] = None, has_default: bool = False) -> str:
     """Format parameter description with optional default value."""
     # Clean up multi-line descriptions
     desc = ' '.join(description.strip().split())
 
-    if default is not None and default != "":
-        desc += f" (default to `{default}`)"
+    # Only add default info if the parameter actually has a default key in YAML
+    if has_default:
+        if default is not None and default != "":
+            desc += f" (default to `{default}`)"
+        elif default == "":
+            desc += f" (default to empty string)"
 
     return desc
 
@@ -47,11 +51,19 @@ def generate_parameters_section(params: List[Dict[str, Any]], heading_prefix: st
         description = param.get('description', '')
         default = param.get('default')
 
-        # Determine if parameter is optional
-        is_optional = default is not None or '(optional)' in description.lower()
+        # Check if 'default' key exists in the parameter
+        has_default = 'default' in param
 
-        formatted_desc = format_param_description(description, default)
-        lines.append(f"* **{name}**: {formatted_desc}")
+        # Determine if parameter is optional
+        is_optional = has_default or '(optional)' in description.lower()
+
+        formatted_desc = format_param_description(description, default, has_default)
+
+        # Add [required] indicator for parameters without defaults
+        if not has_default:
+            lines.append(f"* **{name}** **[required]**: {formatted_desc}")
+        else:
+            lines.append(f"* **{name}**: {formatted_desc}")
 
     return '\n'.join(lines) + '\n'
 

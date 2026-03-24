@@ -70,9 +70,15 @@ This pipeline and relevant trigger(s) can be configured using the properties des
 
 See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines&interface=ui#configure_tekton_pipeline for more information.
 
+
+**EventListeners:**
+
+- [default](#default) - listener for default sonarqube
+- [maven](#maven) - listener for sonarqube maven plugin
+
 ### default
 
-**EventListener**: default
+**EventListener**: default - listener for default sonarqube
 
 
 | Properties | Description | Default | Required | Type |
@@ -80,8 +86,8 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `apikey` (**secured property**) | [IBM Cloud Api Key](https://cloud.ibm.com/iam/apikeys) used to access to the toolchain (and git intergation toolcard like `Git Repos and Issue Tracking` service if used). | - | Yes | secret |
 | `app-name` | application name | - | Yes | string |
 | `branch` | the branch for the git repo | `master` | No | string |
-| `build-script` | script executed in build task | - | Yes | string |
-| `directory-name` | the directory to clone | - | Yes | string |
+| `build-script` | script executed in build task | `` | No | string |
+| `directory-name` | the directory to clone | `` | No | string |
 | `doi-policy` | DevOps Insights polciy to evaluate | `sonarqube-policy` | No | string |
 | `doi-sonarqube-token` (**secured property**) | the SonarQube token to publish the SonarQube report to DOI.
 It has some specific permissions which are required that a Global Analysis Token may not have.
@@ -93,13 +99,13 @@ See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-f
  | `doi-sonarqube-token` | No | string |
 | `ibmcloud-api` | the ibmcloud api | `https://cloud.ibm.com` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `repository` | the git repo containing source code. If empty, the repository url will be found from toolchain | - | Yes | string |
-| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `repository` | the git repo containing source code. If empty, the repository url will be found from toolchain | `` | No | string |
+| `revision` | the git revision/commit for the git repo | `` | No | string |
 | `scan-step-image` | - | `icr.io/continuous-delivery/toolchains/devsecops/sonar-scanner-cli:29-11-2024-10-26` | No | string |
 | `sonar-scan-command` | command for sonarqube scan | `sonar-scanner -Dsonar.working.directory=$SONAR_DIR` | No | string |
 | `sonarqube-name` | name of the sonarqube toolcard integration in the toolchain
 ("" meaning the first sonarqube integration found will be used)
- | - | Yes | string |
+ | `` | No | string |
 | `sonarqube-project-key` | - | `default-sonarqube-sample` | No | string |
 | `toolchain-apikey` (**secured property**) | the api key used to access toolchain and DOI instance | - | Yes | secret |
 | `toolchain-apikey-secret-key` | field in the secret that contains the api key used to access toolchain and DOI instance | `toolchain-apikey` | No | string |
@@ -107,7 +113,7 @@ See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-f
 
 ### maven
 
-**EventListener**: maven
+**EventListener**: maven - listener for sonarqube maven plugin
 
 
 | Properties | Description | Default | Required | Type |
@@ -116,7 +122,7 @@ See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-f
 | `app-name` | application name | - | Yes | string |
 | `branch` | the branch for the git repo | `master` | No | string |
 | `build-script` | script executed in build task | `mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" clean compile` | No | string |
-| `directory-name` | the directory to clone | - | Yes | string |
+| `directory-name` | the directory to clone | `` | No | string |
 | `doi-policy` | DevOps Insights polciy to evaluate | `sonarqube-policy` | No | string |
 | `doi-sonarqube-token` (**secured property**) | the SonarQube token to publish the SonarQube report to DOI.
 It has some specific permissions which are required that a Global Analysis Token may not have.
@@ -128,14 +134,14 @@ See https://cloud.ibm.com/docs/devsecops?topic=devsecops-sonarqube#permissions-f
  | `doi-sonarqube-token` | No | string |
 | `ibmcloud-api` | the ibmcloud api | `https://cloud.ibm.com` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `repository` | the git repo containing source code. If empty, the repository url will be found from toolchain | - | Yes | string |
-| `revision` | the git revision/commit for the git repo | - | Yes | string |
+| `repository` | the git repo containing source code. If empty, the repository url will be found from toolchain | `` | No | string |
+| `revision` | the git revision/commit for the git repo | `` | No | string |
 | `scan-step-image` | - | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | No | string |
 | `sonar-scan-command` | command for sonarqube scan | `mvn -Dmaven.repo.local="${WORKSPACE_PATH}/.m2" -Dsonar.login="${SONAR_USER}" -Dsonar.token="${SONAR_PASS}" -Dsonar.host.url="$SONAR_HOST_URL"
  -Dsonar.projectKey="$SONAR_PROJECT_KEY" -Dsonar.projectName="$SONAR_PROJECT_KEY" -Dsonar.working.directory="$SONAR_DIR" sonar:sonar` | No | string |
 | `sonarqube-name` | name of the sonarqube toolcard integration in the toolchain
 ("" meaning the first sonarqube integration found will be used)
- | - | Yes | string |
+ | `` | No | string |
 | `sonarqube-project-key` | - | `maven-sonarqube-sample` | No | string |
 | `toolchain-apikey` (**secured property**) | the api key used to access toolchain and DOI instance | - | Yes | secret |
 | `toolchain-apikey-secret-key` | field in the secret that contains the api key used to access toolchain and DOI instance | `toolchain-apikey` | No | string |

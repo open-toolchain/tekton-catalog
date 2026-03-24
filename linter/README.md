@@ -35,9 +35,9 @@ This task performs a lint on the given Dockerfile using [Hadolint](https://githu
 
 * **path-to-dockerfile**: the path to the Dockerfile that is used for the build (`.` meaning current directory) (default to `.`)
 * **dockerfile**: The name of the Dockerfile (default to `Dockerfile`)
-* **path-to-hadolint-config**: The path to the hadolint configuration file
-* **hadolint-ignored-rules**: Comma separated list of ignored rules for the lint
-* **trusted-registries**: Comma separated list of trusted repositories that can be used in Dockerfiles
+* **path-to-hadolint-config**: The path to the hadolint configuration file (default to empty string)
+* **hadolint-ignored-rules**: Comma separated list of ignored rules for the lint (default to empty string)
+* **trusted-registries**: Comma separated list of trusted repositories that can be used in Dockerfiles (default to empty string)
 * **fail-on-lint-errors**: flag (`true` | `false`) to indicate if the task should fail or continue if issues are found in the Dockerfile lint (default to `true`)
 * **hadolint-image**: image for installing Hadolint (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **hadolint-version**: The version of Hadolint to use. (default to `v2.12.0`)

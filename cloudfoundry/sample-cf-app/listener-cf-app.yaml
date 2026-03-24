@@ -74,6 +74,8 @@ apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: sample-cf-app
+  annotations:
+    tekton.dev/displayName: "cf build and rolling deploy"
 spec:
   triggers:
     - binding:

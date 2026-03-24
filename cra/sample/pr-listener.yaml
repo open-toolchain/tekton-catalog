@@ -3,6 +3,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-pr-listener
+  annotations:
+    tekton.dev/displayName: "github pull-request listener"
 spec:
   triggers:
     - bindings:
@@ -14,6 +16,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: gitlab-pr-listener
+  annotations:
+    tekton.dev/displayName: "grit/gitlab merge-request listener"
 spec:
   triggers:
     - bindings:
@@ -25,6 +29,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: github-ent-pr-listener
+  annotations:
+    tekton.dev/displayName: "github enterprise pull-request listener"
 spec:
   triggers:
     - bindings:

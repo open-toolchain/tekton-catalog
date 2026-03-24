@@ -6,7 +6,7 @@ metadata:
 spec:
   params:
     - name: cluster-region
-      description: (optional) the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
+      description: the ibmcloud region hosting the cluster (if none is found it will default to the toolchain region)
       default: ""
     - name: resource-group
       description: target resource group (name or id) for the ibmcloud login operation

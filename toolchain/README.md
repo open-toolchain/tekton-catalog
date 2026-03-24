@@ -70,7 +70,7 @@ This task perform build operation on the given workspace. Default build operatio
 
 #### Parameters
 
-* **custom-script**: The command(s) to run the build in run-build step. It will override the default commands
+* **custom-script**: The command(s) to run the build in run-build step. It will override the default commands (default to empty string)
 * **run-build-image**: The name of the image used for the run-build step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode (default to `0`)
 
@@ -86,7 +86,7 @@ This task extracts values from the desired config map with a given jq expression
 
 * **config-map-name**: name of the config map (default to `toolchain`)
 * **config-map-key**: key of the config map (default to `toolchain.json`)
-* **expression**: A valid jq expression which is used to search
+* **expression** **[required]**: A valid jq expression which is used to search
 * **extract-value-jq-step-image**: image to use for the extract-value-jq step (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
 * **pipeline-debug**: Pipeline debug mode (default to `0`)
 * **raw**: determines if extracted value should be a raw string (default to `1`)
@@ -111,16 +111,16 @@ This task creates or updates a toolchain deployable mapping for a [Continuous De
 Note: secret name and secret key(s) can be configured using Task's params.
 #### Parameters
 
-* **deployable-type**: type of the deployable. Can be either: - `app` for a CF application or - `kubernetes_cluster` for K8S deployment
-* **deployable-region-id**: IBM Cloud Region where the deployable is located. A fully qualified id is expected (such as ibm:yp:us-south) If not fully qualified, the ibmcloud production prefix is appended (ie 'ibm:yp:')
-* **deployable-guid**: GUID of the deployable (either cluster guid or cf app guid)
-* **deployable-cf-org-id**: CF organization id (only required when deployable-type is `app`)
-* **deployable-cf-org-name**: CF organization name (only required when deployable-type is `app`). It will only be used for traceability event purpose. Default to `deployable-cf-org-id`
-* **deployable-cf-space-id**: CF space id (only required when deployable-type is `app`)
-* **deployable-cf-space-name**: CF space name (only required when deployable-type is `app`). It will only be used for traceability event purpose. Default to `deployable-cf-space-id`
-* **deployable-rg-id**: Resource Group id (only required when deployable-type is `kubernetes_cluster`)
-* **deployable-url**: (optional) an URL that represent the deployable, e.g. the application's URL.
-* **git-inputs**: list of git repository,commit and branch triple (repository,commit id and branch spearated by a comma). each triple-element of the list is contained in one line
+* **deployable-type** **[required]**: type of the deployable. Can be either: - `app` for a CF application or - `kubernetes_cluster` for K8S deployment
+* **deployable-region-id** **[required]**: IBM Cloud Region where the deployable is located. A fully qualified id is expected (such as ibm:yp:us-south) If not fully qualified, the ibmcloud production prefix is appended (ie 'ibm:yp:')
+* **deployable-guid** **[required]**: GUID of the deployable (either cluster guid or cf app guid)
+* **deployable-cf-org-id**: CF organization id (only required when deployable-type is `app`) (default to empty string)
+* **deployable-cf-org-name**: CF organization name (only required when deployable-type is `app`). It will only be used for traceability event purpose. Default to `deployable-cf-org-id` (default to empty string)
+* **deployable-cf-space-id**: CF space id (only required when deployable-type is `app`) (default to empty string)
+* **deployable-cf-space-name**: CF space name (only required when deployable-type is `app`). It will only be used for traceability event purpose. Default to `deployable-cf-space-id` (default to empty string)
+* **deployable-rg-id**: Resource Group id (only required when deployable-type is `kubernetes_cluster`) (default to empty string)
+* **deployable-url**: an URL that represent the deployable, e.g. the application's URL. (default to empty string)
+* **git-inputs**: list of git repository,commit and branch triple (repository,commit id and branch spearated by a comma). each triple-element of the list is contained in one line (default to empty string)
 * **environment-label**: the label of the environment where the deployment has occured (default to `label of the deployed environment`)
 * **ibmcloud-api**: the ibmcloud api (default to `https://cloud.ibm.com`)
 * **continuous-delivery-context-secret**: Name of the secret containing the continuous delivery pipeline context secrets (default to `secure-properties`)

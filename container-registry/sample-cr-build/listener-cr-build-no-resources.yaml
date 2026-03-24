@@ -73,6 +73,8 @@ apiVersion: tekton.dev/v1
 kind: EventListener
 metadata:
   name: cr-build-no-resources
+  annotations:
+    tekton.dev/displayName: "ibmcloud cr build without tekton resources defined"
 spec:
   triggers:
     - binding:
