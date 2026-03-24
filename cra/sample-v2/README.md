@@ -76,7 +76,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `bom-report` | Filepath to store generated Bill of Materials. Default to `./bom.json` | `bom.json` | No | string |
 | `branch` | The git branch | - | Yes | string |
 | `commit-id` | commit id | - | Yes | string |
-| `cra-scan-image` | Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | No | string |
+| `cra-scan-image` | Image to use for `scan` task. | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72` | No | string |
 | `custom-script` | (Optional) Filepath to a custom script that is ran prior to CRA scanning | - | Yes | string |
 | `cveignore` | (Optional) Filepath to cveignore | - | Yes | string |
 | `deploy-report` | Filepath to store generated Deploy Analytic report. Default to `./deploy.json` | `deploy.json` | No | string |
@@ -133,7 +133,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `bom-report` | Filepath to store generated Bill of Materials. Default to `./bom.json` | `bom.json` | No | string |
 | `branch` | The git branch | - | Yes | string |
 | `commit-id` | commit id | - | Yes | string |
-| `cra-scan-image` | Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | No | string |
+| `cra-scan-image` | Image to use for `scan` task. | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72` | No | string |
 | `custom-script` | (Optional) Filepath to a custom script that is ran prior to CRA scanning | - | Yes | string |
 | `cveignore` | (Optional) Filepath to cveignore | - | Yes | string |
 | `deploy-report` | Filepath to store generated Deploy Analytic report. Default to `./deploy.json` | `deploy.json` | No | string |
@@ -190,7 +190,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `bom-report` | Filepath to store generated Bill of Materials. Default to `./bom.json` | `bom.json` | No | string |
 | `branch` | The git branch | - | Yes | string |
 | `commit-id` | commit id | - | Yes | string |
-| `cra-scan-image` | Image to use for `scan` task. Default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79` | No | string |
+| `cra-scan-image` | Image to use for `scan` task. | `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72` | No | string |
 | `custom-script` | (Optional) Filepath to a custom script that is ran prior to CRA scanning | - | Yes | string |
 | `cveignore` | (Optional) Filepath to cveignore | - | Yes | string |
 | `deploy-report` | Filepath to store generated Deploy Analytic report. Default to `./deploy.json` | `deploy.json` | No | string |

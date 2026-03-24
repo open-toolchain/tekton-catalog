@@ -315,7 +315,7 @@ Note: secret name and secret key(s) can be configured using Task's params.
 * **cveignore**: (Optional) File path to cveignore
 * **exclude-dev**: (Optional) Exclude dev dependencies during vulnerability scan (default to `false`)
 * **vulnerability-report**: Filepath to store generated Vulnerability report, not stored if empty (default to `vulnerability.json`)
-* **cra-scan-image**: Image to use for `scan` task (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.79`)
+* **cra-scan-image**: Image to use for `scan` task (default to `icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.72`)
 * **dind-image**: image to use for the Docker-in-Docker sidecar (default to `icr.io/continuous-delivery/pipeline/docker:20.10.22-dind`)
 
 #### Workspaces
