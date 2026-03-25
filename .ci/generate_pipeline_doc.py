@@ -17,13 +17,17 @@ Usage:
     # Insert at anchor in existing file
     python generate_pipeline_doc.py -f listener.yaml -f pipeline.yaml --output README.md --anchor-output "## Parameters"
 
+    # Add epilogue text after documentation
+    python generate_pipeline_doc.py -f *.yaml -o README.md -a "## Parameters" -e "For more info, see the docs."
+
     # Short form with all options
-    python generate_pipeline_doc.py -f *.yaml -o README.md -a "## Parameters" -v
+    python generate_pipeline_doc.py -f *.yaml -o README.md -a "## Parameters" -e "Additional notes" -v
 
 Options:
     --file, -f              Path to YAML file (can be used multiple times, supports glob patterns)
     --output, -o            Output markdown file (default: stdout)
     --anchor-output, -a     Heading anchor where content should be inserted (requires --output and existing file)
+    --epilogue, -e          Text to append after the generated documentation
     --verbose, -v           Enable verbose output
 
 Features:
@@ -321,7 +325,8 @@ def process_yaml_files(file_paths: List[Path], verbose: bool = False) -> Tuple[L
                 continue
 
             kind = doc.get('kind', '')
-            name = doc.get('metadata', {}).get('name', 'Unknown')
+            metadata = doc.get('metadata') or {}
+            name = metadata.get('name', 'Unknown')
 
             if kind == 'Pipeline':
                 pipeline_names.append(name)
@@ -656,7 +661,8 @@ def generate_combined_markdown(pipeline_params: List[Dict],
                                event_listeners: List[Dict],
                                resource_map: Dict[str, Dict],
                                heading_level: int = 1,
-                               verbose: bool = False) -> str:
+                               verbose: bool = False,
+                               epilogue: Optional[str] = None) -> str:
     """
     Generate combined markdown documentation with unified parameter table.
     If EventListeners are present, generates documentation per EventListener.
@@ -672,6 +678,7 @@ def generate_combined_markdown(pipeline_params: List[Dict],
         resource_map: Map of all resources by kind and name
         heading_level: Heading level for the main title (default: 1 for #)
         verbose: Print debug information
+        epilogue: Optional text to append after the generated documentation
     """
     heading_prefix = '#' * heading_level
     params_heading_prefix = '#' * (heading_level + 1)
@@ -797,8 +804,13 @@ def generate_combined_markdown(pipeline_params: List[Dict],
             markdown_sections.append('\n'.join(section))
 
         result = ('\n' + '\n').join(markdown_sections)
-        # Ensure single trailing newline using OS-specific line ending
-        result = result.rstrip('\n') + '\n'
+
+        # Append epilogue if provided
+        if epilogue:
+            result = result.rstrip('\n') + '\n\n' + epilogue.rstrip('\n') + '\n'
+        else:
+            # Ensure single trailing newline using OS-specific line ending
+            result = result.rstrip('\n') + '\n'
         return result
 
     # Fallback: Generate combined documentation (original behavior)
@@ -853,8 +865,13 @@ def generate_combined_markdown(pipeline_params: List[Dict],
     markdown.append("")
 
     result = '\n'.join(markdown)
-    # Ensure single trailing newline using OS-specific line ending
-    result = result.rstrip('\n') + '\n'
+
+    # Append epilogue if provided
+    if epilogue:
+        result = result.rstrip('\n') + '\n\n' + epilogue.rstrip('\n') + '\n'
+    else:
+        # Ensure single trailing newline using OS-specific line ending
+        result = result.rstrip('\n') + '\n'
     return result
 
 
@@ -926,6 +943,8 @@ Examples:
                        help='Output markdown file (default: print to stdout)')
     parser.add_argument('--anchor-output', '-a',
                        help='Markdown heading anchor in output file where content should be inserted (e.g., "## Parameters"). If specified, replaces content between this anchor and the next heading of same or higher level.')
+    parser.add_argument('--epilogue', '-e',
+                       help='Text to append after the generated documentation (e.g., additional notes or links)')
     parser.add_argument('--verbose', '-v', action='store_true',
                        help='Verbose output')
 
@@ -967,7 +986,8 @@ Examples:
         event_listeners,
         resource_map,
         heading_level,
-        args.verbose
+        args.verbose,
+        args.epilogue
     )
 
     # Output

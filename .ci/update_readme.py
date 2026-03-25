@@ -33,7 +33,7 @@ def find_task_files(folder: Path) -> List[Path]:
     """Find all task YAML files in a folder (excluding samples)."""
     task_files = []
 
-    for file_path in folder.glob("task-*.y*ml"):
+    for file_path in folder.glob("*.y*ml"):
         # Skip if in a sample directory
         if "sample" in str(file_path):
             continue
@@ -122,14 +122,25 @@ def update_readme(folder: Path, dry_run: bool = False, verbose: bool = False, ou
     # Generate task list section (summary at the top)
     task_list = generate_task_list_section(task_files)
 
+    # Calculate heading level for task documentation based on details_anchor_heading
+    # Extract the heading level from details_anchor_heading (e.g., "## Tasks" -> 2)
+    anchor_match = re.match(r'^(#+)\s+', details_anchor_heading.strip())
+    if anchor_match:
+        anchor_level = len(anchor_match.group(1))
+        # Task sections should be one level deeper than the anchor heading
+        task_heading_level = anchor_level + 1
+    else:
+        # Default to level 3 if anchor heading format is invalid
+        task_heading_level = 3
+
     # Generate detailed documentation for each task using generate_task_doc
     task_docs = []
     for task_file in task_files:
         try:
             if verbose:
                 print(f"Generating documentation for {task_file.name}...")
-            # Use heading level 3 (###) for task sections
-            doc = generate_task_doc_from_file(str(task_file), heading_level=3)
+            # Use calculated heading level for task sections
+            doc = generate_task_doc_from_file(str(task_file), heading_level=task_heading_level)
             task_docs.append(doc)
         except Exception as e:
             print(f"Error generating docs for {task_file}: {e}", file=sys.stderr)
