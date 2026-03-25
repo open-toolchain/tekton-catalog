@@ -45,7 +45,9 @@ for folder in "${FOLDERS[@]}"; do
 
         if python3 "$SCRIPT_DIR/update_readme.py" \
           --summary-anchor-output "## Available tasks" \
-          --details-anchor-output "## Details" "$folder"; then
+          --details-anchor-output "## Details" \
+          --output "$folder/README.md" \
+          --file "$folder/*.y*ml"; then
             successful_folders=$((successful_folders + 1))
             echo "  ✓ Successfully updated $folder/README.md"
         else

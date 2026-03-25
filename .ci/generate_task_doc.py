@@ -20,21 +20,21 @@ from typing import Dict, List, Any, Optional
 
 def parse_task_yaml(file_path: str) -> Dict[str, Any]:
     """Parse a Tekton task YAML file.
-    
+
     If the file contains multiple documents, returns the first Task document found.
     """
     with open(file_path, 'r', encoding='utf-8') as f:
         documents = list(yaml.safe_load_all(f))
-        
+
     # If single document, return it
     if len(documents) == 1:
         return documents[0]
-    
+
     # If multiple documents, find and return the first Task
     for doc in documents:
         if doc and doc.get('kind') == 'Task':
             return doc
-    
+
     # If no Task found, return first document (backward compatibility)
     return documents[0] if documents else {}
 
