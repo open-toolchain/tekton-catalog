@@ -1,0 +1,88 @@
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: pipeline-sample-environment
+spec:
+  params:
+    - name: pipeline-debug
+      default: "0"
+  tasks:
+    - name: inspect-environment
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      taskSpec:
+        params:
+          - name: pipeline-debug
+        steps:
+          - name: inspect-toolchain
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
+            script: |
+              #!/bin/bash
+              set -e -o pipefail
+              echo "ls -al /toolchain:"
+              ls -al /toolchain
+            volumeMounts:
+              - mountPath: /toolchain
+                name: toolchain
+          - name: inspect-environment-properties
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
+            script: |
+              #!/bin/bash
+              set -e -o pipefail
+              echo "ls -al /environment-properties:"
+              ls -al /environment-properties
+            volumeMounts:
+              - mountPath: /environment-properties
+                name: environment-properties
+          - name: inspect-secure-properties
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
+            script: |
+              #!/bin/bash
+              set -e -o pipefail
+              echo "ls -al /secure-properties:"
+              ls -al /secure-properties
+            volumeMounts:
+              - mountPath: /secure-properties
+                name: secure-properties
+          - name: inspect-event-parameters
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.46
+            script: |
+              #!/bin/bash
+              set -e -o pipefail
+              echo "ls -al /event-parameters:"
+              ls -al /event-parameters
+              echo "========================="
+              if [ -f "/event-parameters/eventHeader" ]; then
+                echo "cat /event-parameters/eventHeader"
+                cat /event-parameters/eventHeader
+              else
+                echo "no /event-parameters/eventHeader"
+              fi
+              echo ""
+              echo "========================="
+              if [ -f "/event-parameters/eventBody" ]; then
+                echo "cat /event-parameters/eventBody"
+                cat /event-parameters/eventBody
+              else
+                echo "no /event-parameters/eventBody"
+              fi
+              echo ""
+            volumeMounts:
+              - mountPath: /event-parameters
+                name: event-parameters
+        volumes:
+          - name: toolchain
+            configMap:
+              name: toolchain
+          - name: environment-properties
+            configMap:
+              name: environment-properties
+          - name: secure-properties
+            secret:
+              secretName: secure-properties
+          - name: event-parameters
+            configMap:
+              name: event-parameters
+              optional: true

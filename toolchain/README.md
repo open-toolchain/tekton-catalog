@@ -18,6 +18,8 @@ These tasks needs to run on Kubernetes cluster with minimal version 1.16. If you
 
 - The `sample-dm` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing a simple usage of the `toolchain-publish-deployable-mapping`.
 
+- The `sample-environment` sub-directory contains an EventListener definition that you can include in your CD tekton pipeline configuration to run an example showing the available environment context provide by the IBM Cloud Continuous Delivery Tekton Support - See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekton_environment#tekton_envprop.
+
 - The `toolchain-extract-value` task will save the desired value into a tekton task result.
   Check out the example below, where we pass the result of the `extract-value` task to the `use-result-task` task.
   In addition, you have to add the `extracted-value` param to the `use-result-task` task itself.
