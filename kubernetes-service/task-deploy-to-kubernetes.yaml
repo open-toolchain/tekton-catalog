@@ -111,15 +111,7 @@ spec:
         set -e -o pipefail
 
         if [ $PIPELINE_DEBUG == 1 ]; then
-            env
-            pwd
-            ls -l
-            echo "=== cat /artifacts/_toolchain.json ==="
-            cat /artifacts/_toolchain.json
-            echo ""
-            echo "======================================"
-            trap env EXIT
-            set -x
+          set -x
         fi
 
         # SETUP BEGIN

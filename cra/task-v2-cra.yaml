@@ -190,9 +190,6 @@ spec:
         - |
           #!/bin/sh
           if [ "$PIPELINE_DEBUG" = "1" ]; then
-            pwd
-            env
-            trap env EXIT
             set -x +e
           fi
 

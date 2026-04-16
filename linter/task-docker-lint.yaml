@@ -65,10 +65,6 @@ spec:
         mv hadolint-Linux-x86_64 /bin/hadolint
 
         if [ $PIPELINE_DEBUG == 1 ]; then
-          pwd
-          env
-          hadolint --version
-          trap env EXIT
           set -x
         fi
 

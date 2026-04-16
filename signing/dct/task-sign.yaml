@@ -74,10 +74,7 @@ spec:
       script: |
           #!/bin/bash
           if [ $PIPELINE_DEBUG == 1 ]; then
-           pwd
-           env
-           trap env EXIT
-           set -x
+            set -x
           fi
 
           # if vault region is in the 'ibm:yp:<region>' just keep the region part
@@ -174,10 +171,7 @@ spec:
           set -e
 
           if [ $PIPELINE_DEBUG == 1 ]; then
-           pwd
-           env
-           trap env EXIT
-           set -x
+            set -x
           fi
 
           # Obtain image registry context from previous step

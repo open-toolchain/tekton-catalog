@@ -113,6 +113,8 @@ spec:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
             optional: true
+      - name: GIT_TOKEN
+        value: $(params.git-access-token)
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
   steps:
@@ -124,13 +126,6 @@ spec:
       script: |
         #!/bin/bash
         set -e -o pipefail
-
-        if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
-            env
-            trap env EXIT
-            set -x
-        fi
 
         TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
         ##########################################################################
@@ -166,7 +161,6 @@ spec:
           GIT_AUTH_USER="x-token-auth"
         fi;
 
-        GIT_TOKEN="$(params.git-access-token)"
         if [ -z "$GIT_TOKEN" ]; then
           AUTHTYPE=$(jq -r --arg git_repo "$REPOSITORY" \
             '.services[] | select (.parameters.repo_url==$git_repo) | .parameters.auth_type' \
@@ -258,13 +252,6 @@ spec:
       script: |
         #!/bin/sh
         set -e
-
-        if [ $PIPELINE_DEBUG == 1 ]; then
-            pwd
-            env
-            trap env EXIT
-            set -x
-        fi
 
         ############################
         # Workaround until a null/empty param can be flowing to Task

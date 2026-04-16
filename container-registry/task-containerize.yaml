@@ -123,10 +123,7 @@ spec:
           set -e -o pipefail
 
           if [ $PIPELINE_DEBUG == 1 ]; then
-              pwd
-              env
-              trap env EXIT
-              set -x
+            set -x
           fi
 
           ##########################################################################
@@ -240,10 +237,7 @@ spec:
       args:
         - |
           if [ $PIPELINE_DEBUG == 1 ]; then
-              pwd
-              env
-              trap env EXIT
-              set -x
+            set -x
           fi
 
           source /steps/next-step-env.properties
@@ -336,10 +330,7 @@ spec:
           set -e -o pipefail
 
           if [ $PIPELINE_DEBUG == 1 ]; then
-              pwd
-              env
-              trap env EXIT
-              set -x
+            set -x
           fi
 
           source /steps/next-step-env.properties

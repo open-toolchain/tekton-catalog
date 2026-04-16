@@ -177,9 +177,6 @@ spec:
       script: |
         #!/bin/bash
         if [ $PIPELINE_DEBUG == 1 ]; then
-          pwd
-          env
-          trap env EXIT
           set -x
         fi
 
@@ -235,9 +232,6 @@ spec:
 
         # DOI processing is made here to self-contain generated sonarqube token manipulation inside this task
         if [ $PIPELINE_DEBUG == 1 ]; then
-          pwd
-          env
-          trap env EXIT
           set -x
         fi
 

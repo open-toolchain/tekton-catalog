@@ -76,10 +76,7 @@ spec:
         set -e -o pipefail
 
         if [ $PIPELINE_DEBUG == 1 ]; then
-            env
-            pwd
-            trap env EXIT
-            set -x
+          set -x
         fi
 
         export PIPELINE_TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /artifacts/_toolchain.json)
