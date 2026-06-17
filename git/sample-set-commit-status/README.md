@@ -96,7 +96,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `branch` | the branch for the git repo | `$(event.ref)` | No | string |
 | `description` | A short description of the status | `status from cd tekton` | No | string |
 | `pipeline-debug` | Pipeline debug mode. Value can be 0 or 1. | `0` | No | string |
-| `repository` | The git repo | `$(event.repository.url)` | No | string |
+| `repository` | The git repo | `$(event.repository.html_url)` | No | string |
 | `revision` | the git revision/commit to update the git HEAD to. Default is to mean only use the branch | `$(event.head_commit.id)` | No | string |
 | `state` | The state of the status. Can be one of the following: pending, success, error, or failure | `success` | No | string |
 

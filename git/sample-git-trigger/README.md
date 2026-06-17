@@ -191,7 +191,7 @@ See https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tekto
 | `pr-repository` | The source git repo for the PullRequest | `` | No | string |
 | `pr-revision` | the commit id/sha for the PullRequest | `` | No | string |
 | `properties-file` | - | `output/thebuild.properties` | No | string |
-| `repository` | the git repo | `$(event.repository.url)` | No | string |
+| `repository` | the git repo | `$(event.repository.html_url)` | No | string |
 | `revision` | the commit id/sha for the clone action | `$(event.head_commit.id)` | No | string |
 | `triggerName` | name of the trigger | `github-commit` | No | string |
 
